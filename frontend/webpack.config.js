@@ -23,6 +23,13 @@ module.exports = {
                 test: /\.css$/,
                 use: [MiniCssExtractPlugin.loader, 'css-loader'],
             },
+            {
+                test: /\.(jpg|png|svg)$/i,
+                loader: 'url-loader',
+                options: {
+                    outputPath: 'images',
+                }
+            },
         ]
     },
     devtool: prod ? undefined : 'source-map',

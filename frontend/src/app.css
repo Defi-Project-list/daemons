@@ -1,0 +1,65 @@
+@font-face {
+    font-family: DMSans;
+    src: url('./assets/DMSans-Regular.ttf');
+}
+
+body {
+    color: rgb(48, 48, 48);
+    font-family: DMSans;
+}
+
+.header {
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.page-logo {
+    height: 35px;
+    width: 35px;
+    margin-right: 10px;
+}
+
+.menu {
+    display: flex;
+    flex-direction: row;
+}
+
+.menu__entry {
+    margin: 10px;
+}
+
+.menu__entry:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.wallet-control {
+    margin-left: auto;
+    text-align: right;
+}
+
+.wallet-control__connect-bt {
+    border-radius: 5px;
+    padding: 5px;
+    background: transparent;
+    font-size: 16px;
+    font-family: DMSans;
+}
+
+.wallet-control__connect-bt:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.wallet-control__wrong-network-msg {
+    font-size: 13px;
+    color: #a66;
+}
+
+.page {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    padding: 10px;
+}
