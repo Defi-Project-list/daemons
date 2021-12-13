@@ -1,33 +1,31 @@
-import React, { Component, ReactNode } from 'react';
-
-import "./app.css";
+import React from 'react';
 import { ConnectWalletButton } from './components/connect-wallet';
 import { MetaMaskProvider } from "metamask-react";
-
+import { Link } from 'react-router-dom';
 import logo from './assets/logo.png';
 
-export class App extends Component {
+import "./app.css";
 
-    render(): ReactNode {
-        return (
-            <div>
-                <div className="header">
-                    <img src={logo} alt='Balrog logo' className="page-logo" />
-                    <div className="menu">
-                        <div className="menu__entry">Scripts</div>
-                        <div className="menu__entry">Queue</div>
-                    </div>
+export const App = ({ children }: { children: any; }) => {
+    const queueLinkClassName = `menu__entry ${document.location.href.includes('/queue') ? 'menu__entry--selected' : ''}`;
+    const scriptsLinkClassName = `menu__entry ${queueLinkClassName.includes('selected') ? '' : 'menu__entry--selected'}`;
 
-                    <div className="wallet-control"><MetaMaskProvider> <ConnectWalletButton /> </MetaMaskProvider></div>
+    return (
+        <div>
+            <div className="header">
+                <img src={logo} alt='Balrog logo' className="page-logo" />
+                <div className="menu">
+                    <Link className={scriptsLinkClassName} to="/scripts">Scripts</Link>
+                    <Link className={queueLinkClassName} to="/queue">Queue</Link>
                 </div>
 
-                <div className="page">
-                    <div className="Screen">
-                        // something will happen here one day..
-                    </div>
-                </div>
+                <div className="wallet-control"><MetaMaskProvider> <ConnectWalletButton /> </MetaMaskProvider></div>
             </div>
-        );
-    }
+            <hr />
 
-}
+            <div className="page">
+                {children}
+            </div>
+        </div>
+    );
+};
