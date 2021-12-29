@@ -3,6 +3,8 @@ import { ConnectWalletButton } from './components/connect-wallet';
 import { MetaMaskProvider } from "metamask-react";
 import { Link } from 'react-router-dom';
 import logo from './assets/logo.png';
+import { Provider } from 'react-redux';
+import { store } from './state';
 
 import "./app.css";
 
@@ -12,7 +14,7 @@ export const App = ({ children }: { children: any; }) => {
     const scriptsLinkClassName = `menu__entry ${document.location.href.endsWith('/') || document.location.href.endsWith('/scripts') ? 'menu__entry--selected' : ''}`;
 
     return (
-        <div>
+        <Provider store={store}>
             <div className="header">
                 <img src={logo} alt='Balrog logo' className="page-logo" />
                 <div className="menu">
@@ -28,6 +30,6 @@ export const App = ({ children }: { children: any; }) => {
             <div className="page">
                 {children}
             </div>
-        </div>
+        </Provider>
     );
 };
