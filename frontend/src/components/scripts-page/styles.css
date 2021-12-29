@@ -1,0 +1,30 @@
+.scripts-container {
+    padding: 25px;
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.script {
+    width: 200px;
+    margin: 5px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #aaa;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    user-select: none;
+}
+
+.script__actions {
+    margin-top: 15px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: space-evenly;
+    justify-items: center;
+}
+
+.script__button {
+    width: 80px;
+    height: 30px;
+}

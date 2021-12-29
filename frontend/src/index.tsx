@@ -3,14 +3,16 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import { App } from './App';
-import { Queue } from './components/queue';
-import { Scripts } from './components/scripts';
+import { CreateScripts } from './components/create-script-page';
+import { Queue } from './components/queue-page';
+import Scripts from './components/scripts-page';
 
 ReactDOM.render(
     <BrowserRouter>
         <Routes>
             <Route path="/" element={<App><Scripts /></App>} />
             <Route path="scripts" element={<App><Scripts /></App>} />
+            <Route path="new-script" element={<App><CreateScripts /></App>} />
             <Route path="queue" element={<App><Queue /></App>} />
         </Routes>
     </BrowserRouter>,

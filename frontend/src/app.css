@@ -67,9 +67,3 @@ body {
     font-size: 13px;
     color: #a66;
 }
-
-.page {
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    padding: 10px;
-}

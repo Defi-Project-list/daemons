@@ -7,8 +7,9 @@ import logo from './assets/logo.png';
 import "./app.css";
 
 export const App = ({ children }: { children: any; }) => {
-    const queueLinkClassName = `menu__entry ${document.location.href.includes('/queue') ? 'menu__entry--selected' : ''}`;
-    const scriptsLinkClassName = `menu__entry ${queueLinkClassName.includes('selected') ? '' : 'menu__entry--selected'}`;
+    const queueLinkClassName = `menu__entry ${document.location.href.endsWith('/queue') ? 'menu__entry--selected' : ''}`;
+    const newScriptLinkClassName = `menu__entry ${document.location.href.endsWith('/new-script') ? 'menu__entry--selected' : ''}`;
+    const scriptsLinkClassName = `menu__entry ${document.location.href.endsWith('/') || document.location.href.endsWith('/scripts') ? 'menu__entry--selected' : ''}`;
 
     return (
         <div>
@@ -16,6 +17,7 @@ export const App = ({ children }: { children: any; }) => {
                 <img src={logo} alt='Balrog logo' className="page-logo" />
                 <div className="menu">
                     <Link className={scriptsLinkClassName} to="/scripts">Scripts</Link>
+                    <Link className={newScriptLinkClassName} to="/new-script">New Script</Link>
                     <Link className={queueLinkClassName} to="/queue">Queue</Link>
                 </div>
 

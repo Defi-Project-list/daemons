@@ -1,0 +1,90 @@
+/* Add Script page */
+
+.new-script {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    column-gap: 50px;
+    align-items: center;
+}
+
+.new-script__step {
+    border-radius: 5px;
+    border: 1px solid #555;
+    margin: 20px;
+    padding: 25px;
+    height: 65vh;
+}
+
+.new-script__block-title {
+    margin-bottom: 25px;
+}
+
+
+/* Blocks */
+
+.script-block {
+    border: 1px solid #888;
+    margin-bottom: 15px;
+    width: 270px;
+}
+
+.script-block__title {
+    padding: 5px;
+    line-height: 30px;
+}
+
+.script-block__accordion {
+    cursor: pointer;
+    height: 40px;
+}
+
+.script-block--selected .script-block__title {
+    font-weight: bold;
+}
+
+.script-block--selected .script-block__panel {
+    padding: 10px 0;
+}
+
+
+/* Balance Block */
+
+.balance-block {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    column-gap: 10px;
+}
+
+.balance-block__token {
+    width: 70px;
+}
+
+.balance-block__comparison {
+    width: 50px;
+}
+
+.balance-block__amount {
+    width: 70px;
+    text-align: right;
+}
+
+
+/* Frequency Block */
+
+.frequency-block {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    column-gap: 10px;
+}
+
+.frequency-block__time-unit {
+    width: 70px;
+}
+
+.frequency-block__amount {
+    width: 70px;
+    text-align: right;
+}
