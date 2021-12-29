@@ -4,14 +4,12 @@ import { ActionType } from '../action-types';
 import { ScriptAction } from '../actions/script-actions';
 
 
-export const fetchScripts = (address?: string) => {
+export const fetchScripts = (address: string | null) => {
 
     return (dispatch: Dispatch<ScriptAction>) => {
-        console.log("Fetching user's scripts...");
-
         dispatch({
             type: ActionType.FETCH_SCRIPTS,
-            payload: SCRIPTS,
+            payload: SCRIPTS.filter(script => script.address.toLowerCase() === address),
         });
     };
 };
