@@ -1,9 +1,15 @@
 import React from 'react';
 import { useMetaMask } from "metamask-react";
+import { updateWalletAddress } from '../state/action-creators/wallet-action-creators';
+import { useDispatch } from 'react-redux';
 
 export function ConnectWalletButton() {
     const { status, connect, account, chainId } = useMetaMask();
     const maticChainId = '0x89';
+
+    const walletAddress = status === 'connected' && chainId === maticChainId ? account : null;
+    const dispatcher = useDispatch();
+    dispatcher(updateWalletAddress(walletAddress));
 
     switch (status) {
         case "initializing":

@@ -1,6 +1,6 @@
 import { IScript } from '../../data/fakescripts';
 import { ActionType } from "../action-types/index";
-import { ScriptAction } from "../actions";
+import { ScriptAction } from "../actions/script-actions";
 
 export type ScriptState = {
     fetchedScripts: IScript[],

@@ -2,7 +2,7 @@ import React, { Component, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { IScript } from '../../data/fakescripts';
 import { RootState } from '../../state';
-import { fetchScripts } from '../../state/action-creators';
+import { fetchScripts } from '../../state/action-creators/script-action-creators';
 import './styles.css';
 
 const ScriptComponent = ({ script }: { script: IScript; }) => (

@@ -1,7 +1,7 @@
 import { Dispatch } from 'redux';
 import { SCRIPTS } from '../../data/fakescripts';
 import { ActionType } from '../action-types';
-import { ScriptAction } from '../actions';
+import { ScriptAction } from '../actions/script-actions';
 
 
 export const fetchScripts = (address?: string) => {
