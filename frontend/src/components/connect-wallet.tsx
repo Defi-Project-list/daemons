@@ -3,12 +3,13 @@ import { useMetaMask } from "metamask-react";
 import { updateWalletAddress } from '../state/action-creators/wallet-action-creators';
 import { useDispatch } from 'react-redux';
 
-const maticChainId = '0x89';
+const supportedChainId = '0x2a';
+const supportedChainName = 'Kovan';
 
 export function ConnectWalletButton() {
     const { status, connect, account, chainId } = useMetaMask();
 
-    const walletAddress = status === 'connected' && chainId === maticChainId ? account : null;
+    const walletAddress = status === 'connected' && chainId === supportedChainId ? account : null;
     const dispatcher = useDispatch();
     const dispatchCall = () => dispatcher(updateWalletAddress(walletAddress));
 
@@ -54,7 +55,11 @@ class WalletConnectedComponent extends WalletComponent {
         return (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <div>Connected! ({this.props.account!.substr(0, 8) + "..."})</div>
-                {this.props.chainId === maticChainId ? null : <div className='wallet-control__wrong-network-msg'>Wrong network :(<br />Connect to Polygon to use the app.</div>}
+                {
+                    this.props.chainId === supportedChainId
+                        ? null
+                        : <div className='wallet-control__wrong-network-msg'>Wrong network :(<br />Connect to {supportedChainName} to use the app.  </div>
+                }
             </div>
         );
     }
