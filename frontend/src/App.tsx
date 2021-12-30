@@ -11,6 +11,7 @@ import "./app.css";
 export const App = ({ children }: { children: any; }) => {
     const queueLinkClassName = `menu__entry ${document.location.href.endsWith('/queue') ? 'menu__entry--selected' : ''}`;
     const newScriptLinkClassName = `menu__entry ${document.location.href.endsWith('/new-script') ? 'menu__entry--selected' : ''}`;
+    const gasTankLinkClassName = `menu__entry ${document.location.href.endsWith('/gas-tank') ? 'menu__entry--selected' : ''}`;
     const scriptsLinkClassName = `menu__entry ${document.location.href.endsWith('/') || document.location.href.endsWith('/scripts') ? 'menu__entry--selected' : ''}`;
 
     return (
@@ -20,6 +21,7 @@ export const App = ({ children }: { children: any; }) => {
                 <div className="menu">
                     <Link className={scriptsLinkClassName} to="/scripts">Scripts</Link>
                     <Link className={newScriptLinkClassName} to="/new-script">New Script</Link>
+                    <Link className={gasTankLinkClassName} to="/gas-tank">Gas Tank</Link>
                     <Link className={queueLinkClassName} to="/queue">Queue</Link>
                 </div>
 
