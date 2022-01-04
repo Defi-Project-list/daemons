@@ -8,6 +8,18 @@ body {
     font-family: DMSans;
 }
 
+/* Hide arrows in number inputs for Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Hide arrows in number inputs for Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
 .header {
     padding: 10px;
     display: flex;
@@ -45,8 +57,17 @@ body {
     text-decoration: underline;
 }
 
-.wallet-control {
+.menu__entry--gas {
     margin-left: auto;
+}
+
+.menu__entry--gas:hover {
+    text-decoration: none;
+    cursor: auto;
+}
+
+.wallet-control {
+    margin-left: 20px;
     text-align: right;
 }
 

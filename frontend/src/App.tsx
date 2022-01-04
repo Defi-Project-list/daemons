@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import logo from './assets/logo.png';
 import { Provider } from 'react-redux';
 import { store } from './state';
+import GasIndicator from './components/gas-indicator';
 
 import "./app.css";
 
@@ -25,6 +26,7 @@ export const App = ({ children }: { children: any; }) => {
                     <Link className={queueLinkClassName} to="/queue">Queue</Link>
                 </div>
 
+                <div className="menu__entry menu__entry--gas"><GasIndicator /></div>
                 <div className="wallet-control"><MetaMaskProvider> <ConnectWalletButton /> </MetaMaskProvider></div>
             </div>
             <hr />

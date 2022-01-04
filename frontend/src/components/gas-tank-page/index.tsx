@@ -5,6 +5,8 @@ import { getAbiFor } from '../../utils/get-abi';
 import { RootState } from '../../state';
 import { fetchGasTankBalance } from '../../state/action-creators/gas-tank-action-creators';
 import './styles.css';
+import '../switch.css';
+import { Field, Form } from 'react-final-form';
 
 interface IGasTankComponentsProps {
     fetchGasTankBalance: (address: string) => any;
@@ -13,20 +15,24 @@ interface IGasTankComponentsProps {
 }
 
 class GasTank extends Component<IGasTankComponentsProps> {
-    componentDidMount() {
+    state = {
+        toggleDeposit: true
+    };
+
+    public componentDidMount() {
         if (this.props.walletAddress) {
             this.props.fetchGasTankBalance(this.props.walletAddress);
         }
     }
 
-    componentDidUpdate(prevProps: IGasTankComponentsProps) {
+    public componentDidUpdate(prevProps: IGasTankComponentsProps) {
         // recheck balance in case the wallet address has changed
         if (prevProps.walletAddress !== this.props.walletAddress && this.props.walletAddress) {
             this.props.fetchGasTankBalance(this.props.walletAddress);
         }
     }
 
-    getGasTankContract = async () => {
+    private getGasTankContract = async () => {
         const ethers = require('ethers');
         const provider = new ethers.providers.Web3Provider((window as any).ethereum);
         const signer = provider.getSigner();
@@ -37,7 +43,9 @@ class GasTank extends Component<IGasTankComponentsProps> {
         return gasTank;
     };
 
-    deposit = async (amount: number) => {
+    private deposit = async () => {
+        const amount = parseFloat((document.getElementById('id-amount') as HTMLInputElement).value);
+
         const ethers = require('ethers');
         const gasTank = await this.getGasTankContract();
 
@@ -45,9 +53,12 @@ class GasTank extends Component<IGasTankComponentsProps> {
         await tx.wait();
 
         this.props.fetchGasTankBalance(this.props.walletAddress!);
+        (document.getElementById('id-amount') as HTMLInputElement).value = '';
     };
 
-    withdraw = async (amount: number) => {
+    private withdraw = async () => {
+        const amount = parseFloat((document.getElementById('id-amount') as HTMLInputElement).value);
+
         const ethers = require('ethers');
         const gasTank = await this.getGasTankContract();
 
@@ -55,36 +66,119 @@ class GasTank extends Component<IGasTankComponentsProps> {
         await tx.wait();
 
         this.props.fetchGasTankBalance(this.props.walletAddress!);
+        (document.getElementById('id-amount') as HTMLInputElement).value = '';
     };
 
-    withdrawAll = async () => {
+    private withdrawAll = async () => {
         const gasTank = await this.getGasTankContract();
 
         const tx = await gasTank.withdrawAll();
         await tx.wait();
 
         this.props.fetchGasTankBalance(this.props.walletAddress!);
+        (document.getElementById('id-amount') as HTMLInputElement).value = '';
     };
 
     public render(): ReactNode {
         return (
-            <div>
-                <div>Gas Tank</div>
+            <div className="outer-component">
                 <div className="gas-tank">
-                    {
-                        this.props.balance !== null && this.props.walletAddress !== null
-                            ? <div>
-                                <div>Balance: {this.props.balance}</div>
-                                <button onClick={() => this.deposit(1)}> Deposit 1Eth</button>
-                                <button onClick={() => this.withdraw(1)}> Withdraw 1Eth</button>
-                                <button onClick={() => this.withdrawAll()}> Withdraw All</button>
+                    <div className="gas-tank__header">
+                        <div className='gas-tank__title'>
+                            Gas Tank
+
+                            {/* Deposit/Withdraw switch */}
+                            <div className='gas-tank__switch'>
+                                Deposit
+                                <label className="switch">
+                                    <input
+                                        type="checkbox"
+                                        value={String(this.state.toggleDeposit)}
+                                        onChange={() => this.setState({ toggleDeposit: !this.state.toggleDeposit })}
+                                    />
+                                    <span className="slider round"></span>
+                                </label>
+                                Withdraw
                             </div>
-                            : <div>Loading...</div>
-                    }
+
+                        </div>
+                        <div className="gas-tank__balance">{this.props.balance !== null ? this.props.balance : '??'} ETH</div>
+                    </div>
+                    <div className="gas-tank__forms-container">
+                        {
+                            this.props.balance === null || this.props.walletAddress === null
+                                ? this.renderLoadingMessage()
+                                : (<div>
+                                    {/* Deposit/Withdraw forms, depending on the switch position */}
+                                    {this.state.toggleDeposit
+                                        ? this.renderDepositForm()
+                                        : this.renderWithdrawForm()
+                                    }
+                                </div>
+                                )
+                        }
+                    </div>
                 </div>
             </div>
         );
     }
+
+    private renderLoadingMessage: () => ReactNode = () => {
+        return (
+            <div className='gas-tank__loading'>
+                Loading...
+            </div>
+        );
+    };
+
+    private renderDepositForm: () => ReactNode = () => {
+        return (
+            <Form
+                className='gas-tank__form'
+                onSubmit={this.deposit}
+                render={({ handleSubmit }) => (
+                    <form onSubmit={handleSubmit}>
+                        <Field
+                            className='gas-tank__input'
+                            id='id-amount'
+                            name="amount"
+                            component="input"
+                            type="number"
+                            placeholder="0.0"
+                        />
+                        <div className='gas-tank__buttons-container'>
+                            <input className='gas-tank__button' type="submit" value="Deposit" />
+                        </div>
+                    </form>
+                )}
+            />
+        );
+    };
+
+    private renderWithdrawForm: () => ReactNode = () => {
+        return (
+            <Form
+                className='gas-tank__form'
+                onSubmit={() => {/* Handled in the buttons */ }}
+                render={({ handleSubmit }) => (
+                    <form onSubmit={handleSubmit}>
+                        <Field
+                            className='gas-tank__input'
+                            id='id-amount'
+                            name="amount"
+                            component="input"
+                            type="number"
+                            placeholder="0.0"
+                        />
+                        <div className='gas-tank__buttons-container'>
+                            <input className='gas-tank__button' type="submit" onClick={this.withdraw} value="Withdraw" />
+                            <input className='gas-tank__button' type="submit" onClick={this.withdrawAll} value="Withdraw All" />
+                        </div>
+                    </form>
+                )}
+            />
+        );
+    };
 }
 
 const mapStateToProps: (state: RootState) => IGasTankComponentsProps = state => ({

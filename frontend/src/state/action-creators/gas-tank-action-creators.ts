@@ -17,7 +17,7 @@ export const fetchGasTankBalance = (address: string) => {
 
         const gasTank = new ethers.Contract(contractAddress, contractAbi, provider);
         const rawBalance: BigNumber = await gasTank.balanceOf(address);
-        const balance = rawBalance.div(BigNumber.from(10).pow(18)).toNumber();
+        const balance = rawBalance.div(BigNumber.from(10).pow(14)).toNumber() / 10000; // let's keep 4 digits precision
 
         dispatch({
             type: ActionType.GAS_TANK_BALANCE,
