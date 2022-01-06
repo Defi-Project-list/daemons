@@ -22,6 +22,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
         bytes32 swapHash = keccak256(
             abi.encode(
                 SWAP_TYPEHASH,
+                swap.id,
                 swap.tokenFrom,
                 swap.tokenTo,
                 swap.amount,
