@@ -93,7 +93,7 @@ abstract contract ConditionsChecker {
 
         require(
             block.number > frequency.startBlock + frequency.blocks,
-            "[Frequency Condition] Not enough time has passed since the the start block"
+            "[Frequency Condition] Not enough time has passed since the start block"
         );
     }
 }

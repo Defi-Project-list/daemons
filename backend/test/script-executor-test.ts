@@ -96,7 +96,7 @@ describe("SwapperScriptExecutor", function () {
         message = await initialize(baseMessage);
 
         // this should fail as the start block has not been reached yet
-        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Frequency Condition] Not enough time has passed since the the start block');
+        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Frequency Condition] Not enough time has passed since the start block');
     });
 
     it('fails the verification if balance is enabled and the user does not own enough tokens', async () => {
