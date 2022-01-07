@@ -25,7 +25,7 @@ describe("Mock Router", function () {
         mockRouter = await MockRouterContract.deploy();
     });
 
-    it('correctly swaps tokens', async () => {
+    it('mints new tokenTo into the specified "to" address', async () => {
         await fooToken.mint(owner.address, 150000);
 
         expect(await fooToken.balanceOf(owner.address)).to.equal(150000);
@@ -33,7 +33,6 @@ describe("Mock Router", function () {
 
         await mockRouter.swapExactTokensForTokens(150000, 0, [fooToken.address, barToken.address], owner.address, 0);
 
-        expect(await fooToken.balanceOf(owner.address)).to.equal(0);
         expect(await barToken.balanceOf(owner.address)).to.equal(150000);
     });
 });
