@@ -55,6 +55,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
         bytes32 s,
         uint8 v
     ) public view {
+        verifyRevocation(message.user, message.id);
         verifySignature(message, r, s, v);
         verifyFrequency(message.frequency, message.id);
         verifyBalance(message.balance, message.user);

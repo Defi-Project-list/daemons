@@ -9,6 +9,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 abstract contract ConditionsChecker is Ownable {
     mapping(bytes32 => uint256) private lastExecutions;
+    mapping(address => mapping(bytes32 => bool)) private revocations;
 
     address private gasTank;
     uint256 public MINIMUM_GAS_FOR_SCRIPT_EXECUTION = 1 ether;
@@ -21,6 +22,12 @@ abstract contract ConditionsChecker is Ownable {
 
     function setMinimumGas(uint256 _amount) external onlyOwner {
         MINIMUM_GAS_FOR_SCRIPT_EXECUTION = _amount;
+    }
+
+    /* ========== PUBLIC FUNCTIONS ========== */
+
+    function revoke(bytes32 _id) external {
+        revocations[msg.sender][_id] = true;
     }
 
     /* ========== HASH FUNCTIONS ========== */
@@ -61,6 +68,11 @@ abstract contract ConditionsChecker is Ownable {
     }
 
     /* ========== VERIFICATION FUNCTIONS ========== */
+
+    /** Checks whether the user has revoked the script execution */
+    function verifyRevocation(address user, bytes32 id) public view {
+        require(!revocations[user][id], "Script has been revoked by the user");
+    }
 
     /** Checks whether the user has enough funds in the GasTank to cover a script execution */
     function verifyGasTank(address user) public view {

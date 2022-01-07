@@ -86,6 +86,15 @@ describe("SwapperScriptExecutor", function () {
         await expect(executor.verify(tamperedMessage, sigR, sigS, sigV)).to.be.revertedWith('Signature does not match');
     });
 
+    it("fails if the script has been revoked by the user", async () => {
+        const message = await initialize(baseMessage);
+
+        // revoke the script execution
+        await executor.revoke(message.id);
+
+        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('Script has been revoked by the user');
+    });
+
     it('fails the verification if frequency is enabled and the start block has not been reached', async () => {
         // update frequency in message and submit for signature
         let message = JSON.parse(JSON.stringify(baseMessage));
