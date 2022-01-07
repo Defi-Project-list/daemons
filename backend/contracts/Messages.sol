@@ -11,10 +11,10 @@ pragma solidity ^0.8.4;
 struct Balance {
     bool enabled;
     address token;
-    string comparison;
+    bytes1 comparison;
     uint256 amount;
 }
-string constant BALANCE_TYPE = "Balance(bool enabled,address token,string comparison,uint256 amount)";
+string constant BALANCE_TYPE = "Balance(bool enabled,address token,bytes1 comparison,uint256 amount)";
 bytes32 constant BALANCE_TYPEHASH = keccak256(abi.encodePacked(BALANCE_TYPE));
 
 struct Frequency {
@@ -44,5 +44,5 @@ struct Swap {
     Balance balance;
     Frequency frequency;
 }
-string constant SWAP_TYPE = "Swap(bytes32 id,address tokenFrom,address tokenTo,uint256 amount,address user,address executor,Balance balance,Frequency frequency)Balance(bool enabled,address token,string comparison,uint256 amount)Frequency(bool enabled,uint256 blocks,uint256 startBlock)";
+string constant SWAP_TYPE = "Swap(bytes32 id,address tokenFrom,address tokenTo,uint256 amount,address user,address executor,Balance balance,Frequency frequency)Balance(bool enabled,address token,bytes1 comparison,uint256 amount)Frequency(bool enabled,uint256 blocks,uint256 startBlock)";
 bytes32 constant SWAP_TYPEHASH = keccak256(abi.encodePacked(SWAP_TYPE));

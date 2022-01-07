@@ -3,6 +3,7 @@ pragma solidity ^0.8.4;
 
 import "hardhat/console.sol";
 import "./Messages.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 abstract contract ConditionsChecker {
     mapping(bytes32 => uint256) private lastExecutions;
@@ -24,16 +25,31 @@ abstract contract ConditionsChecker {
                     BALANCE_TYPEHASH,
                     balance.enabled,
                     balance.token,
-                    keccak256(abi.encodePacked(balance.comparison)),
+                    balance.comparison,
                     balance.amount
                 )
             );
     }
 
     /** If the balance condition is enabled, it checks the user balance for it */
-    function verifyBalance(Balance memory balance, address user) internal pure {
+    function verifyBalance(Balance memory balance, address user) internal view {
         if (!balance.enabled) return;
-        //TODO
+
+        ERC20 token = ERC20(balance.token);
+        uint256 userBalance = token.balanceOf(user);
+
+        if (balance.comparison == 0x00)
+            // less than
+            require(
+                userBalance > balance.amount,
+                "[Balance Condition] User does not own enough tokens"
+            );
+        else if (balance.comparison == 0x01)
+            // greater than
+            require(
+                userBalance < balance.amount,
+                "[Balance Condition] User owns too many tokens"
+            );
     }
 
     /** Returns the hashed version of the frequency */
@@ -64,7 +80,7 @@ abstract contract ConditionsChecker {
             // the message has already been executed at least once
             require(
                 block.number > lastExecutions[id] + frequency.blocks,
-                "Not enough time has passed since the last execution"
+                "[Frequency Condition] Not enough time has passed since the last execution"
             );
             return;
         }
@@ -72,12 +88,12 @@ abstract contract ConditionsChecker {
         // the message has never been executed before
         require(
             block.number >= frequency.startBlock,
-            "Start block has not been reached yet"
+            "[Frequency Condition] Start block has not been reached yet"
         );
 
         require(
             block.number > frequency.startBlock + frequency.blocks,
-            "Not enough time has passed since the the start block"
+            "[Frequency Condition] Not enough time has passed since the the start block"
         );
     }
 }

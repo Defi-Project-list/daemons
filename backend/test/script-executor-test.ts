@@ -1,13 +1,15 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from "chai";
-import { BigNumber, Contract } from 'ethers';
+import { BigNumber, Contract, utils } from 'ethers';
 import { ethers } from 'hardhat';
+import { ComparisonType } from '../messages/condition-messages';
 import { domain, ISwapAction, types } from "../messages/swap-action-messages";
 
 describe("SwapperScriptExecutor", function () {
 
     let owner: SignerWithAddress;
     let executor: Contract;
+    let BRG: Contract;
     let sigR: string;
     let sigS: string;
     let sigV: number;
@@ -23,7 +25,7 @@ describe("SwapperScriptExecutor", function () {
             enabled: false,
             amount: BigNumber.from(0),
             token: '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
-            comparison: ">",
+            comparison: ComparisonType.GreaterThan,
         },
         frequency: {
             enabled: false,
@@ -40,10 +42,15 @@ describe("SwapperScriptExecutor", function () {
         const SwapperScriptExecutorContract = await ethers.getContractFactory("SwapperScriptExecutor");
         executor = await SwapperScriptExecutorContract.deploy();
 
+        // Balrog contract
+        const BalrogTokenContract = await ethers.getContractFactory("BalrogToken");
+        BRG = await BalrogTokenContract.deploy();
+
         // Create message
         const message = { ...baseMessage };
         message.user = owner.address;
         message.executor = executor.address;
+        message.balance.token = BRG.address; // let's set BRG as token in the balance condition
 
         // Sign message
         const signature = await owner._signTypedData(domain, types, message);
@@ -77,7 +84,7 @@ describe("SwapperScriptExecutor", function () {
         message = await initialize(baseMessage);
 
         // this should fail as the start block has not been reached yet
-        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('Start block has not been reached yet');
+        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Frequency Condition] Start block has not been reached yet');
     });
 
     it('fails the verification if frequency is enabled and not enough blocks passed since start block', async () => {
@@ -89,6 +96,29 @@ describe("SwapperScriptExecutor", function () {
         message = await initialize(baseMessage);
 
         // this should fail as the start block has not been reached yet
-        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('Not enough time has passed since the the start block');
+        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Frequency Condition] Not enough time has passed since the the start block');
+    });
+
+    it('fails the verification if balance is enabled and the user does not own enough tokens', async () => {
+        // update balance in message and submit for signature
+        // enabling it will be enough as the condition is "DAI>0"
+        let message = { ...baseMessage };
+        message.balance.enabled = true;
+        message = await initialize(baseMessage);
+
+        // this should fail as the start block has not been reached yet
+        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Balance Condition] User does not own enough tokens');
+    });
+
+    it('fails the verification if balance is enabled and the user owns too many tokens', async () => {
+        // update frequency in message and submit for signature
+        // we'll change the comparison so it will become "DAI<0" and it will always fail
+        let message = { ...baseMessage };
+        message.balance.enabled = true;
+        message.balance.comparison = ComparisonType.LessThan;
+        message = await initialize(baseMessage);
+
+        // this should fail as the start block has not been reached yet
+        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Balance Condition] User owns too many tokens');
     });
 });
