@@ -77,11 +77,11 @@ describe("SwapperScriptExecutor", function () {
 
     it('fails the verification if frequency is enabled and the start block has not been reached', async () => {
         // update frequency in message and submit for signature
-        let message = { ...baseMessage };
+        let message = JSON.parse(JSON.stringify(baseMessage));
         message.frequency.enabled = true;
         message.frequency.blocks = BigNumber.from(0);
         message.frequency.startBlock = BigNumber.from(100000000);
-        message = await initialize(baseMessage);
+        message = await initialize(message);
 
         // this should fail as the start block has not been reached yet
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Frequency Condition] Start block has not been reached yet');
@@ -89,11 +89,11 @@ describe("SwapperScriptExecutor", function () {
 
     it('fails the verification if frequency is enabled and not enough blocks passed since start block', async () => {
         // update frequency in message and submit for signature
-        let message = { ...baseMessage };
+        let message = JSON.parse(JSON.stringify(baseMessage));
         message.frequency.enabled = true;
         message.frequency.blocks = BigNumber.from(1000000);
         message.frequency.startBlock = BigNumber.from(0);
-        message = await initialize(baseMessage);
+        message = await initialize(message);
 
         // this should fail as the start block has not been reached yet
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Frequency Condition] Not enough time has passed since the start block');
@@ -102,9 +102,9 @@ describe("SwapperScriptExecutor", function () {
     it('fails the verification if balance is enabled and the user does not own enough tokens', async () => {
         // update balance in message and submit for signature
         // enabling it will be enough as the condition is "DAI>0"
-        let message = { ...baseMessage };
+        let message = JSON.parse(JSON.stringify(baseMessage));
         message.balance.enabled = true;
-        message = await initialize(baseMessage);
+        message = await initialize(message);
 
         // this should fail as the start block has not been reached yet
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Balance Condition] User does not own enough tokens');
@@ -113,10 +113,10 @@ describe("SwapperScriptExecutor", function () {
     it('fails the verification if balance is enabled and the user owns too many tokens', async () => {
         // update frequency in message and submit for signature
         // we'll change the comparison so it will become "DAI<0" and it will always fail
-        let message = { ...baseMessage };
+        let message = JSON.parse(JSON.stringify(baseMessage));
         message.balance.enabled = true;
         message.balance.comparison = ComparisonType.LessThan;
-        message = await initialize(baseMessage);
+        message = await initialize(message);
 
         // this should fail as the start block has not been reached yet
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Balance Condition] User owns too many tokens');
