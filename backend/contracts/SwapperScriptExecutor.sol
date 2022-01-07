@@ -37,16 +37,27 @@ contract SwapperScriptExecutor is ConditionsChecker {
             keccak256(abi.encodePacked("\x19\x01", eip712DomainHash, swapHash));
     }
 
+    function verifySignature(
+        Swap memory message,
+        bytes32 r,
+        bytes32 s,
+        uint8 v
+    ) private pure {
+        require(
+            message.user == ecrecover(hash(message), v, r, s),
+            "Signature does not match"
+        );
+    }
+
     function verify(
         Swap memory message,
         bytes32 r,
         bytes32 s,
         uint8 v
-    ) public view returns (bool) {
-        console.log("hash");
-        console.logBytes32(hash(message));
-        console.log("user", message.user);
-
-        return message.user == ecrecover(hash(message), v, r, s);
+    ) public view {
+        verifySignature(message, r, s, v);
+        verifyFrequency(message.frequency, message.id);
+        verifyBalance(message.balance, message.user);
+        verifyGasTank(message.user);
     }
 }
