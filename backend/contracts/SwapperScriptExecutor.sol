@@ -75,6 +75,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
         verifyFrequency(message.frequency, message.id);
         verifyBalance(message.balance, message.user);
         verifyGasTank(message.user);
+        verifyAllowance(message.user, message.tokenFrom, message.amount);
     }
 
     /* ========== EXECUTION FUNCTIONS ========== */
@@ -97,7 +98,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
         path[0] = message.tokenFrom;
         path[1] = message.tokenTo;
 
-        // step 2: sign allowance if it has not been given yet
+        // step 2: grant allowance to the router if it has not been given yet
         if (!allowances[exchange][tokenFrom])
             giveAllowance(tokenFrom, exchange);
 

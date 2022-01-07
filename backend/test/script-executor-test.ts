@@ -71,6 +71,9 @@ describe("SwapperScriptExecutor", function () {
         await executor.setBrgToken(BRG.address);
         await executor.setExchange(mockRouter.address);
 
+        // Grant allowance
+        await fooToken.approve(executor.address, ethers.utils.parseEther("500"));
+
         // Create message
         const message = { ...baseMessage };
         message.user = owner.address;
@@ -165,14 +168,21 @@ describe("SwapperScriptExecutor", function () {
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Gas Condition] Not enough gas in the tank');
     });
 
+
+    it('fails if the user did not grant enough allowance to the executor contract', async () => {
+        const message = await initialize(baseMessage);
+
+        // revoke the allowance for the token to the executor contract
+        await fooToken.approve(executor.address, ethers.utils.parseEther("0"));
+
+        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Allowance Condition] User did not give enough allowance to the script executor');
+    });
+
     it('swaps the tokens', async () => {
         let message = JSON.parse(JSON.stringify(baseMessage));
         message = await initialize(message);
-
         await fooToken.mint(owner.address, ethers.utils.parseEther("200"));
 
-        // giving allowance. This will have to be another check!
-        await fooToken.approve(executor.address, ethers.utils.parseEther("250"));
         await executor.execute(message, sigR, sigS, sigV);
 
         expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("55"));

@@ -135,4 +135,15 @@ abstract contract ConditionsChecker is Ownable {
             "[Frequency Condition] Not enough time has passed since the start block"
         );
     }
+
+    function verifyAllowance(
+        address user,
+        address token,
+        uint256 amount
+    ) internal view {
+        require(
+            IERC20(token).allowance(user, address(this)) >= amount,
+            "[Allowance Condition] User did not give enough allowance to the script executor"
+        );
+    }
 }
