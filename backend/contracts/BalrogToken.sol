@@ -8,6 +8,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract BalrogToken is ERC20, ERC20Burnable, Ownable {
     constructor() ERC20("Balrog", "BRG") {}
 
+    // TODO: set initial amount
+
     function mint(address to, uint256 amount) public onlyOwner {
         _mint(to, amount);
     }

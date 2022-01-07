@@ -11,13 +11,18 @@ abstract contract ConditionsChecker is Ownable {
     mapping(bytes32 => uint256) private lastExecutions;
     mapping(address => mapping(bytes32 => bool)) private revocations;
 
-    address private gasTank;
+    IERC20 private balrogToken;
+    IGasTank private gasTank;
     uint256 public MINIMUM_GAS_FOR_SCRIPT_EXECUTION = 1 ether;
 
     /* ========== RESTRICTED FUNCTIONS ========== */
 
     function setGasTank(address _gasTank) external onlyOwner {
-        gasTank = _gasTank;
+        gasTank = IGasTank(_gasTank);
+    }
+
+    function setBrgToken(address _brgToken) external onlyOwner {
+        balrogToken = IERC20(_brgToken);
     }
 
     function setMinimumGas(uint256 _amount) external onlyOwner {
@@ -77,8 +82,7 @@ abstract contract ConditionsChecker is Ownable {
     /** Checks whether the user has enough funds in the GasTank to cover a script execution */
     function verifyGasTank(address user) public view {
         require(
-            IGasTank(gasTank).balanceOf(user) >=
-                MINIMUM_GAS_FOR_SCRIPT_EXECUTION,
+            gasTank.balanceOf(user) >= MINIMUM_GAS_FOR_SCRIPT_EXECUTION,
             "[Gas Condition] Not enough gas in the tank"
         );
     }
