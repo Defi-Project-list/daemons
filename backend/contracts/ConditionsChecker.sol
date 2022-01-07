@@ -3,15 +3,27 @@ pragma solidity ^0.8.4;
 
 import "hardhat/console.sol";
 import "./Messages.sol";
+import "./interfaces/IGasTank.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-abstract contract ConditionsChecker {
+abstract contract ConditionsChecker is Ownable {
     mapping(bytes32 => uint256) private lastExecutions;
 
-    /** Checks whether the user has enough funds in the GasTank to cover a script execution */
-    function verifyGasTank(address user) public pure {
-        //TODO
+    address private gasTank;
+    uint256 public MINIMUM_GAS_FOR_SCRIPT_EXECUTION = 1 ether;
+
+    /* ========== RESTRICTED FUNCTIONS ========== */
+
+    function setGasTank(address _gasTank) external onlyOwner {
+        gasTank = _gasTank;
     }
+
+    function setMinimumGas(uint256 _amount) external onlyOwner {
+        MINIMUM_GAS_FOR_SCRIPT_EXECUTION = _amount;
+    }
+
+    /* ========== HASH FUNCTIONS ========== */
 
     /** Returns the hashed version of the balance */
     function hashBalance(Balance memory balance)
@@ -29,6 +41,34 @@ abstract contract ConditionsChecker {
                     balance.amount
                 )
             );
+    }
+
+    /** Returns the hashed version of the frequency */
+    function hashFrequency(Frequency memory frequency)
+        internal
+        pure
+        returns (bytes32)
+    {
+        return
+            keccak256(
+                abi.encode(
+                    FREQUENCY_TYPEHASH,
+                    frequency.enabled,
+                    frequency.blocks,
+                    frequency.startBlock
+                )
+            );
+    }
+
+    /* ========== VERIFICATION FUNCTIONS ========== */
+
+    /** Checks whether the user has enough funds in the GasTank to cover a script execution */
+    function verifyGasTank(address user) public view {
+        require(
+            IGasTank(gasTank).balanceOf(user) >=
+                MINIMUM_GAS_FOR_SCRIPT_EXECUTION,
+            "[Gas Condition] Not enough gas in the tank"
+        );
     }
 
     /** If the balance condition is enabled, it checks the user balance for it */
@@ -49,23 +89,6 @@ abstract contract ConditionsChecker {
             require(
                 userBalance < balance.amount,
                 "[Balance Condition] User owns too many tokens"
-            );
-    }
-
-    /** Returns the hashed version of the frequency */
-    function hashFrequency(Frequency memory frequency)
-        internal
-        pure
-        returns (bytes32)
-    {
-        return
-            keccak256(
-                abi.encode(
-                    FREQUENCY_TYPEHASH,
-                    frequency.enabled,
-                    frequency.blocks,
-                    frequency.startBlock
-                )
             );
     }
 

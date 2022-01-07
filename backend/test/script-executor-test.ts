@@ -8,8 +8,13 @@ import { domain, ISwapAction, types } from "../messages/swap-action-messages";
 describe("SwapperScriptExecutor", function () {
 
     let owner: SignerWithAddress;
-    let executor: Contract;
+
+    // contracts
     let BRG: Contract;
+    let gasTank: Contract;
+    let executor: Contract;
+
+    // signature components
     let sigR: string;
     let sigS: string;
     let sigV: number;
@@ -38,13 +43,19 @@ describe("SwapperScriptExecutor", function () {
         // get some wallets
         [owner] = await ethers.getSigners();
 
-        // Executor contract
-        const SwapperScriptExecutorContract = await ethers.getContractFactory("SwapperScriptExecutor");
-        executor = await SwapperScriptExecutorContract.deploy();
-
         // Balrog contract
         const BalrogTokenContract = await ethers.getContractFactory("BalrogToken");
         BRG = await BalrogTokenContract.deploy();
+
+        // GasTank contract
+        const GasTankContract = await ethers.getContractFactory("GasTank");
+        gasTank = await GasTankContract.deploy();
+        await gasTank.deposit({ value: ethers.utils.parseEther("2.0") });
+
+        // Executor contract
+        const SwapperScriptExecutorContract = await ethers.getContractFactory("SwapperScriptExecutor");
+        executor = await SwapperScriptExecutorContract.deploy();
+        await executor.setGasTank(gasTank.address);
 
         // Create message
         const message = { ...baseMessage };
@@ -120,5 +131,13 @@ describe("SwapperScriptExecutor", function () {
 
         // this should fail as the start block has not been reached yet
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Balance Condition] User owns too many tokens');
+    });
+
+    it('fails if the user does not have enough funds in the gas tank', async () => {
+        const message = await initialize(baseMessage);
+
+        // empty the gas tank and try to verify the message
+        await gasTank.withdrawAll();
+        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Gas Condition] Not enough gas in the tank');
     });
 });
