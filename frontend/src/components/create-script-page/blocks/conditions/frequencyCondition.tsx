@@ -19,7 +19,7 @@ export class FrequencyCondition extends SelectableBlock<IFrequencyConditionForm>
                 onSubmit={() => { /** Individual forms are not submitted */ }}
                 render={({ handleSubmit, valid }) => (
                     <form onSubmit={handleSubmit}>
-                        <div id="id-frequency-form" className='frequency-block'>
+                        <div className='frequency-block'>
 
                             <Field name="ticks"
                                 className='frequency-block__ticks'
@@ -80,7 +80,7 @@ export class FrequencyCondition extends SelectableBlock<IFrequencyConditionForm>
                             </Field>
 
                         </div >
-                        <pre>{JSON.stringify(this.props.blockForm)}</pre>
+                        {/* <pre>{JSON.stringify(this.props.blockForm)}</pre> */}
                     </form>
                 )}
             />

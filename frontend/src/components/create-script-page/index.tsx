@@ -26,7 +26,7 @@ export class CreateScripts extends Component<any, ICreateScriptState> {
 
     state: ICreateScriptState = {
         frequencyCondition: { valid: true, enabled: false, ticks: 1, unit: FrequencyUnits.Hours, startNow: true },
-        balanceCondition: { valid: true, enabled: false, comparison: ComparisonType.GreaterThan, floatAmount: 0 },
+        balanceCondition: { valid: false, enabled: false, comparison: ComparisonType.GreaterThan, floatAmount: 0 },
         action: ScriptAction.None,
     };
 
