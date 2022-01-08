@@ -1,18 +1,13 @@
 import React, { Component, ReactNode } from 'react';
+import { ComparisonType } from '../../messages/condition-messages';
 import { DaoAction } from './blocks/actions/daoAction';
 import { FarmAction } from './blocks/actions/farmAction';
 import { SwapAction } from './blocks/actions/swapAction';
 import { BalanceCondition } from './blocks/conditions/balanceCondition';
+import { IBalanceConditionForm, IFrequencyConditionForm, FrequencyUnits } from './blocks/conditions/conditions-interfaces';
 import { FrequencyCondition } from './blocks/conditions/frequencyCondition';
 
 import './styles.css';
-
-/** The selected condition to create a new script */
-export enum ScriptCondition {
-    None,
-    Frequency,
-    WalletBalance,
-}
 
 export enum ScriptAction {
     None,
@@ -22,19 +17,21 @@ export enum ScriptAction {
 }
 
 interface ICreateScriptState {
-    condition: ScriptCondition;
+    frequencyCondition: IFrequencyConditionForm;
+    balanceCondition: IBalanceConditionForm;
     action: ScriptAction;
 }
 
 export class CreateScripts extends Component<any, ICreateScriptState> {
 
     state: ICreateScriptState = {
-        condition: ScriptCondition.None,
+        frequencyCondition: { valid: true, enabled: false, ticks: 1, unit: FrequencyUnits.Hours, startNow: true },
+        balanceCondition: { valid: true, enabled: false, comparison: ComparisonType.GreaterThan, floatAmount: 0 },
         action: ScriptAction.None,
     };
 
-    private setFrequencyConditionAsSelected = () => { this.setState({ condition: ScriptCondition.Frequency }); };
-    private setBalanceConditionAsSelected = () => { this.setState({ condition: ScriptCondition.WalletBalance }); };
+    private toggleFrequencyCondition = () => { this.setState({ frequencyCondition: { ...this.state.frequencyCondition, enabled: !this.state.frequencyCondition.enabled } }); };
+    private toggleBalanceCondition = () => { this.setState({ balanceCondition: { ...this.state.balanceCondition, enabled: !this.state.balanceCondition.enabled } }); };
     private setFarmActionAsSelected = () => { this.setState({ action: ScriptAction.Farm }); };
     private setSwapActionAsSelected = () => { this.setState({ action: ScriptAction.Swap }); };
     private setDaoActionAsSelected = () => { this.setState({ action: ScriptAction.Dao }); };
@@ -46,11 +43,17 @@ export class CreateScripts extends Component<any, ICreateScriptState> {
                 {/* Condition Block */}
                 <div className="new-script__step">
                     <div className="new-script__block-title">Initial Condition</div>
-                    <div onClick={this.setFrequencyConditionAsSelected}>
-                        <FrequencyCondition selected={this.state.condition === ScriptCondition.Frequency} />
+                    <div onClick={this.toggleFrequencyCondition}>
+                        <FrequencyCondition selected={this.state.frequencyCondition.enabled}
+                            showSelectionCheckbox={true}
+                            blockForm={this.state.frequencyCondition}
+                        />
                     </div>
-                    <div onClick={this.setBalanceConditionAsSelected}>
-                        <BalanceCondition selected={this.state.condition === ScriptCondition.WalletBalance} />
+                    <div onClick={this.toggleBalanceCondition}>
+                        <BalanceCondition selected={this.state.balanceCondition.enabled}
+                            showSelectionCheckbox={true}
+                            blockForm={this.state.balanceCondition}
+                        />
                     </div>
                 </div>
 
@@ -60,7 +63,7 @@ export class CreateScripts extends Component<any, ICreateScriptState> {
                 {/* Action Block */}
                 <div className="new-script__step">
                     <div className="new-script__block-title">Action</div>
-                    <div onClick={this.setFarmActionAsSelected}>
+                    {/* <div onClick={this.setFarmActionAsSelected}>
                         <FarmAction selected={this.state.action === ScriptAction.Farm} />
                     </div>
                     <div onClick={this.setSwapActionAsSelected}>
@@ -68,7 +71,7 @@ export class CreateScripts extends Component<any, ICreateScriptState> {
                     </div>
                     <div onClick={this.setDaoActionAsSelected}>
                         <DaoAction selected={this.state.action === ScriptAction.Dao} />
-                    </div>
+                    </div> */}
                 </div>
 
             </div >

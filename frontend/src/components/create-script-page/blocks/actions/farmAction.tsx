@@ -1,8 +1,9 @@
 import React, { Component, ReactNode } from 'react';
 import { SelectableBlock } from '../baseBlock';
+import { IFarmActionForm } from './actions-interfaces';
 
 
-export class FarmAction extends SelectableBlock {
+export class FarmAction extends SelectableBlock<IFarmActionForm> {
 
     protected title: string = "Farms";
     protected content = () => {

@@ -1,8 +1,9 @@
 import React, { Component, ReactNode } from 'react';
 import { SelectableBlock } from '../baseBlock';
+import { IDAOActionForm } from './actions-interfaces';
 
 
-export class DaoAction extends SelectableBlock {
+export class DaoAction extends SelectableBlock<IDAOActionForm> {
 
     protected title: string = "DAOs";
     protected content = () => {

@@ -29,14 +29,23 @@
     width: 270px;
 }
 
+.script-block__accordion {
+    cursor: pointer;
+    height: 40px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
 .script-block__title {
     padding: 5px;
     line-height: 30px;
 }
 
-.script-block__accordion {
-    cursor: pointer;
-    height: 40px;
+.script-block__selection-checkbox {
+    margin-left: auto;
+    margin-right: 10px;
 }
 
 .script-block--selected .script-block__title {

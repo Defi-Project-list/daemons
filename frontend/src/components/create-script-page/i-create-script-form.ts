@@ -1,0 +1,3 @@
+interface ICreateScriptForm {
+    valid: boolean;
+}

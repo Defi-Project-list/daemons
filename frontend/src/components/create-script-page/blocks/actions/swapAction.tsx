@@ -1,8 +1,9 @@
 import React, { Component, ReactNode } from 'react';
 import { SelectableBlock } from '../baseBlock';
+import { ISwapActionForm } from './actions-interfaces';
 
 
-export class SwapAction extends SelectableBlock {
+export class SwapAction extends SelectableBlock<ISwapActionForm> {
 
     protected title: string = "Swap";
     protected content = () => {

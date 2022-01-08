@@ -1,10 +1,13 @@
 import React, { Component, ReactNode } from 'react';
+import { Form, Field } from 'react-final-form';
 
-interface ISelectableBlockProps {
+interface ISelectableBlockProps<T> {
     selected?: boolean;
+    showSelectionCheckbox?: boolean;
+    blockForm: T,
 }
 
-export abstract class SelectableBlock extends Component<ISelectableBlockProps> {
+export abstract class SelectableBlock<T> extends Component<ISelectableBlockProps<T>> {
 
     protected abstract title: string;
     protected abstract content: () => ReactNode;
@@ -15,11 +18,21 @@ export abstract class SelectableBlock extends Component<ISelectableBlockProps> {
             <div className={`script-block ${selected ? "script-block--selected" : ""} `}>
                 <div className='script-block__accordion'>
                     <div className='script-block__title'>{this.title}</div>
+                    {
+                        this.props.showSelectionCheckbox ?
+                            <input type="checkbox"
+                                name="enabled"
+                                className='script-block__selection-checkbox'
+                                checked={this.props.selected}
+                                onChange={() => {/** Do nothing, updated by the parent */ }}
+                            />
+                            : null
+                    }
                 </div>
-                <div className='script-block__panel'>
+                <div onClick={(e) => e.stopPropagation()} className='script-block__panel'>
                     {selected ? this.content() : null}
                 </div>
-            </div>
+            </div >
         );
     }
 

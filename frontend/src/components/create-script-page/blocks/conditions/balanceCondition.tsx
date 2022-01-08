@@ -1,8 +1,9 @@
 import React, { Component, ReactNode } from 'react';
 import { SelectableBlock } from '../baseBlock';
+import { IBalanceConditionForm } from './conditions-interfaces';
 
 
-export class BalanceCondition extends SelectableBlock {
+export class BalanceCondition extends SelectableBlock<IBalanceConditionForm> {
 
     protected title: string = "Wallet Balance";
     protected content = () => {
@@ -17,9 +18,6 @@ export class BalanceCondition extends SelectableBlock {
 
                 <select className='balance-block__comparison'>
                     <option selected id='comparison-option-greater-than'>&gt;</option>
-                    <option id='comparison-option-greater-or-equal'>&gt;=</option>
-                    <option id='comparison-option-equal'>=</option>
-                    <option id='comparison-option-less-or-equal'>=&lt;</option>
                     <option id='comparison-option-less-than'>&lt;</option>
                 </select>
 
