@@ -32,6 +32,11 @@ export class CreateScripts extends Component<any, ICreateScriptBundle> {
     private setSwapActionAsSelected = () => { this.setState({ actionForm: swapActionForm }); };
     private setDaoActionAsSelected = () => { this.setState({ actionForm: daoActionForm }); };
 
+    private async createAndSignScript() {
+        const signature = await new ScriptFactory().SubmitScriptsForSignature(this.state);
+        alert(signature);
+    }
+
     public render(): ReactNode {
         return (
             <div className="new-script">
@@ -78,6 +83,17 @@ export class CreateScripts extends Component<any, ICreateScriptBundle> {
                         />
                     </div>
                 </div>
+
+                <button
+                    disabled={
+                        !this.state.actionForm.valid
+                        || (this.state.balanceCondition.enabled && !this.state.balanceCondition.valid)
+                        || (this.state.frequencyCondition.enabled && !this.state.frequencyCondition.valid)
+                    }
+                    onClick={async () => this.createAndSignScript()}
+                >
+                    YAY
+                </button>
 
             </div >
         );
