@@ -1,4 +1,5 @@
 import { ComparisonType } from '../../../../messages/condition-messages';
+import { ICreateScriptForm } from '../../i-create-script-form';
 
 interface IScriptConditionForm extends ICreateScriptForm {
     enabled: boolean;
