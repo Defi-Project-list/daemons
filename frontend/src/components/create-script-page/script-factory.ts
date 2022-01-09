@@ -1,6 +1,8 @@
 import { BigNumber } from 'ethers';
 import { ChainInfo, ZeroAddress } from '../../data/chain-info';
 import { Contracts } from '../../data/contracts';
+import { BaseScript } from '../../data/script/base-script';
+import { SwapScript } from '../../data/script/swap-script';
 import { Tokens } from '../../data/tokens';
 import { IBalanceCondition, IFrequencyCondition } from '../../messages/condition-messages';
 import { ISwapAction, domain as swapDomain, types as swapTypes } from '../../messages/swap-action-messages';
@@ -32,11 +34,12 @@ export class ScriptFactory {
         this.signer = this.provider.getSigner();
     }
 
-    public async SubmitScriptsForSignature(bundle: ICreateScriptBundle): Promise<string> {
-        console.log("HEHE");
+    public async SubmitScriptsForSignature(bundle: ICreateScriptBundle): Promise<BaseScript> {
         const message = await this.createScript(bundle);
         const signature: string = await this.signer._signTypedData(message.domain, message.types, message.script);
-        return signature;
+
+        // once we have more Executors we need to abstract this and get the right Script based on the message
+        return new SwapScript(message.script, signature);
     }
 
     private async createScript(bundle: ICreateScriptBundle): Promise<IMessage> {

@@ -1,11 +1,12 @@
 import React, { Component, ReactNode } from 'react';
+import { addScript, fetchAllScripts } from '../../data/fakeMongoDb';
 import { ComparisonType } from '../../messages/condition-messages';
-import { IDAOActionForm, IFarmActionForm, INoActionForm, ISwapActionForm, ScriptAction, IScriptActionForm } from './blocks/actions/actions-interfaces';
+import { IDAOActionForm, IFarmActionForm, INoActionForm, ISwapActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
 import { DaoAction } from './blocks/actions/daoAction';
 import { FarmAction } from './blocks/actions/farmAction';
 import { SwapAction } from './blocks/actions/swapAction';
 import { BalanceCondition } from './blocks/conditions/balanceCondition';
-import { IBalanceConditionForm, IFrequencyConditionForm, FrequencyUnits } from './blocks/conditions/conditions-interfaces';
+import { FrequencyUnits } from './blocks/conditions/conditions-interfaces';
 import { FrequencyCondition } from './blocks/conditions/frequencyCondition';
 import { ICreateScriptBundle } from './i-create-script-form';
 import { ScriptFactory } from './script-factory';
@@ -33,8 +34,11 @@ export class CreateScripts extends Component<any, ICreateScriptBundle> {
     private setDaoActionAsSelected = () => { this.setState({ actionForm: daoActionForm }); };
 
     private async createAndSignScript() {
-        const signature = await new ScriptFactory().SubmitScriptsForSignature(this.state);
-        alert(signature);
+        const script = await new ScriptFactory().SubmitScriptsForSignature(this.state);
+
+        // add script to backend...
+        addScript(script);
+        alert("success!");
     }
 
     public render(): ReactNode {
@@ -92,7 +96,7 @@ export class CreateScripts extends Component<any, ICreateScriptBundle> {
                     }
                     onClick={async () => this.createAndSignScript()}
                 >
-                    YAY
+                    {"Sign & Deploy"}
                 </button>
 
             </div >

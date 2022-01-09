@@ -1,15 +1,15 @@
-import React, { Component, ReactNode, useEffect } from 'react';
+import React, { Component, ReactNode } from 'react';
 import { connect } from 'react-redux';
-import { IScript } from '../../data/fakescripts';
+import { BaseScript } from '../../data/script/base-script';
 import { RootState } from '../../state';
 import { fetchScripts } from '../../state/action-creators/script-action-creators';
 import './styles.css';
 
-const ScriptComponent = ({ script }: { script: IScript; }) => (
+const ScriptComponent = ({ script }: { script: BaseScript; }) => (
     <div className="script">
-        <div className="script__description">{script.description}</div>
+        <div className="script__description">{script.getDescription()}</div>
         <div className="script__actions">
-            <button className='script__button'>Edit</button>
+            <button className='script__button'>Revoke</button>
             <button className='script__button'>Execute</button>
         </div>
     </div>
@@ -17,7 +17,7 @@ const ScriptComponent = ({ script }: { script: IScript; }) => (
 
 interface IScriptsComponentsProps {
     fetchScripts: (address: string | null) => any;
-    fetchedScripts: IScript[];
+    fetchedScripts: BaseScript[];
     walletAddress: string | null;
 }
 
@@ -33,7 +33,7 @@ class Scripts extends Component<IScriptsComponentsProps> {
     }
 
     public render(): ReactNode {
-        const scripts = this.props.fetchedScripts.map((script: IScript) => <ScriptComponent key={script.id} script={script}></ScriptComponent>);
+        const scripts = this.props.fetchedScripts.map((script: BaseScript) => <ScriptComponent key={script.getId()} script={script}></ScriptComponent>);
 
         return (
             <div>

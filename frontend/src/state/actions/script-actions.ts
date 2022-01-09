@@ -1,14 +1,14 @@
-import { IScript } from '../../data/fakescripts';
+import { BaseScript } from '../../data/script/base-script';
 import { ActionType } from "../action-types/index";
 
 export interface IFetchScriptsAction {
     type: ActionType.FETCH_SCRIPTS;
-    payload: IScript[];
+    payload: BaseScript[];
 }
 
 export interface INewScriptsAction {
     type: ActionType.NEW_SCRIPT;
-    payload: IScript;
+    payload: BaseScript;
 }
 
 export type ScriptAction = IFetchScriptsAction | INewScriptsAction;

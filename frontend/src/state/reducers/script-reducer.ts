@@ -1,10 +1,10 @@
-import { IScript } from '../../data/fakescripts';
+import { BaseScript } from '../../data/script/base-script';
 import { ActionType } from "../action-types/index";
 import { ScriptAction } from "../actions/script-actions";
 
 export type ScriptState = {
-    fetchedScripts: IScript[],
-    currentScript?: IScript,
+    fetchedScripts: BaseScript[],
+    currentScript?: BaseScript,
 };
 
 const initialState: ScriptState = {
