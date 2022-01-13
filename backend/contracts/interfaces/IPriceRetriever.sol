@@ -2,5 +2,5 @@
 pragma solidity ^0.8.4;
 
 interface IPriceRetriever {
-    function priceOf(address token) external view returns (int256);
+    function priceOf(address token) external view returns (uint256);
 }
