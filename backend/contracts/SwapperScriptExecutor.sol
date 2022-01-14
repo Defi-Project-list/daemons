@@ -90,6 +90,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
     ) public {
         verify(message, r, s, v);
         require(exchange != address(0), "Exchange address has not been set");
+        lastExecutions[message.id] = block.number;
 
         // step 0 get the tokens from the user
         IERC20 tokenFrom = IERC20(message.tokenFrom);

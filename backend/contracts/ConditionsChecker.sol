@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 abstract contract ConditionsChecker is Ownable {
-    mapping(bytes32 => uint256) private lastExecutions;
+    mapping(bytes32 => uint256) internal lastExecutions;
     mapping(address => mapping(bytes32 => bool)) private revocations;
 
     IERC20 private balrogToken;

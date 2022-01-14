@@ -38,7 +38,7 @@ describe("SwapperScriptExecutor", function () {
         },
         frequency: {
             enabled: false,
-            blocks: BigNumber.from(0),
+            blocks: BigNumber.from(5),
             startBlock: BigNumber.from(0),
         },
         price: {
@@ -132,6 +132,20 @@ describe("SwapperScriptExecutor", function () {
         expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("145"));
     });
 
+    it('sets the lastExecution value during execution', async () => {
+        let message = JSON.parse(JSON.stringify(baseMessage));
+
+        // enable frequency condition so 2 consecutive executions should fail
+        message.frequency.enabled = true;
+        message = await initialize(message);
+        await fooToken.mint(owner.address, ethers.utils.parseEther("2000"));
+
+        // the first one goes through
+        await executor.execute(message, sigR, sigS, sigV);
+
+        // the second one fails as not enough blocks have passed
+        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Frequency Condition] Not enough time has passed since the last execution');
+    });
 
     /* ========== REVOCATION CONDITION CHECK ========== */
 
