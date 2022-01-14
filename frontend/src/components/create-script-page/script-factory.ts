@@ -4,10 +4,10 @@ import { Contracts } from '../../data/contracts';
 import { BaseScript } from '../../data/script/base-script';
 import { SwapScript } from '../../data/script/swap-script';
 import { Tokens } from '../../data/tokens';
-import { IBalanceCondition, IFrequencyCondition } from '../../messages/condition-messages';
+import { IBalanceCondition, IFrequencyCondition, IPriceCondition } from '../../messages/condition-messages';
 import { ISwapAction, domain as swapDomain, types as swapTypes } from '../../messages/swap-action-messages';
 import { ISwapActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
-import { IBalanceConditionForm, IFrequencyConditionForm } from './blocks/conditions/conditions-interfaces';
+import { IBalanceConditionForm, IFrequencyConditionForm, IPriceConditionForm } from './blocks/conditions/conditions-interfaces';
 import { ICreateScriptBundle } from './i-create-script-form';
 
 type ScriptDefinition = ISwapAction;
@@ -59,6 +59,7 @@ export class ScriptFactory {
     private async createSwapScript(bundle: ICreateScriptBundle): Promise<ISwapAction> {
         const frequencyCondition = await this.createFrequencyConditionFromForm(bundle.frequencyCondition);
         const balanceCondition = this.createBalanceConditionFromForm(bundle.balanceCondition);
+        const priceCondition = this.createPriceConditionFromForm(bundle.priceCondition);
 
         const swapActionForm = bundle.actionForm as ISwapActionForm;
         const tokenFrom = Tokens.Kovan.filter(token => token.address === swapActionForm.tokenFromAddress)[0];
@@ -72,7 +73,8 @@ export class ScriptFactory {
             user: await this.signer.getAddress(),
             frequency: frequencyCondition,
             balance: balanceCondition,
-            executor: Contracts.SwapExecutor
+            price: priceCondition,
+            executor: Contracts.SwapExecutor,
         };
     }
 
@@ -114,6 +116,25 @@ export class ScriptFactory {
             enabled: true,
             amount: amount,
             comparison: balanceCondition.comparison,
+            token: token.address,
+        };
+    }
+
+    private createPriceConditionFromForm(priceCondition: IPriceConditionForm): IPriceCondition {
+        if (!priceCondition.enabled) return {
+            enabled: false,
+            value: BigNumber.from(0),
+            comparison: 0,
+            token: ZeroAddress,
+        };
+
+        const token = Tokens.Kovan.filter(token => token.address === priceCondition.tokenAddress)[0];
+        const value = BigNumber.from(10).pow(token.decimals).mul(priceCondition.floatValue);
+
+        return {
+            enabled: true,
+            value: value,
+            comparison: priceCondition.comparison,
             token: token.address,
         };
     }

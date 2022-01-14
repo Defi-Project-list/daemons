@@ -1,5 +1,5 @@
 import React, { Component, ReactNode } from 'react';
-import { addScript, fetchAllScripts } from '../../data/fakeMongoDb';
+import { addScript } from '../../data/fakeMongoDb';
 import { ComparisonType } from '../../messages/condition-messages';
 import { IDAOActionForm, IFarmActionForm, INoActionForm, ISwapActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
 import { DaoAction } from './blocks/actions/daoAction';
@@ -8,6 +8,7 @@ import { SwapAction } from './blocks/actions/swapAction';
 import { BalanceCondition } from './blocks/conditions/balanceCondition';
 import { FrequencyUnits } from './blocks/conditions/conditions-interfaces';
 import { FrequencyCondition } from './blocks/conditions/frequencyCondition';
+import { PriceCondition } from './blocks/conditions/priceCondition';
 import { ICreateScriptBundle } from './i-create-script-form';
 import { ScriptFactory } from './script-factory';
 
@@ -24,11 +25,13 @@ export class CreateScripts extends Component<any, ICreateScriptBundle> {
     state: ICreateScriptBundle = {
         frequencyCondition: { valid: true, enabled: false, ticks: 1, unit: FrequencyUnits.Hours, startNow: true },
         balanceCondition: { valid: false, enabled: false, comparison: ComparisonType.GreaterThan, floatAmount: 0 },
+        priceCondition: { valid: false, enabled: false, comparison: ComparisonType.GreaterThan, floatValue: 0 },
         actionForm: noActionForm
     };
 
     private toggleFrequencyCondition = () => { this.setState({ frequencyCondition: { ...this.state.frequencyCondition, enabled: !this.state.frequencyCondition.enabled } }); };
     private toggleBalanceCondition = () => { this.setState({ balanceCondition: { ...this.state.balanceCondition, enabled: !this.state.balanceCondition.enabled } }); };
+    private togglePriceCondition = () => { this.setState({ priceCondition: { ...this.state.priceCondition, enabled: !this.state.priceCondition.enabled } }); };
     private setFarmActionAsSelected = () => { this.setState({ actionForm: farmActionForm }); };
     private setSwapActionAsSelected = () => { this.setState({ actionForm: swapActionForm }); };
     private setDaoActionAsSelected = () => { this.setState({ actionForm: daoActionForm }); };
@@ -58,6 +61,12 @@ export class CreateScripts extends Component<any, ICreateScriptBundle> {
                         <BalanceCondition selected={this.state.balanceCondition.enabled}
                             showSelectionCheckbox={true}
                             blockForm={this.state.balanceCondition}
+                        />
+                    </div>
+                    <div onClick={this.togglePriceCondition}>
+                        <PriceCondition selected={this.state.priceCondition.enabled}
+                            showSelectionCheckbox={true}
+                            blockForm={this.state.priceCondition}
                         />
                     </div>
                 </div>

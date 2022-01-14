@@ -18,3 +18,9 @@ export interface IBalanceConditionForm extends IScriptConditionForm {
     comparison: ComparisonType;
     floatAmount: number;
 }
+
+export interface IPriceConditionForm extends IScriptConditionForm {
+    tokenAddress?: string;
+    comparison: ComparisonType;
+    floatValue: number;
+}

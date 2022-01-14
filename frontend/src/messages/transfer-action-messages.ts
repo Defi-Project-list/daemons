@@ -3,10 +3,10 @@ import { IBalanceCondition, Balance } from './condition-messages';
 import { IPriceCondition, Price } from './condition-messages';
 import { IFrequencyCondition, Frequency } from './condition-messages';
 
-export interface ISwapAction {
+export interface ITransferAction {
     id: string;
-    tokenFrom: string;
-    tokenTo: string;
+    token: string;
+    destination: string;
     amount: BigNumber;
     user: string;
     executor: string;
@@ -15,10 +15,10 @@ export interface ISwapAction {
     price: IPriceCondition;
 }
 
-const Swap = [
-    { name: "id", type: "bytes32" },                           // the token owned by the user
-    { name: "tokenFrom", type: "address" },             // the token owned by the user
-    { name: "tokenTo", type: "address" },                  // the token that should be swapped
+const Transfer = [
+    { name: "id", type: "bytes32" },                            // the token owned by the user
+    { name: "token", type: "address" },                      // the token owned by the user
+    { name: "destination", type: "address" },             // the token that should be swapped
     { name: "amount", type: "uint256" },                   // the amount to swap
     { name: "user", type: "address" },                        // the user that is signing the transaction
     { name: "executor", type: "address" },                 // the executor contract this message will be sent to
@@ -28,12 +28,12 @@ const Swap = [
 ];
 
 export const domain = {
-    name: "Balrog-Swap-v1"
+    name: "Balrog-Transfer-v1"
 };
 
 export const types = {
     Frequency,
     Balance,
-    Swap,
+    Transfer,
     Price,
 };
