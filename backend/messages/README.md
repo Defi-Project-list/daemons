@@ -27,6 +27,9 @@ Triggers the action every fixed amount of blocks.
 Swaps a token for another one.
 Currently all swaps go through the same AMM, but in the future the user will have the possibility of specifying their favorite exchange.
 
+### Transfer
+
+Sends a certain amount of tokens to the specified address.
 
 ## Note:
 

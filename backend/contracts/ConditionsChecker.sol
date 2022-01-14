@@ -17,6 +17,11 @@ abstract contract ConditionsChecker is Ownable {
     IPriceRetriever private priceRetriever;
     uint256 public MINIMUM_GAS_FOR_SCRIPT_EXECUTION = 1 ether;
 
+    // domain definition
+    string private constant EIP712_DOMAIN = "EIP712Domain(string name)";
+    bytes32 internal constant EIP712_DOMAIN_TYPEHASH =
+        keccak256(abi.encodePacked(EIP712_DOMAIN));
+
     /* ========== RESTRICTED FUNCTIONS ========== */
 
     function setGasTank(address _gasTank) external onlyOwner {

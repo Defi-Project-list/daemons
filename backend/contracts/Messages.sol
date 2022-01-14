@@ -56,3 +56,17 @@ struct Swap {
 }
 string constant SWAP_TYPE = "Swap(bytes32 id,address tokenFrom,address tokenTo,uint256 amount,address user,address executor,Balance balance,Frequency frequency,Price price)Balance(bool enabled,address token,bytes1 comparison,uint256 amount)Frequency(bool enabled,uint256 blocks,uint256 startBlock)Price(bool enabled,address token,bytes1 comparison,uint256 value)";
 bytes32 constant SWAP_TYPEHASH = keccak256(abi.encodePacked(SWAP_TYPE));
+
+struct Transfer {
+    bytes32 id;
+    address token;
+    address destination;
+    uint256 amount;
+    address user;
+    address executor;
+    Balance balance;
+    Frequency frequency;
+    Price price;
+}
+string constant TRANSFER_TYPE = "Transfer(bytes32 id,address token,address destination,uint256 amount,address user,address executor,Balance balance,Frequency frequency,Price price)Balance(bool enabled,address token,bytes1 comparison,uint256 amount)Frequency(bool enabled,uint256 blocks,uint256 startBlock)Price(bool enabled,address token,bytes1 comparison,uint256 value)";
+bytes32 constant TRANSFER_TYPEHASH = keccak256(abi.encodePacked(TRANSFER_TYPE));

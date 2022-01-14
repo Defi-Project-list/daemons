@@ -7,11 +7,6 @@ import "./Messages.sol";
 import "./interfaces/UniswapV2.sol";
 
 contract SwapperScriptExecutor is ConditionsChecker {
-    // domain definition
-    string private constant EIP712_DOMAIN = "EIP712Domain(string name)";
-    bytes32 private constant EIP712_DOMAIN_TYPEHASH =
-        keccak256(abi.encodePacked(EIP712_DOMAIN));
-
     // exchange address
     address private exchange;
     mapping(address => mapping(IERC20 => bool)) private allowances;
