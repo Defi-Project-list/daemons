@@ -15,25 +15,21 @@ export abstract class BaseScript {
     public async verify(): Promise<string> {
         const executor = await this.getExecutor();
         const message = this.getMessage();
+        let tx: any;
         try {
+            console.log("Verifying...");
             await executor.verify(message, this.R, this.S, this.V);
-        } catch (error) {
-            return String(error);
+            return "Verified!";
+        } catch (error: any) {
+            return this.parseFailedVerifyError(error.data);
         }
-
-        return "";
     }
 
     public async execute(): Promise<string> {
         const executor = await this.getExecutor();
         const message = this.getMessage();
-        try {
-            await executor.execute(message, this.R, this.S, this.V);
-        } catch (error) {
-            return String(error);
-        }
-
-        return "";
+        await executor.execute(message, this.R, this.S, this.V);
+        return "YAY!";
     }
 
     public async revoke(): Promise<void> {
@@ -47,4 +43,10 @@ export abstract class BaseScript {
     public abstract getDescription(): string;
 
     public abstract toJsonString(): string;
+
+    private parseFailedVerifyError(errorText: string): string {
+        const hex = "0x" + errorText.substring(147);
+        const withoutTrailing0s = hex.replace(/0*$/g, '');
+        return ethers.utils.toUtf8String(withoutTrailing0s);
+    }
 }

@@ -25,7 +25,7 @@ export const Tokens: { [chain: string]: IToken[]; } = {
         {
             name: "DAI Stablecoin",
             symbol: "DAI",
-            address: "0xff795577d9ac8bd7d90ee22b6c1703490b6512fd",
+            address: "0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa",
             decimals: 18,
             logoURI: "https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png"
         },

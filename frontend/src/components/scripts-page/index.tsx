@@ -10,7 +10,8 @@ const ScriptComponent = ({ script }: { script: BaseScript; }) => (
         <div className="script__description">{script.getDescription()}</div>
         <div className="script__actions">
             <button className='script__button'>Revoke</button>
-            <button className='script__button'>Execute</button>
+            <button onClick={async () => alert(await script.verify())} className='script__button'>Verify</button>
+            <button onClick={async () => alert(await script.execute())} className='script__button'>Execute</button>
         </div>
     </div>
 );

@@ -100,7 +100,7 @@ export class ScriptFactory {
             frequency: frequencyCondition,
             balance: balanceCondition,
             price: priceCondition,
-            executor: Contracts.SwapExecutor,
+            executor: Contracts.TransferExecutor,
         };
     }
 

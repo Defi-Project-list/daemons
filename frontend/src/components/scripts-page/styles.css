@@ -19,12 +19,12 @@
 .script__actions {
     margin-top: 15px;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     justify-content: space-evenly;
     justify-items: center;
 }
 
 .script__button {
-    width: 80px;
+    width: 66px;
     height: 30px;
 }
