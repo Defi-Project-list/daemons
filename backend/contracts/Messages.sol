@@ -27,6 +27,15 @@ bytes32 constant FREQUENCY_TYPEHASH = keccak256(
     abi.encodePacked(FREQUENCY_TYPE)
 );
 
+struct Price {
+    bool enabled;
+    address token;
+    bytes1 comparison;
+    uint256 value;
+}
+string constant PRICE_TYPE = "Price(bool enabled,address token,bytes1 comparison,uint256 value)";
+bytes32 constant PRICE_TYPEHASH = keccak256(abi.encodePacked(PRICE_TYPE));
+
 /**  ACTIONS
 
     Each action type will be executed by a different contract, called 'executor'.
@@ -43,6 +52,7 @@ struct Swap {
     address executor;
     Balance balance;
     Frequency frequency;
+    Price price;
 }
-string constant SWAP_TYPE = "Swap(bytes32 id,address tokenFrom,address tokenTo,uint256 amount,address user,address executor,Balance balance,Frequency frequency)Balance(bool enabled,address token,bytes1 comparison,uint256 amount)Frequency(bool enabled,uint256 blocks,uint256 startBlock)";
+string constant SWAP_TYPE = "Swap(bytes32 id,address tokenFrom,address tokenTo,uint256 amount,address user,address executor,Balance balance,Frequency frequency,Price price)Balance(bool enabled,address token,bytes1 comparison,uint256 amount)Frequency(bool enabled,uint256 blocks,uint256 startBlock)Price(bool enabled,address token,bytes1 comparison,uint256 value)";
 bytes32 constant SWAP_TYPEHASH = keccak256(abi.encodePacked(SWAP_TYPE));

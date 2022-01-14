@@ -12,6 +12,7 @@ describe("SwapperScriptExecutor", function () {
     // contracts
     let BRG: Contract;
     let gasTank: Contract;
+    let priceRetriever: Contract;
     let executor: Contract;
     let fooToken: Contract;
     let barToken: Contract;
@@ -39,11 +40,17 @@ describe("SwapperScriptExecutor", function () {
             enabled: false,
             blocks: BigNumber.from(0),
             startBlock: BigNumber.from(0),
+        },
+        price: {
+            enabled: false,
+            token: '',
+            comparison: ComparisonType.GreaterThan,
+            value: ethers.utils.parseEther("150"),
         }
     };
 
-    async function initialize(baseMessage: ISwapAction): Promise<ISwapAction> {
-        // get some wallets
+    this.beforeEach(async () => {
+        // get main wallet
         [owner] = await ethers.getSigners();
 
         // Balrog contract
@@ -55,12 +62,16 @@ describe("SwapperScriptExecutor", function () {
         gasTank = await GasTankContract.deploy();
         await gasTank.deposit({ value: ethers.utils.parseEther("2.0") });
 
-        // instantiate Mock token contracts
+        // Price retriever contract
+        const PriceRetrieverContract = await ethers.getContractFactory("PriceRetriever");
+        priceRetriever = await PriceRetrieverContract.deploy();
+
+        // Mock token contracts
         const MockTokenContract = await ethers.getContractFactory("MockToken");
         fooToken = await MockTokenContract.deploy("Foo Token", "FOO");
         barToken = await MockTokenContract.deploy("Bar Token", "BAR");
 
-        // instantiate Mock router contract
+        // Mock router contract
         const MockRouterContract = await ethers.getContractFactory("MockRouter");
         mockRouter = await MockRouterContract.deploy();
 
@@ -70,17 +81,21 @@ describe("SwapperScriptExecutor", function () {
         await executor.setGasTank(gasTank.address);
         await executor.setBrgToken(BRG.address);
         await executor.setExchange(mockRouter.address);
+        await executor.setPriceRetriever(priceRetriever.address);
 
         // Grant allowance
         await fooToken.approve(executor.address, ethers.utils.parseEther("500"));
+    });
 
-        // Create message
+    async function initialize(baseMessage: ISwapAction): Promise<ISwapAction> {
+        // Create message and fill missing info
         const message = { ...baseMessage };
         message.user = owner.address;
         message.executor = executor.address;
         message.tokenFrom = fooToken.address;
         message.tokenTo = barToken.address;
         message.balance.token = fooToken.address;
+        message.price.token = fooToken.address;
 
         // Sign message
         const signature = await owner._signTypedData(domain, types, message);
@@ -93,6 +108,7 @@ describe("SwapperScriptExecutor", function () {
 
     it("verifies a correct message with no conditions", async () => {
         const message = await initialize(baseMessage);
+        console.log(message);
         await executor.verify(message, sigR, sigS, sigV);
         // no error means success!
     });
@@ -105,6 +121,20 @@ describe("SwapperScriptExecutor", function () {
         await expect(executor.verify(tamperedMessage, sigR, sigS, sigV)).to.be.revertedWith('Signature does not match');
     });
 
+    it('swaps the tokens', async () => {
+        let message = JSON.parse(JSON.stringify(baseMessage));
+        message = await initialize(message);
+        await fooToken.mint(owner.address, ethers.utils.parseEther("200"));
+
+        await executor.execute(message, sigR, sigS, sigV);
+
+        expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("55"));
+        expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("145"));
+    });
+
+
+    /* ========== REVOCATION CONDITION CHECK ========== */
+
     it("fails if the script has been revoked by the user", async () => {
         const message = await initialize(baseMessage);
 
@@ -113,6 +143,9 @@ describe("SwapperScriptExecutor", function () {
 
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('Script has been revoked by the user');
     });
+
+
+    /* ========== FREQUENCY CONDITION CHECK ========== */
 
     it('fails the verification if frequency is enabled and the start block has not been reached', async () => {
         // update frequency in message and submit for signature
@@ -135,6 +168,9 @@ describe("SwapperScriptExecutor", function () {
 
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Frequency Condition] Not enough time has passed since the start block');
     });
+
+
+    /* ========== BALANCE CONDITION CHECK ========== */
 
     it('fails the verification if balance is enabled and the user does not own enough tokens', async () => {
         // update balance in message and submit for signature
@@ -160,6 +196,97 @@ describe("SwapperScriptExecutor", function () {
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Balance Condition] User owns too many tokens');
     });
 
+
+    /* ========== PRICE CONDITION CHECK ========== */
+
+    it('fails the verification if price is enabled, but token is not supported', async () => {
+        // update price in message and submit for signature.
+        // Condition: FOO > 150
+        let message = JSON.parse(JSON.stringify(baseMessage));
+        message.price.enabled = true;
+        message.price.token = fooToken.address;
+        message.price.comparison = ComparisonType.GreaterThan;
+        message.price.value = ethers.utils.parseEther("150");
+        message = await initialize(message);
+
+        // executor has no price feed for the token, so it should fail
+        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[PriceRetriever] Unsupported token');
+    });
+
+    it('fails the verification if price is enabled with GREATER_THAN condition and tokenPrice < value', async () => {
+        // update price in message and submit for signature.
+        // Condition: FOO > 150
+        let message = JSON.parse(JSON.stringify(baseMessage));
+        message.price.enabled = true;
+        message.price.token = fooToken.address;
+        message.price.comparison = ComparisonType.GreaterThan;
+        message.price.value = ethers.utils.parseEther("150");
+        message = await initialize(message);
+
+        // define FOO token price and feed decimals
+        const fooDecimals = 18;
+        const feedDecimals = 8;
+        const fooPrice = BigNumber.from('149').mul(BigNumber.from(10).pow(BigNumber.from(feedDecimals))); // 149 * 10**8
+
+        // add feed for FOO token
+        const mockFooPriceFeed = await ethers.getContractFactory("MockChainlinkAggregator");
+        const fooPriceFeed = await mockFooPriceFeed.deploy(fooPrice);
+        await priceRetriever.addPriceFeed(fooToken.address, fooPriceFeed.address, fooDecimals, feedDecimals);
+
+        // verification should fail as the price lower than expected
+        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Price Condition] Token price is lower than expected value');
+    });
+
+    it('fails the verification if price is enabled with LESS_THAN condition and tokenPrice > value', async () => {
+        // update price in message and submit for signature.
+        // Condition: FOO < 150
+        let message = JSON.parse(JSON.stringify(baseMessage));
+        message.price.enabled = true;
+        message.price.token = fooToken.address;
+        message.price.comparison = ComparisonType.LessThan;
+        message.price.value = ethers.utils.parseEther("150");
+        message = await initialize(message);
+
+        // define FOO token price and feed decimals
+        const fooDecimals = 18;
+        const feedDecimals = 8;
+        const fooPrice = BigNumber.from('151').mul(BigNumber.from(10).pow(BigNumber.from(feedDecimals))); // 151 * 10**8
+
+        // add feed for FOO token
+        const mockFooPriceFeed = await ethers.getContractFactory("MockChainlinkAggregator");
+        const fooPriceFeed = await mockFooPriceFeed.deploy(fooPrice);
+        await priceRetriever.addPriceFeed(fooToken.address, fooPriceFeed.address, fooDecimals, feedDecimals);
+
+        // verification should fail as the price lower than expected
+        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Price Condition] Token price is higher than expected value');
+    });
+
+    it('passes the price verification if conditions are met', async () => {
+        // update price in message and submit for signature.
+        // Condition: FOO < 150
+        let message = JSON.parse(JSON.stringify(baseMessage));
+        message.price.enabled = true;
+        message.price.token = fooToken.address;
+        message.price.comparison = ComparisonType.GreaterThan;
+        message.price.value = ethers.utils.parseEther("150");
+        message = await initialize(message);
+
+        // define FOO token price and feed decimals
+        const fooDecimals = 18;
+        const feedDecimals = 8;
+        const fooPrice = BigNumber.from('151').mul(BigNumber.from(10).pow(BigNumber.from(feedDecimals))); // 149 * 10**8
+
+        // add feed for FOO token
+        const mockFooPriceFeed = await ethers.getContractFactory("MockChainlinkAggregator");
+        const fooPriceFeed = await mockFooPriceFeed.deploy(fooPrice);
+        await priceRetriever.addPriceFeed(fooToken.address, fooPriceFeed.address, fooDecimals, feedDecimals);
+
+        // verification should go through and raise no errors!
+        await executor.verify(message, sigR, sigS, sigV);
+    });
+
+    /* ========== GAS TANK CONDITION CHECK ========== */
+
     it('fails if the user does not have enough funds in the gas tank', async () => {
         const message = await initialize(baseMessage);
 
@@ -169,6 +296,8 @@ describe("SwapperScriptExecutor", function () {
     });
 
 
+    /* ========== ALLOWANCE CONDITION CHECK ========== */
+
     it('fails if the user did not grant enough allowance to the executor contract', async () => {
         const message = await initialize(baseMessage);
 
@@ -176,16 +305,5 @@ describe("SwapperScriptExecutor", function () {
         await fooToken.approve(executor.address, ethers.utils.parseEther("0"));
 
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Allowance Condition] User did not give enough allowance to the script executor');
-    });
-
-    it('swaps the tokens', async () => {
-        let message = JSON.parse(JSON.stringify(baseMessage));
-        message = await initialize(message);
-        await fooToken.mint(owner.address, ethers.utils.parseEther("200"));
-
-        await executor.execute(message, sigR, sigS, sigV);
-
-        expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("55"));
-        expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("145"));
     });
 });

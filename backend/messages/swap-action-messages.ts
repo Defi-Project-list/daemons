@@ -1,5 +1,6 @@
 import { BigNumber } from 'ethers';
 import { IBalanceCondition, Balance } from './condition-messages';
+import { IPriceCondition, Price } from './condition-messages';
 import { IFrequencyCondition, Frequency } from './condition-messages';
 
 export interface ISwapAction {
@@ -11,6 +12,7 @@ export interface ISwapAction {
     executor: string;
     balance: IBalanceCondition;
     frequency: IFrequencyCondition;
+    price: IPriceCondition;
 }
 
 const Swap = [
@@ -22,6 +24,7 @@ const Swap = [
     { name: "executor", type: "address" },                 // the executor contract this message will be sent to
     { name: "balance", type: "Balance" },                   // condition: balance
     { name: "frequency", type: "Frequency" },           // condition: frequency
+    { name: "price", type: "Price" },                            // condition: balance
 ];
 
 export const domain = {
@@ -32,4 +35,5 @@ export const types = {
     Frequency,
     Balance,
     Swap,
+    Price,
 };

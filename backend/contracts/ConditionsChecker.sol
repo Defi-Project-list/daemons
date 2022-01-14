@@ -4,6 +4,7 @@ pragma solidity ^0.8.4;
 import "hardhat/console.sol";
 import "./Messages.sol";
 import "./interfaces/IGasTank.sol";
+import "./interfaces/IPriceRetriever.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -13,6 +14,7 @@ abstract contract ConditionsChecker is Ownable {
 
     IERC20 private balrogToken;
     IGasTank private gasTank;
+    IPriceRetriever private priceRetriever;
     uint256 public MINIMUM_GAS_FOR_SCRIPT_EXECUTION = 1 ether;
 
     /* ========== RESTRICTED FUNCTIONS ========== */
@@ -23,6 +25,10 @@ abstract contract ConditionsChecker is Ownable {
 
     function setBrgToken(address _brgToken) external onlyOwner {
         balrogToken = IERC20(_brgToken);
+    }
+
+    function setPriceRetriever(address _priceRetriever) external onlyOwner {
+        priceRetriever = IPriceRetriever(_priceRetriever);
     }
 
     function setMinimumGas(uint256 _amount) external onlyOwner {
@@ -51,6 +57,20 @@ abstract contract ConditionsChecker is Ownable {
                     balance.token,
                     balance.comparison,
                     balance.amount
+                )
+            );
+    }
+
+    /** Returns the hashed version of the price condition */
+    function hashPrice(Price memory price) internal pure returns (bytes32) {
+        return
+            keccak256(
+                abi.encode(
+                    PRICE_TYPEHASH,
+                    price.enabled,
+                    price.token,
+                    price.comparison,
+                    price.value
                 )
             );
     }
@@ -95,16 +115,36 @@ abstract contract ConditionsChecker is Ownable {
         uint256 userBalance = token.balanceOf(user);
 
         if (balance.comparison == 0x00)
-            // less than
+            // greater than
             require(
                 userBalance > balance.amount,
                 "[Balance Condition] User does not own enough tokens"
             );
         else if (balance.comparison == 0x01)
-            // greater than
+            // less than
             require(
                 userBalance < balance.amount,
                 "[Balance Condition] User owns too many tokens"
+            );
+    }
+
+    /** If the price condition is enabled, it checks the token price for it */
+    function verifyPrice(Price memory price) internal view {
+        if (!price.enabled) return;
+
+        uint256 tokenPrice = priceRetriever.priceOf(price.token);
+
+        if (price.comparison == 0x00)
+            // greater than
+            require(
+                tokenPrice > price.value,
+                "[Price Condition] Token price is lower than expected value"
+            );
+        else if (price.comparison == 0x01)
+            // less than
+            require(
+                tokenPrice < price.value,
+                "[Price Condition] Token price is higher than expected value"
             );
     }
 

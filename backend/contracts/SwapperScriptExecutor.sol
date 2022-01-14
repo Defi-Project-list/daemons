@@ -42,7 +42,8 @@ contract SwapperScriptExecutor is ConditionsChecker {
                 swap.user,
                 swap.executor,
                 hashBalance(swap.balance),
-                hashFrequency(swap.frequency)
+                hashFrequency(swap.frequency),
+                hashPrice(swap.price)
             )
         );
 
@@ -74,6 +75,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
         verifySignature(message, r, s, v);
         verifyFrequency(message.frequency, message.id);
         verifyBalance(message.balance, message.user);
+        verifyPrice(message.price);
         verifyGasTank(message.user);
         verifyAllowance(message.user, message.tokenFrom, message.amount);
     }
