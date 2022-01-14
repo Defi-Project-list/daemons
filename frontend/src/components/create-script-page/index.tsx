@@ -1,10 +1,11 @@
 import React, { Component, ReactNode } from 'react';
 import { addScript } from '../../data/fakeMongoDb';
 import { ComparisonType } from '../../messages/condition-messages';
-import { IDAOActionForm, IFarmActionForm, INoActionForm, ISwapActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
+import { IDAOActionForm, IFarmActionForm, INoActionForm, ISwapActionForm, ITransferActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
 import { DaoAction } from './blocks/actions/daoAction';
 import { FarmAction } from './blocks/actions/farmAction';
 import { SwapAction } from './blocks/actions/swapAction';
+import { TransferAction } from './blocks/actions/transferAction';
 import { BalanceCondition } from './blocks/conditions/balanceCondition';
 import { FrequencyUnits } from './blocks/conditions/conditions-interfaces';
 import { FrequencyCondition } from './blocks/conditions/frequencyCondition';
@@ -17,6 +18,7 @@ import './styles.css';
 
 const noActionForm: INoActionForm = { action: ScriptAction.None, valid: false };
 const swapActionForm: ISwapActionForm = { action: ScriptAction.Swap, valid: false, tokenFromAddress: '', tokenToAddress: '', floatAmount: 0 };
+const transferActionForm: ITransferActionForm = { action: ScriptAction.Transfer, valid: false, tokenAddress: '', destinationAddress: '', floatAmount: 0 };
 const daoActionForm: IDAOActionForm = { action: ScriptAction.Dao, valid: false };
 const farmActionForm: IFarmActionForm = { action: ScriptAction.Farm, valid: false };
 
@@ -34,6 +36,7 @@ export class CreateScripts extends Component<any, ICreateScriptBundle> {
     private togglePriceCondition = () => { this.setState({ priceCondition: { ...this.state.priceCondition, enabled: !this.state.priceCondition.enabled } }); };
     private setFarmActionAsSelected = () => { this.setState({ actionForm: farmActionForm }); };
     private setSwapActionAsSelected = () => { this.setState({ actionForm: swapActionForm }); };
+    private setTransferActionAsSelected = () => { this.setState({ actionForm: transferActionForm }); };
     private setDaoActionAsSelected = () => { this.setState({ actionForm: daoActionForm }); };
 
     private async createAndSignScript() {
@@ -83,6 +86,12 @@ export class CreateScripts extends Component<any, ICreateScriptBundle> {
                             blockForm={swapActionForm}
                         />
                     </div>
+                    <div onClick={this.setTransferActionAsSelected}>
+                        <TransferAction
+                            selected={this.state.actionForm.action === ScriptAction.Transfer}
+                            blockForm={transferActionForm}
+                        />
+                    </div>
                     <div onClick={this.setFarmActionAsSelected}>
                         <FarmAction
                             selected={this.state.actionForm.action === ScriptAction.Farm}
@@ -102,6 +111,7 @@ export class CreateScripts extends Component<any, ICreateScriptBundle> {
                         !this.state.actionForm.valid
                         || (this.state.balanceCondition.enabled && !this.state.balanceCondition.valid)
                         || (this.state.frequencyCondition.enabled && !this.state.frequencyCondition.valid)
+                        || (this.state.priceCondition.enabled && !this.state.priceCondition.valid)
                     }
                     onClick={async () => this.createAndSignScript()}
                 >

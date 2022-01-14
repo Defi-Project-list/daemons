@@ -3,14 +3,16 @@ import { ChainInfo, ZeroAddress } from '../../data/chain-info';
 import { Contracts } from '../../data/contracts';
 import { BaseScript } from '../../data/script/base-script';
 import { SwapScript } from '../../data/script/swap-script';
+import { TransferScript } from '../../data/script/transfer-script';
 import { Tokens } from '../../data/tokens';
 import { IBalanceCondition, IFrequencyCondition, IPriceCondition } from '../../messages/condition-messages';
 import { ISwapAction, domain as swapDomain, types as swapTypes } from '../../messages/swap-action-messages';
-import { ISwapActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
+import { ITransferAction, domain as transferDomain, types as transferTypes } from '../../messages/transfer-action-messages';
+import { ISwapActionForm, ITransferActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
 import { IBalanceConditionForm, IFrequencyConditionForm, IPriceConditionForm } from './blocks/conditions/conditions-interfaces';
 import { ICreateScriptBundle } from './i-create-script-form';
 
-type ScriptDefinition = ISwapAction;
+type ScriptDefinition = ISwapAction | ITransferAction;
 
 interface IMessage {
     script: ScriptDefinition;
@@ -35,26 +37,28 @@ export class ScriptFactory {
     }
 
     public async SubmitScriptsForSignature(bundle: ICreateScriptBundle): Promise<BaseScript> {
-        const message = await this.createScript(bundle);
-        const signature: string = await this.signer._signTypedData(message.domain, message.types, message.script);
+        const getSignature = async (message: IMessage) => (await this.signer._signTypedData(message.domain, message.types, message.script)) as string;
 
-        // once we have more Executors we need to abstract this and get the right Script based on the message
-        return new SwapScript(message.script, signature);
-    }
-
-    private async createScript(bundle: ICreateScriptBundle): Promise<IMessage> {
         switch (bundle.actionForm.action) {
             case ScriptAction.Swap:
-                return {
+                const swapMessage = {
                     script: await this.createSwapScript(bundle),
                     domain: swapDomain,
                     types: swapTypes
                 };
+                return new SwapScript(swapMessage.script, await getSignature(swapMessage));
+            case ScriptAction.Transfer:
+                const transferMessage = {
+                    script: await this.createTransferScript(bundle),
+                    domain: transferDomain,
+                    types: transferTypes
+                };
+                return new TransferScript(transferMessage.script, await getSignature(transferMessage));
             default:
                 throw new Error("Not implemented");
         }
-
     }
+
 
     private async createSwapScript(bundle: ICreateScriptBundle): Promise<ISwapAction> {
         const frequencyCondition = await this.createFrequencyConditionFromForm(bundle.frequencyCondition);
@@ -70,6 +74,28 @@ export class ScriptFactory {
             amount: amount,
             tokenFrom: tokenFrom.address,
             tokenTo: swapActionForm.tokenToAddress,
+            user: await this.signer.getAddress(),
+            frequency: frequencyCondition,
+            balance: balanceCondition,
+            price: priceCondition,
+            executor: Contracts.SwapExecutor,
+        };
+    }
+
+    private async createTransferScript(bundle: ICreateScriptBundle): Promise<ITransferAction> {
+        const frequencyCondition = await this.createFrequencyConditionFromForm(bundle.frequencyCondition);
+        const balanceCondition = this.createBalanceConditionFromForm(bundle.balanceCondition);
+        const priceCondition = this.createPriceConditionFromForm(bundle.priceCondition);
+
+        const transferActionForm = bundle.actionForm as ITransferActionForm;
+        const token = Tokens.Kovan.filter(token => token.address === transferActionForm.tokenAddress)[0];
+        const amount = BigNumber.from(10).pow(token.decimals).mul(transferActionForm.floatAmount);
+
+        return {
+            id: this.ethers.utils.hexlify(this.ethers.utils.randomBytes(32)),
+            amount: amount,
+            token: token.address,
+            destination: transferActionForm.destinationAddress,
             user: await this.signer.getAddress(),
             frequency: frequencyCondition,
             balance: balanceCondition,
