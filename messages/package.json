@@ -1,0 +1,14 @@
+{
+  "name": "balrog.messages",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "start": ""
+  },
+  "author": "Alvin Sartor",
+  "license": "ISC",
+  "dependencies": {
+    "ethers": "^5.5.2"
+  }
+}
