@@ -70,7 +70,7 @@ export class ScriptFactory {
         const amount = BigNumber.from(10).pow(tokenFrom.decimals).mul(swapActionForm.floatAmount);
 
         return {
-            id: this.ethers.utils.hexlify(this.ethers.utils.randomBytes(32)),
+            scriptId: this.ethers.utils.hexlify(this.ethers.utils.randomBytes(32)),
             amount: amount,
             tokenFrom: tokenFrom.address,
             tokenTo: swapActionForm.tokenToAddress,
@@ -92,7 +92,7 @@ export class ScriptFactory {
         const amount = BigNumber.from(10).pow(token.decimals).mul(transferActionForm.floatAmount);
 
         return {
-            id: this.ethers.utils.hexlify(this.ethers.utils.randomBytes(32)),
+            scriptId: this.ethers.utils.hexlify(this.ethers.utils.randomBytes(32)),
             amount: amount,
             token: token.address,
             destination: transferActionForm.destinationAddress,

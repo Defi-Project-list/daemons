@@ -12,7 +12,7 @@ export class SwapScript extends BaseScript {
 
     public getMessage = () => this.message;
     public getUser = () => this.message.user;
-    public getId = () => this.message.id;
+    public getId = () => this.message.scriptId;
     public getDescription(): string {
         const tokens = Tokens.Kovan;
         const tokenFrom = tokens.filter(t => t.address === this.message.tokenFrom)[0];

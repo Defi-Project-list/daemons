@@ -3,8 +3,12 @@ import { IBalanceCondition, Balance } from './condition-messages';
 import { IPriceCondition, Price } from './condition-messages';
 import { IFrequencyCondition, Frequency } from './condition-messages';
 
+export interface ISignedSwapAction extends ISwapAction {
+    signature: string;
+}
+
 export interface ISwapAction {
-    id: string;
+    scriptId: string;
     tokenFrom: string;
     tokenTo: string;
     amount: BigNumber;
@@ -16,7 +20,7 @@ export interface ISwapAction {
 }
 
 const Swap = [
-    { name: "id", type: "bytes32" },                           // the token owned by the user
+    { name: "scriptId", type: "bytes32" },                  // the token owned by the user
     { name: "tokenFrom", type: "address" },             // the token owned by the user
     { name: "tokenTo", type: "address" },                  // the token that should be swapped
     { name: "amount", type: "uint256" },                   // the amount to swap

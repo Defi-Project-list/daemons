@@ -23,7 +23,7 @@ describe("TransferScriptExecutor", function () {
     let sigV: number;
 
     let baseMessage: ITransferAction = {
-        id: '0x7465737400000000000000000000000000000000000000000000000000000000',
+        scriptId: '0x7465737400000000000000000000000000000000000000000000000000000000',
         token: '',
         destination: '',
         amount: ethers.utils.parseEther("145"),
@@ -148,7 +148,7 @@ describe("TransferScriptExecutor", function () {
         const message = await initialize(baseMessage);
 
         // revoke the script execution
-        await executor.revoke(message.id);
+        await executor.revoke(message.scriptId);
 
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('Script has been revoked by the user');
     });

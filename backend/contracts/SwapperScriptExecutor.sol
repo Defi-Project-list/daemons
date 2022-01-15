@@ -30,7 +30,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
         bytes32 swapHash = keccak256(
             abi.encode(
                 SWAP_TYPEHASH,
-                swap.id,
+                swap.scriptId,
                 swap.tokenFrom,
                 swap.tokenTo,
                 swap.amount,
@@ -66,9 +66,9 @@ contract SwapperScriptExecutor is ConditionsChecker {
         bytes32 s,
         uint8 v
     ) public view {
-        verifyRevocation(message.user, message.id);
+        verifyRevocation(message.user, message.scriptId);
         verifySignature(message, r, s, v);
-        verifyFrequency(message.frequency, message.id);
+        verifyFrequency(message.frequency, message.scriptId);
         verifyBalance(message.balance, message.user);
         verifyPrice(message.price);
         verifyGasTank(message.user);
@@ -85,7 +85,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
     ) public {
         verify(message, r, s, v);
         require(exchange != address(0), "Exchange address has not been set");
-        lastExecutions[message.id] = block.number;
+        lastExecutions[message.scriptId] = block.number;
 
         // step 0 get the tokens from the user
         IERC20 tokenFrom = IERC20(message.tokenFrom);

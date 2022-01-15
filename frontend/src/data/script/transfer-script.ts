@@ -13,7 +13,7 @@ export class TransferScript extends BaseScript {
 
     public getMessage = () => this.message;
     public getUser = () => this.message.user;
-    public getId = () => this.message.id;
+    public getId = () => this.message.scriptId;
     public getDescription(): string {
         const tokens = Tokens.Kovan;
         const token = tokens.filter(t => t.address === this.message.token)[0];

@@ -20,7 +20,7 @@ contract TransferScriptExecutor is ConditionsChecker {
         bytes32 swapHash = keccak256(
             abi.encode(
                 TRANSFER_TYPEHASH,
-                transfer.id,
+                transfer.scriptId,
                 transfer.token,
                 transfer.destination,
                 transfer.amount,
@@ -56,9 +56,9 @@ contract TransferScriptExecutor is ConditionsChecker {
         bytes32 s,
         uint8 v
     ) public view {
-        verifyRevocation(message.user, message.id);
+        verifyRevocation(message.user, message.scriptId);
         verifySignature(message, r, s, v);
-        verifyFrequency(message.frequency, message.id);
+        verifyFrequency(message.frequency, message.scriptId);
         verifyBalance(message.balance, message.user);
         verifyPrice(message.price);
         verifyGasTank(message.user);
@@ -74,7 +74,7 @@ contract TransferScriptExecutor is ConditionsChecker {
         uint8 v
     ) public {
         verify(message, r, s, v);
-        lastExecutions[message.id] = block.number;
+        lastExecutions[message.scriptId] = block.number;
 
         // step 0 transfer the tokens to the destination
         IERC20 tokenFrom = IERC20(message.token);
