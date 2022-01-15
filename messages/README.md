@@ -36,3 +36,17 @@ Currently all swaps go through the same AMM, but in the future the user will hav
 ### Transfer
 
 Sends a certain amount of tokens to the specified address.
+
+
+## NOTE:
+
+If you change something here, remember to update:
+
+ - **Backend** at `backend/contracts/messages`, containing the definitions used by the solidity contracts to interpret messages.
+ - **Frontend** at `frontend/src/data/script`, containing the scripts representation for the frontend.
+ - **Frontend** at `frontend/src/components/create-script-page/script-factory.ts`, containing the code that creates scripts.
+ - **Storage** at `storage/src/models`, containing the db schemas.
+
+Also remember: **every change to the messages is a breaking change (no backward compatibility)** and will require to **redeploy contracts** and **update the references to point to the new ones**.
+
+Think about them properly before implementing them or doing any change!
