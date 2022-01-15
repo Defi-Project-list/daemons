@@ -1,4 +1,4 @@
-import { ComparisonType } from '../../../../messages/condition-messages';
+import { ComparisonType } from '../../../../../../messages/definitions/condition-messages';
 import { ICreateScriptForm } from '../../i-create-script-form';
 
 interface IScriptConditionForm extends ICreateScriptForm {

@@ -1,6 +1,6 @@
 import React, { Component, ReactNode } from 'react';
 import { addScript } from '../../data/fakeMongoDb';
-import { ComparisonType } from '../../messages/condition-messages';
+import { ComparisonType } from '../../../../messages/definitions/condition-messages';
 import { IDAOActionForm, IFarmActionForm, INoActionForm, ISwapActionForm, ITransferActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
 import { DaoAction } from './blocks/actions/daoAction';
 import { FarmAction } from './blocks/actions/farmAction';
