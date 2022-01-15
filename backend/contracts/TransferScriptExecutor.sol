@@ -26,6 +26,7 @@ contract TransferScriptExecutor is ConditionsChecker {
                 transfer.amount,
                 transfer.user,
                 transfer.executor,
+                transfer.chainId,
                 hashBalance(transfer.balance),
                 hashFrequency(transfer.frequency),
                 hashPrice(transfer.price)
@@ -43,7 +44,9 @@ contract TransferScriptExecutor is ConditionsChecker {
         bytes32 r,
         bytes32 s,
         uint8 v
-    ) private pure {
+    ) private view {
+        console.log("CHAIN", chainId);
+        require(message.chainId == chainId, "Wrong chain");
         require(
             message.user == ecrecover(hash(message), v, r, s),
             "Signature does not match"

@@ -11,6 +11,9 @@ const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
   networks: {
     hardhat: {
+      // let's make it believe that we're on Kovan,
+      // so to fool the contracts to use a predictable chain id.
+      chainId: 42,
     },
     mainnet: {
       url: "https://rpc-mumbai.maticvigil.com",

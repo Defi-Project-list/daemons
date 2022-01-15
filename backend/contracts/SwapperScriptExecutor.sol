@@ -36,6 +36,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
                 swap.amount,
                 swap.user,
                 swap.executor,
+                swap.chainId,
                 hashBalance(swap.balance),
                 hashFrequency(swap.frequency),
                 hashPrice(swap.price)
@@ -53,7 +54,8 @@ contract SwapperScriptExecutor is ConditionsChecker {
         bytes32 r,
         bytes32 s,
         uint8 v
-    ) private pure {
+    ) private view {
+        require(message.chainId == chainId, "Wrong chain");
         require(
             message.user == ecrecover(hash(message), v, r, s),
             "Signature does not match"

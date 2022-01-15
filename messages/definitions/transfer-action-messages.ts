@@ -14,6 +14,7 @@ export interface ITransferAction {
     amount: BigNumber;
     user: string;
     executor: string;
+    chainId: BigNumber;
     balance: IBalanceCondition;
     frequency: IFrequencyCondition;
     price: IPriceCondition;
@@ -26,6 +27,7 @@ const Transfer = [
     { name: "amount", type: "uint256" },                   // the amount to swap
     { name: "user", type: "address" },                        // the user that is signing the transaction
     { name: "executor", type: "address" },                 // the executor contract this message will be sent to
+    { name: "chainId", type: "uint256" },                   // the chain in which the message was signed
     { name: "balance", type: "Balance" },                   // condition: balance
     { name: "frequency", type: "Frequency" },           // condition: frequency
     { name: "price", type: "Price" },                            // condition: balance

@@ -30,6 +30,7 @@ describe("SwapperScriptExecutor", function () {
         amount: ethers.utils.parseEther("145"),
         user: '',
         executor: '',
+        chainId: BigNumber.from(42),
         balance: {
             enabled: false,
             amount: ethers.utils.parseEther("150"),
@@ -119,6 +120,15 @@ describe("SwapperScriptExecutor", function () {
         tamperedMessage.amount = ethers.utils.parseEther("0");
 
         await expect(executor.verify(tamperedMessage, sigR, sigS, sigV)).to.be.revertedWith('Signature does not match');
+    });
+
+    it("spots a valid message from another chain", async () => {
+        let message = JSON.parse(JSON.stringify(baseMessage));
+        message.chainId = BigNumber.from('1'); // message created for the Ethereum chain
+        message = await initialize(message);
+
+        // as the contract is created on chain 42, it will refuse to execute this message
+        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('Wrong chain');
     });
 
     it('swaps the tokens', async () => {

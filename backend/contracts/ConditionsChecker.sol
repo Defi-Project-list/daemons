@@ -12,6 +12,7 @@ abstract contract ConditionsChecker is Ownable {
     mapping(bytes32 => uint256) internal lastExecutions;
     mapping(address => mapping(bytes32 => bool)) private revocations;
 
+    uint256 internal chainId;
     IERC20 private balrogToken;
     IGasTank private gasTank;
     IPriceRetriever private priceRetriever;
@@ -21,6 +22,16 @@ abstract contract ConditionsChecker is Ownable {
     string private constant EIP712_DOMAIN = "EIP712Domain(string name)";
     bytes32 internal constant EIP712_DOMAIN_TYPEHASH =
         keccak256(abi.encodePacked(EIP712_DOMAIN));
+
+    /* ========== CONSTRUCTOR ========== */
+
+    constructor() {
+        uint256 id;
+        assembly {
+            id := chainid()
+        }
+        chainId = id;
+    }
 
     /* ========== RESTRICTED FUNCTIONS ========== */
 

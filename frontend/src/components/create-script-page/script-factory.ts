@@ -79,6 +79,7 @@ export class ScriptFactory {
             balance: balanceCondition,
             price: priceCondition,
             executor: Contracts.SwapExecutor,
+            chainId: BigNumber.from(42), // hardcoded as we currently only support kovan. Will be retrieved in the future
         };
     }
 
@@ -101,6 +102,7 @@ export class ScriptFactory {
             balance: balanceCondition,
             price: priceCondition,
             executor: Contracts.TransferExecutor,
+            chainId: BigNumber.from(42), // hardcoded as we currently only support kovan. Will be retrieved in the future
         };
     }
 
