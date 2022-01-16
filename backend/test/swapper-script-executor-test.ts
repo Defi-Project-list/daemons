@@ -109,7 +109,6 @@ describe("SwapperScriptExecutor", function () {
 
     it("verifies a correct message with no conditions", async () => {
         const message = await initialize(baseMessage);
-        console.log(message);
         await executor.verify(message, sigR, sigS, sigV);
         // no error means success!
     });
