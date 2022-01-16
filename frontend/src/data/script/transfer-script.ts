@@ -43,8 +43,10 @@ export class TransferScript extends BaseScript {
         const message: ISwapAction = object.message;
 
         // complex objects are broken down and need to be recreated. Sigh.
+        message.chainId = BigNumber.from(object.message.chainId.hex);
         message.amount = BigNumber.from(object.message.amount.hex);
         message.balance.amount = BigNumber.from(object.message.balance.amount.hex);
+        message.price.value = BigNumber.from(object.message.price.value.hex);
 
         return new TransferScript(object.message, object.signature);
     }

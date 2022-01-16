@@ -21,7 +21,10 @@ export abstract class BaseScript {
             await executor.verify(message, this.R, this.S, this.V);
             return "Verified!";
         } catch (error: any) {
-            return this.parseFailedVerifyError(error.data);
+            if (error.data)
+                return this.parseFailedVerifyError(error.data);
+
+            throw error;
         }
     }
 
