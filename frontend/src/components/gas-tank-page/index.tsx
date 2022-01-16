@@ -11,7 +11,9 @@ import { Field, Form } from 'react-final-form';
 interface IGasTankComponentsProps {
     fetchGasTankBalance: (address: string) => any;
     balance: number | null;
-    walletAddress: string | null;
+    walletConnected: boolean;
+    walletAddress?: string;
+    walletChainId?: string;
 }
 
 class GasTank extends Component<IGasTankComponentsProps> {
@@ -27,6 +29,7 @@ class GasTank extends Component<IGasTankComponentsProps> {
 
     public componentDidUpdate(prevProps: IGasTankComponentsProps) {
         // recheck balance in case the wallet address has changed
+        // TODO: recheck also when chain and connection status change!
         if (prevProps.walletAddress !== this.props.walletAddress && this.props.walletAddress) {
             this.props.fetchGasTankBalance(this.props.walletAddress);
         }
@@ -184,7 +187,9 @@ class GasTank extends Component<IGasTankComponentsProps> {
 const mapStateToProps: (state: RootState) => IGasTankComponentsProps = state => ({
     fetchGasTankBalance: fetchGasTankBalance,
     balance: state.gasTank.balance,
-    walletAddress: state.wallet,
+    walletConnected: state.wallet.connected,
+    walletAddress: state.wallet.address,
+    walletChainId: state.wallet.chainId,
 });
 
 export default connect(mapStateToProps, { fetchGasTankBalance })(GasTank);

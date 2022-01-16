@@ -17,9 +17,11 @@ const ScriptComponent = ({ script }: { script: BaseScript; }) => (
 );
 
 interface IScriptsComponentsProps {
-    fetchScripts: (address: string | null) => any;
+    fetchScripts: (address?: string) => any;
     fetchedScripts: BaseScript[];
-    walletAddress: string | null;
+    walletConnected: boolean;
+    walletAddress?: string;
+    walletChainId?: string;
 }
 
 class Scripts extends Component<IScriptsComponentsProps> {
@@ -51,7 +53,9 @@ class Scripts extends Component<IScriptsComponentsProps> {
 const mapStateToProps: (state: RootState) => IScriptsComponentsProps = state => ({
     fetchScripts: fetchScripts,
     fetchedScripts: state.script.fetchedScripts,
-    walletAddress: state.wallet,
+    walletConnected: state.wallet.connected,
+    walletAddress: state.wallet.address,
+    walletChainId: state.wallet.chainId,
 });
 
 export default connect(mapStateToProps, { fetchScripts })(Scripts);

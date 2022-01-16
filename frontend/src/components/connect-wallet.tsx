@@ -3,15 +3,18 @@ import { useMetaMask } from "metamask-react";
 import { updateWalletAddress } from '../state/action-creators/wallet-action-creators';
 import { useDispatch } from 'react-redux';
 
-const supportedChainId = '0x2a';
+const supportedChainIds = new Set<string>(['0x2a']);
 const supportedChainName = 'Kovan';
 
 export function ConnectWalletButton() {
     const { status, connect, account, chainId } = useMetaMask();
 
-    const walletAddress = status === 'connected' && chainId === supportedChainId ? account : null;
+    const connected = status === 'connected' && supportedChainIds.has(chainId ?? '');
+    const walletAddress = connected ? account! : undefined;
+    const walletChainId = connected ? chainId! : undefined;
+
     const dispatcher = useDispatch();
-    const dispatchCall = () => dispatcher(updateWalletAddress(walletAddress));
+    const dispatchCall = () => dispatcher(updateWalletAddress(connected, walletAddress, walletChainId));
 
     switch (status) {
         case "initializing":
@@ -56,7 +59,7 @@ class WalletConnectedComponent extends WalletComponent {
             <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <div>Connected! ({this.props.account!.substr(0, 8) + "..."})</div>
                 {
-                    this.props.chainId === supportedChainId
+                    supportedChainIds.has(this.props.chainId)
                         ? null
                         : <div className='wallet-control__wrong-network-msg'>Wrong network :(<br />Connect to {supportedChainName} to use the app.  </div>
                 }

@@ -6,7 +6,9 @@ import { RootState } from '../state';
 interface IGasIndicatorProps {
     fetchGasTankBalance: (address: string) => any;
     balance: number | null;
-    walletAddress: string | null;
+    walletConnected: boolean;
+    walletAddress?: string;
+    walletChainId?: string;
 }
 
 class GasIndicator extends Component<IGasIndicatorProps> {
@@ -19,6 +21,7 @@ class GasIndicator extends Component<IGasIndicatorProps> {
 
     public componentDidUpdate(prevProps: IGasIndicatorProps) {
         // recheck balance in case the wallet address has changed
+        // TODO: recheck also when chain and connection status change!
         if (prevProps.walletAddress !== this.props.walletAddress && this.props.walletAddress) {
             this.props.fetchGasTankBalance(this.props.walletAddress);
         }
@@ -32,7 +35,9 @@ class GasIndicator extends Component<IGasIndicatorProps> {
 const mapStateToProps: (state: RootState) => IGasIndicatorProps = state => ({
     fetchGasTankBalance: fetchGasTankBalance,
     balance: state.gasTank.balance,
-    walletAddress: state.wallet,
+    walletConnected: state.wallet.connected,
+    walletAddress: state.wallet.address,
+    walletChainId: state.wallet.chainId,
 });
 
 export default connect(mapStateToProps, { fetchGasTankBalance })(GasIndicator);

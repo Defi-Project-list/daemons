@@ -36,7 +36,7 @@ export class StorageProxy {
         return json.map(StorageProxy.parseScript);
     }
 
-    public static async fetchUserScripts(user: string | null): Promise<BaseScript[]> {
+    public static async fetchUserScripts(user?: string): Promise<BaseScript[]> {
         if (!user) return [];
 
         const url = `${storageAddress}/scripts/${user}`;

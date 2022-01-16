@@ -4,7 +4,7 @@ import { ActionType } from '../action-types';
 import { ScriptAction } from '../actions/script-actions';
 
 
-export const fetchScripts = (address: string | null) => {
+export const fetchScripts = (address?: string) => {
 
     return async (dispatch: Dispatch<ScriptAction>) => {
         dispatch({
