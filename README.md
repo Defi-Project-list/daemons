@@ -39,6 +39,8 @@ The storage directory contains the code to interact with the MongoDB where the s
 
 - `npm run dev` to run the project on port 5000
 
+NOTE: **You need to have mongodb installed locally**
+
 
 ### Messages
 

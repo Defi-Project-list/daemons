@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { Contract } from 'ethers';
 
 export abstract class BaseScript {
@@ -17,7 +17,6 @@ export abstract class BaseScript {
         const message = this.getMessage();
         let tx: any;
         try {
-            console.log("Verifying...");
             await executor.verify(message, this.R, this.S, this.V);
             return "Verified!";
         } catch (error: any) {
@@ -39,13 +38,19 @@ export abstract class BaseScript {
         throw new Error("Not implemented yet");
     }
 
+    public abstract readonly ScriptType: string;
     protected abstract getExecutor(): Promise<Contract>;
     public abstract getMessage(): any;
     public abstract getUser(): string;
     public abstract getId(): string;
     public abstract getDescription(): string;
 
-    public abstract toJsonString(): string;
+    public toJsonString(): string {
+        return JSON.stringify({
+            signature: this.signature,
+            ...this.getMessage(),
+        });
+    }
 
     private parseFailedVerifyError(errorText: string): string {
         const hex = "0x" + errorText.substring(147);

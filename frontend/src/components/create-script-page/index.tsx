@@ -1,5 +1,4 @@
 import React, { Component, ReactNode } from 'react';
-import { addScript } from '../../data/fakeMongoDb';
 import { ComparisonType } from '../../../../messages/definitions/condition-messages';
 import { IDAOActionForm, IFarmActionForm, INoActionForm, ISwapActionForm, ITransferActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
 import { DaoAction } from './blocks/actions/daoAction';
@@ -12,6 +11,7 @@ import { FrequencyCondition } from './blocks/conditions/frequencyCondition';
 import { PriceCondition } from './blocks/conditions/priceCondition';
 import { ICreateScriptBundle } from './i-create-script-form';
 import { ScriptFactory } from './script-factory';
+import { StorageProxy } from '../../data/storage-proxy';
 
 import './styles.css';
 
@@ -41,10 +41,7 @@ export class CreateScripts extends Component<any, ICreateScriptBundle> {
 
     private async createAndSignScript() {
         const script = await new ScriptFactory().SubmitScriptsForSignature(this.state);
-
-        // add script to backend...
-        addScript(script);
-        alert("success!");
+        StorageProxy.saveScript(script);
     }
 
     public render(): ReactNode {

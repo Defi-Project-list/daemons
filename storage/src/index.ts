@@ -1,21 +1,18 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import { json } from 'body-parser';
-import { scriptRouter } from './routes/scripts';
+import { router } from './routes';
+import cors from 'cors';
 
-const app = express();
+mongoose
+    .connect("mongodb://localhost:27017/scripts")
+    .then(() => {
+        const app = express();
+        app.use(express.json());
+        app.use(cors());
 
-app.use(json());
-app.use(scriptRouter);
+        app.use("/api", router);
 
-mongoose.connect('mongodb://localhost:27017/scripts', {}, () => {
-    console.log("connected to database");
-});
-
-const port = 5000;
-
-app.get('/', (_, res) => {
-    res.send('Hello World');
-});
-
-app.listen(port, () => console.log(`Running on port ${port}`));
+        app.listen(5000, () => {
+            console.log("Storage has started!");
+        });
+    });

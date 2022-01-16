@@ -11,6 +11,7 @@ export class TransferScript extends BaseScript {
         super(signature);
     }
 
+    public readonly ScriptType = "TransferScript";
     public getMessage = () => this.message;
     public getUser = () => this.message.user;
     public getId = () => this.message.scriptId;
@@ -31,23 +32,15 @@ export class TransferScript extends BaseScript {
         return new ethers.Contract(contractAddress, contractAbi, signer);
     }
 
-    public toJsonString(): string {
-        return JSON.stringify({
-            signature: this.signature,
-            message: this.message,
-        });
-    }
-
-    public static fromJsonString(json: string) {
-        const object: any = JSON.parse(json);
-        const message: ISwapAction = object.message;
+    public static fromStorageJson(object: any) {
+        const message: ITransferAction = object;
 
         // complex objects are broken down and need to be recreated. Sigh.
-        message.chainId = BigNumber.from(object.message.chainId.hex);
-        message.amount = BigNumber.from(object.message.amount.hex);
-        message.balance.amount = BigNumber.from(object.message.balance.amount.hex);
-        message.price.value = BigNumber.from(object.message.price.value.hex);
+        message.chainId = BigNumber.from(object.chainId);
+        message.amount = BigNumber.from(object.amount);
+        message.balance.amount = BigNumber.from(object.balance.amount);
+        message.price.value = BigNumber.from(object.price.value);
 
-        return new TransferScript(object.message, object.signature);
+        return new TransferScript(message, object.signature);
     }
 }
