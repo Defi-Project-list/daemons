@@ -1,6 +1,7 @@
 export enum ActionType {
     // user scripts
-    FETCH_SCRIPTS = "FETCH_SCRIPTS",
+    FETCH_USER_SCRIPTS = "FETCH_USER_SCRIPTS",
+    FETCH_ALL_SCRIPTS = "FETCH_ALL_SCRIPTS",
     NEW_SCRIPT = "NEW_SCRIPT",
 
     // wallet

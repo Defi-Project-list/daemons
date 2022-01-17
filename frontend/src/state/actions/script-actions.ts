@@ -2,7 +2,7 @@ import { BaseScript } from '../../data/script/base-script';
 import { ActionType } from "../action-types/index";
 
 export interface IFetchScriptsAction {
-    type: ActionType.FETCH_SCRIPTS;
+    type: ActionType.FETCH_USER_SCRIPTS | ActionType.FETCH_ALL_SCRIPTS;
     payload: BaseScript[];
 }
 

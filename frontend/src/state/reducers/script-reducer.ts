@@ -3,20 +3,27 @@ import { ActionType } from "../action-types/index";
 import { ScriptAction } from "../actions/script-actions";
 
 export type ScriptState = {
-    fetchedScripts: BaseScript[],
+    userScripts: BaseScript[],
+    allScripts: BaseScript[],
     currentScript?: BaseScript,
 };
 
 const initialState: ScriptState = {
-    fetchedScripts: [],
+    userScripts: [],
+    allScripts: [],
 };
 
 export const scriptReducer = (state: ScriptState = initialState, action: ScriptAction): ScriptState => {
     switch (action.type) {
-        case ActionType.FETCH_SCRIPTS:
+        case ActionType.FETCH_USER_SCRIPTS:
             return {
                 ...state,
-                fetchedScripts: action.payload,
+                userScripts: action.payload,
+            };
+        case ActionType.FETCH_ALL_SCRIPTS:
+            return {
+                ...state,
+                allScripts: action.payload,
             };
         case ActionType.NEW_SCRIPT:
             return {

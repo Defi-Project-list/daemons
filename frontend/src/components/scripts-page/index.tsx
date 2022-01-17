@@ -2,7 +2,7 @@ import React, { Component, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { BaseScript } from '../../data/script/base-script';
 import { RootState } from '../../state';
-import { fetchScripts } from '../../state/action-creators/script-action-creators';
+import { fetchUserScripts } from '../../state/action-creators/script-action-creators';
 import './styles.css';
 
 const ScriptComponent = ({ script }: { script: BaseScript; }) => (
@@ -51,11 +51,11 @@ class Scripts extends Component<IScriptsComponentsProps> {
 }
 
 const mapStateToProps: (state: RootState) => IScriptsComponentsProps = state => ({
-    fetchScripts: fetchScripts,
-    fetchedScripts: state.script.fetchedScripts,
+    fetchScripts: fetchUserScripts,
+    fetchedScripts: state.script.userScripts,
     walletConnected: state.wallet.connected,
     walletAddress: state.wallet.address,
     walletChainId: state.wallet.chainId,
 });
 
-export default connect(mapStateToProps, { fetchScripts })(Scripts);
+export default connect(mapStateToProps, { fetchScripts: fetchUserScripts })(Scripts);

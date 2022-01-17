@@ -1,0 +1,25 @@
+.queue {
+    margin: 10px;
+}
+
+.queue__scripts-container {
+    margin-top: 20px;
+}
+
+.queue-script {
+    margin: 10px 0;
+    padding: 3px 15px;
+    display: grid;
+    grid-template-columns: 0.3fr 0.45fr auto;
+    width: 500px;
+    height: 40px;
+    background: #ededed;
+    border-radius: 5px;
+    align-items: center;
+}
+
+.queue-script__actions {
+    margin-left: auto;
+    display: grid;
+    grid-template-columns: 0.5fr 0.5fr;
+}
