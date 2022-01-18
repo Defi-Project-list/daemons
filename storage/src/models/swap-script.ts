@@ -12,7 +12,7 @@ const swapScriptSchema = new mongoose.Schema({
     tokenFrom: { type: String, required: true },
     tokenTo: { type: String, required: true },
     amount: { type: String, required: true, set: (bigNumber: any) => BigNumber.from(bigNumber.hex).toString() },
-    user: { type: String, required: true },
+    user: { type: String, required: true, index: true },
     executor: { type: String, required: true },
     chainId: { type: String, required: true, set: (bigNumber: any) => BigNumber.from(bigNumber.hex).toString() },
     balance: {
