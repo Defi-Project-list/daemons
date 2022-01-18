@@ -1,4 +1,4 @@
-import { BigNumber } from 'ethers';
+import { BigNumber, FixedNumber, utils } from 'ethers';
 import { ChainInfo, ZeroAddress } from '../../data/chain-info';
 import { Contracts } from '../../data/contracts';
 import { BaseScript } from '../../data/script/base-script';
@@ -67,7 +67,7 @@ export class ScriptFactory {
 
         const swapActionForm = bundle.actionForm as ISwapActionForm;
         const tokenFrom = Tokens.Kovan.filter(token => token.address === swapActionForm.tokenFromAddress)[0];
-        const amount = BigNumber.from(10).pow(tokenFrom.decimals).mul(swapActionForm.floatAmount);
+        const amount = utils.parseUnits(swapActionForm.floatAmount.toString(), tokenFrom.decimals);
 
         return {
             scriptId: this.ethers.utils.hexlify(this.ethers.utils.randomBytes(32)),
@@ -90,7 +90,7 @@ export class ScriptFactory {
 
         const transferActionForm = bundle.actionForm as ITransferActionForm;
         const token = Tokens.Kovan.filter(token => token.address === transferActionForm.tokenAddress)[0];
-        const amount = BigNumber.from(10).pow(token.decimals).mul(transferActionForm.floatAmount);
+        const amount = utils.parseUnits(transferActionForm.floatAmount.toString(), token.decimals);
 
         return {
             scriptId: this.ethers.utils.hexlify(this.ethers.utils.randomBytes(32)),
@@ -138,7 +138,7 @@ export class ScriptFactory {
         };
 
         const token = Tokens.Kovan.filter(token => token.address === balanceCondition.tokenAddress)[0];
-        const amount = BigNumber.from(10).pow(token.decimals).mul(balanceCondition.floatAmount);
+        const amount = utils.parseUnits(balanceCondition.floatAmount.toString(), token.decimals);
 
         return {
             enabled: true,
@@ -157,7 +157,7 @@ export class ScriptFactory {
         };
 
         const token = Tokens.Kovan.filter(token => token.address === priceCondition.tokenAddress)[0];
-        const value = BigNumber.from(10).pow(token.decimals).mul(priceCondition.floatValue);
+        const value = utils.parseUnits(priceCondition.floatValue.toString(), token.decimals);
 
         return {
             enabled: true,
