@@ -7,14 +7,18 @@ import { TransferScript } from '../models/transfer-script';
 
 export const router = express.Router();
 
-router.get('/scripts', async (req: Request, res: Response) => {
+router.get('/scripts/:chainId', async (req: Request, res: Response) => {
+    const chainId = String(req.params.chainId);
+
     const scripts = await SwapScript.aggregate([
         { $addFields: { type: "SwapScript" } },
+        { $match: { chainId: chainId } },
         {
             $unionWith: {
                 coll: "transferscripts",
                 pipeline: [
                     { $addFields: { type: "TransferScript" } },
+                    { $match: { chainId: chainId } },
                 ]
             }
         },
@@ -23,19 +27,20 @@ router.get('/scripts', async (req: Request, res: Response) => {
     return res.send(scripts);
 });
 
-router.get('/scripts/:userAddress', async (req: Request, res: Response) => {
+router.get('/scripts/:chainId/:userAddress', async (req: Request, res: Response) => {
     // adds checksum to address (uppercase characters)
     const userAddress = utils.getAddress(req.params.userAddress);
+    const chainId = String(req.params.chainId);
 
     const scripts = await SwapScript.aggregate([
         { $addFields: { type: "SwapScript" } },
-        { $match: { user: userAddress } },
+        { $match: { user: userAddress, chainId: chainId } },
         {
             $unionWith: {
                 coll: "transferscripts",
                 pipeline: [
                     { $addFields: { type: "TransferScript" } },
-                    { $match: { user: userAddress } }
+                    { $match: { user: userAddress, chainId: chainId } }
                 ]
             }
         },
