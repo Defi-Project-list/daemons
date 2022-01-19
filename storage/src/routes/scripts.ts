@@ -1,9 +1,9 @@
+import { utils } from 'ethers';
 import express, { Request, Response } from 'express';
 import { ISignedSwapAction } from '../../../messages/definitions/swap-action-messages';
 import { ISignedTransferAction } from '../../../messages/definitions/transfer-action-messages';
 import { SwapScript } from '../models/swap-script';
 import { TransferScript } from '../models/transfer-script';
-import { utils } from 'ethers';
 
 export const router = express.Router();
 
@@ -46,12 +46,20 @@ router.get('/scripts/:userAddress', async (req: Request, res: Response) => {
 
 router.post('/scripts/transfer', async (req: Request, res: Response) => {
     const script: ISignedTransferAction = req.body;
-    await TransferScript.build(script).save();
-    return res.send();
+    try {
+        await TransferScript.build(script).save();
+        return res.send();
+    } catch (error) {
+        return res.status(400).send(error);
+    }
 });
 
 router.post('/scripts/swap', async (req: Request, res: Response) => {
     const script: ISignedSwapAction = req.body;
-    await SwapScript.build(script).save();
-    return res.send();
+    try {
+        await SwapScript.build(script).save();
+        return res.send();
+    } catch (error) {
+        return res.status(400).send(error);
+    }
 });

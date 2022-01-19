@@ -1,6 +1,7 @@
-import { BigNumber } from 'ethers';
+import { utils } from 'ethers';
 import mongoose from 'mongoose';
 import { ISignedSwapAction } from '../../../messages/definitions/swap-action-messages';
+import { stringifyBigNumber } from './utils';
 
 
 const swapScriptSchema = new mongoose.Schema({
@@ -11,26 +12,26 @@ const swapScriptSchema = new mongoose.Schema({
     scriptId: { type: String, required: true, index: { unique: true } },
     tokenFrom: { type: String, required: true },
     tokenTo: { type: String, required: true },
-    amount: { type: String, required: true, set: (bigNumber: any) => BigNumber.from(bigNumber.hex).toString() },
-    user: { type: String, required: true, index: true },
+    amount: { type: String, required: true, set: stringifyBigNumber },
+    user: { type: String, required: true, index: true, set: utils.getAddress },
     executor: { type: String, required: true },
-    chainId: { type: String, required: true, set: (bigNumber: any) => BigNumber.from(bigNumber.hex).toString() },
+    chainId: { type: String, required: true, set: stringifyBigNumber },
     balance: {
         enabled: { type: Boolean, required: true },
         token: { type: String, required: true },
         comparison: { type: Number, required: true },
-        amount: { type: String, required: true, set: (bigNumber: any) => BigNumber.from(bigNumber.hex).toString() },
+        amount: { type: String, required: true, set: stringifyBigNumber },
     },
     frequency: {
         enabled: { type: Boolean, required: true },
-        blocks: { type: String, required: true, set: (bigNumber: any) => BigNumber.from(bigNumber.hex).toString() },
-        startBlock: { type: String, required: true, set: (bigNumber: any) => BigNumber.from(bigNumber.hex).toString() },
+        blocks: { type: String, required: true, set: stringifyBigNumber },
+        startBlock: { type: String, required: true, set: stringifyBigNumber },
     },
     price: {
         enabled: { type: Boolean, required: true },
         token: { type: String, required: true },
         comparison: { type: Number, required: true },
-        value: { type: String, required: true, set: (bigNumber: any) => BigNumber.from(bigNumber.hex).toString() },
+        value: { type: String, required: true, set: stringifyBigNumber },
     },
 });
 
