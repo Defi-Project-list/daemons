@@ -17,7 +17,7 @@ const ScriptComponent = ({ script }: { script: BaseScript; }) => (
 );
 
 interface IScriptsComponentsProps {
-    fetchScripts: (address?: string) => any;
+    fetchScripts: (chainId?: string, address?: string) => any;
     fetchedScripts: BaseScript[];
     walletConnected: boolean;
     walletAddress?: string;
@@ -26,12 +26,12 @@ interface IScriptsComponentsProps {
 
 class Scripts extends Component<IScriptsComponentsProps> {
     componentDidMount() {
-        this.props.fetchScripts(this.props.walletAddress);
+        this.props.fetchScripts(this.props.walletChainId, this.props.walletAddress);
     }
 
     componentDidUpdate(prevProps: IScriptsComponentsProps) {
         if (prevProps.walletAddress !== this.props.walletAddress) {
-            this.props.fetchScripts(this.props.walletAddress);
+            this.props.fetchScripts(this.props.walletChainId, this.props.walletAddress);
         }
     }
 

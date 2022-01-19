@@ -17,7 +17,7 @@ const QueueScriptComponent = ({ script }: { script: BaseScript; }) => (
 );
 
 interface IQueueComponentsProps {
-    fetchAllScripts: () => any;
+    fetchAllScripts: (chainId?: string) => any;
     fetchedScripts: BaseScript[];
     walletConnected: boolean;
     walletAddress?: string;
@@ -26,13 +26,13 @@ interface IQueueComponentsProps {
 
 class Queue extends Component<IQueueComponentsProps>{
     componentDidMount() {
-        this.props.fetchAllScripts();
+        this.props.fetchAllScripts(this.props.walletChainId);
     }
 
     componentDidUpdate(prevProps: IQueueComponentsProps) {
         // TODO when chain changes, load chain scripts (BRG-20)
         if (prevProps.walletConnected !== this.props.walletConnected) {
-            this.props.fetchAllScripts();
+            this.props.fetchAllScripts(this.props.walletChainId);
         }
     }
 
@@ -45,7 +45,6 @@ class Queue extends Component<IQueueComponentsProps>{
         }
 
         const scripts = this.props.fetchedScripts.map((script: BaseScript) => <QueueScriptComponent key={script.getId()} script={script}></QueueScriptComponent>);
-        console.log(scripts);
         return (
             <div className='queue'>
                 <div className='queue__subtitle'>Execute scripts and get rewarded in BRG tokens</div>

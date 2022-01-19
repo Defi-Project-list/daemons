@@ -2,6 +2,7 @@ import React, { Component, ReactNode } from 'react';
 import { useMetaMask } from "metamask-react";
 import { updateWalletAddress } from '../state/action-creators/wallet-action-creators';
 import { useDispatch } from 'react-redux';
+import { BigNumber } from 'ethers';
 
 const supportedChainIds = new Set<string>(['0x2a']);
 const supportedChainName = 'Kovan';
@@ -11,7 +12,7 @@ export function ConnectWalletButton() {
 
     const connected = status === 'connected' && supportedChainIds.has(chainId ?? '');
     const walletAddress = connected ? account! : undefined;
-    const walletChainId = connected ? chainId! : undefined;
+    const walletChainId = connected ? BigNumber.from(chainId!).toString() : undefined; // convert from hex to decimal string
 
     const dispatcher = useDispatch();
     const dispatchCall = () => dispatcher(updateWalletAddress(connected, walletAddress, walletChainId));

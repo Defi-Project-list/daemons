@@ -29,17 +29,25 @@ export class StorageProxy {
         }
     }
 
-    public static async fetchScripts(): Promise<BaseScript[]> {
-        const url = `${storageAddress}/scripts`;
+    public static async fetchScripts(chainId?: string): Promise<BaseScript[]> {
+        if (!chainId) {
+            console.warn("Missing chain id. Fetch aborted");
+            return [];
+        }
+
+        const url = `${storageAddress}/scripts/${chainId}`;
         const response = await fetch(url);
         const json: any[] = await response.json();
         return json.map(StorageProxy.parseScript);
     }
 
-    public static async fetchUserScripts(user?: string): Promise<BaseScript[]> {
-        if (!user) return [];
+    public static async fetchUserScripts(chainId?: string, user?: string): Promise<BaseScript[]> {
+        if (!user || !chainId) {
+            console.warn("Missing user or chain id. Fetch aborted");
+            return [];
+        }
 
-        const url = `${storageAddress}/scripts/${user}`;
+        const url = `${storageAddress}/scripts/${chainId}/${user}`;
         const response = await fetch(url);
         const json: any[] = await response.json();
         return json.map(StorageProxy.parseScript);
