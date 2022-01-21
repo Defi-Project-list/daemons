@@ -6,10 +6,6 @@ import { SwapScript } from '../models/swap-script';
 import { TransferScript } from '../models/transfer-script';
 
 
-// - # - # - FACTORIES - # - # -
-//
-// This file contains helpers that can be used in tests to quickly create test objects
-// and db documents without having to duplicate code.
 
 /** Returns a randomized balance condition */
 function balanceConditionFactory(args: any): IBalanceCondition {

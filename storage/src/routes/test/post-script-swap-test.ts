@@ -1,7 +1,7 @@
 import { connectToTestDb, closeTestDb, clearTestDb } from '../../test/test-db-handler';
 import supertest from 'supertest';
 import { app } from '../../app';
-import { signedSwapActionFactory } from '../../test/factories';
+import { signedSwapActionFactory } from '../../test-factories/script-factories';
 import { expect } from 'chai';
 import { utils } from 'ethers';
 import { SwapScript } from '../../models/swap-script';
@@ -35,7 +35,7 @@ describe('POST api/scripts/swap', () => {
     });
 
     it('fails if script ID is not unique', async () => {
-        const payload = signedSwapActionFactory({});
+        const payload = signedSwapActionFactory({ scriptId: '0x00' });
 
         await supertest(app)
             .post("/api/scripts/swap")

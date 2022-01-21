@@ -5,9 +5,9 @@ import { ISignedTransferAction } from '../../../messages/definitions/transfer-ac
 import { SwapScript } from '../models/swap-script';
 import { TransferScript } from '../models/transfer-script';
 
-export const router = express.Router();
+export const scriptsRouter = express.Router();
 
-router.get('/scripts/:chainId', async (req: Request, res: Response) => {
+scriptsRouter.get('/:chainId', async (req: Request, res: Response) => {
     const chainId = String(req.params.chainId);
 
     const scripts = await SwapScript.aggregate([
@@ -27,7 +27,7 @@ router.get('/scripts/:chainId', async (req: Request, res: Response) => {
     return res.send(scripts);
 });
 
-router.get('/scripts/:chainId/:userAddress', async (req: Request, res: Response) => {
+scriptsRouter.get('/:chainId/:userAddress', async (req: Request, res: Response) => {
     // adds checksum to address (uppercase characters)
     const userAddress = utils.getAddress(req.params.userAddress);
     const chainId = String(req.params.chainId);
@@ -49,7 +49,7 @@ router.get('/scripts/:chainId/:userAddress', async (req: Request, res: Response)
     return res.send(scripts);
 });
 
-router.post('/scripts/transfer', async (req: Request, res: Response) => {
+scriptsRouter.post('/transfer', async (req: Request, res: Response) => {
     const script: ISignedTransferAction = req.body;
     try {
         await TransferScript.build(script).save();
@@ -59,7 +59,7 @@ router.post('/scripts/transfer', async (req: Request, res: Response) => {
     }
 });
 
-router.post('/scripts/swap', async (req: Request, res: Response) => {
+scriptsRouter.post('/swap', async (req: Request, res: Response) => {
     const script: ISignedSwapAction = req.body;
     try {
         await SwapScript.build(script).save();

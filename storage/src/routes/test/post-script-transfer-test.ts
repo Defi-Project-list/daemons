@@ -1,7 +1,7 @@
 import { connectToTestDb, closeTestDb, clearTestDb } from '../../test/test-db-handler';
 import supertest from 'supertest';
 import { app } from '../../app';
-import { signedTransferActionFactory } from '../../test/factories';
+import { signedTransferActionFactory } from '../../test-factories/script-factories';
 import { expect } from 'chai';
 import { utils } from 'ethers';
 import { TransferScript } from '../../models/transfer-script';
@@ -35,7 +35,7 @@ describe('POST api/scripts/transfer', () => {
     });
 
     it('fails if script ID is not unique', async () => {
-        const payload = signedTransferActionFactory({});
+        const payload = signedTransferActionFactory({ scriptId: '0x00' });
 
         await supertest(app)
             .post("/api/scripts/transfer")
