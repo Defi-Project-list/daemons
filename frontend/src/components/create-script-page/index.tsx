@@ -12,9 +12,15 @@ import { PriceCondition } from './blocks/conditions/priceCondition';
 import { ICreateScriptBundle } from './i-create-script-form';
 import { ScriptFactory } from './script-factory';
 import { StorageProxy } from '../../data/storage-proxy';
+import { DisconnectedPage } from '../disconnected-page';
+import { RootState } from '../../state';
+import { connect } from 'react-redux';
 
 import './styles.css';
 
+interface ICreateScriptsComponentsProps {
+    walletConnected: boolean;
+}
 
 const noActionForm: INoActionForm = { action: ScriptAction.None, valid: false };
 const swapActionForm: ISwapActionForm = { action: ScriptAction.Swap, valid: false, tokenFromAddress: '', tokenToAddress: '', floatAmount: 0 };
@@ -22,7 +28,7 @@ const transferActionForm: ITransferActionForm = { action: ScriptAction.Transfer,
 const daoActionForm: IDAOActionForm = { action: ScriptAction.Dao, valid: false };
 const farmActionForm: IFarmActionForm = { action: ScriptAction.Farm, valid: false };
 
-export class CreateScripts extends Component<any, ICreateScriptBundle> {
+class CreateScripts extends Component<ICreateScriptsComponentsProps, ICreateScriptBundle> {
 
     state: ICreateScriptBundle = {
         frequencyCondition: { valid: true, enabled: false, ticks: 1, unit: FrequencyUnits.Hours, startNow: true },
@@ -45,6 +51,8 @@ export class CreateScripts extends Component<any, ICreateScriptBundle> {
     }
 
     public render(): ReactNode {
+        if (!this.props.walletConnected) return <DisconnectedPage />;
+
         return (
             <div className="new-script">
 
@@ -120,3 +128,9 @@ export class CreateScripts extends Component<any, ICreateScriptBundle> {
     }
 
 }
+
+const mapStateToProps: (state: RootState) => ICreateScriptsComponentsProps = state => ({
+    walletConnected: state.wallet.connected,
+});
+
+export default connect(mapStateToProps)(CreateScripts);

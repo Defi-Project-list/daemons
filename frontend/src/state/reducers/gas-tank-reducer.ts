@@ -2,11 +2,11 @@ import { ActionType } from "../action-types/index";
 import { GasTankAction } from '../actions/gas-tank-actions';
 
 export type GasTankState = {
-    balance: number | null;
+    balance?: number;
 };
 
 const initialState: GasTankState = {
-    balance: null,
+    balance: undefined,
 };
 
 export const gasTankReducer = (state: GasTankState = initialState, action: GasTankAction): GasTankState => {

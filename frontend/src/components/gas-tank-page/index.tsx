@@ -4,13 +4,14 @@ import { Contracts } from '../../data/contracts';
 import { getAbiFor } from '../../utils/get-abi';
 import { RootState } from '../../state';
 import { fetchGasTankBalance } from '../../state/action-creators/gas-tank-action-creators';
+import { Field, Form } from 'react-final-form';
+import { DisconnectedPage } from '../disconnected-page';
 import './styles.css';
 import '../switch.css';
-import { Field, Form } from 'react-final-form';
 
 interface IGasTankComponentsProps {
     fetchGasTankBalance: (address: string) => any;
-    balance: number | null;
+    balance?: number;
     walletConnected: boolean;
     walletAddress?: string;
     walletChainId?: string;
@@ -83,6 +84,8 @@ class GasTank extends Component<IGasTankComponentsProps> {
     };
 
     public render(): ReactNode {
+        if (!this.props.walletConnected) return <DisconnectedPage />;
+
         return (
             <div className="outer-component">
                 <div className="gas-tank">
@@ -105,11 +108,11 @@ class GasTank extends Component<IGasTankComponentsProps> {
                             </div>
 
                         </div>
-                        <div className="gas-tank__balance">{this.props.balance !== null ? this.props.balance : '??'} ETH</div>
+                        <div className="gas-tank__balance">{this.props.balance !== undefined ? this.props.balance : '??'} ETH</div>
                     </div>
                     <div className="gas-tank__forms-container">
                         {
-                            this.props.balance === null || this.props.walletAddress === null
+                            this.props.balance === undefined || this.props.walletAddress === undefined
                                 ? this.renderLoadingMessage()
                                 : (<div>
                                     {/* Deposit/Withdraw forms, depending on the switch position */}

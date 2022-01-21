@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { BaseScript } from '../../data/script/base-script';
 import { RootState } from '../../state';
 import { fetchUserScripts } from '../../state/action-creators/script-action-creators';
+import { DisconnectedPage } from '../disconnected-page';
 import './styles.css';
 
 const ScriptComponent = ({ script }: { script: BaseScript; }) => (
@@ -36,8 +37,9 @@ class Scripts extends Component<IScriptsComponentsProps> {
     }
 
     public render(): ReactNode {
-        const scripts = this.props.fetchedScripts.map((script: BaseScript) => <ScriptComponent key={script.getId()} script={script}></ScriptComponent>);
+        if (!this.props.walletConnected) return <DisconnectedPage />;
 
+        const scripts = this.props.fetchedScripts.map((script: BaseScript) => <ScriptComponent key={script.getId()} script={script}></ScriptComponent>);
         return (
             <div>
                 <div>Your active scripts</div>

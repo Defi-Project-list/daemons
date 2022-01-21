@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { BaseScript } from '../../data/script/base-script';
 import { RootState } from '../../state';
 import { fetchAllScripts } from '../../state/action-creators/script-action-creators';
+import { DisconnectedPage } from '../disconnected-page';
 import './styles.css';
 
 const QueueScriptComponent = ({ script }: { script: BaseScript; }) => (
@@ -39,10 +40,7 @@ class Queue extends Component<IQueueComponentsProps>{
 
 
     public render(): ReactNode {
-        // TODO when wallet disconnects, empty the list and show a message (improve on BRG-21)
-        if (!this.props.walletConnected) {
-            return <div>You must connect :(</div>;
-        }
+        if (!this.props.walletConnected) return <DisconnectedPage />;
 
         const scripts = this.props.fetchedScripts.map((script: BaseScript) => <QueueScriptComponent key={script.getId()} script={script}></QueueScriptComponent>);
         return (

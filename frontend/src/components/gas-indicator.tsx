@@ -4,14 +4,18 @@ import { fetchGasTankBalance } from '../state/action-creators/gas-tank-action-cr
 import { RootState } from '../state';
 
 interface IGasIndicatorProps {
-    fetchGasTankBalance: (address: string) => any;
-    balance: number | null;
+    fetchGasTankBalance: (address?: string) => any;
+    balance?: number;
     walletConnected: boolean;
     walletAddress?: string;
     walletChainId?: string;
 }
 
 class GasIndicator extends Component<IGasIndicatorProps> {
+
+    private connectionStatusChanged = (prevProps: IGasIndicatorProps) => prevProps.walletConnected != this.props.walletConnected;
+    private walletChanged = (prevProps: IGasIndicatorProps) => prevProps.walletAddress != this.props.walletAddress;
+    private chainChanged = (prevProps: IGasIndicatorProps) => prevProps.walletChainId != this.props.walletChainId;
 
     public componentDidMount() {
         if (this.props.walletAddress) {
@@ -20,6 +24,10 @@ class GasIndicator extends Component<IGasIndicatorProps> {
     }
 
     public componentDidUpdate(prevProps: IGasIndicatorProps) {
+        if (this.connectionStatusChanged(prevProps) || this.walletChanged(prevProps) || this.chainChanged(prevProps)) {
+            this.props.fetchGasTankBalance(this.props.walletAddress);
+        }
+
         // recheck balance in case the wallet address has changed
         // TODO: recheck also when chain and connection status change!
         if (prevProps.walletAddress !== this.props.walletAddress && this.props.walletAddress) {
@@ -28,7 +36,7 @@ class GasIndicator extends Component<IGasIndicatorProps> {
     }
 
     public render(): ReactNode {
-        return <div>Gas: {this.props.balance !== null ? this.props.balance : '??'} ETH</div>;
+        return <div>Gas: {this.props.balance != undefined && this.props.walletConnected ? this.props.balance : '??'} ETH</div>;
     }
 }
 

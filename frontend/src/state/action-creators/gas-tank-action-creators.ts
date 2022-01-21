@@ -5,9 +5,17 @@ import { Contracts } from '../../data/contracts';
 import { GasTankAction } from '../actions/gas-tank-actions';
 import { BigNumber } from 'ethers';
 
-export const fetchGasTankBalance = (address: string) => {
+export const fetchGasTankBalance = (address?: string) => {
 
     return async (dispatch: Dispatch<GasTankAction>) => {
+        if (!address) {
+            console.log('Address missing, balance check aborted');
+            dispatch({
+                type: ActionType.GAS_TANK_BALANCE,
+                balance: undefined,
+            });
+        }
+
         console.log('Checking balance in gas tank for', address);
         const ethers = require('ethers');
         const provider = new ethers.providers.Web3Provider((window as any).ethereum);

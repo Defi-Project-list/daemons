@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import { App } from './App';
-import { CreateScripts } from './components/create-script-page';
+import CreateScripts from './components/create-script-page';
 import GasTank from './components/gas-tank-page';
 import Queue from './components/queue-page';
 import Scripts from './components/scripts-page';
