@@ -35,6 +35,7 @@ export class StorageProxy {
             return [];
         }
 
+        console.log(`Fetching all scripts for chain ${chainId}`);
         const url = `${storageAddress}/scripts/${chainId}`;
         const response = await fetch(url);
         const json: any[] = await response.json();
@@ -47,6 +48,7 @@ export class StorageProxy {
             return [];
         }
 
+        console.log(`Fetching user ${user} scripts for chain ${chainId}`);
         const url = `${storageAddress}/scripts/${chainId}/${user}`;
         const response = await fetch(url);
         const json: any[] = await response.json();
