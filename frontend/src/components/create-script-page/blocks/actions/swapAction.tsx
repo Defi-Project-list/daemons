@@ -28,65 +28,65 @@ export class SwapAction extends SelectableBlock<ISwapActionForm> {
                     <form onSubmit={handleSubmit}>
 
                         <div className='swap-block'>
-
-                            <Field
-                                name="tokenFromAddress"
-                                component="select"
-                                className='swap-block__token'
-                                validate={this.tokenValidation}
-                            >
-                                {({ input }) => <select
-                                    {...input}
-                                    onChange={(e) => {
-                                        input.onChange(e);
-                                        this.props.blockForm.tokenFromAddress = e.target.value;
-                                    }}
-                                    onBlur={(e) => {
-                                        input.onBlur(e);
-                                        this.props.blockForm.valid = valid;
-                                    }}
+                            <div className='script-block__panel--row'>
+                                <Field
+                                    name="tokenFromAddress"
+                                    component="select"
+                                    validate={this.tokenValidation}
                                 >
-                                    <option key={0} value="" disabled ></option>
-                                    {
-                                        Tokens.Kovan.map(token => (
-                                            <option key={token.address} value={token.address}>
-                                                {token.symbol}
-                                            </option>
-                                        ))
-                                    }
-                                </select>}
-                            </Field>
+                                    {({ input }) => <select
+                                        {...input}
+                                        onChange={(e) => {
+                                            input.onChange(e);
+                                            this.props.blockForm.tokenFromAddress = e.target.value;
+                                        }}
+                                        onBlur={(e) => {
+                                            input.onBlur(e);
+                                            this.props.blockForm.valid = valid;
+                                        }}
+                                        className='swap-block__token-from-address'
+                                    >
+                                        <option key={0} value="" disabled ></option>
+                                        {
+                                            Tokens.Kovan.map(token => (
+                                                <option key={token.address} value={token.address}>
+                                                    {token.symbol}
+                                                </option>
+                                            ))
+                                        }
+                                    </select>}
+                                </Field>
 
-                            <Field
-                                name="tokenToAddress"
-                                component="select"
-                                className='swap-block__token'
-                                validate={this.tokenValidation}
-                            >
-                                {({ input }) => <select
-                                    {...input}
-                                    onChange={(e) => {
-                                        input.onChange(e);
-                                        this.props.blockForm.tokenToAddress = e.target.value;
-                                    }}
-                                    onBlur={(e) => {
-                                        input.onBlur(e);
-                                        this.props.blockForm.valid = valid;
-                                    }}
+                                <Field
+                                    name="tokenToAddress"
+                                    component="select"
+                                    validate={this.tokenValidation}
                                 >
-                                    <option key={0} value="" disabled ></option>
-                                    {
-                                        Tokens.Kovan.map(token => (
-                                            <option key={token.address} value={token.address}>
-                                                {token.symbol}
-                                            </option>
-                                        ))
-                                    }
-                                </select>}
-                            </Field>
+                                    {({ input }) => <select
+                                        {...input}
+                                        onChange={(e) => {
+                                            input.onChange(e);
+                                            this.props.blockForm.tokenToAddress = e.target.value;
+                                        }}
+                                        onBlur={(e) => {
+                                            input.onBlur(e);
+                                            this.props.blockForm.valid = valid;
+                                        }}
+                                        className='swap-block__token-to-address'
+                                    >
+                                        <option key={0} value="" disabled ></option>
+                                        {
+                                            Tokens.Kovan.map(token => (
+                                                <option key={token.address} value={token.address}>
+                                                    {token.symbol}
+                                                </option>
+                                            ))
+                                        }
+                                    </select>}
+                                </Field>
+                            </div>
 
                             <Field name="floatAmount"
-                                className='balance-block__amount'
                                 component="input"
                                 type="number"
                                 placeholder='1.00'
@@ -104,11 +104,12 @@ export class SwapAction extends SelectableBlock<ISwapActionForm> {
                                             input.onBlur(e);
                                             this.props.blockForm.valid = valid;
                                         }}
+                                        className='balance-block__amount'
                                     />
                                 }
                             </Field>
                         </div >
-                        <pre>{JSON.stringify(this.props.blockForm)}</pre>
+                        <pre>{JSON.stringify(this.props.blockForm, null, ' ')}</pre>
                     </form>
                 )}
             />

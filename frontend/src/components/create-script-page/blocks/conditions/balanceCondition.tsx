@@ -25,13 +25,12 @@ export class BalanceCondition extends SelectableBlock<IBalanceConditionForm> {
                 onSubmit={() => { /** Individual forms are not submitted */ }}
                 render={({ handleSubmit, valid }) => (
                     <form onSubmit={handleSubmit}>
-                        <div className='balance-block'>
+                        <div className='script-block__panel--row balance-block'>
 
 
                             <Field
                                 name="tokenAddress"
                                 component="select"
-                                className='balance-block__token'
                                 validate={this.tokenValidation}
                             >
                                 {({ input }) => <select
@@ -44,6 +43,7 @@ export class BalanceCondition extends SelectableBlock<IBalanceConditionForm> {
                                         input.onBlur(e);
                                         this.props.blockForm.valid = valid;
                                     }}
+                                    className='balance-block__token-address'
                                 >
                                     <option key={0} value="" disabled ></option>
                                     {
@@ -59,7 +59,6 @@ export class BalanceCondition extends SelectableBlock<IBalanceConditionForm> {
                             <Field
                                 name="comparison"
                                 component="select"
-                                className='balance-block__comparison'
                             >
                                 {({ input }) => <select
                                     {...input}
@@ -67,6 +66,7 @@ export class BalanceCondition extends SelectableBlock<IBalanceConditionForm> {
                                         input.onChange(e);
                                         this.props.blockForm.comparison = Number(e.target.value);
                                     }}
+                                    className='balance-block__comparison'
                                 >
                                     <option value={0}>&gt;</option>
                                     <option value={1}>&lt;</option>
@@ -74,7 +74,6 @@ export class BalanceCondition extends SelectableBlock<IBalanceConditionForm> {
                             </Field>
 
                             <Field name="floatAmount"
-                                className='balance-block__amount'
                                 component="input"
                                 type="number"
                                 placeholder='1.00'
@@ -92,6 +91,7 @@ export class BalanceCondition extends SelectableBlock<IBalanceConditionForm> {
                                             input.onBlur(e);
                                             this.props.blockForm.valid = valid;
                                         }}
+                                        className='balance-block__amount'
                                     />
                                 }
                             </Field>

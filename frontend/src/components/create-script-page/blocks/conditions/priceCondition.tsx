@@ -25,13 +25,12 @@ export class PriceCondition extends SelectableBlock<IPriceConditionForm> {
                 onSubmit={() => { /** Individual forms are not submitted */ }}
                 render={({ handleSubmit, valid }) => (
                     <form onSubmit={handleSubmit}>
-                        <div className='price-block'>
+                        <div className='script-block__panel--row price-block'>
 
 
                             <Field
                                 name="tokenAddress"
                                 component="select"
-                                className='price-block__token'
                                 validate={this.tokenValidation}
                             >
                                 {({ input }) => <select
@@ -44,6 +43,7 @@ export class PriceCondition extends SelectableBlock<IPriceConditionForm> {
                                         input.onBlur(e);
                                         this.props.blockForm.valid = valid;
                                     }}
+                                    className='price-block__token-address'
                                 >
                                     <option key={0} value="" disabled ></option>
                                     {
@@ -59,7 +59,6 @@ export class PriceCondition extends SelectableBlock<IPriceConditionForm> {
                             <Field
                                 name="comparison"
                                 component="select"
-                                className='price-block__comparison'
                             >
                                 {({ input }) => <select
                                     {...input}
@@ -67,6 +66,7 @@ export class PriceCondition extends SelectableBlock<IPriceConditionForm> {
                                         input.onChange(e);
                                         this.props.blockForm.comparison = Number(e.target.value);
                                     }}
+                                    className='price-block__comparison'
                                 >
                                     <option value={0}>&gt;</option>
                                     <option value={1}>&lt;</option>
@@ -74,7 +74,6 @@ export class PriceCondition extends SelectableBlock<IPriceConditionForm> {
                             </Field>
 
                             <Field name="floatValue"
-                                className='price-block__value'
                                 component="input"
                                 type="number"
                                 placeholder='1.00'
@@ -92,6 +91,7 @@ export class PriceCondition extends SelectableBlock<IPriceConditionForm> {
                                             input.onBlur(e);
                                             this.props.blockForm.valid = valid;
                                         }}
+                                        className='price-block__value'
                                     />
                                 }
                             </Field>

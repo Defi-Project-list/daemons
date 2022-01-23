@@ -36,38 +36,64 @@ export class TransferAction extends SelectableBlock<ITransferActionForm> {
 
                         <div className='transfer-block'>
 
-                            <Field
-                                name="tokenAddress"
-                                component="select"
-                                className='transfer-block__token'
-                                validate={this.tokenValidation}
-                            >
-                                {({ input }) => <select
-                                    {...input}
-                                    onChange={(e) => {
-                                        input.onChange(e);
-                                        this.props.blockForm.tokenAddress = e.target.value;
-                                    }}
-                                    onBlur={(e) => {
-                                        input.onBlur(e);
-                                        this.props.blockForm.valid = valid;
-                                    }}
+                            <div className="script-block__panel--row">
+                                <Field
+                                    name="tokenAddress"
+                                    component="select"
+                                    validate={this.tokenValidation}
                                 >
-                                    <option key={0} value="" disabled ></option>
-                                    {
-                                        Tokens.Kovan.map(token => (
-                                            <option key={token.address} value={token.address}>
-                                                {token.symbol}
-                                            </option>
-                                        ))
+                                    {({ input }) => <select
+                                        {...input}
+                                        onChange={(e) => {
+                                            input.onChange(e);
+                                            this.props.blockForm.tokenAddress = e.target.value;
+                                        }}
+                                        onBlur={(e) => {
+                                            input.onBlur(e);
+                                            this.props.blockForm.valid = valid;
+                                        }}
+                                        className='transfer-block__token-address'
+                                    >
+                                        <option key={0} value="" disabled ></option>
+                                        {
+                                            Tokens.Kovan.map(token => (
+                                                <option key={token.address} value={token.address}>
+                                                    {token.symbol}
+                                                </option>
+                                            ))
+                                        }
+                                    </select>}
+                                </Field>
+
+                                <Field name="floatAmount"
+                                    component="input"
+                                    type="number"
+                                    placeholder='1.00'
+                                    validate={this.amountValidation}
+                                >
+                                    {({ input }) =>
+                                        <input
+                                            {...input}
+                                            onChange={(e) => {
+                                                e.target.value = Number(e.target.value) < 0 ? '0' : e.target.value;
+                                                input.onChange(e);
+                                                this.props.blockForm.floatAmount = Number(e.target.value);
+                                            }}
+                                            onBlur={(e) => {
+                                                input.onBlur(e);
+                                                this.props.blockForm.valid = valid;
+                                            }}
+                                            placeholder="Amount"
+                                            className='balance-block__amount'
+                                        />
                                     }
-                                </select>}
-                            </Field>
+                                </Field>
+
+                            </div>
 
                             <Field
                                 name="destinationAddress"
                                 component="select"
-                                className='transfer-block__token'
                                 validate={this.addressValidation}
                             >
                                 {({ input }) =>
@@ -81,34 +107,14 @@ export class TransferAction extends SelectableBlock<ITransferActionForm> {
                                             input.onBlur(e);
                                             this.props.blockForm.valid = valid;
                                         }}
+                                        placeholder="Destination Address"
+                                        className='transfer-block__token'
                                     />
                                 }
                             </Field>
 
-                            <Field name="floatAmount"
-                                className='balance-block__amount'
-                                component="input"
-                                type="number"
-                                placeholder='1.00'
-                                validate={this.amountValidation}
-                            >
-                                {({ input }) =>
-                                    <input
-                                        {...input}
-                                        onChange={(e) => {
-                                            e.target.value = Number(e.target.value) < 0 ? '0' : e.target.value;
-                                            input.onChange(e);
-                                            this.props.blockForm.floatAmount = Number(e.target.value);
-                                        }}
-                                        onBlur={(e) => {
-                                            input.onBlur(e);
-                                            this.props.blockForm.valid = valid;
-                                        }}
-                                    />
-                                }
-                            </Field>
                         </div >
-                        <pre>{JSON.stringify(this.props.blockForm)}</pre>
+                        <pre>{JSON.stringify(this.props.blockForm, null, ' ')}</pre>
                     </form>
                 )}
             />

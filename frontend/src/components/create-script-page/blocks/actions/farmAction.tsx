@@ -9,18 +9,20 @@ export class FarmAction extends SelectableBlock<IFarmActionForm> {
     protected content = () => {
         return (
             <div className='farms-block'>
-                <select className='farms-block__protocol'>
-                    <option selected id='dao-option-sushi'>Sushi</option>
-                    <option id='dao-option-quickswap'>QuickSwap</option>
-                    <option id='dao-option-curve'>Curve</option>
-                    <option id='dao-option-polycat'>Polycat</option>
-                </select>
+                <div className="script-block__panel--row">
+                    <select className='farms-block__protocol'>
+                        <option selected id='dao-option-sushi'>Sushi</option>
+                        <option id='dao-option-quickswap'>QuickSwap</option>
+                        <option id='dao-option-curve'>Curve</option>
+                        <option id='dao-option-polycat'>Polycat</option>
+                    </select>
 
-                <select className='farms-block__action'>
-                    <option selected id='farm-action-option-claim'>Claim</option>
-                    <option id='farm-action-option-stake'>Stake</option> {/* Should show range */}
-                    <option id='farm-action-option-unstake'>Unstake</option> {/* Should show range */}
-                </select>
+                    <select className='farms-block__action'>
+                        <option selected id='farm-action-option-claim'>Claim</option>
+                        <option id='farm-action-option-stake'>Stake</option> {/* Should show range */}
+                        <option id='farm-action-option-unstake'>Unstake</option> {/* Should show range */}
+                    </select>
+                </div>
 
                 <select className='farms-block__pool'>
                     <option selected id='farm-pool-option-1'>USDC-USDT</option>

@@ -18,6 +18,12 @@
 
 .new-script__block-title {
     margin-bottom: 25px;
+    text-align: center;
+    font-size: 20px;
+}
+
+.new-script__step--condition .script-block__accordion {
+    padding: 0px 15px;
 }
 
 
@@ -27,6 +33,7 @@
     border: 1px solid #888;
     margin-bottom: 15px;
     width: 270px;
+    border-radius: 5px;
 }
 
 .script-block__accordion {
@@ -39,13 +46,11 @@
 }
 
 .script-block__title {
-    padding: 5px;
     line-height: 30px;
 }
 
 .script-block__selection-checkbox {
     margin-left: auto;
-    margin-right: 10px;
 }
 
 .script-block--selected .script-block__title {
@@ -53,18 +58,17 @@
 }
 
 .script-block--selected .script-block__panel {
-    padding: 10px 0;
+    padding: 15px;
+}
+
+.script-block__panel--row {
+    display: flex;
+    flex-direction: row;
+    column-gap: 10px;
 }
 
 
 /* Balance Block */
-
-.balance-block {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    column-gap: 10px;
-}
 
 .balance-block__token {
     width: 70px;
@@ -79,15 +83,12 @@
     text-align: right;
 }
 
+.balance-block .balance-block__amount {
+    width: 50%;
+}
+
 
 /* Frequency Block */
-
-.frequency-block {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    column-gap: 10px;
-}
 
 .frequency-block__time-unit {
     width: 70px;
@@ -96,4 +97,87 @@
 .frequency-block__amount {
     width: 70px;
     text-align: right;
+}
+
+.frequency-block .frequency-block__ticks {
+    width: 50%;
+    padding: 3px 7px;
+}
+
+.frequency-block .frequency-block__time-unit {
+    width: 35%;
+    padding: 5px;
+}
+
+.frequency-block .frequency-block__starting-point {
+    margin: auto 3px;
+}
+
+
+/* Price Block */
+
+.price-block .price-block__value {
+    width: 50%;
+}
+
+
+/* Transfer Block */
+
+.transfer-block .transfer-block__token-address {
+    width: 40%;
+}
+
+.transfer-block .balance-block__amount {
+    width: 60%;
+}
+
+
+/* Shared */
+
+.balance-block .balance-block__token-address,
+.price-block .price-block__token-address {
+    width: 35%;
+}
+
+.balance-block .balance-block__comparison,
+.price-block .price-block__comparison {
+    width: 15%;
+}
+
+.script-block__panel pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.swap-block .swap-block__token-from-address,
+.swap-block .swap-block__token-to-address,
+.farms-block .farms-block__protocol,
+.farms-block .farms-block__action {
+    width: 50%;
+}
+
+.swap-block .balance-block__amount,
+.transfer-block .transfer-block__token,
+.farms-block .farms-block__pool,
+.dao-block .dao-block__dao,
+.dao-block .dao-block__action {
+    width: 100%;
+    margin-top: 15px;
+    box-sizing: border-box;
+}
+
+.new-script__button {
+    padding: 10px 15px;
+    border-radius: 10px;
+    color: white;
+    border: none;
+    background-image: linear-gradient(to right, #ff748e, #f6e276);
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.new-script__button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }

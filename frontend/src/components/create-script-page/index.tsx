@@ -57,7 +57,7 @@ class CreateScripts extends Component<ICreateScriptsComponentsProps, ICreateScri
             <div className="new-script">
 
                 {/* Condition Block */}
-                <div className="new-script__step">
+                <div className="new-script__step new-script__step--condition">
                     <div className="new-script__block-title">Initial Condition</div>
                     <div onClick={this.toggleFrequencyCondition}>
                         <FrequencyCondition selected={this.state.frequencyCondition.enabled}
@@ -112,6 +112,7 @@ class CreateScripts extends Component<ICreateScriptsComponentsProps, ICreateScri
                 </div>
 
                 <button
+                    className="new-script__button"
                     disabled={
                         !this.state.actionForm.valid
                         || (this.state.balanceCondition.enabled && !this.state.balanceCondition.valid)

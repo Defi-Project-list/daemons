@@ -19,10 +19,9 @@ export class FrequencyCondition extends SelectableBlock<IFrequencyConditionForm>
                 onSubmit={() => { /** Individual forms are not submitted */ }}
                 render={({ handleSubmit, valid }) => (
                     <form onSubmit={handleSubmit}>
-                        <div className='frequency-block'>
+                        <div className='script-block__panel--row frequency-block'>
 
                             <Field name="ticks"
-                                className='frequency-block__ticks'
                                 component="input"
                                 type="number"
                                 placeholder='0'
@@ -41,6 +40,7 @@ export class FrequencyCondition extends SelectableBlock<IFrequencyConditionForm>
                                             input.onBlur(e);
                                             this.props.blockForm.valid = valid;
                                         }}
+                                        className='frequency-block__ticks'
                                     />
                                 }
                             </Field>
@@ -48,7 +48,6 @@ export class FrequencyCondition extends SelectableBlock<IFrequencyConditionForm>
                             <Field
                                 name="unit"
                                 component="select"
-                                className='frequency-block__time-unit'
                             >
                                 {({ input }) => <select
                                     {...input}
@@ -56,6 +55,7 @@ export class FrequencyCondition extends SelectableBlock<IFrequencyConditionForm>
                                         input.onChange(e);
                                         this.props.blockForm.unit = Number(e.target.value);
                                     }}
+                                    className='frequency-block__time-unit'
                                 >
                                     <option value={604800}>Seconds</option>
                                     <option value={10080}>Minutes</option>
@@ -68,7 +68,6 @@ export class FrequencyCondition extends SelectableBlock<IFrequencyConditionForm>
                             <Field
                                 name="startNow"
                                 type="checkbox"
-                                className='frequency-block__starting-point'
                             >
                                 {({ input }) => <input
                                     {...input}
@@ -76,6 +75,7 @@ export class FrequencyCondition extends SelectableBlock<IFrequencyConditionForm>
                                         input.onChange(e);
                                         this.props.blockForm.startNow = e.target.checked;
                                     }}
+                                    className='frequency-block__starting-point'
                                 />}
                             </Field>
 
