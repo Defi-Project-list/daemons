@@ -24,3 +24,7 @@ export interface IPriceConditionForm extends IScriptConditionForm {
     comparison: ComparisonType;
     floatValue: number;
 }
+
+export interface IRepetitionsConditionForm extends IScriptConditionForm {
+    amount: number;
+}

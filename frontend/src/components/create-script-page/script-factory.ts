@@ -9,7 +9,7 @@ import { IBalanceCondition, IFrequencyCondition, IMaxRepetitionsCondition, IPric
 import { ISwapAction, domain as swapDomain, types as swapTypes } from '../../../../messages/definitions/swap-action-messages';
 import { ITransferAction, domain as transferDomain, types as transferTypes } from '../../../../messages/definitions/transfer-action-messages';
 import { ISwapActionForm, ITransferActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
-import { IBalanceConditionForm, IFrequencyConditionForm, IPriceConditionForm } from './blocks/conditions/conditions-interfaces';
+import { IBalanceConditionForm, IFrequencyConditionForm, IPriceConditionForm, IRepetitionsConditionForm } from './blocks/conditions/conditions-interfaces';
 import { ICreateScriptBundle } from './i-create-script-form';
 
 type ScriptDefinition = ISwapAction | ITransferAction;
@@ -64,9 +64,7 @@ export class ScriptFactory {
         const frequencyCondition = await this.createFrequencyConditionFromForm(bundle.frequencyCondition);
         const balanceCondition = this.createBalanceConditionFromForm(bundle.balanceCondition);
         const priceCondition = this.createPriceConditionFromForm(bundle.priceCondition);
-
-        // TODO: extract repetitions from form
-        const maxRepetitions: IMaxRepetitionsCondition = { enabled: false, amount: BigNumber.from("0") };
+        const maxRepetitions = this.createRepetitionsConditionFromForm(bundle.repetitionsCondition);
 
         const swapActionForm = bundle.actionForm as ISwapActionForm;
         const tokenFrom = Tokens.Kovan.filter(token => token.address === swapActionForm.tokenFromAddress)[0];
@@ -91,9 +89,7 @@ export class ScriptFactory {
         const frequencyCondition = await this.createFrequencyConditionFromForm(bundle.frequencyCondition);
         const balanceCondition = this.createBalanceConditionFromForm(bundle.balanceCondition);
         const priceCondition = this.createPriceConditionFromForm(bundle.priceCondition);
-
-        // TODO: extract repetitions from form
-        const maxRepetitions: IMaxRepetitionsCondition = { enabled: false, amount: BigNumber.from("0") };
+        const maxRepetitions = this.createRepetitionsConditionFromForm(bundle.repetitionsCondition);
 
         const transferActionForm = bundle.actionForm as ITransferActionForm;
         const token = Tokens.Kovan.filter(token => token.address === transferActionForm.tokenAddress)[0];
@@ -172,6 +168,15 @@ export class ScriptFactory {
             value: value,
             comparison: priceCondition.comparison,
             token: token.address,
+        };
+    }
+
+    private createRepetitionsConditionFromForm(repetitionsCondition: IRepetitionsConditionForm): IMaxRepetitionsCondition {
+        return {
+            enabled: repetitionsCondition.enabled,
+            amount: repetitionsCondition.enabled
+                ? BigNumber.from(repetitionsCondition.amount)
+                : BigNumber.from(0),
         };
     }
 }

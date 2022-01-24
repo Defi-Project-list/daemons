@@ -17,6 +17,7 @@ import { RootState } from '../../state';
 import { connect } from 'react-redux';
 
 import './styles.css';
+import { RepetitionsCondition } from './blocks/conditions/repetitionsCondition';
 
 interface ICreateScriptsComponentsProps {
     walletConnected: boolean;
@@ -34,15 +35,18 @@ class CreateScripts extends Component<ICreateScriptsComponentsProps, ICreateScri
         frequencyCondition: { valid: true, enabled: false, ticks: 1, unit: FrequencyUnits.Hours, startNow: true },
         balanceCondition: { valid: false, enabled: false, comparison: ComparisonType.GreaterThan, floatAmount: 0 },
         priceCondition: { valid: false, enabled: false, comparison: ComparisonType.GreaterThan, floatValue: 0 },
+        repetitionsCondition: { valid: false, enabled: false, amount: 0 },
         actionForm: noActionForm
     };
 
     private toggleFrequencyCondition = () => { this.setState({ frequencyCondition: { ...this.state.frequencyCondition, enabled: !this.state.frequencyCondition.enabled } }); };
     private toggleBalanceCondition = () => { this.setState({ balanceCondition: { ...this.state.balanceCondition, enabled: !this.state.balanceCondition.enabled } }); };
     private togglePriceCondition = () => { this.setState({ priceCondition: { ...this.state.priceCondition, enabled: !this.state.priceCondition.enabled } }); };
-    private setFarmActionAsSelected = () => { this.setState({ actionForm: farmActionForm }); };
+    private toggleRepetitionsCondition = () => { this.setState({ repetitionsCondition: { ...this.state.repetitionsCondition, enabled: !this.state.repetitionsCondition.enabled } }); };
+
     private setSwapActionAsSelected = () => { this.setState({ actionForm: swapActionForm }); };
     private setTransferActionAsSelected = () => { this.setState({ actionForm: transferActionForm }); };
+    private setFarmActionAsSelected = () => { this.setState({ actionForm: farmActionForm }); };
     private setDaoActionAsSelected = () => { this.setState({ actionForm: daoActionForm }); };
 
     private async createAndSignScript() {
@@ -77,6 +81,12 @@ class CreateScripts extends Component<ICreateScriptsComponentsProps, ICreateScri
                             blockForm={this.state.priceCondition}
                         />
                     </div>
+                    <div onClick={this.toggleRepetitionsCondition}>
+                        <RepetitionsCondition selected={this.state.repetitionsCondition.enabled}
+                            showSelectionCheckbox={true}
+                            blockForm={this.state.repetitionsCondition}
+                        />
+                    </div>
                 </div>
 
                 {/* Separator */}
@@ -97,7 +107,7 @@ class CreateScripts extends Component<ICreateScriptsComponentsProps, ICreateScri
                             blockForm={transferActionForm}
                         />
                     </div>
-                    <div onClick={this.setFarmActionAsSelected}>
+                    {/* <div onClick={this.setFarmActionAsSelected}>
                         <FarmAction
                             selected={this.state.actionForm.action === ScriptAction.Farm}
                             blockForm={farmActionForm}
@@ -108,7 +118,7 @@ class CreateScripts extends Component<ICreateScriptsComponentsProps, ICreateScri
                             selected={this.state.actionForm.action === ScriptAction.Dao}
                             blockForm={daoActionForm}
                         />
-                    </div>
+                    </div> */}
                 </div>
 
                 <button
@@ -118,6 +128,7 @@ class CreateScripts extends Component<ICreateScriptsComponentsProps, ICreateScri
                         || (this.state.balanceCondition.enabled && !this.state.balanceCondition.valid)
                         || (this.state.frequencyCondition.enabled && !this.state.frequencyCondition.valid)
                         || (this.state.priceCondition.enabled && !this.state.priceCondition.valid)
+                        || (this.state.repetitionsCondition.enabled && !this.state.repetitionsCondition.valid)
                     }
                     onClick={async () => this.createAndSignScript()}
                 >
