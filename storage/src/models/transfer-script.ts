@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { ISignedTransferAction } from '../../../messages/definitions/transfer-action-messages';
-import { BigNumber, utils } from 'ethers';
+import { utils } from 'ethers';
 import { stringifyBigNumber } from './utils';
 
 
@@ -32,6 +32,10 @@ const transferScriptSchema = new mongoose.Schema({
         token: { type: String, required: true },
         comparison: { type: Number, required: true },
         value: { type: String, required: true, set: stringifyBigNumber },
+    },
+    repetitions: {
+        enabled: { type: Boolean, required: true },
+        amount: { type: String, required: true, set: stringifyBigNumber },
     },
 });
 

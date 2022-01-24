@@ -25,6 +25,10 @@ Triggers the action whenever the price of a certain token passes a threshold def
 
 Triggers the action every fixed amount of blocks.
 
+### Repetitions
+
+Sets a maximum amount of numbers a script can be run.
+
 
 ## Script Actions
 

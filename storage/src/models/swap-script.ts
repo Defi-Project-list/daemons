@@ -33,6 +33,10 @@ const swapScriptSchema = new mongoose.Schema({
         comparison: { type: Number, required: true },
         value: { type: String, required: true, set: stringifyBigNumber },
     },
+    repetitions: {
+        enabled: { type: Boolean, required: true },
+        amount: { type: String, required: true, set: stringifyBigNumber },
+    },
 });
 
 interface ISwapScriptDocument extends ISignedSwapAction, mongoose.Document { }
