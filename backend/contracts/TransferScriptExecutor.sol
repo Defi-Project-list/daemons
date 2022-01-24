@@ -9,7 +9,7 @@ import "./interfaces/UniswapV2.sol";
 contract TransferScriptExecutor is ConditionsChecker {
     /* ========== HASH FUNCTIONS ========== */
 
-    function hash(Transfer memory transfer) private pure returns (bytes32) {
+    function hash(Transfer calldata transfer) private pure returns (bytes32) {
         bytes32 eip712DomainHash = keccak256(
             abi.encode(
                 EIP712_DOMAIN_TYPEHASH,
@@ -41,7 +41,7 @@ contract TransferScriptExecutor is ConditionsChecker {
     /* ========== VERIFICATION FUNCTIONS ========== */
 
     function verifySignature(
-        Transfer memory message,
+        Transfer calldata message,
         bytes32 r,
         bytes32 s,
         uint8 v
@@ -55,7 +55,7 @@ contract TransferScriptExecutor is ConditionsChecker {
     }
 
     function verify(
-        Transfer memory message,
+        Transfer calldata message,
         bytes32 r,
         bytes32 s,
         uint8 v
@@ -73,7 +73,7 @@ contract TransferScriptExecutor is ConditionsChecker {
     /* ========== EXECUTION FUNCTIONS ========== */
 
     function execute(
-        Transfer memory message,
+        Transfer calldata message,
         bytes32 r,
         bytes32 s,
         uint8 v

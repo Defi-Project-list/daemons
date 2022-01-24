@@ -61,7 +61,7 @@ abstract contract ConditionsChecker is Ownable {
     /* ========== HASH FUNCTIONS ========== */
 
     /** Returns the hashed version of the balance */
-    function hashBalance(Balance memory balance)
+    function hashBalance(Balance calldata balance)
         internal
         pure
         returns (bytes32)
@@ -79,7 +79,7 @@ abstract contract ConditionsChecker is Ownable {
     }
 
     /** Returns the hashed version of the price condition */
-    function hashPrice(Price memory price) internal pure returns (bytes32) {
+    function hashPrice(Price calldata price) internal pure returns (bytes32) {
         return
             keccak256(
                 abi.encode(
@@ -93,7 +93,7 @@ abstract contract ConditionsChecker is Ownable {
     }
 
     /** Returns the hashed version of the frequency */
-    function hashFrequency(Frequency memory frequency)
+    function hashFrequency(Frequency calldata frequency)
         internal
         pure
         returns (bytes32)
@@ -110,7 +110,7 @@ abstract contract ConditionsChecker is Ownable {
     }
 
     /** Returns the hashed version of the repetitions */
-    function hashRepetitions(Repetitions memory repetitions)
+    function hashRepetitions(Repetitions calldata repetitions)
         internal
         pure
         returns (bytes32)
@@ -141,7 +141,10 @@ abstract contract ConditionsChecker is Ownable {
     }
 
     /** If the balance condition is enabled, it checks the user balance for it */
-    function verifyBalance(Balance memory balance, address user) internal view {
+    function verifyBalance(Balance calldata balance, address user)
+        internal
+        view
+    {
         if (!balance.enabled) return;
 
         ERC20 token = ERC20(balance.token);
@@ -162,7 +165,7 @@ abstract contract ConditionsChecker is Ownable {
     }
 
     /** If the price condition is enabled, it checks the token price for it */
-    function verifyPrice(Price memory price) internal view {
+    function verifyPrice(Price calldata price) internal view {
         if (!price.enabled) return;
 
         uint256 tokenPrice = priceRetriever.priceOf(price.token);
@@ -182,7 +185,7 @@ abstract contract ConditionsChecker is Ownable {
     }
 
     /** If the frequency condition is enabled, it checks whether enough blocks have been minted since the last execution */
-    function verifyFrequency(Frequency memory frequency, bytes32 id)
+    function verifyFrequency(Frequency calldata frequency, bytes32 id)
         internal
         view
     {
@@ -210,7 +213,7 @@ abstract contract ConditionsChecker is Ownable {
     }
 
     /** If the repetitions condition is enabled, it checks whether the script has reached its maximum number of executions */
-    function verifyRepetitions(Repetitions memory repetitions, bytes32 id)
+    function verifyRepetitions(Repetitions calldata repetitions, bytes32 id)
         internal
         view
     {

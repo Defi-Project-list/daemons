@@ -19,7 +19,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
 
     /* ========== HASH FUNCTIONS ========== */
 
-    function hash(Swap memory swap) private pure returns (bytes32) {
+    function hash(Swap calldata swap) private pure returns (bytes32) {
         bytes32 eip712DomainHash = keccak256(
             abi.encode(
                 EIP712_DOMAIN_TYPEHASH,
@@ -51,7 +51,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
     /* ========== VERIFICATION FUNCTIONS ========== */
 
     function verifySignature(
-        Swap memory message,
+        Swap calldata message,
         bytes32 r,
         bytes32 s,
         uint8 v
@@ -64,7 +64,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
     }
 
     function verify(
-        Swap memory message,
+        Swap calldata message,
         bytes32 r,
         bytes32 s,
         uint8 v
@@ -82,7 +82,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
     /* ========== EXECUTION FUNCTIONS ========== */
 
     function execute(
-        Swap memory message,
+        Swap calldata message,
         bytes32 r,
         bytes32 s,
         uint8 v
