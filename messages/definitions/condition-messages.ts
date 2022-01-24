@@ -49,5 +49,5 @@ export interface IMaxRepetitionsCondition {
 
 export const Repetitions = [
     { name: "enabled", type: "bool" },                    // indicates whether the condition should be checked
-    { name: "amount", type: "uint256" },                // the maximum number of times the script can be ran
+    { name: "amount", type: "uint16" },                 // the maximum number of times the script can be ran
 ];

@@ -175,7 +175,7 @@ export class ScriptFactory {
         return {
             enabled: repetitionsCondition.enabled,
             amount: repetitionsCondition.enabled
-                ? BigNumber.from(repetitionsCondition.amount)
+                ? BigNumber.from(Math.min(repetitionsCondition.amount, 65535)) // truncate to uint16
                 : BigNumber.from(0),
         };
     }
