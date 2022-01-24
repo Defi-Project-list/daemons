@@ -2,6 +2,7 @@ import { BigNumber } from 'ethers';
 import { IBalanceCondition, Balance } from './condition-messages';
 import { IPriceCondition, Price } from './condition-messages';
 import { IFrequencyCondition, Frequency } from './condition-messages';
+import { IMaxRepetitionsCondition, Repetitions } from './condition-messages';
 
 export interface ISignedSwapAction extends ISwapAction {
     signature: string;
@@ -18,6 +19,7 @@ export interface ISwapAction {
     balance: IBalanceCondition;
     frequency: IFrequencyCondition;
     price: IPriceCondition;
+    repetitions: IMaxRepetitionsCondition;
 }
 
 const Swap = [
@@ -27,10 +29,11 @@ const Swap = [
     { name: "amount", type: "uint256" },                   // the amount to swap
     { name: "user", type: "address" },                        // the user that is signing the transaction
     { name: "executor", type: "address" },                 // the executor contract this message will be sent to
-    { name: "chainId", type: "uint256" },                   // the chain in which the message was signed
+    { name: "chainId", type: "uint256" },                    // the chain in which the message was signed
     { name: "balance", type: "Balance" },                   // condition: balance
     { name: "frequency", type: "Frequency" },           // condition: frequency
     { name: "price", type: "Price" },                            // condition: balance
+    { name: "repetitions", type: "Repetitions" },        // condition: max repetitions
 ];
 
 export const domain = {
@@ -42,4 +45,5 @@ export const types = {
     Balance,
     Swap,
     Price,
+    Repetitions,
 };

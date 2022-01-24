@@ -2,6 +2,7 @@ import { BigNumber } from 'ethers';
 import { IBalanceCondition, Balance } from './condition-messages';
 import { IPriceCondition, Price } from './condition-messages';
 import { IFrequencyCondition, Frequency } from './condition-messages';
+import { IMaxRepetitionsCondition, Repetitions } from './condition-messages';
 
 export interface ISignedTransferAction extends ITransferAction {
     signature: string;
@@ -18,6 +19,7 @@ export interface ITransferAction {
     balance: IBalanceCondition;
     frequency: IFrequencyCondition;
     price: IPriceCondition;
+    repetitions: IMaxRepetitionsCondition;
 }
 
 const Transfer = [
@@ -31,6 +33,7 @@ const Transfer = [
     { name: "balance", type: "Balance" },                   // condition: balance
     { name: "frequency", type: "Frequency" },           // condition: frequency
     { name: "price", type: "Price" },                            // condition: balance
+    { name: "repetitions", type: "Repetitions" },        // condition: max repetitions
 ];
 
 export const domain = {
@@ -42,4 +45,5 @@ export const types = {
     Balance,
     Transfer,
     Price,
+    Repetitions,
 };

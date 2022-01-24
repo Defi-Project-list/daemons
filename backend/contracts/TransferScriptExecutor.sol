@@ -29,7 +29,8 @@ contract TransferScriptExecutor is ConditionsChecker {
                 transfer.chainId,
                 hashBalance(transfer.balance),
                 hashFrequency(transfer.frequency),
-                hashPrice(transfer.price)
+                hashPrice(transfer.price),
+                hashRepetitions(transfer.repetitions)
             )
         );
 
@@ -61,6 +62,7 @@ contract TransferScriptExecutor is ConditionsChecker {
     ) public view {
         verifyRevocation(message.user, message.scriptId);
         verifySignature(message, r, s, v);
+        verifyRepetitions(message.repetitions, message.scriptId);
         verifyFrequency(message.frequency, message.scriptId);
         verifyBalance(message.balance, message.user);
         verifyPrice(message.price);
@@ -78,6 +80,7 @@ contract TransferScriptExecutor is ConditionsChecker {
     ) public {
         verify(message, r, s, v);
         lastExecutions[message.scriptId] = block.number;
+        repetitionsCount[message.scriptId] += 1;
 
         // step 0 transfer the tokens to the destination
         IERC20 tokenFrom = IERC20(message.token);

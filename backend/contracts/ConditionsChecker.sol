@@ -10,6 +10,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 abstract contract ConditionsChecker is Ownable {
     mapping(bytes32 => uint256) internal lastExecutions;
+    mapping(bytes32 => uint16) internal repetitionsCount;
     mapping(address => mapping(bytes32 => bool)) private revocations;
 
     uint256 internal chainId;
@@ -108,6 +109,22 @@ abstract contract ConditionsChecker is Ownable {
             );
     }
 
+    /** Returns the hashed version of the repetitions */
+    function hashRepetitions(Repetitions memory repetitions)
+        internal
+        pure
+        returns (bytes32)
+    {
+        return
+            keccak256(
+                abi.encode(
+                    REPETITIONS_TYPEHASH,
+                    repetitions.enabled,
+                    repetitions.amount
+                )
+            );
+    }
+
     /* ========== VERIFICATION FUNCTIONS ========== */
 
     /** Checks whether the user has revoked the script execution */
@@ -189,6 +206,18 @@ abstract contract ConditionsChecker is Ownable {
         require(
             block.number > frequency.startBlock + frequency.blocks,
             "[Frequency Condition] Not enough time has passed since the start block"
+        );
+    }
+
+    /** If the repetitions condition is enabled, it checks whether the script has reached its maximum number of executions */
+    function verifyRepetitions(Repetitions memory repetitions, bytes32 id)
+        internal
+        view
+    {
+        if (!repetitions.enabled) return;
+        require(
+            repetitionsCount[id] < repetitions.amount,
+            "[Repetitions Condition] The script has reached its maximum number of executions"
         );
     }
 

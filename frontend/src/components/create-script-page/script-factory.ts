@@ -5,7 +5,7 @@ import { BaseScript } from '../../data/script/base-script';
 import { SwapScript } from '../../data/script/swap-script';
 import { TransferScript } from '../../data/script/transfer-script';
 import { Tokens } from '../../data/tokens';
-import { IBalanceCondition, IFrequencyCondition, IPriceCondition } from '../../../../messages/definitions/condition-messages';
+import { IBalanceCondition, IFrequencyCondition, IMaxRepetitionsCondition, IPriceCondition } from '../../../../messages/definitions/condition-messages';
 import { ISwapAction, domain as swapDomain, types as swapTypes } from '../../../../messages/definitions/swap-action-messages';
 import { ITransferAction, domain as transferDomain, types as transferTypes } from '../../../../messages/definitions/transfer-action-messages';
 import { ISwapActionForm, ITransferActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
@@ -65,6 +65,9 @@ export class ScriptFactory {
         const balanceCondition = this.createBalanceConditionFromForm(bundle.balanceCondition);
         const priceCondition = this.createPriceConditionFromForm(bundle.priceCondition);
 
+        // TODO: extract repetitions from form
+        const maxRepetitions: IMaxRepetitionsCondition = { enabled: false, amount: BigNumber.from("0") };
+
         const swapActionForm = bundle.actionForm as ISwapActionForm;
         const tokenFrom = Tokens.Kovan.filter(token => token.address === swapActionForm.tokenFromAddress)[0];
         const amount = utils.parseUnits(swapActionForm.floatAmount.toString(), tokenFrom.decimals);
@@ -78,6 +81,7 @@ export class ScriptFactory {
             frequency: frequencyCondition,
             balance: balanceCondition,
             price: priceCondition,
+            repetitions: maxRepetitions,
             executor: Contracts.SwapExecutor,
             chainId: BigNumber.from(42), // hardcoded as we currently only support kovan. Will be retrieved in the future
         };
@@ -87,6 +91,9 @@ export class ScriptFactory {
         const frequencyCondition = await this.createFrequencyConditionFromForm(bundle.frequencyCondition);
         const balanceCondition = this.createBalanceConditionFromForm(bundle.balanceCondition);
         const priceCondition = this.createPriceConditionFromForm(bundle.priceCondition);
+
+        // TODO: extract repetitions from form
+        const maxRepetitions: IMaxRepetitionsCondition = { enabled: false, amount: BigNumber.from("0") };
 
         const transferActionForm = bundle.actionForm as ITransferActionForm;
         const token = Tokens.Kovan.filter(token => token.address === transferActionForm.tokenAddress)[0];
@@ -101,6 +108,7 @@ export class ScriptFactory {
             frequency: frequencyCondition,
             balance: balanceCondition,
             price: priceCondition,
+            repetitions: maxRepetitions,
             executor: Contracts.TransferExecutor,
             chainId: BigNumber.from(42), // hardcoded as we currently only support kovan. Will be retrieved in the future
         };

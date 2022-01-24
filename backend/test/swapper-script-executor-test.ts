@@ -47,7 +47,11 @@ describe("SwapperScriptExecutor", function () {
             token: '',
             comparison: ComparisonType.GreaterThan,
             value: ethers.utils.parseEther("150"),
-        }
+        },
+        repetitions: {
+            enabled: false,
+            amount: BigNumber.from(0),
+        },
     };
 
     this.beforeEach(async () => {
@@ -328,5 +332,25 @@ describe("SwapperScriptExecutor", function () {
         await fooToken.approve(executor.address, ethers.utils.parseEther("0"));
 
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Allowance Condition] User did not give enough allowance to the script executor');
+    });
+
+
+    /* ========== REPETITIONS CONDITION CHECK ========== */
+
+    it('fails if the script has been executed more than the allowed repetitions', async () => {
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
+        message.repetitions.enabled = true;
+        message.repetitions.amount = BigNumber.from(2);
+        message = await initialize(message);
+
+        // let's get rich. wink.
+        await fooToken.mint(owner.address, ethers.utils.parseEther("20000000"));
+
+        // first two times it goes through
+        await executor.execute(message, sigR, sigS, sigV);
+        await executor.execute(message, sigR, sigS, sigV);
+
+        // the third time won't as it'll hit the max-repetitions limit
+        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Repetitions Condition] The script has reached its maximum number of executions');
     });
 });

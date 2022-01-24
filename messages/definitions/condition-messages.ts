@@ -41,3 +41,13 @@ export const Price = [
     { name: "comparison", type: "bytes1" },           // the comparison symbol [">", "<"]
     { name: "value", type: "uint256" },                    // the threshold that will trigger the condition
 ];
+
+export interface IMaxRepetitionsCondition {
+    enabled: boolean;
+    amount: BigNumber;
+}
+
+export const Repetitions = [
+    { name: "enabled", type: "bool" },                    // indicates whether the condition should be checked
+    { name: "amount", type: "uint256" },                // the maximum number of times the script can be ran
+];

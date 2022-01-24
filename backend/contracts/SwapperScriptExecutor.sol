@@ -39,7 +39,8 @@ contract SwapperScriptExecutor is ConditionsChecker {
                 swap.chainId,
                 hashBalance(swap.balance),
                 hashFrequency(swap.frequency),
-                hashPrice(swap.price)
+                hashPrice(swap.price),
+                hashRepetitions(swap.repetitions)
             )
         );
 
@@ -70,6 +71,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
     ) public view {
         verifyRevocation(message.user, message.scriptId);
         verifySignature(message, r, s, v);
+        verifyRepetitions(message.repetitions, message.scriptId);
         verifyFrequency(message.frequency, message.scriptId);
         verifyBalance(message.balance, message.user);
         verifyPrice(message.price);
@@ -88,6 +90,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
         verify(message, r, s, v);
         require(exchange != address(0), "Exchange address has not been set");
         lastExecutions[message.scriptId] = block.number;
+        repetitionsCount[message.scriptId] += 1;
 
         // step 0 get the tokens from the user
         IERC20 tokenFrom = IERC20(message.tokenFrom);
