@@ -145,6 +145,23 @@ describe("SwapperScriptExecutor", function () {
         expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("145"));
     });
 
+    it('swapping is cheap', async () => {
+        // At the time this test was last checked, the gas spent to
+        // execute the script was 0.000282913270269640 ETH.
+        // NOTE: the swap contract is mocked, so this measures all the rest.
+
+        const message = await initialize(baseMessage);
+        await fooToken.mint(owner.address, ethers.utils.parseEther("200"));
+
+        const initialBalance = await owner.getBalance();
+        await executor.execute(message, sigR, sigS, sigV);
+        const spentAmount = initialBalance.sub(await owner.getBalance());
+
+        const threshold = ethers.utils.parseEther("0.0003");
+        console.log("Spent for swapping:", spentAmount.toString());
+        expect(spentAmount.lte(threshold)).to.equal(true);
+    });
+
     it('sets the lastExecution value during execution', async () => {
         let message = JSON.parse(JSON.stringify(baseMessage));
 
