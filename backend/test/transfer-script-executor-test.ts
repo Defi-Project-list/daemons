@@ -140,6 +140,22 @@ describe("TransferScriptExecutor", function () {
         expect(await fooToken.balanceOf(otherWallet.address)).to.equal(ethers.utils.parseEther("145"));
     });
 
+    it('transferring is cheap', async () => {
+        // At the time this test was last checked, the gas spent to
+        // execute the script was 0.000175302855780080 ETH.
+
+        const message = await initialize(baseMessage);
+        await fooToken.mint(owner.address, ethers.utils.parseEther("200"));
+
+        const initialBalance = await owner.getBalance();
+        await executor.execute(message, sigR, sigS, sigV);
+        const spentAmount = initialBalance.sub(await owner.getBalance());
+
+        const threshold = ethers.utils.parseEther("0.0002");
+        console.log("Spent for transfer:", spentAmount.toString());
+        expect(spentAmount.lte(threshold)).to.equal(true);
+    });
+
     it('sets the lastExecution value during execution', async () => {
         let message = JSON.parse(JSON.stringify(baseMessage));
 
