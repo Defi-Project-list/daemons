@@ -11,4 +11,5 @@ export interface ICreateScriptBundle {
     priceCondition: IPriceConditionForm;
     repetitionsCondition: IRepetitionsConditionForm;
     actionForm: IScriptActionForm;
+    loading: boolean;
 }

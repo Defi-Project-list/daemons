@@ -5,9 +5,10 @@ interface ISelectableBlockProps<T> {
     selected?: boolean;
     showSelectionCheckbox?: boolean;
     blockForm: T,
+    chainId?: string;
 }
 
-export abstract class SelectableBlock<T> extends Component<ISelectableBlockProps<T>> {
+export abstract class SelectableBlock<T, S = {}> extends Component<ISelectableBlockProps<T>, S> {
 
     protected abstract title: string;
     protected abstract content: () => ReactNode;

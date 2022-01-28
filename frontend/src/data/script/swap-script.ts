@@ -1,7 +1,7 @@
 import { BigNumber, Contract } from 'ethers';
 import { ISwapAction } from '../../../../messages/definitions/swap-action-messages';
 import { getAbiFor } from '../../utils/get-abi';
-import { Tokens } from '../tokens';
+import { StorageProxy } from '../storage-proxy';
 import { BaseScript } from './base-script';
 
 
@@ -14,8 +14,8 @@ export class SwapScript extends BaseScript {
     public getMessage = () => this.message;
     public getUser = () => this.message.user;
     public getId = () => this.message.scriptId;
-    public getDescription(): string {
-        const tokens = Tokens.Kovan;
+    public async getDescription(): Promise<string> {
+        const tokens = await StorageProxy.fetchTokens(this.message.chainId.toString());
         const tokenFrom = tokens.filter(t => t.address === this.message.tokenFrom)[0];
         const tokenTo = tokens.filter(t => t.address === this.message.tokenTo)[0];
         const amount = this.message.amount.div(BigNumber.from(10).pow(BigNumber.from(tokenFrom.decimals - 2))).toNumber() / 100;

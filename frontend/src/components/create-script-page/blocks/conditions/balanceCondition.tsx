@@ -2,9 +2,17 @@ import React from 'react';
 import { SelectableBlock } from '../baseBlock';
 import { IBalanceConditionForm } from './conditions-interfaces';
 import { Form, Field } from 'react-final-form';
-import { Tokens } from '../../../../data/tokens';
+import { IToken } from '../../../../data/tokens';
+import { StorageProxy } from '../../../../data/storage-proxy';
 
-export class BalanceCondition extends SelectableBlock<IBalanceConditionForm> {
+interface IBalanceActionState {
+    tokens?: IToken[];
+}
+export class BalanceCondition extends SelectableBlock<IBalanceConditionForm, IBalanceActionState> {
+
+    componentDidMount() {
+        this.fetchTokens();
+    }
 
     private tokenValidation = (value: string) => {
         if (!value || value === '') return 'required';
@@ -15,6 +23,13 @@ export class BalanceCondition extends SelectableBlock<IBalanceConditionForm> {
         if (!value || value === '') return 'required';
         if (Number(value) <= 0) return 'required > 0';
         return undefined;
+    };
+
+    fetchTokens = async () => {
+        const tokens = await StorageProxy.fetchTokens(this.props.chainId);
+        this.setState({
+            tokens: tokens
+        });
     };
 
     protected title: string = "Wallet Balance";
@@ -47,7 +62,7 @@ export class BalanceCondition extends SelectableBlock<IBalanceConditionForm> {
                                 >
                                     <option key={0} value="" disabled ></option>
                                     {
-                                        Tokens.Kovan.map(token => (
+                                        this.state.tokens && this.state.tokens.map(token => (
                                             <option key={token.address} value={token.address}>
                                                 {token.symbol}
                                             </option>

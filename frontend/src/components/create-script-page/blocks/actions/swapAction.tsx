@@ -2,10 +2,18 @@ import React from 'react';
 import { SelectableBlock } from '../baseBlock';
 import { ISwapActionForm } from './actions-interfaces';
 import { Form, Field } from 'react-final-form';
-import { Tokens } from '../../../../data/tokens';
+import { StorageProxy } from '../../../../data/storage-proxy';
+import { IToken } from '../../../../data/tokens';
 
+interface ISwapActionState {
+    tokens?: IToken[];
+}
 
-export class SwapAction extends SelectableBlock<ISwapActionForm> {
+export class SwapAction extends SelectableBlock<ISwapActionForm, ISwapActionState> {
+
+    componentDidMount() {
+        this.fetchTokens();
+    }
 
     private amountValidation = (value: string) => {
         if (!value || value === '') return 'required';
@@ -16,6 +24,13 @@ export class SwapAction extends SelectableBlock<ISwapActionForm> {
     private tokenValidation = (value: string) => {
         if (!value || value === '') return 'required';
         return undefined;
+    };
+
+    fetchTokens = async () => {
+        const tokens = await StorageProxy.fetchTokens(this.props.chainId);
+        this.setState({
+            tokens: tokens
+        });
     };
 
     protected title: string = "Swap";
@@ -48,7 +63,7 @@ export class SwapAction extends SelectableBlock<ISwapActionForm> {
                                     >
                                         <option key={0} value="" disabled ></option>
                                         {
-                                            Tokens.Kovan.map(token => (
+                                            this.state.tokens && this.state.tokens.map(token => (
                                                 <option key={token.address} value={token.address}>
                                                     {token.symbol}
                                                 </option>
@@ -76,7 +91,7 @@ export class SwapAction extends SelectableBlock<ISwapActionForm> {
                                     >
                                         <option key={0} value="" disabled ></option>
                                         {
-                                            Tokens.Kovan.map(token => (
+                                            this.state.tokens && this.state.tokens.map(token => (
                                                 <option key={token.address} value={token.address}>
                                                     {token.symbol}
                                                 </option>

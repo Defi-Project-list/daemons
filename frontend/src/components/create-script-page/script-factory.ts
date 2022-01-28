@@ -1,16 +1,17 @@
-import { BigNumber, FixedNumber, utils } from 'ethers';
+import { BigNumber, utils } from 'ethers';
 import { ChainInfo, ZeroAddress } from '../../data/chain-info';
 import { Contracts } from '../../data/contracts';
 import { BaseScript } from '../../data/script/base-script';
 import { SwapScript } from '../../data/script/swap-script';
 import { TransferScript } from '../../data/script/transfer-script';
-import { Tokens } from '../../data/tokens';
 import { IBalanceCondition, IFrequencyCondition, IMaxRepetitionsCondition, IPriceCondition } from '../../../../messages/definitions/condition-messages';
 import { ISwapAction, domain as swapDomain, types as swapTypes } from '../../../../messages/definitions/swap-action-messages';
 import { ITransferAction, domain as transferDomain, types as transferTypes } from '../../../../messages/definitions/transfer-action-messages';
 import { ISwapActionForm, ITransferActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
 import { IBalanceConditionForm, IFrequencyConditionForm, IPriceConditionForm, IRepetitionsConditionForm } from './blocks/conditions/conditions-interfaces';
 import { ICreateScriptBundle } from './i-create-script-form';
+import { StorageProxy } from '../../data/storage-proxy';
+import { IToken } from '../../data/tokens';
 
 type ScriptDefinition = ISwapAction | ITransferAction;
 
@@ -29,11 +30,20 @@ export class ScriptFactory {
     private readonly ethers: any;
     private readonly provider: any;
     private readonly signer: any;
+    private readonly tokens: IToken[];
+    private readonly chainId: string;
 
-    public constructor() {
+    public static async build(chainId: string): Promise<ScriptFactory> {
+        const tokens = await StorageProxy.fetchTokens(chainId);
+        return new ScriptFactory(chainId, tokens);
+    }
+
+    private constructor(chainId: string, tokens: IToken[]) {
         this.ethers = require('ethers');
         this.provider = new this.ethers.providers.Web3Provider((window as any).ethereum, "any");
         this.signer = this.provider.getSigner();
+        this.tokens = tokens;
+        this.chainId = chainId;
     }
 
     public async SubmitScriptsForSignature(bundle: ICreateScriptBundle): Promise<BaseScript> {
@@ -67,7 +77,7 @@ export class ScriptFactory {
         const maxRepetitions = this.createRepetitionsConditionFromForm(bundle.repetitionsCondition);
 
         const swapActionForm = bundle.actionForm as ISwapActionForm;
-        const tokenFrom = Tokens.Kovan.filter(token => token.address === swapActionForm.tokenFromAddress)[0];
+        const tokenFrom = this.tokens.filter(token => token.address === swapActionForm.tokenFromAddress)[0];
         const amount = utils.parseUnits(swapActionForm.floatAmount.toString(), tokenFrom.decimals);
 
         return {
@@ -81,7 +91,7 @@ export class ScriptFactory {
             price: priceCondition,
             repetitions: maxRepetitions,
             executor: Contracts.SwapExecutor,
-            chainId: BigNumber.from(42), // hardcoded as we currently only support kovan. Will be retrieved in the future
+            chainId: BigNumber.from(this.chainId),
         };
     }
 
@@ -92,7 +102,7 @@ export class ScriptFactory {
         const maxRepetitions = this.createRepetitionsConditionFromForm(bundle.repetitionsCondition);
 
         const transferActionForm = bundle.actionForm as ITransferActionForm;
-        const token = Tokens.Kovan.filter(token => token.address === transferActionForm.tokenAddress)[0];
+        const token = this.tokens.filter(token => token.address === transferActionForm.tokenAddress)[0];
         const amount = utils.parseUnits(transferActionForm.floatAmount.toString(), token.decimals);
 
         return {
@@ -106,7 +116,7 @@ export class ScriptFactory {
             price: priceCondition,
             repetitions: maxRepetitions,
             executor: Contracts.TransferExecutor,
-            chainId: BigNumber.from(42), // hardcoded as we currently only support kovan. Will be retrieved in the future
+            chainId: BigNumber.from(this.chainId),
         };
     }
 
@@ -141,7 +151,7 @@ export class ScriptFactory {
             token: ZeroAddress,
         };
 
-        const token = Tokens.Kovan.filter(token => token.address === balanceCondition.tokenAddress)[0];
+        const token = this.tokens.filter(token => token.address === balanceCondition.tokenAddress)[0];
         const amount = utils.parseUnits(balanceCondition.floatAmount.toString(), token.decimals);
 
         return {
@@ -160,7 +170,7 @@ export class ScriptFactory {
             token: ZeroAddress,
         };
 
-        const token = Tokens.Kovan.filter(token => token.address === priceCondition.tokenAddress)[0];
+        const token = this.tokens.filter(token => token.address === priceCondition.tokenAddress)[0];
         const value = utils.parseUnits(priceCondition.floatValue.toString(), token.decimals);
 
         return {

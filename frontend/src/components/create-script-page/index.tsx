@@ -21,6 +21,7 @@ import { RepetitionsCondition } from './blocks/conditions/repetitionsCondition';
 
 interface ICreateScriptsComponentsProps {
     walletConnected: boolean;
+    chainId?: string;
 }
 
 const noActionForm: INoActionForm = { action: ScriptAction.None, valid: false };
@@ -36,7 +37,8 @@ class CreateScripts extends Component<ICreateScriptsComponentsProps, ICreateScri
         balanceCondition: { valid: false, enabled: false, comparison: ComparisonType.GreaterThan, floatAmount: 0 },
         priceCondition: { valid: false, enabled: false, comparison: ComparisonType.GreaterThan, floatValue: 0 },
         repetitionsCondition: { valid: false, enabled: false, amount: 0 },
-        actionForm: noActionForm
+        actionForm: noActionForm,
+        loading: true
     };
 
     private toggleFrequencyCondition = () => { this.setState({ frequencyCondition: { ...this.state.frequencyCondition, enabled: !this.state.frequencyCondition.enabled } }); };
@@ -49,13 +51,25 @@ class CreateScripts extends Component<ICreateScriptsComponentsProps, ICreateScri
     private setFarmActionAsSelected = () => { this.setState({ actionForm: farmActionForm }); };
     private setDaoActionAsSelected = () => { this.setState({ actionForm: daoActionForm }); };
 
+    async componentDidUpdate(prevProps: ICreateScriptsComponentsProps) {
+        if (this.props.chainId !== prevProps.chainId) {
+            await StorageProxy.fetchTokens(this.props.chainId);
+            this.setState({ loading: false });
+        }
+    }
+
     private async createAndSignScript() {
-        const script = await new ScriptFactory().SubmitScriptsForSignature(this.state);
+        if (!this.props.chainId) throw new Error("Cannot create the script! The chain is unknown");
+
+        const scriptFactory = await ScriptFactory.build(this.props.chainId);
+        const script = await scriptFactory.SubmitScriptsForSignature(this.state);
         StorageProxy.saveScript(script);
     }
 
     public render(): ReactNode {
         if (!this.props.walletConnected) return <DisconnectedPage />;
+
+        if (this.state.loading) return <div>Loading...</div>;
 
         return (
             <div className="new-script">
@@ -73,12 +87,14 @@ class CreateScripts extends Component<ICreateScriptsComponentsProps, ICreateScri
                         <BalanceCondition selected={this.state.balanceCondition.enabled}
                             showSelectionCheckbox={true}
                             blockForm={this.state.balanceCondition}
+                            chainId={this.props.chainId}
                         />
                     </div>
                     <div onClick={this.togglePriceCondition}>
                         <PriceCondition selected={this.state.priceCondition.enabled}
                             showSelectionCheckbox={true}
                             blockForm={this.state.priceCondition}
+                            chainId={this.props.chainId}
                         />
                     </div>
                     <div onClick={this.toggleRepetitionsCondition}>
@@ -99,12 +115,14 @@ class CreateScripts extends Component<ICreateScriptsComponentsProps, ICreateScri
                         <SwapAction
                             selected={this.state.actionForm.action === ScriptAction.Swap}
                             blockForm={swapActionForm}
+                            chainId={this.props.chainId}
                         />
                     </div>
                     <div onClick={this.setTransferActionAsSelected}>
                         <TransferAction
                             selected={this.state.actionForm.action === ScriptAction.Transfer}
                             blockForm={transferActionForm}
+                            chainId={this.props.chainId}
                         />
                     </div>
                     {/* <div onClick={this.setFarmActionAsSelected}>
@@ -143,6 +161,7 @@ class CreateScripts extends Component<ICreateScriptsComponentsProps, ICreateScri
 
 const mapStateToProps: (state: RootState) => ICreateScriptsComponentsProps = state => ({
     walletConnected: state.wallet.connected,
+    chainId: state.wallet.chainId,
 });
 
 export default connect(mapStateToProps)(CreateScripts);
