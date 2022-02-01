@@ -1,16 +1,20 @@
 import React, { Component, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { BaseScript } from '../../data/script/base-script';
+import { StorageProxy } from '../../data/storage-proxy';
 import { RootState } from '../../state';
 import { fetchUserScripts } from '../../state/action-creators/script-action-creators';
 import { DisconnectedPage } from '../disconnected-page';
 import './styles.css';
 
-const ScriptComponent = ({ script }: { script: BaseScript; }) => (
+const ScriptComponent = ({ script, fetchScripts }: { script: BaseScript; fetchScripts: () => Promise<void>; }) => (
     <div className="script">
         <div className="script__description">{script.getDescription()}</div>
         <div className="script__actions">
-            <button className='script__button'>Revoke</button>
+            <button onClick={async () => {
+                await script.revoke();
+                await fetchScripts();
+            }} className='script__button'>Revoke</button>
             <button onClick={async () => alert(await script.verify())} className='script__button'>Verify</button>
             <button onClick={async () => alert(await script.execute())} className='script__button'>Execute</button>
         </div>
@@ -39,7 +43,13 @@ class Scripts extends Component<IScriptsComponentsProps> {
     public render(): ReactNode {
         if (!this.props.walletConnected) return <DisconnectedPage />;
 
-        const scripts = this.props.fetchedScripts.map((script: BaseScript) => <ScriptComponent key={script.getId()} script={script}></ScriptComponent>);
+        const scripts = this.props.fetchedScripts.map((script: BaseScript) => (
+            <ScriptComponent
+                key={script.getId()}
+                script={script}
+                fetchScripts={() => this.props.fetchScripts(this.props.walletChainId, this.props.walletAddress)}
+            />
+        ));
         return (
             <div>
                 <div>Your active scripts</div>

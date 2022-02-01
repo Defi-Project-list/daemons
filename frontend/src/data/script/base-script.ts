@@ -1,5 +1,6 @@
 import { BigNumber, ethers } from 'ethers';
 import { Contract } from 'ethers';
+import { StorageProxy } from '../storage-proxy';
 
 export abstract class BaseScript {
 
@@ -15,7 +16,6 @@ export abstract class BaseScript {
     public async verify(): Promise<string> {
         const executor = await this.getExecutor();
         const message = this.getMessage();
-        let tx: any;
         try {
             await executor.verify(message, this.R, this.S, this.V);
             return "Verified!";
@@ -35,7 +35,19 @@ export abstract class BaseScript {
     }
 
     public async revoke(): Promise<void> {
-        throw new Error("Not implemented yet");
+        alert("Do not leave the site until tx is successful to be sure the script is removed");
+        const executor = await this.getExecutor();
+        try {
+            // add "are you sure you want to leave" message
+            window.onbeforeunload = () => true;
+            const tx = await executor.revoke(this.getId());
+            await tx.wait();
+            await StorageProxy.revokeScript(this.getId(), this.ScriptType);
+            // remove "are you sure you want to leave" message
+            window.onbeforeunload = null;
+        } catch (error: any) {
+            throw error;
+        }
     }
 
     public abstract readonly ScriptType: string;

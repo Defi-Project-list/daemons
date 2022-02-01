@@ -68,3 +68,22 @@ scriptsRouter.post('/swap', async (req: Request, res: Response) => {
         return res.status(400).send(error);
     }
 });
+
+scriptsRouter.post('/revoke', async (req: Request, res: Response) => {
+    const { scriptId, scriptType } = req.body;
+
+    try {
+        switch (scriptType) {
+            case "SwapScript":
+                await SwapScript.deleteOne({ scriptId: scriptId });
+                return res.send();
+            case "TransferScript":
+                await TransferScript.deleteOne({ scriptId: scriptId });
+                return res.send();
+            default:
+                return res.status(400).send(`Unsupported script type ${scriptType}`);
+        }
+    } catch (error) {
+        return res.status(400).send(error);
+    }
+});

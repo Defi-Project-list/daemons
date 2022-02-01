@@ -79,6 +79,19 @@ export class StorageProxy {
         }
     }
 
+
+    public static async revokeScript(scriptId: string, scriptType: string): Promise<void> {
+        console.log(`Revoking script ${scriptId}`);
+        const url = `${storageAddress}/scripts/revoke`;
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ scriptId, scriptType }),
+        };
+
+        await fetch(url, requestOptions);
+    }
+
     // Tokens
     private static cachedTokens: { [chainId: string]: Token[]; } = {};
 
