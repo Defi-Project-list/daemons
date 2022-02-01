@@ -46,7 +46,6 @@ contract TransferScriptExecutor is ConditionsChecker {
         bytes32 s,
         uint8 v
     ) private view {
-        console.log("CHAIN", chainId);
         require(message.chainId == chainId, "Wrong chain");
         require(
             message.user == ecrecover(hash(message), v, r, s),
@@ -62,6 +61,12 @@ contract TransferScriptExecutor is ConditionsChecker {
     ) public view {
         verifyRevocation(message.user, message.scriptId);
         verifySignature(message, r, s, v);
+
+        require(
+            ERC20(message.token).balanceOf(message.user) > message.amount - 1,
+            "User doesn't have enough balance"
+        );
+
         verifyRepetitions(message.repetitions, message.scriptId);
         verifyFrequency(message.frequency, message.scriptId);
         verifyBalance(message.balance, message.user);

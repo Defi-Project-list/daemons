@@ -83,6 +83,9 @@ describe("TransferScriptExecutor", function () {
 
         // Grant allowance
         await fooToken.approve(executor.address, ethers.utils.parseEther("500"));
+
+        // Generate balance
+        await fooToken.mint(owner.address, baseMessage.amount);
     });
 
     async function initialize(baseMessage: ITransferAction): Promise<ITransferAction> {
@@ -130,10 +133,11 @@ describe("TransferScriptExecutor", function () {
     it('transfers the tokens', async () => {
         let message = JSON.parse(JSON.stringify(baseMessage));
         message = await initialize(message);
-        await fooToken.mint(owner.address, ethers.utils.parseEther("200"));
+        await fooToken.mint(owner.address, ethers.utils.parseEther("55"));
 
         await executor.execute(message, sigR, sigS, sigV);
 
+        // check post-balance. Note that 145 were generated during initialization
         expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("55"));
 
         // the destination got his tokens
@@ -169,6 +173,17 @@ describe("TransferScriptExecutor", function () {
 
         // the second one fails as not enough blocks have passed
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Frequency Condition] Not enough time has passed since the last execution');
+    });
+
+
+    /* ========== ACTION INTRINSIC CHECK ========== */
+
+    it("fails if the user doesn't have enough balance, even tho the balance condition was not set", async () => {
+        let message = JSON.parse(JSON.stringify(baseMessage));
+        message.amount = ethers.utils.parseEther("9999"); // setting an amount higher than the user's balance
+        message = await initialize(message);
+
+        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith("User doesn't have enough balance");
     });
 
     /* ========== REVOCATION CONDITION CHECK ========== */

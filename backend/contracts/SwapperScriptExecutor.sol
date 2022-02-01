@@ -71,6 +71,11 @@ contract SwapperScriptExecutor is ConditionsChecker {
     ) public view {
         verifyRevocation(message.user, message.scriptId);
         verifySignature(message, r, s, v);
+        require(
+            ERC20(message.tokenFrom).balanceOf(message.user) >
+                message.amount - 1,
+            "User doesn't have enough balance"
+        );
         verifyRepetitions(message.repetitions, message.scriptId);
         verifyFrequency(message.frequency, message.scriptId);
         verifyBalance(message.balance, message.user);
