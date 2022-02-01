@@ -56,14 +56,14 @@ export class ScriptFactory {
                     domain: swapDomain,
                     types: swapTypes
                 };
-                return new SwapScript(swapMessage.script, await getSignature(swapMessage));
+                return await SwapScript.build(swapMessage.script, await getSignature(swapMessage));
             case ScriptAction.Transfer:
                 const transferMessage = {
                     script: await this.createTransferScript(bundle),
                     domain: transferDomain,
                     types: transferTypes
                 };
-                return new TransferScript(transferMessage.script, await getSignature(transferMessage));
+                return await TransferScript.build(transferMessage.script, await getSignature(transferMessage));
             default:
                 throw new Error("Not implemented");
         }

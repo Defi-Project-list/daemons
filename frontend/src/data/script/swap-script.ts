@@ -2,22 +2,30 @@ import { BigNumber, Contract } from 'ethers';
 import { ISwapAction } from '../../../../messages/definitions/swap-action-messages';
 import { getAbiFor } from '../../utils/get-abi';
 import { StorageProxy } from '../storage-proxy';
+import { IToken } from '../tokens';
 import { BaseScript } from './base-script';
 
 
 export class SwapScript extends BaseScript {
-    public constructor(private readonly message: ISwapAction, signature: string) {
+    private readonly tokens: IToken[];
+
+    public static async build(message: ISwapAction, signature: string): Promise<SwapScript> {
+        const tokens = await StorageProxy.fetchTokens(message.chainId.toString());
+        return new SwapScript(message, signature, tokens);
+    }
+
+    private constructor(private readonly message: ISwapAction, signature: string, tokens: IToken[]) {
         super(signature);
+        this.tokens = tokens;
     }
 
     public readonly ScriptType = "SwapScript";
     public getMessage = () => this.message;
     public getUser = () => this.message.user;
     public getId = () => this.message.scriptId;
-    public async getDescription(): Promise<string> {
-        const tokens = await StorageProxy.fetchTokens(this.message.chainId.toString());
-        const tokenFrom = tokens.filter(t => t.address === this.message.tokenFrom)[0];
-        const tokenTo = tokens.filter(t => t.address === this.message.tokenTo)[0];
+    public getDescription(): string {
+        const tokenFrom = this.tokens.filter(t => t.address === this.message.tokenFrom)[0];
+        const tokenTo = this.tokens.filter(t => t.address === this.message.tokenTo)[0];
         const amount = this.message.amount.div(BigNumber.from(10).pow(BigNumber.from(tokenFrom.decimals - 2))).toNumber() / 100;
         return `Swap ${amount} ${tokenFrom.symbol} for ${tokenTo.symbol}`;
     }
@@ -32,7 +40,7 @@ export class SwapScript extends BaseScript {
         return new ethers.Contract(contractAddress, contractAbi, signer);
     }
 
-    public static fromStorageJson(object: any) {
+    public static async fromStorageJson(object: any) {
         const message: ISwapAction = object;
 
         // complex objects are broken down and need to be recreated. Sigh.
@@ -44,6 +52,6 @@ export class SwapScript extends BaseScript {
         message.frequency.startBlock = BigNumber.from(object.frequency.startBlock);
         message.repetitions.amount = BigNumber.from(object.repetitions.amount);
 
-        return new SwapScript(message, object.signature);
+        return await SwapScript.build(message, object.signature);
     }
 }

@@ -42,7 +42,12 @@ export class StorageProxy {
         const url = `${storageAddress}/scripts/${chainId}`;
         const response = await fetch(url);
         const json: any[] = await response.json();
-        return json.map(StorageProxy.parseScript);
+        const scripts: BaseScript[] = [];
+        for (const script of json) {
+            scripts.push(await StorageProxy.parseScript(script));
+        }
+
+        return scripts;
     }
 
     public static async fetchUserScripts(chainId?: string, user?: string): Promise<BaseScript[]> {
@@ -55,15 +60,20 @@ export class StorageProxy {
         const url = `${storageAddress}/scripts/${chainId}/${user}`;
         const response = await fetch(url);
         const json: any[] = await response.json();
-        return json.map(StorageProxy.parseScript);
+        const scripts: BaseScript[] = [];
+        for (const script of json) {
+            scripts.push(await StorageProxy.parseScript(script));
+        }
+
+        return scripts;
     }
 
-    private static parseScript(script: any): BaseScript {
+    private static async parseScript(script: any): Promise<BaseScript> {
         switch (script.type) {
             case 'SwapScript':
-                return SwapScript.fromStorageJson(script);
+                return await SwapScript.fromStorageJson(script);
             case 'TransferScript':
-                return TransferScript.fromStorageJson(script);
+                return await TransferScript.fromStorageJson(script);
             default:
                 throw new Error("Unsupported script type: " + script.ScriptType);
         }

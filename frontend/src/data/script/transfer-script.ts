@@ -4,20 +4,27 @@ import { ITransferAction } from '../../../../messages/definitions/transfer-actio
 import { getAbiFor } from '../../utils/get-abi';
 import { StorageProxy } from '../storage-proxy';
 import { BaseScript } from './base-script';
-
+import { IToken } from '../tokens';
 
 export class TransferScript extends BaseScript {
-    public constructor(private readonly message: ITransferAction, signature: string) {
+    private readonly tokens: IToken[];
+
+    public static async build(message: ITransferAction, signature: string): Promise<TransferScript> {
+        const tokens = await StorageProxy.fetchTokens(message.chainId.toString());
+        return new TransferScript(message, signature, tokens);
+    }
+
+    private constructor(private readonly message: ITransferAction, signature: string, tokens: IToken[]) {
         super(signature);
+        this.tokens = tokens;
     }
 
     public readonly ScriptType = "TransferScript";
     public getMessage = () => this.message;
     public getUser = () => this.message.user;
     public getId = () => this.message.scriptId;
-    public async getDescription(): Promise<string> {
-        const tokens = await StorageProxy.fetchTokens(this.message.chainId.toString());
-        const token = tokens.filter(t => t.address === this.message.token)[0];
+    public getDescription(): string {
+        const token = this.tokens.filter(t => t.address === this.message.token)[0];
         const amount = this.message.amount.div(BigNumber.from(10).pow(BigNumber.from(token.decimals - 2))).toNumber() / 100;
         return `Transfer ${amount} ${token.symbol} to ${this.message.destination.substr(0, 8) + "..."}`;
     }
@@ -32,7 +39,7 @@ export class TransferScript extends BaseScript {
         return new ethers.Contract(contractAddress, contractAbi, signer);
     }
 
-    public static fromStorageJson(object: any) {
+    public static async fromStorageJson(object: any) {
         const message: ITransferAction = object;
 
         // complex objects are broken down and need to be recreated. Sigh.
@@ -44,6 +51,6 @@ export class TransferScript extends BaseScript {
         message.frequency.startBlock = BigNumber.from(object.frequency.startBlock);
         message.repetitions.amount = BigNumber.from(object.repetitions?.amount);
 
-        return new TransferScript(message, object.signature);
+        return await TransferScript.build(message, object.signature);
     }
 }
