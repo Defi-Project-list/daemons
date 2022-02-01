@@ -51,9 +51,19 @@ class CreateScripts extends Component<ICreateScriptsComponentsProps, ICreateScri
     private setFarmActionAsSelected = () => { this.setState({ actionForm: farmActionForm }); };
     private setDaoActionAsSelected = () => { this.setState({ actionForm: daoActionForm }); };
 
+    async componentDidMount() {
+        await this.setCacheTokens();
+    }
+
     async componentDidUpdate(prevProps: ICreateScriptsComponentsProps) {
         if (this.props.chainId !== prevProps.chainId) {
-            await StorageProxy.fetchTokens(this.props.chainId);
+            await this.setCacheTokens();
+        }
+    }
+
+    private async setCacheTokens() {
+        const tokens = await StorageProxy.fetchTokens(this.props.chainId);
+        if (tokens.length > 0) {
             this.setState({ loading: false });
         }
     }
