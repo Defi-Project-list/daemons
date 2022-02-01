@@ -14,7 +14,6 @@ interface IGasTankComponentsProps {
     balance?: number;
     walletConnected: boolean;
     walletAddress?: string;
-    walletChainId?: string;
 }
 
 class GasTank extends Component<IGasTankComponentsProps> {
@@ -178,7 +177,6 @@ const mapStateToProps: (state: RootState) => IGasTankComponentsProps = state => 
     balance: state.gasTank.balance,
     walletConnected: state.wallet.connected,
     walletAddress: state.wallet.address,
-    walletChainId: state.wallet.chainId,
 });
 
 export default connect(mapStateToProps, { fetchGasTankBalance })(GasTank);
