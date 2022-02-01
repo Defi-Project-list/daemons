@@ -1,22 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ConnectWalletButton } from './components/connect-wallet';
 import { MetaMaskProvider } from "metamask-react";
 import { Link } from 'react-router-dom';
 import logo from './assets/logo.png';
-import { Provider } from 'react-redux';
-import { store } from './state';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from './state';
 import GasIndicator from './components/gas-indicator';
-
+import { fetchUserScripts } from './state/action-creators/script-action-creators';
+import { fetchGasTankBalance } from './state/action-creators/gas-tank-action-creators';
 import "./app.css";
 
+
 export const App = ({ children }: { children: any; }) => {
+    // redux
+    const dispatch = useDispatch();
+    const chainId: string | undefined = useSelector((state: RootState) => state.wallet.chainId);
+    const walletAddress: string | undefined = useSelector((state: RootState) => state.wallet.address);
+
+    // menu selection classes
     const queueLinkClassName = `menu__entry ${document.location.href.endsWith('/queue') ? 'menu__entry--selected' : ''}`;
     const newScriptLinkClassName = `menu__entry ${document.location.href.endsWith('/new-script') ? 'menu__entry--selected' : ''}`;
     const gasTankLinkClassName = `menu__entry ${document.location.href.endsWith('/gas-tank') ? 'menu__entry--selected' : ''}`;
     const scriptsLinkClassName = `menu__entry ${document.location.href.endsWith('/') || document.location.href.endsWith('/scripts') ? 'menu__entry--selected' : ''}`;
 
+    useEffect(() => {
+        // reload the user scripts and balance each time the chain or the address change
+        dispatch(fetchUserScripts(chainId, walletAddress));
+        dispatch(fetchGasTankBalance(walletAddress));
+    }, [chainId, walletAddress]);
+
     return (
-        <Provider store={store}>
+        <div>
             <div className="header">
                 <img src={logo} alt='Balrog logo' className="page-logo" />
                 <div className="menu">
@@ -34,6 +48,6 @@ export const App = ({ children }: { children: any; }) => {
             <div className="page">
                 {children}
             </div>
-        </Provider>
+        </div>
     );
 };

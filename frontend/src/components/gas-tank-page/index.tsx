@@ -22,20 +22,6 @@ class GasTank extends Component<IGasTankComponentsProps> {
         toggleDeposit: true
     };
 
-    public componentDidMount() {
-        if (this.props.walletAddress) {
-            this.props.fetchGasTankBalance(this.props.walletAddress);
-        }
-    }
-
-    public componentDidUpdate(prevProps: IGasTankComponentsProps) {
-        // recheck balance in case the wallet address has changed
-        // TODO: recheck also when chain and connection status change!
-        if (prevProps.walletAddress !== this.props.walletAddress && this.props.walletAddress) {
-            this.props.fetchGasTankBalance(this.props.walletAddress);
-        }
-    }
-
     private getGasTankContract = async () => {
         const ethers = require('ethers');
         const provider = new ethers.providers.Web3Provider((window as any).ethereum);

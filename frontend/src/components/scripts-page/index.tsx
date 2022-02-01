@@ -1,7 +1,6 @@
 import React, { Component, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { BaseScript } from '../../data/script/base-script';
-import { StorageProxy } from '../../data/storage-proxy';
 import { RootState } from '../../state';
 import { fetchUserScripts } from '../../state/action-creators/script-action-creators';
 import { DisconnectedPage } from '../disconnected-page';
@@ -30,15 +29,6 @@ interface IScriptsComponentsProps {
 }
 
 class Scripts extends Component<IScriptsComponentsProps> {
-    componentDidMount() {
-        this.props.fetchScripts(this.props.walletChainId, this.props.walletAddress);
-    }
-
-    componentDidUpdate(prevProps: IScriptsComponentsProps) {
-        if (prevProps.walletAddress !== this.props.walletAddress) {
-            this.props.fetchScripts(this.props.walletChainId, this.props.walletAddress);
-        }
-    }
 
     public render(): ReactNode {
         if (!this.props.walletConnected) return <DisconnectedPage />;

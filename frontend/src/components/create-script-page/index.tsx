@@ -18,9 +18,12 @@ import { connect } from 'react-redux';
 
 import './styles.css';
 import { RepetitionsCondition } from './blocks/conditions/repetitionsCondition';
+import { fetchUserScripts } from '../../state/action-creators/script-action-creators';
 
 interface ICreateScriptsComponentsProps {
+    fetchUserScripts: (chainId?: string, address?: string) => any;
     walletConnected: boolean;
+    walletAddress?: string;
     chainId?: string;
 }
 
@@ -73,7 +76,9 @@ class CreateScripts extends Component<ICreateScriptsComponentsProps, ICreateScri
 
         const scriptFactory = await ScriptFactory.build(this.props.chainId);
         const script = await scriptFactory.SubmitScriptsForSignature(this.state);
-        StorageProxy.saveScript(script);
+        await StorageProxy.saveScript(script);
+        this.props.fetchUserScripts(this.props.chainId, this.props.walletAddress);
+        console.log(this.props.chainId, this.props.walletAddress);
     }
 
     public render(): ReactNode {
@@ -170,8 +175,10 @@ class CreateScripts extends Component<ICreateScriptsComponentsProps, ICreateScri
 }
 
 const mapStateToProps: (state: RootState) => ICreateScriptsComponentsProps = state => ({
+    fetchUserScripts: fetchUserScripts,
     walletConnected: state.wallet.connected,
+    walletAddress: state.wallet.address,
     chainId: state.wallet.chainId,
 });
 
-export default connect(mapStateToProps)(CreateScripts);
+export default connect(mapStateToProps, { fetchUserScripts: fetchUserScripts })(CreateScripts);

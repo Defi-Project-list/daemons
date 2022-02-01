@@ -14,6 +14,7 @@ export const fetchGasTankBalance = (address?: string) => {
                 type: ActionType.GAS_TANK_BALANCE,
                 balance: undefined,
             });
+            return;
         }
 
         console.log('Checking balance in gas tank for', address);

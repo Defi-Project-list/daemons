@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { Contract } from 'ethers';
 import { StorageProxy } from '../storage-proxy';
 
