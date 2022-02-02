@@ -17,25 +17,31 @@ contract TransferScriptExecutor is ConditionsChecker {
             )
         );
 
-        bytes32 swapHash = keccak256(
-            abi.encode(
-                TRANSFER_TYPEHASH,
-                transfer.scriptId,
-                transfer.token,
-                transfer.destination,
-                transfer.amount,
-                transfer.user,
-                transfer.executor,
-                transfer.chainId,
-                hashBalance(transfer.balance),
-                hashFrequency(transfer.frequency),
-                hashPrice(transfer.price),
-                hashRepetitions(transfer.repetitions)
+        bytes32 transferHash = keccak256(
+            bytes.concat(
+                abi.encode(
+                    TRANSFER_TYPEHASH,
+                    transfer.scriptId,
+                    transfer.token,
+                    transfer.destination,
+                    transfer.amount,
+                    transfer.user,
+                    transfer.executor,
+                    transfer.chainId
+                ),
+                abi.encodePacked(
+                    hashBalance(transfer.balance),
+                    hashFrequency(transfer.frequency),
+                    hashPrice(transfer.price),
+                    hashRepetitions(transfer.repetitions)
+                )
             )
         );
 
         return
-            keccak256(abi.encodePacked("\x19\x01", eip712DomainHash, swapHash));
+            keccak256(
+                abi.encodePacked("\x19\x01", eip712DomainHash, transferHash)
+            );
     }
 
     /* ========== VERIFICATION FUNCTIONS ========== */
