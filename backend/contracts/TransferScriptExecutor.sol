@@ -33,7 +33,8 @@ contract TransferScriptExecutor is ConditionsChecker {
                     hashBalance(transfer.balance),
                     hashFrequency(transfer.frequency),
                     hashPrice(transfer.price),
-                    hashRepetitions(transfer.repetitions)
+                    hashRepetitions(transfer.repetitions),
+                    hashFollow(transfer.follow)
                 )
             )
         );

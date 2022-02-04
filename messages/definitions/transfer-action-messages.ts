@@ -3,6 +3,7 @@ import { IBalanceCondition, Balance } from './condition-messages';
 import { IPriceCondition, Price } from './condition-messages';
 import { IFrequencyCondition, Frequency } from './condition-messages';
 import { IMaxRepetitionsCondition, Repetitions } from './condition-messages';
+import { IFollowCondition, Follow } from './condition-messages';
 
 export interface ISignedTransferAction extends ITransferAction {
     signature: string;
@@ -20,6 +21,7 @@ export interface ITransferAction {
     frequency: IFrequencyCondition;
     price: IPriceCondition;
     repetitions: IMaxRepetitionsCondition;
+    follow: IFollowCondition;
 }
 
 const Transfer = [
@@ -34,6 +36,7 @@ const Transfer = [
     { name: "frequency", type: "Frequency" },           // condition: frequency
     { name: "price", type: "Price" },                            // condition: balance
     { name: "repetitions", type: "Repetitions" },        // condition: max repetitions
+    { name: "follow", type: "Follow" },                       // condition: after script
 ];
 
 export const domain = {
@@ -41,6 +44,7 @@ export const domain = {
 };
 
 export const types = {
+    Follow,
     Frequency,
     Balance,
     Transfer,

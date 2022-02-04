@@ -45,6 +45,15 @@ bytes32 constant REPETITIONS_TYPEHASH = keccak256(
     abi.encodePacked(REPETITIONS_TYPE)
 );
 
+struct Follow {
+    bool enabled;
+    uint256 shift;
+    bytes32 scriptId;
+    address executor;
+}
+string constant FOLLOW_TYPE = "Follow(bool enabled,uint256 shift,bytes32 scriptId,address executor)";
+bytes32 constant FOLLOW_TYPEHASH = keccak256(abi.encodePacked(FOLLOW_TYPE));
+
 /**  ACTIONS
 
     Each action type will be executed by a different contract, called 'executor'.
@@ -64,8 +73,9 @@ struct Swap {
     Frequency frequency;
     Price price;
     Repetitions repetitions;
+    Follow follow;
 }
-string constant SWAP_TYPE = "Swap(bytes32 scriptId,address tokenFrom,address tokenTo,uint256 amount,address user,address executor,uint256 chainId,Balance balance,Frequency frequency,Price price,Repetitions repetitions)Balance(bool enabled,address token,bytes1 comparison,uint256 amount)Frequency(bool enabled,uint256 blocks,uint256 startBlock)Price(bool enabled,address token,bytes1 comparison,uint256 value)Repetitions(bool enabled,uint16 amount)";
+string constant SWAP_TYPE = "Swap(bytes32 scriptId,address tokenFrom,address tokenTo,uint256 amount,address user,address executor,uint256 chainId,Balance balance,Frequency frequency,Price price,Repetitions repetitions,Follow follow)Balance(bool enabled,address token,bytes1 comparison,uint256 amount)Follow(bool enabled,uint256 shift,bytes32 scriptId,address executor)Frequency(bool enabled,uint256 blocks,uint256 startBlock)Price(bool enabled,address token,bytes1 comparison,uint256 value)Repetitions(bool enabled,uint16 amount)";
 bytes32 constant SWAP_TYPEHASH = keccak256(abi.encodePacked(SWAP_TYPE));
 
 struct Transfer {
@@ -77,9 +87,10 @@ struct Transfer {
     address executor;
     uint256 chainId;
     Balance balance;
+    Follow follow;
     Frequency frequency;
     Price price;
     Repetitions repetitions;
 }
-string constant TRANSFER_TYPE = "Transfer(bytes32 scriptId,address token,address destination,uint256 amount,address user,address executor,uint256 chainId,Balance balance,Frequency frequency,Price price,Repetitions repetitions)Balance(bool enabled,address token,bytes1 comparison,uint256 amount)Frequency(bool enabled,uint256 blocks,uint256 startBlock)Price(bool enabled,address token,bytes1 comparison,uint256 value)Repetitions(bool enabled,uint16 amount)";
+string constant TRANSFER_TYPE = "Transfer(bytes32 scriptId,address token,address destination,uint256 amount,address user,address executor,uint256 chainId,Balance balance,Frequency frequency,Price price,Repetitions repetitions,Follow follow)Balance(bool enabled,address token,bytes1 comparison,uint256 amount)Follow(bool enabled,uint256 shift,bytes32 scriptId,address executor)Frequency(bool enabled,uint256 blocks,uint256 startBlock)Price(bool enabled,address token,bytes1 comparison,uint256 value)Repetitions(bool enabled,uint16 amount)";
 bytes32 constant TRANSFER_TYPEHASH = keccak256(abi.encodePacked(TRANSFER_TYPE));

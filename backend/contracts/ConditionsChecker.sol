@@ -125,6 +125,24 @@ abstract contract ConditionsChecker is Ownable {
             );
     }
 
+    /** Returns the hashed version of the follow condition */
+    function hashFollow(Follow calldata follow)
+        internal
+        pure
+        returns (bytes32)
+    {
+        return
+            keccak256(
+                abi.encode(
+                    FOLLOW_TYPEHASH,
+                    follow.enabled,
+                    follow.shift,
+                    follow.scriptId,
+                    follow.executor
+                )
+            );
+    }
+
     /* ========== VERIFICATION FUNCTIONS ========== */
 
     /** Checks whether the user has revoked the script execution */

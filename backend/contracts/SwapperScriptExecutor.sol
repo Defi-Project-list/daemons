@@ -43,7 +43,8 @@ contract SwapperScriptExecutor is ConditionsChecker {
                     hashBalance(swap.balance),
                     hashFrequency(swap.frequency),
                     hashPrice(swap.price),
-                    hashRepetitions(swap.repetitions)
+                    hashRepetitions(swap.repetitions),
+                    hashFollow(swap.follow)
                 )
             )
         );

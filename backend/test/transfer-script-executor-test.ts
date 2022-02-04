@@ -51,6 +51,12 @@ describe("TransferScriptExecutor", function () {
             enabled: false,
             amount: BigNumber.from(0),
         },
+        follow: {
+            enabled: false,
+            shift: BigNumber.from(0),
+            scriptId: '0x0065737400000000000000000000000000000000000000000000000000000000',
+            executor: '0x000000000000000000000000000000000000dead',
+        },
     };
 
     this.beforeEach(async () => {

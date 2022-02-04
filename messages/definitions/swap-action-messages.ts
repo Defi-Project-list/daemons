@@ -3,6 +3,7 @@ import { IBalanceCondition, Balance } from './condition-messages';
 import { IPriceCondition, Price } from './condition-messages';
 import { IFrequencyCondition, Frequency } from './condition-messages';
 import { IMaxRepetitionsCondition, Repetitions } from './condition-messages';
+import { IFollowCondition, Follow } from './condition-messages';
 
 export interface ISignedSwapAction extends ISwapAction {
     signature: string;
@@ -20,6 +21,7 @@ export interface ISwapAction {
     frequency: IFrequencyCondition;
     price: IPriceCondition;
     repetitions: IMaxRepetitionsCondition;
+    follow: IFollowCondition;
 }
 
 const Swap = [
@@ -34,6 +36,7 @@ const Swap = [
     { name: "frequency", type: "Frequency" },           // condition: frequency
     { name: "price", type: "Price" },                            // condition: balance
     { name: "repetitions", type: "Repetitions" },        // condition: max repetitions
+    { name: "follow", type: "Follow" },                       // condition: follow script
 ];
 
 export const domain = {
@@ -46,4 +49,5 @@ export const types = {
     Swap,
     Price,
     Repetitions,
+    Follow,
 };
