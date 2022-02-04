@@ -1,4 +1,5 @@
 import { ComparisonType } from '../../../../../../messages/definitions/condition-messages';
+import { BaseScript } from '../../../../data/script/base-script';
 import { ICreateScriptForm } from '../../i-create-script-form';
 
 interface IScriptConditionForm extends ICreateScriptForm {
@@ -27,4 +28,8 @@ export interface IPriceConditionForm extends IScriptConditionForm {
 
 export interface IRepetitionsConditionForm extends IScriptConditionForm {
     amount: number;
+}
+
+export interface IFollowConditionForm extends IScriptConditionForm {
+    parentScript?: BaseScript;
 }

@@ -29,7 +29,7 @@ export class TransferScript extends BaseScript {
         return `Transfer ${amount} ${token.symbol} to ${this.message.destination.substr(0, 8) + "..."}`;
     }
 
-    protected async getExecutor(): Promise<Contract> {
+    public async getExecutor(): Promise<Contract> {
         const ethers = require('ethers');
         const provider = new ethers.providers.Web3Provider((window as any).ethereum);
         const signer = provider.getSigner();
@@ -38,6 +38,7 @@ export class TransferScript extends BaseScript {
         const contractAbi = await getAbiFor('TransferScriptExecutor');
         return new ethers.Contract(contractAddress, contractAbi, signer);
     }
+    public getExecutorAddress = () => this.message.executor;
 
     public static async fromStorageJson(object: any) {
         const message: ITransferAction = object;

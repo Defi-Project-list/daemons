@@ -51,7 +51,8 @@ export abstract class BaseScript {
     }
 
     public abstract readonly ScriptType: string;
-    protected abstract getExecutor(): Promise<Contract>;
+    public abstract getExecutor(): Promise<Contract>;
+    public abstract getExecutorAddress(): string;
     public abstract getMessage(): any;
     public abstract getUser(): string;
     public abstract getId(): string;

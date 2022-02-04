@@ -4,11 +4,11 @@ import { Contracts } from '../../data/contracts';
 import { BaseScript } from '../../data/script/base-script';
 import { SwapScript } from '../../data/script/swap-script';
 import { TransferScript } from '../../data/script/transfer-script';
-import { IBalanceCondition, IFrequencyCondition, IMaxRepetitionsCondition, IPriceCondition } from '../../../../messages/definitions/condition-messages';
+import { IBalanceCondition, IFollowCondition, IFrequencyCondition, IMaxRepetitionsCondition, IPriceCondition } from '../../../../messages/definitions/condition-messages';
 import { ISwapAction, domain as swapDomain, types as swapTypes } from '../../../../messages/definitions/swap-action-messages';
 import { ITransferAction, domain as transferDomain, types as transferTypes } from '../../../../messages/definitions/transfer-action-messages';
 import { ISwapActionForm, ITransferActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
-import { IBalanceConditionForm, IFrequencyConditionForm, IPriceConditionForm, IRepetitionsConditionForm } from './blocks/conditions/conditions-interfaces';
+import { IBalanceConditionForm, IFollowConditionForm, IFrequencyConditionForm, IPriceConditionForm, IRepetitionsConditionForm } from './blocks/conditions/conditions-interfaces';
 import { ICreateScriptBundle } from './i-create-script-form';
 import { StorageProxy } from '../../data/storage-proxy';
 import { IToken } from '../../data/tokens';
@@ -75,6 +75,7 @@ export class ScriptFactory {
         const balanceCondition = this.createBalanceConditionFromForm(bundle.balanceCondition);
         const priceCondition = this.createPriceConditionFromForm(bundle.priceCondition);
         const maxRepetitions = this.createRepetitionsConditionFromForm(bundle.repetitionsCondition);
+        const followCondition = await this.createFollowConditionFromForm(bundle.followCondition);
 
         const swapActionForm = bundle.actionForm as ISwapActionForm;
         const tokenFrom = this.tokens.filter(token => token.address === swapActionForm.tokenFromAddress)[0];
@@ -90,6 +91,7 @@ export class ScriptFactory {
             balance: balanceCondition,
             price: priceCondition,
             repetitions: maxRepetitions,
+            follow: followCondition,
             executor: Contracts.SwapExecutor,
             chainId: BigNumber.from(this.chainId),
         };
@@ -100,6 +102,7 @@ export class ScriptFactory {
         const balanceCondition = this.createBalanceConditionFromForm(bundle.balanceCondition);
         const priceCondition = this.createPriceConditionFromForm(bundle.priceCondition);
         const maxRepetitions = this.createRepetitionsConditionFromForm(bundle.repetitionsCondition);
+        const followCondition = await this.createFollowConditionFromForm(bundle.followCondition);
 
         const transferActionForm = bundle.actionForm as ITransferActionForm;
         const token = this.tokens.filter(token => token.address === transferActionForm.tokenAddress)[0];
@@ -115,6 +118,7 @@ export class ScriptFactory {
             balance: balanceCondition,
             price: priceCondition,
             repetitions: maxRepetitions,
+            follow: followCondition,
             executor: Contracts.TransferExecutor,
             chainId: BigNumber.from(this.chainId),
         };
@@ -187,6 +191,26 @@ export class ScriptFactory {
             amount: repetitionsCondition.enabled
                 ? BigNumber.from(Math.min(repetitionsCondition.amount, 4294967295)) // truncate to uint32
                 : BigNumber.from(0),
+        };
+    }
+
+    private async createFollowConditionFromForm(followCondition: IFollowConditionForm): Promise<IFollowCondition> {
+        if (!followCondition.enabled || !followCondition.parentScript) return {
+            enabled: false,
+            scriptId: '0x0000000000000000000000000000000000000000000000000000000000000000',
+            executor: '0x0000000000000000000000000000000000000000',
+            shift: BigNumber.from(0),
+        };
+
+        // calculate shift (difference between the number of executions of the parent and the child)
+        const executorContract = await followCondition.parentScript.getExecutor();
+        const shift = await executorContract.getRepetitions(followCondition.parentScript.getId());
+
+        return {
+            enabled: followCondition.enabled,
+            scriptId: followCondition.parentScript.getId(),
+            executor: followCondition.parentScript.getExecutorAddress(),
+            shift: shift,
         };
     }
 }

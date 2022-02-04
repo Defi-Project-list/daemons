@@ -29,8 +29,9 @@ export class SwapScript extends BaseScript {
         const amount = this.message.amount.div(BigNumber.from(10).pow(BigNumber.from(tokenFrom.decimals - 2))).toNumber() / 100;
         return `Swap ${amount} ${tokenFrom.symbol} for ${tokenTo.symbol}`;
     }
+    public getExecutorAddress = () => this.message.executor;
 
-    protected async getExecutor(): Promise<Contract> {
+    public async getExecutor(): Promise<Contract> {
         const ethers = require('ethers');
         const provider = new ethers.providers.Web3Provider((window as any).ethereum);
         const signer = provider.getSigner();

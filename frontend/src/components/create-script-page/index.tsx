@@ -19,6 +19,7 @@ import { connect } from 'react-redux';
 import './styles.css';
 import { RepetitionsCondition } from './blocks/conditions/repetitionsCondition';
 import { fetchUserScripts } from '../../state/action-creators/script-action-creators';
+import { FollowCondition } from './blocks/conditions/followCondition';
 
 interface ICreateScriptsComponentsProps {
     fetchUserScripts: (chainId?: string, address?: string) => any;
@@ -40,6 +41,7 @@ class CreateScripts extends Component<ICreateScriptsComponentsProps, ICreateScri
         balanceCondition: { valid: false, enabled: false, comparison: ComparisonType.GreaterThan, floatAmount: 0 },
         priceCondition: { valid: false, enabled: false, comparison: ComparisonType.GreaterThan, floatValue: 0 },
         repetitionsCondition: { valid: false, enabled: false, amount: 0 },
+        followCondition: { valid: false, enabled: false },
         actionForm: noActionForm,
         loading: true
     };
@@ -48,6 +50,7 @@ class CreateScripts extends Component<ICreateScriptsComponentsProps, ICreateScri
     private toggleBalanceCondition = () => { this.setState({ balanceCondition: { ...this.state.balanceCondition, enabled: !this.state.balanceCondition.enabled } }); };
     private togglePriceCondition = () => { this.setState({ priceCondition: { ...this.state.priceCondition, enabled: !this.state.priceCondition.enabled } }); };
     private toggleRepetitionsCondition = () => { this.setState({ repetitionsCondition: { ...this.state.repetitionsCondition, enabled: !this.state.repetitionsCondition.enabled } }); };
+    private toggleFollowCondition = () => { this.setState({ followCondition: { ...this.state.followCondition, enabled: !this.state.followCondition.enabled } }); };
 
     private setSwapActionAsSelected = () => { this.setState({ actionForm: swapActionForm }); };
     private setTransferActionAsSelected = () => { this.setState({ actionForm: transferActionForm }); };
@@ -116,6 +119,12 @@ class CreateScripts extends Component<ICreateScriptsComponentsProps, ICreateScri
                         <RepetitionsCondition selected={this.state.repetitionsCondition.enabled}
                             showSelectionCheckbox={true}
                             blockForm={this.state.repetitionsCondition}
+                        />
+                    </div>
+                    <div onClick={this.toggleFollowCondition}>
+                        <FollowCondition selected={this.state.followCondition.enabled}
+                            showSelectionCheckbox={true}
+                            blockForm={this.state.followCondition}
                         />
                     </div>
                 </div>
