@@ -1,5 +1,5 @@
 import { BigNumber, utils } from 'ethers';
-import { ComparisonType, IBalanceCondition, IFrequencyCondition, IMaxRepetitionsCondition, IPriceCondition } from '../../../messages/definitions/condition-messages';
+import { ComparisonType, IBalanceCondition, IFollowCondition, IFrequencyCondition, IMaxRepetitionsCondition, IPriceCondition } from '../../../messages/definitions/condition-messages';
 import { ISignedSwapAction } from '../../../messages/definitions/swap-action-messages';
 import { ISignedTransferAction } from '../../../messages/definitions/transfer-action-messages';
 import { SwapScript } from '../models/swap-script';
@@ -46,6 +46,16 @@ function repetitionsConditionFactory(args: any): IMaxRepetitionsCondition {
     };
 }
 
+/** Returns a randomized frequency condition */
+function followConditionFactory(args: any): IFollowCondition {
+    return {
+        enabled: args.enabled ?? false,
+        scriptId: args.scriptId ?? utils.hexlify(utils.randomBytes(32)),
+        executor: args.executor ?? faker.finance.ethereumAddress(),
+        shift: args.amount ?? randomBigNumber(),
+    };
+}
+
 /** Returns a randomized signed swap action */
 export function signedSwapActionFactory(args: any): ISignedSwapAction {
     return {
@@ -61,6 +71,7 @@ export function signedSwapActionFactory(args: any): ISignedSwapAction {
         frequency: frequencyConditionFactory(args.frequency ?? {}),
         price: priceConditionFactory(args.price ?? {}),
         repetitions: repetitionsConditionFactory(args.repetitions ?? {}),
+        follow: followConditionFactory(args.follow ?? {}),
     };
 }
 
@@ -79,6 +90,7 @@ export function signedTransferActionFactory(args: any): ISignedTransferAction {
         frequency: frequencyConditionFactory(args.frequency ?? {}),
         price: priceConditionFactory(args.price ?? {}),
         repetitions: repetitionsConditionFactory(args.repetitions ?? {}),
+        follow: followConditionFactory(args.follow ?? {}),
     };
 }
 

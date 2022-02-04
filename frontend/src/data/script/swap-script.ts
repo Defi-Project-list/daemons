@@ -52,6 +52,7 @@ export class SwapScript extends BaseScript {
         message.frequency.blocks = BigNumber.from(object.frequency.blocks);
         message.frequency.startBlock = BigNumber.from(object.frequency.startBlock);
         message.repetitions.amount = BigNumber.from(object.repetitions.amount);
+        message.follow.shift = BigNumber.from(object.follow.shift);
 
         return await SwapScript.build(message, object.signature);
     }

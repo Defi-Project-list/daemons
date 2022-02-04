@@ -29,6 +29,10 @@ Triggers the action every fixed amount of blocks.
 
 Sets a maximum amount of numbers a script can be run.
 
+### Follow
+
+Defines a script that should be executed BEFORE the script. In this way it is possible to chain scripts to each other.
+
 
 ## Script Actions
 

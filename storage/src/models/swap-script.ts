@@ -14,7 +14,7 @@ const swapScriptSchema = new mongoose.Schema({
     tokenTo: { type: String, required: true },
     amount: { type: String, required: true, set: stringifyBigNumber },
     user: { type: String, required: true, index: true, set: utils.getAddress },
-    executor: { type: String, required: true },
+    executor: { type: String, required: true, set: utils.getAddress },
     chainId: { type: String, required: true, set: stringifyBigNumber },
     balance: {
         enabled: { type: Boolean, required: true },
@@ -36,6 +36,12 @@ const swapScriptSchema = new mongoose.Schema({
     repetitions: {
         enabled: { type: Boolean, required: true },
         amount: { type: String, required: true, set: stringifyBigNumber },
+    },
+    follow: {
+        enabled: { type: Boolean, required: true },
+        scriptId: { type: String, required: true, set: stringifyBigNumber },
+        executor: { type: String, required: true, set: utils.getAddress },
+        shift: { type: String, required: true, set: stringifyBigNumber },
     },
 });
 
