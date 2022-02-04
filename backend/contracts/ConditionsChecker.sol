@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 abstract contract ConditionsChecker is Ownable {
     mapping(bytes32 => uint256) internal lastExecutions;
-    mapping(bytes32 => uint16) internal repetitionsCount;
+    mapping(bytes32 => uint32) internal repetitionsCount;
     mapping(address => mapping(bytes32 => bool)) private revocations;
 
     uint256 internal chainId;
