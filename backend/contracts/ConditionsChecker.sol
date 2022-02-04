@@ -58,6 +58,10 @@ abstract contract ConditionsChecker is Ownable {
         revocations[msg.sender][_id] = true;
     }
 
+    function getRepetitions(bytes32 _id) external view returns (uint32) {
+        return repetitionsCount[_id];
+    }
+
     /* ========== HASH FUNCTIONS ========== */
 
     /** Returns the hashed version of the balance */
@@ -239,6 +243,20 @@ abstract contract ConditionsChecker is Ownable {
         require(
             repetitionsCount[id] < repetitions.amount,
             "[Repetitions Condition] The script has reached its maximum number of executions"
+        );
+    }
+
+    /** If the follow condition is enabled, it checks whether the script it's supposed to follow has been executed */
+    function verifyFollow(Follow calldata follow, bytes32 id) internal view {
+        if (!follow.enabled) return;
+        uint32 parentCount = follow.executor == address(this)
+            ? repetitionsCount[follow.scriptId]
+            : ConditionsChecker(follow.executor).getRepetitions(
+                follow.scriptId
+            );
+        require(
+            parentCount > repetitionsCount[id] + follow.shift,
+            "[Follow Condition] The parent script has not been (re)executed yet"
         );
     }
 

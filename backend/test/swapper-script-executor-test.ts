@@ -110,6 +110,7 @@ describe("SwapperScriptExecutor", function () {
         message.tokenTo = barToken.address;
         message.balance.token = fooToken.address;
         message.price.token = fooToken.address;
+        message.follow.executor = executor.address; // following itself, it'll never be executed when condition is enabled
 
         // Sign message
         const signature = await owner._signTypedData(domain, types, message);
@@ -391,5 +392,31 @@ describe("SwapperScriptExecutor", function () {
 
         // the third time won't as it'll hit the max-repetitions limit
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Repetitions Condition] The script has reached its maximum number of executions');
+    });
+
+
+    /* ========== FOLLOW CONDITION CHECK ========== */
+
+    it('fails if the script should follow a script that has not run yet', async () => {
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
+        // enabling the follow condition. It now points to a script that never executed (as it does not exist),
+        // so it should always fail.
+        message.follow.enabled = true;
+        message = await initialize(message);
+
+        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Follow Condition] The parent script has not been (re)executed yet');
+    });
+
+    it('fails if the script should follow a script that has not run yet, even if it is run by another executor', async () => {
+        const SwapperScriptExecutorContract = await ethers.getContractFactory("SwapperScriptExecutor");
+        const otherExecutor = await SwapperScriptExecutorContract.deploy();
+
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
+        // setting the follow condition to use another executor, so to test the external calls.
+        message.follow.enabled = true;
+        message.follow.executor = otherExecutor.address;
+        message = await initialize(message);
+
+        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Follow Condition] The parent script has not been (re)executed yet');
     });
 });

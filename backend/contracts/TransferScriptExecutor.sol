@@ -75,6 +75,7 @@ contract TransferScriptExecutor is ConditionsChecker {
         );
 
         verifyRepetitions(message.repetitions, message.scriptId);
+        verifyFollow(message.follow, message.scriptId);
         verifyFrequency(message.frequency, message.scriptId);
         verifyBalance(message.balance, message.user);
         verifyPrice(message.price);

@@ -82,6 +82,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
             "User doesn't have enough balance"
         );
         verifyRepetitions(message.repetitions, message.scriptId);
+        verifyFollow(message.follow, message.scriptId);
         verifyFrequency(message.frequency, message.scriptId);
         verifyBalance(message.balance, message.user);
         verifyPrice(message.price);
