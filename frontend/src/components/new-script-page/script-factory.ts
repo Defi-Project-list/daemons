@@ -9,7 +9,7 @@ import { ISwapAction, domain as swapDomain, types as swapTypes } from '../../../
 import { ITransferAction, domain as transferDomain, types as transferTypes } from '../../../../messages/definitions/transfer-action-messages';
 import { ISwapActionForm, ITransferActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
 import { IBalanceConditionForm, IFollowConditionForm, IFrequencyConditionForm, IPriceConditionForm, IRepetitionsConditionForm } from './blocks/conditions/conditions-interfaces';
-import { ICreateScriptBundle } from './i-create-script-form';
+import { INewScriptBundle } from './i-new-script-form';
 import { StorageProxy } from '../../data/storage-proxy';
 import { IToken } from '../../data/tokens';
 
@@ -46,7 +46,7 @@ export class ScriptFactory {
         this.chainId = chainId;
     }
 
-    public async SubmitScriptsForSignature(bundle: ICreateScriptBundle): Promise<BaseScript> {
+    public async SubmitScriptsForSignature(bundle: INewScriptBundle): Promise<BaseScript> {
         const getSignature = async (message: IMessage) => (await this.signer._signTypedData(message.domain, message.types, message.script)) as string;
 
         switch (bundle.actionForm.action) {
@@ -70,7 +70,7 @@ export class ScriptFactory {
     }
 
 
-    private async createSwapScript(bundle: ICreateScriptBundle): Promise<ISwapAction> {
+    private async createSwapScript(bundle: INewScriptBundle): Promise<ISwapAction> {
         const frequencyCondition = await this.createFrequencyConditionFromForm(bundle.frequencyCondition);
         const balanceCondition = this.createBalanceConditionFromForm(bundle.balanceCondition);
         const priceCondition = this.createPriceConditionFromForm(bundle.priceCondition);
@@ -97,7 +97,7 @@ export class ScriptFactory {
         };
     }
 
-    private async createTransferScript(bundle: ICreateScriptBundle): Promise<ITransferAction> {
+    private async createTransferScript(bundle: INewScriptBundle): Promise<ITransferAction> {
         const frequencyCondition = await this.createFrequencyConditionFromForm(bundle.frequencyCondition);
         const balanceCondition = this.createBalanceConditionFromForm(bundle.balanceCondition);
         const priceCondition = this.createPriceConditionFromForm(bundle.priceCondition);

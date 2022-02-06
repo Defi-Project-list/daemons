@@ -1,4 +1,4 @@
-import { ICreateScriptForm } from '../../i-create-script-form';
+import { INewScriptForm } from '../../i-new-script-form';
 
 export enum ScriptAction {
     None,
@@ -8,7 +8,7 @@ export enum ScriptAction {
     Farm,
 }
 
-export interface IScriptActionForm extends ICreateScriptForm {
+export interface IScriptActionForm extends INewScriptForm {
     action: ScriptAction;
 }
 

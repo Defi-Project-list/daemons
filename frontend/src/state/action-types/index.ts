@@ -9,4 +9,7 @@ export enum ActionType {
 
     // gas tank
     GAS_TANK_BALANCE = "GAS_TANK_CHECK",
+
+    // tokens
+    FETCH_TOKENS = "FETCH_TOKENS",
 };

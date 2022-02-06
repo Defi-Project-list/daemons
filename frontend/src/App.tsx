@@ -9,6 +9,7 @@ import GasIndicator from './components/gas-indicator';
 import { fetchUserScripts } from './state/action-creators/script-action-creators';
 import { fetchGasTankBalance } from './state/action-creators/gas-tank-action-creators';
 import "./app.css";
+import { fetchChainTokens } from './state/action-creators/tokens-action-creators';
 
 
 export const App = ({ children }: { children: any; }) => {
@@ -27,6 +28,7 @@ export const App = ({ children }: { children: any; }) => {
         // reload the user scripts and balance each time the chain or the address change
         dispatch(fetchUserScripts(chainId, walletAddress));
         dispatch(fetchGasTankBalance(walletAddress));
+        dispatch(fetchChainTokens(chainId));
     }, [chainId, walletAddress]);
 
     return (

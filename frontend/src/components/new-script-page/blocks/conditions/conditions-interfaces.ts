@@ -1,8 +1,8 @@
 import { ComparisonType } from '../../../../../../messages/definitions/condition-messages';
 import { BaseScript } from '../../../../data/script/base-script';
-import { ICreateScriptForm } from '../../i-create-script-form';
+import { INewScriptForm } from '../../i-new-script-form';
 
-interface IScriptConditionForm extends ICreateScriptForm {
+interface IScriptConditionForm extends INewScriptForm {
     enabled: boolean;
 }
 
