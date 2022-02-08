@@ -4,8 +4,7 @@ import { ScriptAction } from "../actions/script-actions";
 
 export type ScriptState = {
     userScripts: BaseScript[],
-    allScripts: BaseScript[],
-    currentScript?: BaseScript,
+    allScripts: BaseScript[];
 };
 
 const initialState: ScriptState = {
@@ -28,7 +27,7 @@ export const scriptReducer = (state: ScriptState = initialState, action: ScriptA
         case ActionType.NEW_SCRIPT:
             return {
                 ...state,
-                currentScript: action.payload,
+                userScripts: state.userScripts.concat(action.payload),
             };
         default:
             return state;

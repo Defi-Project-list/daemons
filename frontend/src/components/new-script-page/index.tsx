@@ -19,12 +19,13 @@ import { TransferAction } from './blocks/actions/transferAction';
 import { SwapAction } from './blocks/actions/swapAction';
 import { StorageProxy } from '../../data/storage-proxy';
 import './styles.css';
-import { fetchUserScripts } from '../../state/action-creators/script-action-creators';
+import { addNewScript, fetchUserScripts } from '../../state/action-creators/script-action-creators';
 import { Token } from '../../data/tokens';
+import { BaseScript } from '../../data/script/base-script';
 
 
 interface INewScriptsComponentsProps {
-    fetchUserScripts: (chainId?: string, address?: string) => any;
+    addNewScript: (script: BaseScript) => any;
     walletConnected: boolean;
     walletAddress?: string;
     chainId?: string;
@@ -68,7 +69,7 @@ class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle>
         const scriptFactory = new ScriptFactory(this.props.chainId, this.props.tokens);
         const script = await scriptFactory.SubmitScriptsForSignature(this.state);
         await StorageProxy.saveScript(script);
-        this.props.fetchUserScripts(this.props.chainId, this.props.walletAddress);
+        this.props.addNewScript(script);
     }
 
     public render(): ReactNode {
@@ -167,11 +168,11 @@ class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle>
 }
 
 const mapStateToProps: (state: RootState) => INewScriptsComponentsProps = state => ({
-    fetchUserScripts: fetchUserScripts,
+    addNewScript: addNewScript,
     walletConnected: state.wallet.connected,
     walletAddress: state.wallet.address,
     chainId: state.wallet.chainId,
     tokens: state.tokens.currentChainTokens,
 });
 
-export default connect(mapStateToProps, { fetchUserScripts: fetchUserScripts })(NewScripts);
+export default connect(mapStateToProps, { addNewScript: addNewScript })(NewScripts);

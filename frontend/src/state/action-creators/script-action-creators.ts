@@ -1,4 +1,5 @@
 import { Dispatch } from 'redux';
+import { BaseScript } from '../../data/script/base-script';
 import { StorageProxy } from '../../data/storage-proxy';
 import { ActionType } from '../action-types';
 import { ScriptAction } from '../actions/script-actions';
@@ -20,6 +21,16 @@ export const fetchAllScripts = (chainId?: string) => {
         dispatch({
             type: ActionType.FETCH_ALL_SCRIPTS,
             payload: await StorageProxy.fetchScripts(chainId),
+        });
+    };
+};
+
+export const addNewScript = (script: BaseScript) => {
+
+    return async (dispatch: Dispatch<ScriptAction>) => {
+        dispatch({
+            type: ActionType.NEW_SCRIPT,
+            payload: script,
         });
     };
 };
