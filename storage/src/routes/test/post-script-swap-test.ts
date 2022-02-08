@@ -101,6 +101,6 @@ describe('POST api/scripts/swap', () => {
             .expect(200);
 
         const script = await SwapScript.findOne({ scriptId: payload.scriptId });
-        expect(script?.description.length).to.be.equal(truncateAndEscapeText(payload.description));
+        expect(script?.description).to.be.equal(truncateAndEscapeText(payload.description));
     });
 });

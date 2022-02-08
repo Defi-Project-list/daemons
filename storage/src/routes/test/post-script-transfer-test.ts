@@ -99,6 +99,6 @@ describe('POST api/scripts/transfer', () => {
             .expect(200);
 
         const script = await TransferScript.findOne({ scriptId: payload.scriptId });
-        expect(script?.description.length).to.be.equal(truncateAndEscapeText(payload.description));
+        expect(script.description).to.be.equal(truncateAndEscapeText(payload.description));
     });
 });
