@@ -25,6 +25,7 @@ const ScriptComponent = ({ script, fetchScripts, tokens }: IScriptComponentsProp
             <button onClick={async () => alert(await script.verify())} className='script__button'>Verify</button>
             <button onClick={async () => alert(await script.execute())} className='script__button'>Execute</button>
         </div>
+        <button onClick={() => alert(JSON.stringify(script.getMessage(), null, ' '))} className='script__info-button'>i</button>
     </div>
 );
 

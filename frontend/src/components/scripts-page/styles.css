@@ -5,6 +5,7 @@
 }
 
 .script {
+    position: relative;
     width: 200px;
     margin: 5px;
     padding: 10px;
@@ -27,4 +28,17 @@
 .script__button {
     width: 66px;
     height: 30px;
+}
+
+.script__info-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-radius: 100%;
+    height: 17px;
+    width: 17px;
+    background-color: transparent;
+    outline: none;
+    border: 1px solid gray;
+    cursor: pointer;
 }
