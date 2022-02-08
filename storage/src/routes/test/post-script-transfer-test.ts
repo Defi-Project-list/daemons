@@ -5,6 +5,8 @@ import { signedTransferActionFactory } from '../../test-factories/script-factori
 import { expect } from 'chai';
 import { utils } from 'ethers';
 import { TransferScript } from '../../models/transfer-script';
+import { truncateAndEscapeText } from '../../models/utils';
+import faker from '@faker-js/faker';
 
 describe('POST api/scripts/transfer', () => {
     before(async () => await connectToTestDb());
@@ -74,5 +76,29 @@ describe('POST api/scripts/transfer', () => {
         const script = await TransferScript.findOne({ scriptId: payload.scriptId });
         expect(script.amount).to.not.equal(payload.amount);
         expect(script.amount).to.equal("3550000000000000000");
+    });
+
+    it('trims description to 150 characters', async () => {
+        const payload = signedTransferActionFactory({ description: faker.random.words(200) });
+
+        await supertest(app)
+            .post("/api/scripts/transfer")
+            .send(payload)
+            .expect(200);
+
+        const script = await TransferScript.findOne({ scriptId: payload.scriptId });
+        expect(script?.description.length).to.be.lessThanOrEqual(150);
+    });
+
+    it('escapes dangerous characters from the description', async () => {
+        const payload = signedTransferActionFactory({ description: '<script>window.location.href="dangerous-site"</script>' });
+
+        await supertest(app)
+            .post("/api/scripts/transfer")
+            .send(payload)
+            .expect(200);
+
+        const script = await TransferScript.findOne({ scriptId: payload.scriptId });
+        expect(script?.description.length).to.be.equal(truncateAndEscapeText(payload.description));
     });
 });

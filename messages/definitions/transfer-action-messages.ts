@@ -7,7 +7,7 @@ import { IFollowCondition, Follow } from './condition-messages';
 
 export interface ISignedTransferAction extends ITransferAction {
     signature: string;
-    description?: string;
+    description: string;
 }
 
 export interface ITransferAction {

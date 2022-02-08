@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { stringifyBigNumber } from '../utils';
+import { stringifyBigNumber, truncateAndEscapeText } from '../utils';
 import { utils } from 'ethers';
 
 
@@ -31,5 +31,29 @@ describe('stringifyBigNumber', () => {
 
         expect(functionThatWillThrow).to.throw();
     });
+});
 
+
+describe('truncateAndEscapeText', () => {
+
+    it('dangerous characters are removed', async () => {
+        const input = "<script> alert('##hacker##!'); </script>";
+        const expectedOutput = "script alerthacker script";
+
+        expect(truncateAndEscapeText(input)).to.equal(expectedOutput);
+    });
+
+    it('emojis are not removed', async () => {
+        const input = "🐻🐻🐻";
+        const expectedOutput = "🐻🐻🐻";
+
+        expect(truncateAndEscapeText(input)).to.equal(expectedOutput);
+    });
+
+    it('text is truncated to the prefixed length', async () => {
+        const input = "lorem ipsum";
+        const expectedOutput = "lorem ips";
+
+        expect(truncateAndEscapeText(input, 9)).to.equal(expectedOutput);
+    });
 });

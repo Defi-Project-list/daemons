@@ -17,3 +17,9 @@ export function stringifyBigNumber(bigNumber: any): string {
     // No idea, throw
     throw new Error(`Argument '${bigNumber}' does not seem a bigNumber`);
 }
+
+/**
+ * Truncates and removes dangerous characters from the text
+ */
+export const truncateAndEscapeText = (text: string, length: number = 150): string =>
+    text.substring(0, length).replace(/[~`!@#$%^&*()+={}\[\];:\'\"<>.,\/\\\?-_]/g, '');

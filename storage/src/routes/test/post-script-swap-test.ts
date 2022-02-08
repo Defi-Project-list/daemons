@@ -5,6 +5,8 @@ import { signedSwapActionFactory } from '../../test-factories/script-factories';
 import { expect } from 'chai';
 import { utils } from 'ethers';
 import { SwapScript } from '../../models/swap-script';
+import faker from '@faker-js/faker';
+import { truncateAndEscapeText } from '../../models/utils';
 
 describe('POST api/scripts/swap', () => {
     before(async () => await connectToTestDb());
@@ -76,5 +78,29 @@ describe('POST api/scripts/swap', () => {
         expect(script).is.not.null;
         expect(script!.amount).to.not.equal(payload.amount);
         expect(script!.amount).to.equal("3550000000000000000");
+    });
+
+    it('trims description to 150 characters', async () => {
+        const payload = signedSwapActionFactory({ description: faker.random.words(200) });
+
+        await supertest(app)
+            .post("/api/scripts/swap")
+            .send(payload)
+            .expect(200);
+
+        const script = await SwapScript.findOne({ scriptId: payload.scriptId });
+        expect(script?.description.length).to.be.lessThanOrEqual(150);
+    });
+
+    it('escapes dangerous characters from the description', async () => {
+        const payload = signedSwapActionFactory({ description: '<script>window.location.href="dangerous-site"</script>' });
+
+        await supertest(app)
+            .post("/api/scripts/swap")
+            .send(payload)
+            .expect(200);
+
+        const script = await SwapScript.findOne({ scriptId: payload.scriptId });
+        expect(script?.description.length).to.be.equal(truncateAndEscapeText(payload.description));
     });
 });

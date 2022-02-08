@@ -1,13 +1,13 @@
 import mongoose from 'mongoose';
 import { ISignedTransferAction } from '../../../messages/definitions/transfer-action-messages';
 import { utils } from 'ethers';
-import { stringifyBigNumber } from './utils';
+import { stringifyBigNumber, truncateAndEscapeText } from './utils';
 
 
 const transferScriptSchema = new mongoose.Schema({
     // extra fields
     signature: { type: String, required: true },
-    description: { type: String, required: true },
+    description: { type: String, required: true, maxlength: 150, set: truncateAndEscapeText },
 
     // message signed by the user
     scriptId: { type: String, required: true, unique: true, index: { unique: true } },

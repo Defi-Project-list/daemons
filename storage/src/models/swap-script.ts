@@ -1,13 +1,13 @@
 import { utils } from 'ethers';
 import mongoose from 'mongoose';
 import { ISignedSwapAction } from '../../../messages/definitions/swap-action-messages';
-import { stringifyBigNumber } from './utils';
+import { stringifyBigNumber, truncateAndEscapeText } from './utils';
 
 
 const swapScriptSchema = new mongoose.Schema({
     // extra fields
     signature: { type: String, required: true },
-    description: { type: String, required: true },
+    description: { type: String, required: true, maxlength: 150, set: truncateAndEscapeText },
 
     // message signed by the user
     scriptId: { type: String, required: true, index: { unique: true } },
