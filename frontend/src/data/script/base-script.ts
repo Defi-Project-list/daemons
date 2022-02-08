@@ -57,11 +57,12 @@ export abstract class BaseScript {
     public abstract getMessage(): any;
     public abstract getUser(): string;
     public abstract getId(): string;
-    public abstract getDefaultDescription(tokens: Token[]): string;
+    public abstract getDescription(): string;
 
     public toJsonString(): string {
         return JSON.stringify({
             signature: this.signature,
+            description: this.getDescription(),
             ...this.getMessage(),
         });
     }

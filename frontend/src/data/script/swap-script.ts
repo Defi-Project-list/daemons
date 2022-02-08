@@ -6,7 +6,7 @@ import { BaseScript } from './base-script';
 
 
 export class SwapScript extends BaseScript {
-    public constructor(private readonly message: ISwapAction, signature: string) {
+    public constructor(private readonly message: ISwapAction, signature: string, private readonly description: string) {
         super(signature);
     }
 
@@ -14,11 +14,7 @@ export class SwapScript extends BaseScript {
     public getMessage = () => this.message;
     public getUser = () => this.message.user;
     public getId = () => this.message.scriptId;
-    public getDefaultDescription(tokens: Token[]): string {
-        const tokenFrom = tokens.filter(t => t.address === this.message.tokenFrom)[0]?.symbol ?? this.message.tokenFrom;
-        const tokenTo = tokens.filter(t => t.address === this.message.tokenTo)[0]?.symbol ?? this.message.tokenTo;
-        return `Swap ${tokenFrom} for ${tokenTo}`;
-    }
+    public getDescription = () => this.description;
     public getExecutorAddress = () => this.message.executor;
 
     public async getExecutor(): Promise<Contract> {
@@ -29,6 +25,12 @@ export class SwapScript extends BaseScript {
         const contractAddress = this.message.executor;
         const contractAbi = await getAbiFor('SwapperScriptExecutor');
         return new ethers.Contract(contractAddress, contractAbi, signer);
+    }
+
+    public static getDefaultDescription(message: ISwapAction, tokens: Token[]): string {
+        const tokenFrom = tokens.filter(t => t.address === message.tokenFrom)[0]?.symbol ?? message.tokenFrom;
+        const tokenTo = tokens.filter(t => t.address === message.tokenTo)[0]?.symbol ?? message.tokenTo;
+        return `Swap ${tokenFrom} for ${tokenTo}`;
     }
 
     public static async fromStorageJson(object: any) {
@@ -44,6 +46,6 @@ export class SwapScript extends BaseScript {
         message.repetitions.amount = BigNumber.from(object.repetitions.amount);
         message.follow.shift = BigNumber.from(object.follow.shift);
 
-        return new SwapScript(message, object.signature);
+        return new SwapScript(message, object.signature, object.description);
     }
 }

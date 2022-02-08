@@ -60,6 +60,7 @@ function followConditionFactory(args: any): IFollowCondition {
 export function signedSwapActionFactory(args: any): ISignedSwapAction {
     return {
         signature: args.signature ?? utils.hexlify(utils.randomBytes(40)),
+        description: args.description ?? faker.random.words(4),
         scriptId: args.scriptId ?? utils.hexlify(utils.randomBytes(32)),
         tokenFrom: args.tokenFrom ?? faker.finance.ethereumAddress(),
         tokenTo: args.tokenTo ?? faker.finance.ethereumAddress(),
@@ -79,6 +80,7 @@ export function signedSwapActionFactory(args: any): ISignedSwapAction {
 export function signedTransferActionFactory(args: any): ISignedTransferAction {
     return {
         signature: args.signature ?? utils.hexlify(utils.randomBytes(40)),
+        description: args.description ?? faker.random.words(4),
         scriptId: args.scriptId ?? utils.hexlify(utils.randomBytes(32)),
         token: args.tokenFrom ?? faker.finance.ethereumAddress(),
         destination: args.tokenTo ?? faker.finance.ethereumAddress(),

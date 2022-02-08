@@ -7,6 +7,7 @@ import { IFollowCondition, Follow } from './condition-messages';
 
 export interface ISignedSwapAction extends ISwapAction {
     signature: string;
+    description?: string;
 }
 
 export interface ISwapAction {

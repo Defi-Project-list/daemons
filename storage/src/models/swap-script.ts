@@ -5,10 +5,11 @@ import { stringifyBigNumber } from './utils';
 
 
 const swapScriptSchema = new mongoose.Schema({
-    // user's signature
+    // extra fields
     signature: { type: String, required: true },
+    description: { type: String, required: true },
 
-    // transfer action params
+    // message signed by the user
     scriptId: { type: String, required: true, index: { unique: true } },
     tokenFrom: { type: String, required: true },
     tokenTo: { type: String, required: true },

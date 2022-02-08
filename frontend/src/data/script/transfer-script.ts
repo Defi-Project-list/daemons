@@ -2,11 +2,10 @@ import { BigNumber, Contract } from 'ethers';
 import { ITransferAction } from '../../../../messages/definitions/transfer-action-messages';
 import { getAbiFor } from '../../utils/get-abi';
 import { BaseScript } from './base-script';
-import { IToken, Token } from '../tokens';
-import { StorageProxy } from '../storage-proxy';
+import { Token } from '../tokens';
 
 export class TransferScript extends BaseScript {
-    public constructor(private readonly message: ITransferAction, signature: string) {
+    public constructor(private readonly message: ITransferAction, signature: string, private readonly description: string) {
         super(signature);
     }
 
@@ -14,10 +13,8 @@ export class TransferScript extends BaseScript {
     public getMessage = () => this.message;
     public getUser = () => this.message.user;
     public getId = () => this.message.scriptId;
-    public getDefaultDescription(tokens: Token[]): string {
-        const token = tokens.filter(t => t.address === this.message.token)[0]?.symbol ?? this.message.token;
-        return `Transfer ${token} to ${this.message.destination.substring(0, 8) + "..."}`;
-    }
+    public getDescription = () => this.description;
+    public getExecutorAddress = () => this.message.executor;
 
     public async getExecutor(): Promise<Contract> {
         const ethers = require('ethers');
@@ -28,7 +25,11 @@ export class TransferScript extends BaseScript {
         const contractAbi = await getAbiFor('TransferScriptExecutor');
         return new ethers.Contract(contractAddress, contractAbi, signer);
     }
-    public getExecutorAddress = () => this.message.executor;
+
+    public static getDefaultDescription(message: ITransferAction, tokens: Token[]): string {
+        const token = tokens.filter(t => t.address === message.token)[0]?.symbol ?? message.token;
+        return `Transfer ${token} to ${message.destination.substring(0, 8) + "..."}`;
+    }
 
     public static async fromStorageJson(object: any) {
         const message: ITransferAction = object;
@@ -43,6 +44,6 @@ export class TransferScript extends BaseScript {
         message.repetitions.amount = BigNumber.from(object.repetitions?.amount);
         message.follow.shift = BigNumber.from(object.follow.shift);
 
-        return new TransferScript(message, object.signature);
+        return new TransferScript(message, object.signature, object.description);
     }
 }

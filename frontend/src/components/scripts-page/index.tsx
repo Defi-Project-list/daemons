@@ -11,12 +11,11 @@ import './styles.css';
 interface IScriptComponentsProps {
     script: BaseScript;
     fetchScripts: () => Promise<void>;
-    tokens: Token[];
 }
 
-const ScriptComponent = ({ script, fetchScripts, tokens }: IScriptComponentsProps) => (
+const ScriptComponent = ({ script, fetchScripts }: IScriptComponentsProps) => (
     <div className="script">
-        <div className="script__description">{script.getDefaultDescription(tokens)}</div>
+        <div className="script__description">{script.getDescription()}</div>
         <div className="script__actions">
             <button onClick={async () => {
                 await script.revoke();
@@ -48,7 +47,6 @@ class Scripts extends Component<IScriptsComponentsProps> {
                 key={script.getId()}
                 script={script}
                 fetchScripts={() => this.props.fetchScripts(this.props.walletChainId, this.props.walletAddress)}
-                tokens={this.props.tokens}
             />
         ));
         return (
