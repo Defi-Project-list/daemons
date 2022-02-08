@@ -26,9 +26,9 @@ export const App = ({ children }: { children: any; }) => {
 
     useEffect(() => {
         // reload the user scripts and balance each time the chain or the address change
+        dispatch(fetchChainTokens(chainId));
         dispatch(fetchUserScripts(chainId, walletAddress));
         dispatch(fetchGasTankBalance(walletAddress));
-        dispatch(fetchChainTokens(chainId));
     }, [chainId, walletAddress]);
 
     return (

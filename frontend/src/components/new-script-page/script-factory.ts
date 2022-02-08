@@ -10,8 +10,7 @@ import { ITransferAction, domain as transferDomain, types as transferTypes } fro
 import { ISwapActionForm, ITransferActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
 import { IBalanceConditionForm, IFollowConditionForm, IFrequencyConditionForm, IPriceConditionForm, IRepetitionsConditionForm } from './blocks/conditions/conditions-interfaces';
 import { INewScriptBundle } from './i-new-script-form';
-import { StorageProxy } from '../../data/storage-proxy';
-import { IToken } from '../../data/tokens';
+import { Token } from '../../data/tokens';
 
 type ScriptDefinition = ISwapAction | ITransferAction;
 
@@ -30,15 +29,10 @@ export class ScriptFactory {
     private readonly ethers: any;
     private readonly provider: any;
     private readonly signer: any;
-    private readonly tokens: IToken[];
+    private readonly tokens: Token[];
     private readonly chainId: string;
 
-    public static async build(chainId: string): Promise<ScriptFactory> {
-        const tokens = await StorageProxy.fetchTokens(chainId);
-        return new ScriptFactory(chainId, tokens);
-    }
-
-    private constructor(chainId: string, tokens: IToken[]) {
+    public constructor(chainId: string, tokens: Token[]) {
         this.ethers = require('ethers');
         this.provider = new this.ethers.providers.Web3Provider((window as any).ethereum, "any");
         this.signer = this.provider.getSigner();
@@ -56,14 +50,14 @@ export class ScriptFactory {
                     domain: swapDomain,
                     types: swapTypes
                 };
-                return await SwapScript.build(swapMessage.script, await getSignature(swapMessage));
+                return new SwapScript(swapMessage.script, await getSignature(swapMessage));
             case ScriptAction.Transfer:
                 const transferMessage = {
                     script: await this.createTransferScript(bundle),
                     domain: transferDomain,
                     types: transferTypes
                 };
-                return await TransferScript.build(transferMessage.script, await getSignature(transferMessage));
+                return new TransferScript(transferMessage.script, await getSignature(transferMessage));
             default:
                 throw new Error("Not implemented");
         }

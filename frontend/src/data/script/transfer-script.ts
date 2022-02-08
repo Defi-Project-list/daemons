@@ -1,32 +1,22 @@
 import { BigNumber, Contract } from 'ethers';
-import { ISwapAction } from '../../../../messages/definitions/swap-action-messages';
 import { ITransferAction } from '../../../../messages/definitions/transfer-action-messages';
 import { getAbiFor } from '../../utils/get-abi';
-import { StorageProxy } from '../storage-proxy';
 import { BaseScript } from './base-script';
-import { IToken } from '../tokens';
+import { IToken, Token } from '../tokens';
+import { StorageProxy } from '../storage-proxy';
 
 export class TransferScript extends BaseScript {
-    private readonly tokens: IToken[];
-
-    public static async build(message: ITransferAction, signature: string): Promise<TransferScript> {
-        const tokens = await StorageProxy.fetchTokens(message.chainId.toString());
-        return new TransferScript(message, signature, tokens);
-    }
-
-    private constructor(private readonly message: ITransferAction, signature: string, tokens: IToken[]) {
+    public constructor(private readonly message: ITransferAction, signature: string) {
         super(signature);
-        this.tokens = tokens;
     }
 
     public readonly ScriptType = "TransferScript";
     public getMessage = () => this.message;
     public getUser = () => this.message.user;
     public getId = () => this.message.scriptId;
-    public getDescription(): string {
-        const token = this.tokens.filter(t => t.address === this.message.token)[0];
-        const amount = this.message.amount.div(BigNumber.from(10).pow(BigNumber.from(token.decimals - 2))).toNumber() / 100;
-        return `Transfer ${amount} ${token.symbol} to ${this.message.destination.substr(0, 8) + "..."}`;
+    public getDefaultDescription(tokens: Token[]): string {
+        const token = tokens.filter(t => t.address === this.message.token)[0]?.symbol ?? this.message.token;
+        return `Transfer ${token} to ${this.message.destination.substring(0, 8) + "..."}`;
     }
 
     public async getExecutor(): Promise<Contract> {
@@ -53,6 +43,6 @@ export class TransferScript extends BaseScript {
         message.repetitions.amount = BigNumber.from(object.repetitions?.amount);
         message.follow.shift = BigNumber.from(object.follow.shift);
 
-        return await TransferScript.build(message, object.signature);
+        return new TransferScript(message, object.signature);
     }
 }

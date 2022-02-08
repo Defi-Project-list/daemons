@@ -1,5 +1,5 @@
 import React, { Component, ReactNode } from 'react';
-import { ComparisonType, IBalanceCondition, IFrequencyCondition } from '../../../../messages/definitions/condition-messages';
+import { ComparisonType } from '../../../../messages/definitions/condition-messages';
 import { INewScriptBundle } from './i-new-script-form';
 import { ScriptFactory } from './script-factory';
 import { DisconnectedPage } from '../disconnected-page';
@@ -19,12 +19,16 @@ import { TransferAction } from './blocks/actions/transferAction';
 import { SwapAction } from './blocks/actions/swapAction';
 import { StorageProxy } from '../../data/storage-proxy';
 import './styles.css';
+import { fetchUserScripts } from '../../state/action-creators/script-action-creators';
+import { Token } from '../../data/tokens';
 
 
 interface INewScriptsComponentsProps {
+    fetchUserScripts: (chainId?: string, address?: string) => any;
     walletConnected: boolean;
     walletAddress?: string;
     chainId?: string;
+    tokens: Token[];
 }
 
 const noActionForm: INoActionForm = { action: ScriptAction.None, valid: false };
@@ -61,10 +65,10 @@ class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle>
     private async createAndSignScript() {
         if (!this.props.chainId) throw new Error("Cannot create the script! The chain is unknown");
 
-        const scriptFactory = await ScriptFactory.build(this.props.chainId);
+        const scriptFactory = new ScriptFactory(this.props.chainId, this.props.tokens);
         const script = await scriptFactory.SubmitScriptsForSignature(this.state);
         await StorageProxy.saveScript(script);
-        console.log(this.props.chainId, this.props.walletAddress);
+        this.props.fetchUserScripts(this.props.chainId, this.props.walletAddress);
     }
 
     public render(): ReactNode {
@@ -160,13 +164,14 @@ class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle>
             </div >
         );
     }
-
 }
 
 const mapStateToProps: (state: RootState) => INewScriptsComponentsProps = state => ({
+    fetchUserScripts: fetchUserScripts,
     walletConnected: state.wallet.connected,
     walletAddress: state.wallet.address,
     chainId: state.wallet.chainId,
+    tokens: state.tokens.currentChainTokens,
 });
 
-export default connect(mapStateToProps)(NewScripts);
+export default connect(mapStateToProps, { fetchUserScripts: fetchUserScripts })(NewScripts);

@@ -1,14 +1,22 @@
 import React, { Component, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { BaseScript } from '../../data/script/base-script';
+import { Token } from '../../data/tokens';
 import { RootState } from '../../state';
 import { fetchUserScripts } from '../../state/action-creators/script-action-creators';
 import { DisconnectedPage } from '../disconnected-page';
 import './styles.css';
 
-const ScriptComponent = ({ script, fetchScripts }: { script: BaseScript; fetchScripts: () => Promise<void>; }) => (
+
+interface IScriptComponentsProps {
+    script: BaseScript;
+    fetchScripts: () => Promise<void>;
+    tokens: Token[];
+}
+
+const ScriptComponent = ({ script, fetchScripts, tokens }: IScriptComponentsProps) => (
     <div className="script">
-        <div className="script__description">{script.getDescription()}</div>
+        <div className="script__description">{script.getDefaultDescription(tokens)}</div>
         <div className="script__actions">
             <button onClick={async () => {
                 await script.revoke();
@@ -26,6 +34,7 @@ interface IScriptsComponentsProps {
     walletConnected: boolean;
     walletAddress?: string;
     walletChainId?: string;
+    tokens: Token[];
 }
 
 class Scripts extends Component<IScriptsComponentsProps> {
@@ -38,6 +47,7 @@ class Scripts extends Component<IScriptsComponentsProps> {
                 key={script.getId()}
                 script={script}
                 fetchScripts={() => this.props.fetchScripts(this.props.walletChainId, this.props.walletAddress)}
+                tokens={this.props.tokens}
             />
         ));
         return (
@@ -58,6 +68,7 @@ const mapStateToProps: (state: RootState) => IScriptsComponentsProps = state => 
     walletConnected: state.wallet.connected,
     walletAddress: state.wallet.address,
     walletChainId: state.wallet.chainId,
+    tokens: state.tokens.currentChainTokens,
 });
 
 export default connect(mapStateToProps, { fetchScripts: fetchUserScripts })(Scripts);

@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import { Contract } from 'ethers';
 import { StorageProxy } from '../storage-proxy';
+import { Token } from '../tokens';
 
 export abstract class BaseScript {
 
@@ -56,7 +57,7 @@ export abstract class BaseScript {
     public abstract getMessage(): any;
     public abstract getUser(): string;
     public abstract getId(): string;
-    public abstract getDescription(): string;
+    public abstract getDefaultDescription(tokens: Token[]): string;
 
     public toJsonString(): string {
         return JSON.stringify({
