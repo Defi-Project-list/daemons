@@ -79,6 +79,17 @@ export class StorageProxy {
         }
     }
 
+    public static async updateScriptDescription(scriptId: string, scriptType: string, description: string): Promise<void> {
+        console.log(`Updating description for script ${scriptId}`);
+        const url = `${storageAddress}/scripts/update-description`;
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ scriptId, scriptType, description }),
+        };
+
+        await fetch(url, requestOptions);
+    }
 
     public static async revokeScript(scriptId: string, scriptType: string): Promise<void> {
         console.log(`Revoking script ${scriptId}`);
