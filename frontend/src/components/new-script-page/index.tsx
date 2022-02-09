@@ -19,9 +19,10 @@ import { TransferAction } from './blocks/actions/transferAction';
 import { SwapAction } from './blocks/actions/swapAction';
 import { StorageProxy } from '../../data/storage-proxy';
 import './styles.css';
-import { addNewScript, fetchUserScripts } from '../../state/action-creators/script-action-creators';
+import { addNewScript } from '../../state/action-creators/script-action-creators';
 import { Token } from '../../data/tokens';
 import { BaseScript } from '../../data/script/base-script';
+import { Navigate } from 'react-router-dom';
 
 
 interface INewScriptsComponentsProps {
@@ -45,6 +46,7 @@ class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle>
         repetitionsCondition: { valid: false, enabled: false, amount: 0 },
         followCondition: { valid: false, enabled: false },
         actionForm: noActionForm,
+        redirect: false,
     };
 
     private toggleFrequencyCondition = () => { this.setState({ frequencyCondition: { ...this.state.frequencyCondition, enabled: !this.state.frequencyCondition.enabled } }); };
@@ -70,9 +72,11 @@ class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle>
         const script = await scriptFactory.SubmitScriptsForSignature(this.state);
         await StorageProxy.saveScript(script);
         this.props.addNewScript(script);
+        this.setState({ redirect: true });
     }
 
     public render(): ReactNode {
+        if (this.state.redirect) return <Navigate to="/scripts" />;
         if (!this.props.walletConnected) return <DisconnectedPage />;
         return (
             <div className="new-script">
