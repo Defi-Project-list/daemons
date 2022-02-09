@@ -1,7 +1,7 @@
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { Contract } from 'ethers';
+import { AllowanceHelper } from '../../utils/allowance-helper';
 import { StorageProxy } from '../storage-proxy';
-import { Token } from '../tokens';
 
 export abstract class BaseScript {
 
@@ -51,6 +51,26 @@ export abstract class BaseScript {
         }
     }
 
+    public async hasAllowance(): Promise<boolean> {
+        const allowanceHelper = new AllowanceHelper();
+        return await allowanceHelper.checkForAllowance(
+            this.getUser(),
+            this.getToken(),
+            this.getExecutorAddress(),
+            this.getAmount());
+    }
+
+    public async requestAllowance(): Promise<void> {
+        const allowanceHelper = new AllowanceHelper();
+
+        // add "are you sure you want to leave" message
+        window.onbeforeunload = () => true;
+        const tx = await allowanceHelper.requestAllowance(this.getToken(), this.getExecutorAddress());
+        await tx.wait();
+        // remove "are you sure you want to leave" message
+        window.onbeforeunload = null;
+    }
+
     public abstract readonly ScriptType: string;
     public abstract getExecutor(): Promise<Contract>;
     public abstract getExecutorAddress(): string;
@@ -58,6 +78,8 @@ export abstract class BaseScript {
     public abstract getUser(): string;
     public abstract getId(): string;
     public abstract getDescription(): string;
+    protected abstract getAmount(): BigNumber;
+    protected abstract getToken(): string;
 
     public toJsonString(): string {
         return JSON.stringify({

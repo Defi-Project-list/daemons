@@ -16,6 +16,8 @@ export class SwapScript extends BaseScript {
     public getId = () => this.message.scriptId;
     public getDescription = () => this.description;
     public getExecutorAddress = () => this.message.executor;
+    protected getAmount = () => this.message.amount;
+    protected getToken = () => this.message.tokenFrom;
 
     public async getExecutor(): Promise<Contract> {
         const ethers = require('ethers');

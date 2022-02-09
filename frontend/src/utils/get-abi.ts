@@ -8,7 +8,9 @@ export async function getAbiFor(contract: string): Promise<object> {
     if (!cachedAbis[contract]) {
         var jsonFile = `/ABI/${contract}.json`;
         var json = await (await fetch(jsonFile)).json();
-        cachedAbis[contract] = json.abi;
+
+        var abi = json.abi ?? json;
+        cachedAbis[contract] = abi;
     }
 
     return cachedAbis[contract];

@@ -37,6 +37,13 @@ const noActionForm: INoActionForm = { action: ScriptAction.None, valid: false };
 const transferActionForm: ITransferActionForm = { action: ScriptAction.Transfer, valid: false, tokenAddress: '', destinationAddress: '', floatAmount: 0 };
 const swapActionForm: ISwapActionForm = { action: ScriptAction.Swap, valid: false, tokenFromAddress: '', tokenToAddress: '', floatAmount: 0 };
 
+
+const buttonDisabled = (state: INewScriptBundle) => {
+    const actionIsInvalid = !state.actionForm.valid;
+    const invalidCondition = Object.values(state).some(c => c.enabled && !c.valid);
+    return actionIsInvalid || invalidCondition;
+};
+
 class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle> {
 
     state: INewScriptBundle = {
@@ -70,6 +77,9 @@ class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle>
 
         const scriptFactory = new ScriptFactory(this.props.chainId, this.props.tokens);
         const script = await scriptFactory.SubmitScriptsForSignature(this.state);
+        if (!await script.hasAllowance()) {
+            await script.requestAllowance();
+        }
         await StorageProxy.saveScript(script);
         this.props.addNewScript(script);
         this.setState({ redirect: true });
@@ -154,13 +164,7 @@ class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle>
 
                 <button
                     className="new-script__button"
-                    disabled={
-                        !this.state.actionForm.valid
-                        || (this.state.balanceCondition.enabled && !this.state.balanceCondition.valid)
-                        || (this.state.frequencyCondition.enabled && !this.state.frequencyCondition.valid)
-                        || (this.state.priceCondition.enabled && !this.state.priceCondition.valid)
-                        || (this.state.repetitionsCondition.enabled && !this.state.repetitionsCondition.valid)
-                    }
+                    disabled={buttonDisabled(this.state)}
                     onClick={async () => this.createAndSignScript()}
                 >
                     {"Sign & Deploy"}
