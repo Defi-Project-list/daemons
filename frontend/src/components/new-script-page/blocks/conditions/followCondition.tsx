@@ -19,7 +19,7 @@ export const FollowCondition = ({ form, update }: { form: IFollowConditionForm; 
                     <div className='script-block__panel--row follow-block'>
 
                         <Field
-                            name="unit"
+                            name="parentScriptId"
                             component="select"
                             validate={scriptSelectValidation}
                         >
@@ -28,7 +28,13 @@ export const FollowCondition = ({ form, update }: { form: IFollowConditionForm; 
                                 className={`follow-block__parent ${meta.error ? 'script-block__field--error' : null}`}
                                 onChange={(e) => {
                                     input.onChange(e);
-                                    //update({ ...form, parentScript: e.target.value });
+                                    const script: BaseScript | undefined = userScripts.find(script => script.getId() === e.target.value);
+                                    console.log(script);
+                                    if (script) update({
+                                        ...form,
+                                        parentScriptId: script.getId(),
+                                        parentScriptExecutor: script.getExecutorAddress(),
+                                    });
                                 }}
                                 onBlur={(e) => {
                                     input.onBlur(e);
@@ -37,7 +43,13 @@ export const FollowCondition = ({ form, update }: { form: IFollowConditionForm; 
                             >
                                 <option key={0} value="" disabled ></option>
                                 {
-                                    userScripts.map(script => <option key={script.getId()} value={script.getId()}>{script.getId().substring(0, 16) + '...'}</option>)
+                                    userScripts.map(script => (
+                                        <option
+                                            key={script.getId()}
+                                            value={script.getId()}>
+                                            {script.getId().substring(0, 16) + '...'}
+                                        </option>
+                                    ))
                                 }
                             </select>}
                         </Field>

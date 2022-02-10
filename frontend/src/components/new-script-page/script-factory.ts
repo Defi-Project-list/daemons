@@ -1,4 +1,4 @@
-import { BigNumber, utils } from 'ethers';
+import { BigNumber, Contract, utils } from 'ethers';
 import { ChainInfo, ZeroAddress } from '../../data/chain-info';
 import { Contracts } from '../../data/contracts';
 import { BaseScript } from '../../data/script/base-script';
@@ -11,6 +11,7 @@ import { ISwapActionForm, ITransferActionForm, ScriptAction } from './blocks/act
 import { IBalanceConditionForm, IFollowConditionForm, IFrequencyConditionForm, IPriceConditionForm, IRepetitionsConditionForm } from './blocks/conditions/conditions-interfaces';
 import { INewScriptBundle } from './i-new-script-form';
 import { Token } from '../../data/tokens';
+import { getAbiFor } from '../../utils/get-abi';
 
 type ScriptDefinition = ISwapAction | ITransferAction;
 
@@ -195,22 +196,33 @@ export class ScriptFactory {
     }
 
     private async createFollowConditionFromForm(followCondition: IFollowConditionForm): Promise<IFollowCondition> {
-        if (!followCondition.enabled || !followCondition.parentScript) return {
-            enabled: false,
-            scriptId: '0x0000000000000000000000000000000000000000000000000000000000000000',
-            executor: '0x0000000000000000000000000000000000000000',
-            shift: BigNumber.from(0),
-        };
+        if (!followCondition.enabled || !followCondition.parentScriptId || !followCondition.parentScriptExecutor) {
+            return {
+                enabled: false,
+                scriptId: '0x0000000000000000000000000000000000000000000000000000000000000000',
+                executor: '0x0000000000000000000000000000000000000000',
+                shift: BigNumber.from(0),
+            };
+        }
 
         // calculate shift (difference between the number of executions of the parent and the child)
-        const executorContract = await followCondition.parentScript.getExecutor();
-        const shift = await executorContract.getRepetitions(followCondition.parentScript.getId());
+        const executorContract = await this.getExecutor(followCondition.parentScriptExecutor);
+        const shift = await executorContract.getRepetitions(followCondition.parentScriptId);
 
         return {
             enabled: followCondition.enabled,
-            scriptId: followCondition.parentScript.getId(),
-            executor: followCondition.parentScript.getExecutorAddress(),
+            scriptId: followCondition.parentScriptId,
+            executor: followCondition.parentScriptExecutor,
             shift: shift,
         };
+    }
+
+    private async getExecutor(executorAddress: string): Promise<Contract> {
+        const ethers = require('ethers');
+        const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+        const signer = provider.getSigner();
+
+        const contractAbi = await getAbiFor('ConditionsChecker');
+        return new ethers.Contract(executorAddress, contractAbi, signer);
     }
 }

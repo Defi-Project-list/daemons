@@ -31,5 +31,6 @@ export interface IRepetitionsConditionForm extends IScriptConditionForm {
 }
 
 export interface IFollowConditionForm extends IScriptConditionForm {
-    parentScript?: BaseScript;
+    parentScriptId?: string;
+    parentScriptExecutor?: string;
 }
