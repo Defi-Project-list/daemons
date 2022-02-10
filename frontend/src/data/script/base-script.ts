@@ -46,16 +46,14 @@ export abstract class BaseScript {
         return this.verificationState;
     }
 
-    public async execute(): Promise<string> {
+    public async execute(): Promise<void> {
         const executor = await this.getExecutor();
         const message = this.getMessage();
-        console.log(message);
         try {
             await executor.execute(message, this.R, this.S, this.V);
         } catch (error) {
             throw error;
         }
-        return "YAY!";
     }
 
     public async revoke(): Promise<void> {

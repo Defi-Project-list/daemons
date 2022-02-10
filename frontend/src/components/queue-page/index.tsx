@@ -4,18 +4,9 @@ import { BaseScript } from '../../data/script/base-script';
 import { RootState } from '../../state';
 import { fetchAllScripts } from '../../state/action-creators/script-action-creators';
 import { DisconnectedPage } from '../disconnected-page';
+import { QueueScriptComponent } from './query-script-component';
 import './styles.css';
 
-const QueueScriptComponent = ({ script }: { script: BaseScript; }) => (
-    <div className="queue-script">
-        <div className="queue-script__id">{script.getId().substring(0, 5)}...</div>
-        <div className="queue-script__type">{script.ScriptType}</div>
-        <div className="queue-script__actions">
-            <button onClick={async () => alert(await script.verify())} className='script__button'>Verify</button>
-            <button onClick={async () => alert(await script.execute())} className='script__button'>Execute</button>
-        </div>
-    </div>
-);
 
 interface IQueueComponentsProps {
     fetchAllScripts: (chainId?: string) => any;
@@ -38,11 +29,12 @@ class Queue extends Component<IQueueComponentsProps>{
     }
 
 
-
     public render(): ReactNode {
         if (!this.props.walletConnected) return <DisconnectedPage />;
 
-        const scripts = this.props.fetchedScripts.map((script: BaseScript) => <QueueScriptComponent key={script.getId()} script={script}></QueueScriptComponent>);
+        const scripts = this.props.fetchedScripts.map((script: BaseScript) => (
+            <QueueScriptComponent key={script.getId()} script={script} />
+        ));
         return (
             <div className='queue'>
                 <div className='queue__subtitle'>Execute scripts and get rewarded in BRG tokens</div>
