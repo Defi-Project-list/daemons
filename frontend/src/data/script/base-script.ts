@@ -3,26 +3,43 @@ import { Contract } from 'ethers';
 import { AllowanceHelper } from '../../utils/allowance-helper';
 import { StorageProxy } from '../storage-proxy';
 
+export enum VerificationState {
+    unverified = 'unverified',             // the script verification state has not been checked yet
+    loading = 'loading',                   // script is currently  being verified
+    allowanceNeeded = 'allowanceNeeded',   // the user needs to grant allowance
+    maxReached = 'maxReached',             // the maximum number of executions has been reached
+    invalidSignature = 'invalidSignature', // the script signature cannot be verified by the contract
+    valid = 'valid',                       // the script can be executed
+    otherReason = 'otherReason',           // the script cannot be executed due to other reasons
+}
+
 export abstract class BaseScript {
 
     private readonly R: string;
     private readonly S: string;
     private readonly V: number;
+    private verificationState: VerificationState;
 
     protected constructor(protected readonly signature: string) {
         const split = ethers.utils.splitSignature(signature);
         [this.R, this.S, this.V] = [split.r, split.s, split.v];
+        this.verificationState = VerificationState.unverified;
     }
 
-    public async verify(): Promise<string> {
+    public getVerificationState = (): VerificationState => this.verificationState;
+
+    public async verify(): Promise<VerificationState> {
         const executor = await this.getExecutor();
         const message = this.getMessage();
         try {
             await executor.verify(message, this.R, this.S, this.V);
-            return "Verified!";
+            return VerificationState.valid;
         } catch (error: any) {
-            if (error.data)
-                return this.parseFailedVerifyError(error.data);
+            if (error.data) {
+                // we can extract the verification failure reason
+                this.verificationState = this.parseVerificationStateFromErrorText(error.data);
+                return this.verificationState;
+            }
 
             throw error;
         }
@@ -87,6 +104,14 @@ export abstract class BaseScript {
             description: this.getDescription(),
             ...this.getMessage(),
         });
+    }
+
+    private parseVerificationStateFromErrorText(errorText: string): VerificationState {
+        const parsedErrorText = this.parseFailedVerifyError(errorText).toLowerCase();
+        console.log(parsedErrorText);
+        if (parsedErrorText.includes('signature')) return VerificationState.invalidSignature;
+        if (parsedErrorText.includes('allowance')) return VerificationState.allowanceNeeded;
+        return VerificationState.otherReason;
     }
 
     private parseFailedVerifyError(errorText: string): string {

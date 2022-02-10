@@ -5,28 +5,9 @@ import { Token } from '../../data/tokens';
 import { RootState } from '../../state';
 import { fetchUserScripts } from '../../state/action-creators/script-action-creators';
 import { DisconnectedPage } from '../disconnected-page';
+import { ScriptComponent } from './script-component';
 import './styles.css';
 
-
-interface IScriptComponentsProps {
-    script: BaseScript;
-    fetchScripts: () => Promise<void>;
-}
-
-const ScriptComponent = ({ script, fetchScripts }: IScriptComponentsProps) => (
-    <div className="script">
-        <div className="script__description">{script.getDescription()}</div>
-        <div className="script__actions">
-            <button onClick={async () => {
-                await script.revoke();
-                await fetchScripts();
-            }} className='script__button'>Revoke</button>
-            <button onClick={async () => alert(await script.verify())} className='script__button'>Verify</button>
-            <button onClick={async () => alert(await script.execute())} className='script__button'>Execute</button>
-        </div>
-        <button onClick={() => alert(JSON.stringify(script.getMessage(), null, ' '))} className='script__info-button'>i</button>
-    </div>
-);
 
 interface IScriptsComponentsProps {
     fetchScripts: (chainId?: string, address?: string) => any;
