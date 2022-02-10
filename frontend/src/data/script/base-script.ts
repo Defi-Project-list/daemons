@@ -10,6 +10,8 @@ export enum VerificationState {
     maxReached = 'maxReached',             // the maximum number of executions has been reached
     invalidSignature = 'invalidSignature', // the script signature cannot be verified by the contract
     valid = 'valid',                       // the script can be executed
+    noBalance = 'noBalance',               // the user does not have enough tokens to execute the script
+    gasTankEmpty = 'gasTankEmpty',         // the user's gas tank is empty
     otherReason = 'otherReason',           // the script cannot be executed due to other reasons
 }
 
@@ -33,22 +35,26 @@ export abstract class BaseScript {
         const message = this.getMessage();
         try {
             await executor.verify(message, this.R, this.S, this.V);
-            return VerificationState.valid;
+            this.verificationState = VerificationState.valid;
         } catch (error: any) {
-            if (error.data) {
-                // we can extract the verification failure reason
-                this.verificationState = this.parseVerificationStateFromErrorText(error.data);
-                return this.verificationState;
-            }
+            // something strange happened
+            if (!error.data) throw error;
 
-            throw error;
+            // we can extract the verification failure reason
+            this.verificationState = this.parseVerificationStateFromErrorText(error.data);
         }
+        return this.verificationState;
     }
 
     public async execute(): Promise<string> {
         const executor = await this.getExecutor();
         const message = this.getMessage();
-        await executor.execute(message, this.R, this.S, this.V);
+        console.log(message);
+        try {
+            await executor.execute(message, this.R, this.S, this.V);
+        } catch (error) {
+            throw error;
+        }
         return "YAY!";
     }
 
@@ -111,6 +117,9 @@ export abstract class BaseScript {
         console.log(parsedErrorText);
         if (parsedErrorText.includes('signature')) return VerificationState.invalidSignature;
         if (parsedErrorText.includes('allowance')) return VerificationState.allowanceNeeded;
+        if (parsedErrorText.includes('maximum number of executions')) return VerificationState.maxReached;
+        if (parsedErrorText.includes('not enough gas in the tank')) return VerificationState.gasTankEmpty;
+        if (parsedErrorText.includes('enough balance')) return VerificationState.noBalance;
         return VerificationState.otherReason;
     }
 
