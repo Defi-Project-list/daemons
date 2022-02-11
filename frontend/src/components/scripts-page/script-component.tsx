@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { BaseScript, VerificationState } from '../../data/script/base-script';
+import { removeScript } from '../../state/action-creators/script-action-creators';
 
-interface IScriptComponentsProps {
-    script: BaseScript;
-    fetchScripts: () => Promise<void>;
-}
 
-export const ScriptComponent = ({ script, fetchScripts }: IScriptComponentsProps) => {
+export const ScriptComponent = ({ script }: { script: BaseScript; }) => {
     const [verificationState, setVerificationState] = useState(script.getVerificationState());
+    const dispatch = useDispatch();
 
-    const revokeScript = async () => { await script.revoke(); await fetchScripts(); };
+    const revokeScript = async () => { await script.revoke(); dispatch(removeScript(script)); };
     const verifyScript = async () => { setVerificationState(await script.verify()); };
     const executeScript = async () => { await script.execute(); };
     const requestAllowance = async () => { await script.requestAllowance(); await verifyScript(); };

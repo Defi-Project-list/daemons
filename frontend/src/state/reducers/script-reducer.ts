@@ -29,6 +29,12 @@ export const scriptReducer = (state: ScriptState = initialState, action: ScriptA
                 ...state,
                 userScripts: state.userScripts.concat(action.payload),
             };
+        case ActionType.REMOVE_SCRIPT:
+            const scriptToRemove = action.payload.getId();
+            return {
+                ...state,
+                userScripts: state.userScripts.filter(script => script.getId() !== scriptToRemove),
+            };
         default:
             return state;
     }

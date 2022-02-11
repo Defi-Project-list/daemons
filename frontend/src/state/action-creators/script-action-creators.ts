@@ -34,3 +34,13 @@ export const addNewScript = (script: BaseScript) => {
         });
     };
 };
+
+export const removeScript = (script: BaseScript) => {
+
+    return async (dispatch: Dispatch<ScriptAction>) => {
+        dispatch({
+            type: ActionType.REMOVE_SCRIPT,
+            payload: script,
+        });
+    };
+};

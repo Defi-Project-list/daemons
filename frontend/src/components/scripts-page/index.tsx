@@ -24,11 +24,7 @@ class Scripts extends Component<IScriptsComponentsProps> {
         if (!this.props.walletConnected) return <DisconnectedPage />;
 
         const scripts = this.props.fetchedScripts.map((script: BaseScript) => (
-            <ScriptComponent
-                key={script.getId()}
-                script={script}
-                fetchScripts={() => this.props.fetchScripts(this.props.walletChainId, this.props.walletAddress)}
-            />
+            <ScriptComponent key={script.getId()} script={script} />
         ));
         return (
             <div>

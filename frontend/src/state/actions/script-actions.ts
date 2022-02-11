@@ -11,4 +11,9 @@ export interface INewScriptsAction {
     payload: BaseScript;
 }
 
-export type ScriptAction = IFetchScriptsAction | INewScriptsAction;
+export interface IRemoveScriptsAction {
+    type: ActionType.REMOVE_SCRIPT;
+    payload: BaseScript;
+}
+
+export type ScriptAction = IFetchScriptsAction | INewScriptsAction | IRemoveScriptsAction;
