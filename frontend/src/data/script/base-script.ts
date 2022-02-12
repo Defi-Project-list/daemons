@@ -51,8 +51,11 @@ export abstract class BaseScript {
         const message = this.getMessage();
         try {
             await executor.execute(message, this.R, this.S, this.V);
-        } catch (error) {
-            throw error;
+        } catch (error: any) {
+            if (!error.data) throw error;
+
+            // we can extract the verification failure reason
+            alert(this.parseVerificationStateFromErrorText(error.data));
         }
     }
 
