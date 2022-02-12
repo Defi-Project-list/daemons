@@ -2,7 +2,7 @@
     {
         name: "Wrapped Ether",
         symbol: "WETH",
-        address: "0xf3a6679b266899042276804930b3bfbaf807f15b",
+        address: "0xd0a1e359811322d97991e03f863a0c30c2cf029c",
         decimals: 18,
         logoURL: "https://tokens.1inch.io/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
         chainId: '42',
