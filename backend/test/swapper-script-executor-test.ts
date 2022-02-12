@@ -8,6 +8,7 @@ import { domain, ISwapAction, types } from "../../messages/definitions/swap-acti
 describe("SwapperScriptExecutor", function () {
 
     let owner: SignerWithAddress;
+    let user1: SignerWithAddress;
 
     // contracts
     let BRG: Contract;
@@ -62,7 +63,7 @@ describe("SwapperScriptExecutor", function () {
 
     this.beforeEach(async () => {
         // get main wallet
-        [owner] = await ethers.getSigners();
+        [owner, user1] = await ethers.getSigners();
 
         // Balrog contract
         const BalrogTokenContract = await ethers.getContractFactory("BalrogToken");
@@ -99,6 +100,9 @@ describe("SwapperScriptExecutor", function () {
 
         // Generate balance
         await fooToken.mint(owner.address, baseMessage.amount);
+
+        // register executor in gas tank
+        await gasTank.addExecutor(executor.address);
     });
 
     async function initialize(baseMessage: ISwapAction): Promise<ISwapAction> {
@@ -154,6 +158,20 @@ describe("SwapperScriptExecutor", function () {
         // check final amounts. Note that 145 were generated during initialization
         expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("55"));
         expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("145"));
+    });
+
+    it('swapping triggers reward in gas tank', async () => {
+        let message = JSON.parse(JSON.stringify(baseMessage));
+        message = await initialize(message);
+        await fooToken.mint(owner.address, ethers.utils.parseEther("55"));
+
+        // gasTank should NOT have a claimable amount now for user1
+        expect((await gasTank.claimable(user1.address)).toNumber()).to.equal(0);
+
+        await executor.connect(user1).execute(message, sigR, sigS, sigV);
+
+        // gasTank should have a claimable amount now for user1
+        expect((await gasTank.claimable(user1.address)).toNumber()).to.not.equal(0);
     });
 
     it('swapping is cheap', async () => {

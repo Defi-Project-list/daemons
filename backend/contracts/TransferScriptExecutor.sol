@@ -7,6 +7,9 @@ import "./Messages.sol";
 import "./interfaces/UniswapV2.sol";
 
 contract TransferScriptExecutor is ConditionsChecker {
+    uint256 public GAS_COST = 125;
+    uint256 public GAS_PRICE = 1;
+
     /* ========== HASH FUNCTIONS ========== */
 
     function hash(Transfer calldata transfer) private pure returns (bytes32) {
@@ -103,9 +106,7 @@ contract TransferScriptExecutor is ConditionsChecker {
             message.amount
         );
 
-        // step 2: reward executor
-        // -> gas tank send a certain amount of ETH from the user balance to the treasury (still in gas tank?)
-        // -> gas tank reward msg.sender with some freshly minted Brg tokens
-        // -> end
+        // step 4: reward executor
+        gasTank.addReward(GAS_COST * GAS_PRICE, message.user, _msgSender());
     }
 }

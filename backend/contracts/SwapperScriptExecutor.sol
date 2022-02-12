@@ -7,7 +7,8 @@ import "./Messages.sol";
 import "./interfaces/UniswapV2.sol";
 
 contract SwapperScriptExecutor is ConditionsChecker {
-    // exchange address
+    uint256 public GAS_COST = 125;
+    uint256 public GAS_PRICE = 1;
     address private exchange;
     mapping(address => mapping(IERC20 => bool)) private allowances;
 
@@ -126,9 +127,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
         );
 
         // step 4: reward executor
-        // -> gas tank send a certain amount of ETH from the user balance to the treasury (still in gas tank?)
-        // -> gas tank reward msg.sender with some freshly minted Brg tokens
-        // -> end
+        gasTank.addReward(GAS_COST * GAS_PRICE, message.user, _msgSender());
     }
 
     function giveAllowance(IERC20 _token, address _exchange) private {

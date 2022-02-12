@@ -15,7 +15,7 @@ abstract contract ConditionsChecker is Ownable {
 
     uint256 internal chainId;
     IERC20 private balrogToken;
-    IGasTank private gasTank;
+    IGasTank internal gasTank;
     IPriceRetriever private priceRetriever;
     uint256 public MINIMUM_GAS_FOR_SCRIPT_EXECUTION = 1 ether;
 

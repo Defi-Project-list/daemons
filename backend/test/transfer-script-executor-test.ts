@@ -92,6 +92,9 @@ describe("TransferScriptExecutor", function () {
 
         // Generate balance
         await fooToken.mint(owner.address, baseMessage.amount);
+
+        // register executor in gas tank
+        await gasTank.addExecutor(executor.address);
     });
 
     async function initialize(baseMessage: ITransferAction): Promise<ITransferAction> {
@@ -149,6 +152,20 @@ describe("TransferScriptExecutor", function () {
 
         // the destination got his tokens
         expect(await fooToken.balanceOf(otherWallet.address)).to.equal(ethers.utils.parseEther("145"));
+    });
+
+    it('transferring triggers reward in gas tank', async () => {
+        let message = JSON.parse(JSON.stringify(baseMessage));
+        message = await initialize(message);
+        await fooToken.mint(owner.address, ethers.utils.parseEther("55"));
+
+        // gasTank should NOT have a claimable amount now for user1
+        expect((await gasTank.claimable(otherWallet.address)).toNumber()).to.equal(0);
+
+        await executor.connect(otherWallet).execute(message, sigR, sigS, sigV);
+
+        // gasTank should have a claimable amount now for user1
+        expect((await gasTank.claimable(otherWallet.address)).toNumber()).to.not.equal(0);
     });
 
     it('transferring is cheap', async () => {
