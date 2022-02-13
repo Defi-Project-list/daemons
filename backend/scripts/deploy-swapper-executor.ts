@@ -24,7 +24,6 @@ async function main() {
   console.log(`SwapperScriptExecutor deployed to: ${swapperScriptExecutor.address}`);
 
   await swapperScriptExecutor.setGasTank(gasTankAddress);
-  await swapperScriptExecutor.setBrgToken(balrogTokenAddress);
   await swapperScriptExecutor.setPriceRetriever(priceRetrieverAddress);
   await swapperScriptExecutor.setExchange(testRouterAddress);
   console.log(`Secondary contracts have been set`);

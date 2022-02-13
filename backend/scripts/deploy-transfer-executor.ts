@@ -23,7 +23,6 @@ async function main() {
   console.log(`TransferScriptExecutor deployed to: ${transferScriptExecutor.address}`);
 
   await transferScriptExecutor.setGasTank(gasTankAddress);
-  await transferScriptExecutor.setBrgToken(balrogTokenAddress);
   await transferScriptExecutor.setPriceRetriever(priceRetrieverAddress);
   console.log(`Secondary contracts have been set`);
 

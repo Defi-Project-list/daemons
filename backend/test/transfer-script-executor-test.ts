@@ -11,7 +11,6 @@ describe("TransferScriptExecutor", function () {
     let otherWallet: SignerWithAddress;
 
     // contracts
-    let BRG: Contract;
     let gasTank: Contract;
     let priceRetriever: Contract;
     let executor: Contract;
@@ -63,10 +62,6 @@ describe("TransferScriptExecutor", function () {
         // get main wallet
         [owner, otherWallet] = await ethers.getSigners();
 
-        // Balrog contract
-        const BalrogTokenContract = await ethers.getContractFactory("BalrogToken");
-        BRG = await BalrogTokenContract.deploy();
-
         // GasTank contract
         const GasTankContract = await ethers.getContractFactory("GasTank");
         gasTank = await GasTankContract.deploy();
@@ -88,7 +83,6 @@ describe("TransferScriptExecutor", function () {
         const TransferScriptExecutorContract = await ethers.getContractFactory("TransferScriptExecutor");
         executor = await TransferScriptExecutorContract.deploy();
         await executor.setGasTank(gasTank.address);
-        await executor.setBrgToken(BRG.address);
         await executor.setPriceRetriever(priceRetriever.address);
         await executor.setGasFeed(gasPriceFeed.address);
 

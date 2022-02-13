@@ -11,7 +11,6 @@ describe("SwapperScriptExecutor", function () {
     let user1: SignerWithAddress;
 
     // contracts
-    let BRG: Contract;
     let gasTank: Contract;
     let priceRetriever: Contract;
     let executor: Contract;
@@ -65,10 +64,6 @@ describe("SwapperScriptExecutor", function () {
         // get main wallet
         [owner, user1] = await ethers.getSigners();
 
-        // Balrog contract
-        const BalrogTokenContract = await ethers.getContractFactory("BalrogToken");
-        BRG = await BalrogTokenContract.deploy();
-
         // GasTank contract
         const GasTankContract = await ethers.getContractFactory("GasTank");
         gasTank = await GasTankContract.deploy();
@@ -95,7 +90,6 @@ describe("SwapperScriptExecutor", function () {
         const SwapperScriptExecutorContract = await ethers.getContractFactory("SwapperScriptExecutor");
         executor = await SwapperScriptExecutorContract.deploy();
         await executor.setGasTank(gasTank.address);
-        await executor.setBrgToken(BRG.address);
         await executor.setExchange(mockRouter.address);
         await executor.setPriceRetriever(priceRetriever.address);
         await executor.setGasFeed(gasPriceFeed.address);

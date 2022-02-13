@@ -15,7 +15,6 @@ abstract contract ConditionsChecker is Ownable {
     mapping(address => mapping(bytes32 => bool)) private revocations;
 
     uint256 internal chainId;
-    IERC20 private balrogToken;
     IGasTank internal gasTank;
     GasPriceFeed internal gasPriceFeed;
     IPriceRetriever private priceRetriever;
@@ -43,11 +42,6 @@ abstract contract ConditionsChecker is Ownable {
         gasTank = IGasTank(_gasTank);
     }
 
-    function setBrgToken(address _brgToken) external onlyOwner {
-        require(_brgToken != address(0));
-        balrogToken = IERC20(_brgToken);
-    }
-
     function setPriceRetriever(address _priceRetriever) external onlyOwner {
         require(_priceRetriever != address(0));
         priceRetriever = IPriceRetriever(_priceRetriever);
@@ -66,7 +60,6 @@ abstract contract ConditionsChecker is Ownable {
     /** Checks whether the contract is ready to operate */
     function preliminaryCheck() external view {
         require(address(gasTank) != address(0), "GasTank");
-        require(address(balrogToken) != address(0), "Token");
         require(address(priceRetriever) != address(0), "PricesRetriever");
         require(address(gasPriceFeed) != address(0), "GasPriceFeed");
     }
