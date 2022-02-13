@@ -100,6 +100,21 @@ describe("TransferScriptExecutor", function () {
 
         // register executor in gas tank
         await gasTank.addExecutor(executor.address);
+
+        // Treasury contract
+        const TreasuryContract = await ethers.getContractFactory("Treasury");
+        const treasury = await TreasuryContract.deploy(fooToken.address, gasTank.address);
+
+        // add some tokens to treasury
+        fooToken.mint(treasury.address, ethers.utils.parseEther("100"));
+
+        // set treasury address in gas tank
+        await gasTank.setTreasury(treasury.address);
+
+        // check that everything has been set correctly
+        await executor.preliminaryCheck();
+        await gasTank.preliminaryCheck();
+        await treasury.preliminaryCheck();
     });
 
     async function initialize(baseMessage: ITransferAction): Promise<ITransferAction> {

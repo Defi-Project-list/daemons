@@ -63,6 +63,13 @@ abstract contract ConditionsChecker is Ownable {
         MINIMUM_GAS_FOR_SCRIPT_EXECUTION = _amount;
     }
 
+    function preliminaryCheck() external view {
+        require(address(gasTank) != address(0), "GasTank");
+        require(address(balrogToken) != address(0), "Token");
+        require(address(priceRetriever) != address(0), "PricesRetriever");
+        require(address(gasPriceFeed) != address(0), "GasPriceFeed");
+    }
+
     /* ========== PUBLIC FUNCTIONS ========== */
 
     function revoke(bytes32 _id) external {

@@ -26,6 +26,10 @@ contract GasTank is IGasTank, Ownable {
         executors[executor] = false;
     }
 
+    function preliminaryCheck() external view {
+        require(address(treasury) != address(0), "Treasury");
+    }
+
     /* ========== VIEWS ========== */
 
     function balanceOf(address user) external view override returns (uint256) {

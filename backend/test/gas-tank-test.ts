@@ -41,6 +41,10 @@ describe("GasTank", function () {
 
         // sets owner as executor
         await gasTank.addExecutor(owner.address);
+
+        // check that everything has been set correctly
+        await gasTank.preliminaryCheck();
+        await treasury.preliminaryCheck();
     });
 
     describe("Withdrawals and Deposits", function () {

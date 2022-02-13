@@ -21,6 +21,7 @@ contract Treasury is ITreasury, Ownable {
     /* ========== CONSTRUCTOR ========== */
 
     constructor(address _token, address _gasTank) {
+        require(_token != address(0));
         token = IERC20(_token);
         gasTank = _gasTank;
     }
@@ -29,6 +30,11 @@ contract Treasury is ITreasury, Ownable {
 
     function setGasTank(address _gasTank) external onlyOwner {
         gasTank = _gasTank;
+    }
+
+    function preliminaryCheck() external view {
+        require(address(gasTank) != address(0), "GasTank");
+        require(token.balanceOf(address(this)) > 0, "Treasury is empty");
     }
 
     function setCommissionPercentage(uint16 value) external onlyOwner {

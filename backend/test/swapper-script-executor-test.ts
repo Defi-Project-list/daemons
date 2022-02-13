@@ -87,7 +87,7 @@ describe("SwapperScriptExecutor", function () {
         const MockRouterContract = await ethers.getContractFactory("MockRouter");
         mockRouter = await MockRouterContract.deploy();
 
-        // Mock router contract
+        // Gas Price Feed contract
         const GasPriceFeedContract = await ethers.getContractFactory("GasPriceFeed");
         const gasPriceFeed = await GasPriceFeedContract.deploy();
 
@@ -108,6 +108,21 @@ describe("SwapperScriptExecutor", function () {
 
         // register executor in gas tank
         await gasTank.addExecutor(executor.address);
+
+        // Treasury contract
+        const TreasuryContract = await ethers.getContractFactory("Treasury");
+        const treasury = await TreasuryContract.deploy(fooToken.address, gasTank.address);
+
+        // add some tokens to treasury
+        fooToken.mint(treasury.address, ethers.utils.parseEther("100"));
+
+        // set treasury address in gas tank
+        await gasTank.setTreasury(treasury.address);
+
+        // check that everything has been set correctly
+        await executor.preliminaryCheck();
+        await gasTank.preliminaryCheck();
+        await treasury.preliminaryCheck();
     });
 
     async function initialize(baseMessage: ISwapAction): Promise<ISwapAction> {
