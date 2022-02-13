@@ -92,7 +92,7 @@ contract TransferScriptExecutor is ConditionsChecker {
         bytes32 r,
         bytes32 s,
         uint8 v
-    ) public {
+    ) external {
         verify(message, r, s, v);
         lastExecutions[message.scriptId] = block.number;
         repetitionsCount[message.scriptId] += 1;

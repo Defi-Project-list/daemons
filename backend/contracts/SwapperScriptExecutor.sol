@@ -97,7 +97,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
         bytes32 r,
         bytes32 s,
         uint8 v
-    ) public {
+    ) external {
         verify(message, r, s, v);
         require(exchange != address(0), "Exchange address has not been set");
         lastExecutions[message.scriptId] = block.number;
