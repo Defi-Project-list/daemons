@@ -26,6 +26,7 @@ contract GasTank is IGasTank, Ownable {
         executors[executor] = false;
     }
 
+    /** Checks whether the contract is ready to operate */
     function preliminaryCheck() external view {
         require(address(treasury) != address(0), "Treasury");
     }

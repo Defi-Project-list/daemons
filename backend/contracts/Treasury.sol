@@ -32,6 +32,7 @@ contract Treasury is ITreasury, Ownable {
         gasTank = _gasTank;
     }
 
+    /** Checks whether the contract is ready to operate */
     function preliminaryCheck() external view {
         require(address(gasTank) != address(0), "GasTank");
         require(token.balanceOf(address(this)) > 0, "Treasury is empty");

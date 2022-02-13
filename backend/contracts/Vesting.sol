@@ -40,6 +40,7 @@ contract Vesting is Ownable {
 
     /* ========== RESTRICTED FUNCTIONS ========== */
 
+    /** Adds a beneficiary for the vesting and the amount of tokens that belong to it */
     function addBeneficiary(address beneficiary, uint256 amount)
         external
         onlyOwner
@@ -71,6 +72,7 @@ contract Vesting is Ownable {
 
     /* ========== EXTERNAL FUNCTIONS ========== */
 
+    /** Sends the due amount of tokens to the specified beneficiary */
     function release(address beneficiary) external {
         uint256 unreleased = releasableAmount(beneficiary);
         require(unreleased > 0, "Nothing to release");
@@ -81,10 +83,12 @@ contract Vesting is Ownable {
 
     /* ========== VIEWS FUNCTIONS ========== */
 
+    /** The amount of tokens that have not been assigned to any beneficiary */
     function unallocatedTokens() public view returns (uint256) {
         return token.balanceOf(address(this)) - allocated;
     }
 
+    /** The amount a beneficiary can release in this moment */
     function releasableAmount(address beneficiary)
         public
         view
@@ -93,6 +97,7 @@ contract Vesting is Ownable {
         return vestedAmount(beneficiary) - released[beneficiary];
     }
 
+    /** The amount of tokens that have been vested for a beneficiary */
     function vestedAmount(address beneficiary) public view returns (uint256) {
         if (block.timestamp < start) {
             return 0;

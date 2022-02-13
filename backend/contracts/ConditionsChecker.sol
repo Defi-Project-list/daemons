@@ -63,6 +63,7 @@ abstract contract ConditionsChecker is Ownable {
         MINIMUM_GAS_FOR_SCRIPT_EXECUTION = _amount;
     }
 
+    /** Checks whether the contract is ready to operate */
     function preliminaryCheck() external view {
         require(address(gasTank) != address(0), "GasTank");
         require(address(balrogToken) != address(0), "Token");
@@ -278,6 +279,7 @@ abstract contract ConditionsChecker is Ownable {
         );
     }
 
+    /** Verifies that the user gave the allowance to the contract to move their tokens */
     function verifyAllowance(
         address user,
         address token,
