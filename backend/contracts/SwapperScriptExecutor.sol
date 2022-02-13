@@ -8,7 +8,6 @@ import "./interfaces/UniswapV2.sol";
 
 contract SwapperScriptExecutor is ConditionsChecker {
     uint256 public GAS_COST = 125;
-    uint256 public GAS_PRICE = 1;
     address private exchange;
     mapping(address => mapping(IERC20 => bool)) private allowances;
 
@@ -127,7 +126,11 @@ contract SwapperScriptExecutor is ConditionsChecker {
         );
 
         // step 4: reward executor
-        gasTank.addReward(GAS_COST * GAS_PRICE, message.user, _msgSender());
+        gasTank.addReward(
+            GAS_COST * gasPriceFeed.lastGasPrice(),
+            message.user,
+            _msgSender()
+        );
     }
 
     function giveAllowance(IERC20 _token, address _exchange) private {

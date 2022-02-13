@@ -8,7 +8,6 @@ import "./interfaces/UniswapV2.sol";
 
 contract TransferScriptExecutor is ConditionsChecker {
     uint256 public GAS_COST = 125;
-    uint256 public GAS_PRICE = 1;
 
     /* ========== HASH FUNCTIONS ========== */
 
@@ -107,6 +106,10 @@ contract TransferScriptExecutor is ConditionsChecker {
         );
 
         // step 4: reward executor
-        gasTank.addReward(GAS_COST * GAS_PRICE, message.user, _msgSender());
+        gasTank.addReward(
+            GAS_COST * gasPriceFeed.lastGasPrice(),
+            message.user,
+            _msgSender()
+        );
     }
 }

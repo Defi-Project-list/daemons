@@ -5,6 +5,7 @@ import "hardhat/console.sol";
 import "./Messages.sol";
 import "./interfaces/IGasTank.sol";
 import "./interfaces/IPriceRetriever.sol";
+import "./GasPriceFeed.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -16,8 +17,9 @@ abstract contract ConditionsChecker is Ownable {
     uint256 internal chainId;
     IERC20 private balrogToken;
     IGasTank internal gasTank;
+    GasPriceFeed internal gasPriceFeed;
     IPriceRetriever private priceRetriever;
-    uint256 public MINIMUM_GAS_FOR_SCRIPT_EXECUTION = 1 ether;
+    uint256 public MINIMUM_GAS_FOR_SCRIPT_EXECUTION = 0.5 ether;
 
     // domain definition
     string private constant EIP712_DOMAIN = "EIP712Domain(string name)";
@@ -37,18 +39,27 @@ abstract contract ConditionsChecker is Ownable {
     /* ========== RESTRICTED FUNCTIONS ========== */
 
     function setGasTank(address _gasTank) external onlyOwner {
+        require(_gasTank != address(0));
         gasTank = IGasTank(_gasTank);
     }
 
     function setBrgToken(address _brgToken) external onlyOwner {
+        require(_brgToken != address(0));
         balrogToken = IERC20(_brgToken);
     }
 
     function setPriceRetriever(address _priceRetriever) external onlyOwner {
+        require(_priceRetriever != address(0));
         priceRetriever = IPriceRetriever(_priceRetriever);
     }
 
+    function setGasFeed(address _gasPriceFeed) external onlyOwner {
+        require(_gasPriceFeed != address(0));
+        gasPriceFeed = GasPriceFeed(_gasPriceFeed);
+    }
+
     function setMinimumGas(uint256 _amount) external onlyOwner {
+        require(_amount > 0, "Amount must be greater than 0");
         MINIMUM_GAS_FOR_SCRIPT_EXECUTION = _amount;
     }
 

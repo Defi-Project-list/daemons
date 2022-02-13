@@ -87,6 +87,10 @@ describe("SwapperScriptExecutor", function () {
         const MockRouterContract = await ethers.getContractFactory("MockRouter");
         mockRouter = await MockRouterContract.deploy();
 
+        // Mock router contract
+        const GasPriceFeedContract = await ethers.getContractFactory("GasPriceFeed");
+        const gasPriceFeed = await GasPriceFeedContract.deploy();
+
         // Executor contract
         const SwapperScriptExecutorContract = await ethers.getContractFactory("SwapperScriptExecutor");
         executor = await SwapperScriptExecutorContract.deploy();
@@ -94,6 +98,7 @@ describe("SwapperScriptExecutor", function () {
         await executor.setBrgToken(BRG.address);
         await executor.setExchange(mockRouter.address);
         await executor.setPriceRetriever(priceRetriever.address);
+        await executor.setGasFeed(gasPriceFeed.address);
 
         // Grant allowance
         await fooToken.approve(executor.address, ethers.utils.parseEther("500"));

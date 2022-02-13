@@ -80,12 +80,17 @@ describe("TransferScriptExecutor", function () {
         const MockTokenContract = await ethers.getContractFactory("MockToken");
         fooToken = await MockTokenContract.deploy("Foo Token", "FOO");
 
+        // Gas Price Feed contract
+        const GasPriceFeedContract = await ethers.getContractFactory("GasPriceFeed");
+        const gasPriceFeed = await GasPriceFeedContract.deploy();
+
         // Executor contract
         const TransferScriptExecutorContract = await ethers.getContractFactory("TransferScriptExecutor");
         executor = await TransferScriptExecutorContract.deploy();
         await executor.setGasTank(gasTank.address);
         await executor.setBrgToken(BRG.address);
         await executor.setPriceRetriever(priceRetriever.address);
+        await executor.setGasFeed(gasPriceFeed.address);
 
         // Grant allowance
         await fooToken.approve(executor.address, ethers.utils.parseEther("500"));
