@@ -1,7 +1,7 @@
 {
-  "name": "storage",
+  "name": "daemons.storage",
   "version": "1.0.0",
-  "description": "Scripts storage for Balrog",
+  "description": "Scripts storage for Daemons",
   "main": "src/index.ts",
   "scripts": {
     "test": "mocha ./**/*test.ts",

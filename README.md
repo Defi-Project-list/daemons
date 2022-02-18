@@ -1,22 +1,22 @@
-# Balrog Finance
+# Daemons Finance
 
 An environment in which users can **script operations on the blockchain and have them automatically executed** with a certain frequency or when a condition becomes true.
 
 ## Some examples
 
-Balrog scripts include multiple conditions and actions and look like this:
+Daemons scripts include multiple conditions and actions and look like this:
 
 - Once a week => Swap 500 DAI for wBTC
 - When price of wBTC > 4300$ => Swap 2000 DAI for wBTC
 - When BTC > 0 in my wallet => Send to wallet 0x123456..
-- When price of sOHM < 3000$ => Unstake sOHM
+- When price of sOHM < 3000$ => Unstake sOHM => Send sOHM to wallet 0x123 => Swap 100% of sOHM for DAI
 - ...
 
 ## How to run
 
 All the projects:
 
-- `npm install` to install the dependencie
+- `npm install` to install the dependencies
 
 ### Backend
 
