@@ -41,7 +41,7 @@ const Swap = [
 ];
 
 export const domain = {
-    name: "Balrog-Swap-v1"
+    name: "Daemons-Swap-v1"
 };
 
 export const types = {

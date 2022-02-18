@@ -15,7 +15,7 @@ contract TransferScriptExecutor is ConditionsChecker {
         bytes32 eip712DomainHash = keccak256(
             abi.encode(
                 EIP712_DOMAIN_TYPEHASH,
-                keccak256(bytes("Balrog-Transfer-v1"))
+                keccak256(bytes("Daemons-Transfer-v1"))
             )
         );
 

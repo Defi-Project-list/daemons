@@ -28,7 +28,7 @@ async function main() {
   console.log("Account balance:", initialBalance.div(BigNumber.from("10").pow(BigNumber.from("12"))).toNumber() / 1000000);
 
   // retrieve contract
-  const token = await ethers.getContractAt("BalrogToken", tokenAddress);
+  const token = await ethers.getContractAt("DaemonsToken", tokenAddress);
   const vesting = await ethers.getContractAt("Vesting", vestingAddress);
   console.log(`Contracts retrieved`);
 

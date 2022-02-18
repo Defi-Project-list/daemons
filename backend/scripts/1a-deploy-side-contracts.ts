@@ -16,11 +16,11 @@ async function main() {
   console.log("Deploying contracts with the account:", owner.address);
   console.log("Account balance:", initialBalance.div(BigNumber.from("10").pow(BigNumber.from("12"))).toNumber() / 1000000);
 
-  // deploy BRG contract
-  const TokenContract = await ethers.getContractFactory("BalrogToken");
+  // deploy DAEM contract
+  const TokenContract = await ethers.getContractFactory("DaemonsToken");
   const token = await TokenContract.deploy();
   await token.deployed();
-  console.log(`BalrogToken deployed to: ${token.address}`);
+  console.log(`DaemonsToken deployed to: ${token.address}`);
 
   // deploy GasTank contract
   const GasTankContract = await ethers.getContractFactory("GasTank");

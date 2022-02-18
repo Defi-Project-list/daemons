@@ -41,7 +41,7 @@ const Transfer = [
 ];
 
 export const domain = {
-    name: "Balrog-Transfer-v1"
+    name: "Daemons-Transfer-v1"
 };
 
 export const types = {
