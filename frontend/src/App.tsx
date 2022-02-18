@@ -8,9 +8,10 @@ import { RootState } from './state';
 import GasIndicator from './components/gas-indicator';
 import { fetchUserScripts } from './state/action-creators/script-action-creators';
 import { fetchGasTankBalance } from './state/action-creators/gas-tank-action-creators';
-import "./app.css";
 import { fetchChainTokens } from './state/action-creators/tokens-action-creators';
 
+import "./constants.css";
+import "./app.css";
 
 export const App = ({ children }: { children: any; }) => {
     // redux
@@ -34,7 +35,7 @@ export const App = ({ children }: { children: any; }) => {
     return (
         <div>
             <div className="header">
-                <img src={logo} alt='Balrog logo' className="page-logo" />
+                <img src={logo} alt='Daemons logo' className="page-logo" />
                 <div className="menu">
                     <Link className={scriptsLinkClassName} to="/scripts">Scripts</Link>
                     <Link className={newScriptLinkClassName} to="/new-script">New Script</Link>
@@ -45,7 +46,6 @@ export const App = ({ children }: { children: any; }) => {
                 <div className="menu__entry menu__entry--gas"><GasIndicator /></div>
                 <div className="wallet-control"><MetaMaskProvider> <ConnectWalletButton /> </MetaMaskProvider></div>
             </div>
-            <hr />
 
             <div className="page">
                 {children}

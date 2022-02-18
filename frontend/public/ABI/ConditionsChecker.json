@@ -69,6 +69,13 @@
     },
     {
       "inputs": [],
+      "name": "preliminaryCheck",
+      "outputs": [],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "renounceOwnership",
       "outputs": [],
       "stateMutability": "nonpayable",
@@ -91,11 +98,11 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "_brgToken",
+          "name": "_gasPriceFeed",
           "type": "address"
         }
       ],
-      "name": "setBrgToken",
+      "name": "setGasFeed",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

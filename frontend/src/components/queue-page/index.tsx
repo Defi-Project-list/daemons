@@ -22,7 +22,7 @@ class Queue extends Component<IQueueComponentsProps>{
     }
 
     componentDidUpdate(prevProps: IQueueComponentsProps) {
-        // TODO when chain changes, load chain scripts (BRG-20)
+        // TODO when chain changes, load chain scripts
         if (prevProps.walletConnected !== this.props.walletConnected) {
             this.props.fetchAllScripts(this.props.walletChainId);
         }
@@ -37,7 +37,7 @@ class Queue extends Component<IQueueComponentsProps>{
         ));
         return (
             <div className='queue'>
-                <div className='queue__subtitle'>Execute scripts and get rewarded in BRG tokens</div>
+                <div className='queue__subtitle'>Execute scripts and get rewarded in DAEM tokens</div>
                 <div className='queue__scripts-container'>
                     {scripts}
                 </div>

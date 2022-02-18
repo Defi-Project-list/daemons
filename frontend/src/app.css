@@ -4,8 +4,10 @@
 }
 
 body {
+    background-color: var(--body-background);
     color: rgb(48, 48, 48);
     font-family: DMSans;
+    margin: 0;
 }
 
 /* Hide arrows in number inputs for Chrome, Safari, Edge, Opera */
@@ -21,15 +23,20 @@ input[type=number] {
 }
 
 .header {
-    padding: 10px;
+    padding: 10px 80px;
     display: flex;
     flex-direction: row;
     align-items: center;
+    background-color: var(--header-background);
+    box-shadow: 1px 1px #aaa;
+}
+
+.page {
+    padding: 16px 80px;
 }
 
 .page-logo {
-    height: 35px;
-    width: 35px;
+    height: 40px;
     margin-right: 10px;
 }
 

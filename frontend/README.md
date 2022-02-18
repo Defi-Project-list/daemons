@@ -1,3 +1,3 @@
-# Balrog - Frontend
+# Daemons - Frontend
 
-This folder contains the React frontend of Balrog. This is what most of the users will interact with.
+This folder contains the React frontend of Daemons. This is what most of the users will interact with.

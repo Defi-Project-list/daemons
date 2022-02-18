@@ -6,7 +6,7 @@ export class DisconnectedPage extends Component {
     public render(): ReactNode {
         return (
             <div className="disconnected">
-                Connect via Metamask to access Balrog.
+                Connect via Metamask to access Daemons.
             </div>
         );
     }
