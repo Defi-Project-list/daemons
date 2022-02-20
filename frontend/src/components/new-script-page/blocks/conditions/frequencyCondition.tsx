@@ -55,11 +55,11 @@ export const FrequencyCondition = ({ form, update }: { form: IFrequencyCondition
                                 }}
                                 className='frequency-block__time-unit'
                             >
-                                <option value={604800}>Seconds</option>
-                                <option value={10080}>Minutes</option>
-                                <option value={168}>Hours</option>
-                                <option value={7}>Days</option>
-                                <option value={1}>Weeks</option>
+                                <option value={1}>Seconds</option>
+                                <option value={60}>Minutes</option>
+                                <option value={3600}>Hours</option>
+                                <option value={86400}>Days</option>
+                                <option value={604800}>Weeks</option>
                             </select>}
                         </Field>
 
