@@ -101,10 +101,10 @@ scriptsRouter.post('/revoke', authenticate, async (req: Request, res: Response) 
     try {
         switch (scriptType) {
             case "SwapScript":
-                await SwapScript.deleteOne({ scriptId: scriptId });
+                await SwapScript.deleteOne({ user: req.userAddress, scriptId: scriptId });
                 return res.send();
             case "TransferScript":
-                await TransferScript.deleteOne({ scriptId: scriptId });
+                await TransferScript.deleteOne({ user: req.userAddress, scriptId: scriptId });
                 return res.send();
             default:
                 return res.status(400).send(`Unsupported script type ${scriptType}`);

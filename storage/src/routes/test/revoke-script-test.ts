@@ -48,4 +48,34 @@ describe('POST api/scripts/revoke', () => {
             .expect(400)
             .expect(res => expect(res.text).to.equal('Unsupported script type NonexistentScriptType'));
     });
+
+
+    it('returns a 401 error if an unauthenticated user tries to update a description', async () => {
+        const script = await transferScriptDocumentFactory({ user: userAddress });
+        const payload = { scriptId: script.scriptId, scriptType: "TransferScript" };
+
+        await supertest(app)
+            .post("/api/scripts/revoke")
+            .send(payload)
+            .expect(401);
+
+        // script is untouched
+        const fetchedScript = await TransferScript.findOne({ scriptId: payload.scriptId });
+        expect(fetchedScript).to.not.be.null;
+    });
+
+    it('only revokes owned scripts', async () => {
+        const script = await transferScriptDocumentFactory({}); // will belong to a random user
+        const payload = { scriptId: script.scriptId, scriptType: "TransferScript" };
+
+        await supertest(app)
+            .post("/api/scripts/revoke")
+            .set('Cookie', `token=${jwToken}`)
+            .send(payload)
+            .expect(200);  // handled gracefully
+
+        // script is untouched
+        const fetchedScript = await TransferScript.findOne({ scriptId: payload.scriptId });
+        expect(fetchedScript).to.not.be.null;
+    });
 });
