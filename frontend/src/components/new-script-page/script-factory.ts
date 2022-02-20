@@ -136,7 +136,8 @@ export class ScriptFactory {
 
         // getting timestamp
         const latestBlockNumber = await this.provider.getBlockNumber();
-        const latestBlockTimestamp = (await this.provider.getBlock(latestBlockNumber)).timestamp;
+        const latestBlock = await this.provider.getBlock(latestBlockNumber);
+        const latestBlockTimestamp = BigNumber.from(latestBlock.timestamp);
         const start = frequencyCondition.startNow ? latestBlockTimestamp.sub(delay) : latestBlockTimestamp;
 
         return {
