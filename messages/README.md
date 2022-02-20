@@ -23,7 +23,7 @@ Triggers the action whenever the price of a certain token passes a threshold def
 
 ### Frequency
 
-Triggers the action every fixed amount of blocks.
+Triggers the action every fixed amount of seconds.
 
 ### Repetitions
 

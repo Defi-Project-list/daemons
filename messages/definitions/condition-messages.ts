@@ -18,14 +18,14 @@ export const Balance = [
 
 export interface IFrequencyCondition {
     enabled: boolean;
-    blocks: BigNumber;
-    startBlock: BigNumber;
+    delay: BigNumber;
+    start: BigNumber;
 }
 
 export const Frequency = [
-    { name: "enabled", type: "bool" },                    // indicates whether the condition should be checked
-    { name: "blocks", type: "uint256" },                  // the number of blocks to  be waited between each action
-    { name: "startBlock", type: "uint256" },            // the first block that will be counted
+    { name: "enabled", type: "bool" },             // indicates whether the condition should be checked
+    { name: "delay", type: "uint256" },            // the number of blocks to  be waited between each action
+    { name: "start", type: "uint256" },            // the first block that will be counted
 ];
 
 export interface IPriceCondition {
