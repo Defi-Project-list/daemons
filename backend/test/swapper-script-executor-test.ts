@@ -39,8 +39,8 @@ describe("SwapperScriptExecutor", function () {
         },
         frequency: {
             enabled: false,
-            blocks: BigNumber.from(5),
-            startBlock: BigNumber.from(0),
+            delay: BigNumber.from(5),
+            start: BigNumber.from(0),
         },
         price: {
             enabled: false,
@@ -154,7 +154,7 @@ describe("SwapperScriptExecutor", function () {
     });
 
     it("spots a valid message from another chain", async () => {
-        let message = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.chainId = BigNumber.from('1'); // message created for the Ethereum chain
         message = await initialize(message);
 
@@ -163,7 +163,7 @@ describe("SwapperScriptExecutor", function () {
     });
 
     it('swaps the tokens', async () => {
-        let message = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message = await initialize(message);
         await fooToken.mint(owner.address, ethers.utils.parseEther("55"));
 
@@ -175,7 +175,7 @@ describe("SwapperScriptExecutor", function () {
     });
 
     it('swapping triggers reward in gas tank', async () => {
-        let message = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message = await initialize(message);
         await fooToken.mint(owner.address, ethers.utils.parseEther("55"));
 
@@ -206,7 +206,7 @@ describe("SwapperScriptExecutor", function () {
     });
 
     it('sets the lastExecution value during execution', async () => {
-        let message = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
 
         // enable frequency condition so 2 consecutive executions should fail
         message.frequency.enabled = true;
@@ -224,7 +224,7 @@ describe("SwapperScriptExecutor", function () {
     /* ========== ACTION INTRINSIC CHECK ========== */
 
     it("fails if the user doesn't have enough balance, even tho the balance condition was not set", async () => {
-        let message = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.amount = ethers.utils.parseEther("9999"); // setting an amount higher than the user's balance
         message = await initialize(message);
 
@@ -247,22 +247,24 @@ describe("SwapperScriptExecutor", function () {
     /* ========== FREQUENCY CONDITION CHECK ========== */
 
     it('fails the verification if frequency is enabled and the start block has not been reached', async () => {
+        const timestampNow = Math.floor(Date.now() / 1000);
         // update frequency in message and submit for signature
-        let message = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.frequency.enabled = true;
-        message.frequency.blocks = BigNumber.from(0);
-        message.frequency.startBlock = BigNumber.from(100000000);
+        message.frequency.delay = BigNumber.from(0);
+        message.frequency.start = BigNumber.from(timestampNow + 5000);
         message = await initialize(message);
 
-        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Frequency Condition] Start block has not been reached yet');
+        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Frequency Condition] Not enough time has passed since the start block');
     });
 
     it('fails the verification if frequency is enabled and not enough blocks passed since start block', async () => {
+        const timestampNow = Math.floor(Date.now() / 1000);
         // update frequency in message and submit for signature
-        let message = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.frequency.enabled = true;
-        message.frequency.blocks = BigNumber.from(1000000);
-        message.frequency.startBlock = BigNumber.from(0);
+        message.frequency.delay = BigNumber.from(timestampNow + 5000);
+        message.frequency.start = BigNumber.from(0);
         message = await initialize(message);
 
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('[Frequency Condition] Not enough time has passed since the start block');
@@ -274,7 +276,7 @@ describe("SwapperScriptExecutor", function () {
     it('fails the verification if balance is enabled and the user does not own enough tokens', async () => {
         // update balance in message and submit for signature
         // enabling it will be enough as the condition is "FOO_TOKEN>150"
-        let message = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.balance.enabled = true;
         message = await initialize(message);
 
@@ -284,7 +286,7 @@ describe("SwapperScriptExecutor", function () {
     it('fails the verification if balance is enabled and the user owns too many tokens', async () => {
         // update frequency in message and submit for signature
         // we'll change the comparison so it will become "FOO_TOKEN<150"
-        let message = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.balance.enabled = true;
         message.balance.comparison = ComparisonType.LessThan;
         message = await initialize(message);
@@ -301,7 +303,7 @@ describe("SwapperScriptExecutor", function () {
     it('fails the verification if price is enabled, but token is not supported', async () => {
         // update price in message and submit for signature.
         // Condition: FOO > 150
-        let message = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.price.enabled = true;
         message.price.token = fooToken.address;
         message.price.comparison = ComparisonType.GreaterThan;
@@ -315,7 +317,7 @@ describe("SwapperScriptExecutor", function () {
     it('fails the verification if price is enabled with GREATER_THAN condition and tokenPrice < value', async () => {
         // update price in message and submit for signature.
         // Condition: FOO > 150
-        let message = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.price.enabled = true;
         message.price.token = fooToken.address;
         message.price.comparison = ComparisonType.GreaterThan;
@@ -339,7 +341,7 @@ describe("SwapperScriptExecutor", function () {
     it('fails the verification if price is enabled with LESS_THAN condition and tokenPrice > value', async () => {
         // update price in message and submit for signature.
         // Condition: FOO < 150
-        let message = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.price.enabled = true;
         message.price.token = fooToken.address;
         message.price.comparison = ComparisonType.LessThan;
@@ -363,7 +365,7 @@ describe("SwapperScriptExecutor", function () {
     it('passes the price verification if conditions are met', async () => {
         // update price in message and submit for signature.
         // Condition: FOO < 150
-        let message = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.price.enabled = true;
         message.price.token = fooToken.address;
         message.price.comparison = ComparisonType.GreaterThan;

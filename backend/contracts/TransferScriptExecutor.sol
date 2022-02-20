@@ -94,7 +94,7 @@ contract TransferScriptExecutor is ConditionsChecker {
         uint8 v
     ) external {
         verify(message, r, s, v);
-        lastExecutions[message.scriptId] = block.number;
+        lastExecutions[message.scriptId] = block.timestamp;
         repetitionsCount[message.scriptId] += 1;
 
         // step 0 transfer the tokens to the destination

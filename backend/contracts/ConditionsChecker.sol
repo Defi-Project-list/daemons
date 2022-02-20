@@ -119,8 +119,8 @@ abstract contract ConditionsChecker is Ownable {
                 abi.encode(
                     FREQUENCY_TYPEHASH,
                     frequency.enabled,
-                    frequency.blocks,
-                    frequency.startBlock
+                    frequency.delay,
+                    frequency.start
                 )
             );
     }
@@ -228,7 +228,7 @@ abstract contract ConditionsChecker is Ownable {
         if (lastExecutions[id] > 0) {
             // the message has already been executed at least once
             require(
-                block.number > lastExecutions[id] + frequency.blocks,
+                block.timestamp > lastExecutions[id] + frequency.delay,
                 "[Frequency Condition] Not enough time has passed since the last execution"
             );
             return;
@@ -236,12 +236,7 @@ abstract contract ConditionsChecker is Ownable {
 
         // the message has never been executed before
         require(
-            block.number >= frequency.startBlock,
-            "[Frequency Condition] Start block has not been reached yet"
-        );
-
-        require(
-            block.number > frequency.startBlock + frequency.blocks,
+            block.timestamp > frequency.start + frequency.delay,
             "[Frequency Condition] Not enough time has passed since the start block"
         );
     }

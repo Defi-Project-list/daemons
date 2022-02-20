@@ -100,7 +100,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
     ) external {
         verify(message, r, s, v);
         require(exchange != address(0), "Exchange address has not been set");
-        lastExecutions[message.scriptId] = block.number;
+        lastExecutions[message.scriptId] = block.timestamp;
         repetitionsCount[message.scriptId] += 1;
 
         // step 0 get the tokens from the user
