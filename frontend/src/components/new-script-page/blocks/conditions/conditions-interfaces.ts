@@ -6,7 +6,7 @@ interface IScriptConditionForm extends INewScriptForm {
     enabled: boolean;
 }
 
-export enum FrequencyUnits { Seconds = 604800, Minutes = 10080, Hours = 168, Days = 7, Weeks = 1 };
+export enum FrequencyUnits { Seconds = 1, Minutes = 60, Hours = 3600, Days = 86400, Weeks = 604800 };
 
 export interface IFrequencyConditionForm extends IScriptConditionForm {
     ticks: number;

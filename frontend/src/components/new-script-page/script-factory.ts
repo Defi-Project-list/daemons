@@ -1,5 +1,5 @@
 import { BigNumber, Contract, utils } from 'ethers';
-import { ChainInfo, GetCurrentChain, ZeroAddress } from '../../data/chain-info';
+import { GetCurrentChain, ZeroAddress } from '../../data/chain-info';
 import { Contracts } from '../../data/contracts';
 import { BaseScript } from '../../data/script/base-script';
 import { SwapScript } from '../../data/script/swap-script';
@@ -128,23 +128,21 @@ export class ScriptFactory {
     private async createFrequencyConditionFromForm(frequencyCondition: IFrequencyConditionForm): Promise<IFrequencyCondition> {
         if (!frequencyCondition.enabled) return {
             enabled: false,
-            blocks: BigNumber.from(0),
-            startBlock: BigNumber.from(0),
+            delay: BigNumber.from(0),
+            start: BigNumber.from(0),
         };
 
-        // TODO not sure at all!
-        const ticksPerWeek = frequencyCondition.unit / frequencyCondition.ticks;
-        const ticksPerDay = ticksPerWeek / 7;
-        const blocksPerDay = GetCurrentChain(this.chainId).blocksPerDay;
-        const blocks = BigNumber.from(Math.trunc(blocksPerDay / ticksPerDay));
+        const delay = BigNumber.from(frequencyCondition.unit).mul(BigNumber.from(frequencyCondition.ticks));
 
-        const currentBlock = BigNumber.from(await this.provider.getBlockNumber());
-        const startBlock = frequencyCondition.startNow ? currentBlock.sub(blocks) : currentBlock;
+        // getting timestamp
+        const latestBlockNumber = await this.provider.getBlockNumber();
+        const latestBlockTimestamp = (await this.provider.getBlock(latestBlockNumber)).timestamp;
+        const start = frequencyCondition.startNow ? latestBlockTimestamp.sub(delay) : latestBlockTimestamp;
 
         return {
             enabled: true,
-            blocks: blocks,
-            startBlock: startBlock,
+            delay,
+            start,
         };
     }
 

@@ -41,8 +41,8 @@ export class TransferScript extends BaseScript {
         message.amount = BigNumber.from(object.amount);
         message.balance.amount = BigNumber.from(object.balance.amount);
         message.price.value = BigNumber.from(object.price.value);
-        message.frequency.blocks = BigNumber.from(object.frequency.blocks);
-        message.frequency.startBlock = BigNumber.from(object.frequency.startBlock);
+        message.frequency.delay = BigNumber.from(object.frequency.delay);
+        message.frequency.start = BigNumber.from(object.frequency.start);
         message.repetitions.amount = BigNumber.from(object.repetitions?.amount);
         message.follow.shift = BigNumber.from(object.follow.shift);
 
