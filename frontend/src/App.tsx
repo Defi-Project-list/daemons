@@ -19,6 +19,7 @@ export const App = ({ children }: { children: any; }) => {
     const chainId: string | undefined = useSelector((state: RootState) => state.wallet.chainId);
     const walletAddress: string | undefined = useSelector((state: RootState) => state.wallet.address);
     const authenticated: boolean = useSelector((state: RootState) => state.wallet.authenticated);
+    const supportedChain: boolean = useSelector((state: RootState) => state.wallet.supportedChain);
 
     // menu selection classes
     const queueLinkClassName = `menu__entry ${document.location.href.endsWith('/queue') ? 'menu__entry--selected' : ''}`;
@@ -27,7 +28,7 @@ export const App = ({ children }: { children: any; }) => {
     const scriptsLinkClassName = `menu__entry ${document.location.href.endsWith('/') || document.location.href.endsWith('/scripts') ? 'menu__entry--selected' : ''}`;
 
     useEffect(() => {
-        if (authenticated && walletAddress) {
+        if (authenticated && walletAddress && supportedChain) {
             dispatch(fetchUserScripts(chainId, walletAddress));
             dispatch(fetchGasTankBalance(walletAddress));
         }

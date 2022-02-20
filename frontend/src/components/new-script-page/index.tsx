@@ -2,7 +2,6 @@ import React, { Component, ReactNode } from 'react';
 import { ComparisonType } from '../../../../messages/definitions/condition-messages';
 import { INewScriptBundle } from './i-new-script-form';
 import { ScriptFactory } from './script-factory';
-import { DisconnectedPage } from '../disconnected-page';
 import { RootState } from '../../state';
 import { connect } from 'react-redux';
 import { ConditionBlock } from './blocks/conditions/conditionBlock';
@@ -31,6 +30,7 @@ interface INewScriptsComponentsProps {
     walletAddress?: string;
     chainId?: string;
     authenticated: boolean;
+    supportedChain: boolean;
     tokens: Token[];
 }
 
@@ -87,7 +87,8 @@ class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle>
     }
 
     public render(): ReactNode {
-        if (this.state.redirect || !this.props.authenticated) return <Navigate to="/scripts" />;
+        const shouldRedirect = this.state.redirect || !this.props.authenticated || !this.props.supportedChain;
+        if (shouldRedirect) return <Navigate to="/scripts" />;
 
         return (
             <div className="new-script">
@@ -182,6 +183,7 @@ const mapStateToProps: (state: RootState) => INewScriptsComponentsProps = state 
     walletAddress: state.wallet.address,
     chainId: state.wallet.chainId,
     authenticated: state.wallet.authenticated,
+    supportedChain: state.wallet.supportedChain,
     tokens: state.tokens.currentChainTokens,
 });
 

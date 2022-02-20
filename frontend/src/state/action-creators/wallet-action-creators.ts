@@ -4,7 +4,11 @@ import { ActionType } from '../action-types';
 import { WalletAction } from '../actions/wallet-actions';
 
 
-export const updateWalletAddress = (connected: boolean, address?: string, chainId?: string) => {
+export const updateWalletAddress = (
+    connected: boolean,
+    supportedChain: boolean,
+    address?: string,
+    chainId?: string) => {
 
     return (dispatch: Dispatch<WalletAction>) => {
         dispatch({
@@ -12,6 +16,7 @@ export const updateWalletAddress = (connected: boolean, address?: string, chainI
             connected,
             address,
             chainId,
+            supportedChain,
         });
     };
 };

@@ -6,9 +6,10 @@ export type WalletState = {
     address?: string;
     chainId?: string;
     authenticated: boolean;
+    supportedChain: boolean;
 };
 
-const initialState: WalletState = { connected: false, authenticated: false };
+const initialState: WalletState = { connected: false, authenticated: false, supportedChain: false };
 
 export const walletReducer = (state: WalletState = initialState, action: WalletAction): WalletState => {
     switch (action.type) {
@@ -18,6 +19,7 @@ export const walletReducer = (state: WalletState = initialState, action: WalletA
                 connected: action.connected,
                 address: action.address,
                 chainId: action.chainId,
+                supportedChain: action.supportedChain,
             };
         case ActionType.AUTH_CHECK:
             return {

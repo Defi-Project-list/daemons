@@ -5,6 +5,7 @@ export interface IUpdateWalletAction {
     connected: boolean;
     address?: string;
     chainId?: string;
+    supportedChain: boolean;
 }
 
 export interface IAuthCheck {

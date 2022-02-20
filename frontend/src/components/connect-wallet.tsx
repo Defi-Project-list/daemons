@@ -14,13 +14,14 @@ export function ConnectWalletButton() {
     const dispatch = useDispatch();
     const { status, connect, account, chainId } = useMetaMask();
 
-    const connected = status === 'connected' && supportedChainIds.has(chainId ?? '');
+    const connected = status === 'connected';
     const walletAddress = connected ? account! : undefined;
     const walletChainId = connected ? BigNumber.from(chainId!).toString() : undefined; // convert from hex to decimal string
+    const supportedChain = !!walletChainId && supportedChainIds.has(chainId!);
 
     useEffect(() => {
         // update the state and check for authentication each time there is a change
-        dispatch(updateWalletAddress(connected, walletAddress, walletChainId));
+        dispatch(updateWalletAddress(connected, supportedChain, walletAddress, walletChainId));
         dispatch(authenticationCheck(walletAddress));
     }, [status, connected, walletAddress, walletChainId]);
 
@@ -58,11 +59,6 @@ function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element 
     return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div>Connected! ({walletAddress!.substring(0, 8) + "..."})</div>
-            {
-                supportedChainIds.has(chainId!)
-                    ? null
-                    : <div className='wallet-control__wrong-network-msg'>Wrong network :(<br />Connect to {supportedChainName} to use the app.  </div>
-            }
         </div>
     );
 

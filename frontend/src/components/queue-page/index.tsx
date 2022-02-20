@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import { BaseScript } from '../../data/script/base-script';
 import { RootState } from '../../state';
 import { fetchAllScripts } from '../../state/action-creators/script-action-creators';
-import { DisconnectedPage } from '../disconnected-page';
+import { DisconnectedPage } from '../error-pages/disconnected-page';
+import { UnsupportedChainPage } from '../error-pages/unsupported-chain-page';
 import { QueueScriptComponent } from './query-script-component';
 import './styles.css';
 
@@ -15,6 +16,7 @@ interface IQueueComponentsProps {
     walletAddress?: string;
     walletChainId?: string;
     authenticated: boolean;
+    supportedChain: boolean;
 }
 
 class Queue extends Component<IQueueComponentsProps>{
@@ -32,6 +34,7 @@ class Queue extends Component<IQueueComponentsProps>{
 
     public render(): ReactNode {
         if (!this.props.authenticated) return <DisconnectedPage />;
+        if (!this.props.supportedChain) return <UnsupportedChainPage />;
 
         const scripts = this.props.fetchedScripts.map((script: BaseScript) => (
             <QueueScriptComponent key={script.getId()} script={script} />
@@ -55,6 +58,7 @@ const mapStateToProps: (state: RootState) => IQueueComponentsProps = state => ({
     walletAddress: state.wallet.address,
     walletChainId: state.wallet.chainId,
     authenticated: state.wallet.authenticated,
+    supportedChain: state.wallet.supportedChain,
 });
 
 export default connect(mapStateToProps, { fetchAllScripts: fetchAllScripts })(Queue);

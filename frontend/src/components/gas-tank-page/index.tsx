@@ -5,7 +5,8 @@ import { getAbiFor } from '../../utils/get-abi';
 import { RootState } from '../../state';
 import { fetchGasTankBalance } from '../../state/action-creators/gas-tank-action-creators';
 import { Field, Form } from 'react-final-form';
-import { DisconnectedPage } from '../disconnected-page';
+import { DisconnectedPage } from '../error-pages/disconnected-page';
+import { UnsupportedChainPage } from '../error-pages/unsupported-chain-page';
 import './styles.css';
 import '../switch.css';
 
@@ -15,6 +16,7 @@ interface IGasTankComponentsProps {
     walletConnected: boolean;
     walletAddress?: string;
     authenticated: boolean;
+    supportedChain: boolean;
 }
 
 class GasTank extends Component<IGasTankComponentsProps> {
@@ -71,6 +73,7 @@ class GasTank extends Component<IGasTankComponentsProps> {
 
     public render(): ReactNode {
         if (!this.props.authenticated) return <DisconnectedPage />;
+        if (!this.props.supportedChain) return <UnsupportedChainPage />;
 
         return (
             <div className="outer-component">
@@ -179,6 +182,7 @@ const mapStateToProps: (state: RootState) => IGasTankComponentsProps = state => 
     walletConnected: state.wallet.connected,
     walletAddress: state.wallet.address,
     authenticated: state.wallet.authenticated,
+    supportedChain: state.wallet.supportedChain,
 });
 
 export default connect(mapStateToProps, { fetchGasTankBalance })(GasTank);
