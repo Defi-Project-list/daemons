@@ -52,6 +52,10 @@ scriptsRouter.get('/:chainId/:userAddress', authenticate, async (req: Request, r
 
 scriptsRouter.post('/transfer', authenticate, async (req: Request, res: Response) => {
     const script: ISignedTransferAction = req.body;
+    if (req.userAddress !== utils.getAddress(script.user)) {
+        return res.sendStatus(403);
+    }
+
     try {
         await TransferScript.build(script).save();
         return res.send();
@@ -62,6 +66,10 @@ scriptsRouter.post('/transfer', authenticate, async (req: Request, res: Response
 
 scriptsRouter.post('/swap', authenticate, async (req: Request, res: Response) => {
     const script: ISignedSwapAction = req.body;
+    if (req.userAddress !== utils.getAddress(script.user)) {
+        return res.sendStatus(403);
+    }
+
     try {
         await SwapScript.build(script).save();
         return res.send();

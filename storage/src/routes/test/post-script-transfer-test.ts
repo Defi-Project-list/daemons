@@ -30,6 +30,31 @@ describe('POST api/scripts/transfer', () => {
         expect(script).to.not.be.null;
     });
 
+    it('fails if user is not authenticated', async () => {
+        const payload = signedTransferActionFactory({ user: userAddress });
+
+        await supertest(app)
+            .post("/api/scripts/transfer")
+            .send(payload)
+            .expect(401);
+
+        const script = await TransferScript.findOne({ scriptId: payload.scriptId });
+        expect(script).to.be.null;
+    });
+
+    it('fails if user is trying to add a script for another user', async () => {
+        const payload = signedTransferActionFactory({}); // will belong to a random user
+
+        await supertest(app)
+            .post("/api/scripts/transfer")
+            .set('Cookie', `token=${jwToken}`)
+            .send(payload)
+            .expect(403);
+
+        const script = await TransferScript.findOne({ scriptId: payload.scriptId });
+        expect(script).to.be.null;
+    });
+
     it('fails if payload is incomplete', async () => {
         // set type to 'any' so we can fool the type checker
         const payload: any = signedTransferActionFactory({ user: userAddress });
