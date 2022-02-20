@@ -8,7 +8,7 @@ import { TransferScript } from '../models/transfer-script';
 
 export const scriptsRouter = express.Router();
 
-scriptsRouter.get('/:chainId', async (req: Request, res: Response) => {
+scriptsRouter.get('/:chainId', authenticate, async (req: Request, res: Response) => {
     const chainId = String(req.params.chainId);
 
     const scripts = await SwapScript.aggregate([
