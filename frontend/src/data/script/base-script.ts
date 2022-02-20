@@ -12,6 +12,7 @@ export enum VerificationState {
     valid = 'valid',                       // the script can be executed
     noBalance = 'noBalance',               // the user does not have enough tokens to execute the script
     gasTankEmpty = 'gasTankEmpty',         // the user's gas tank is empty
+    cannotBeRunYet = 'cannotBeRunYet',     // the frequency condition is not satisfied
     otherReason = 'otherReason',           // the script cannot be executed due to other reasons
 }
 
@@ -122,6 +123,8 @@ export abstract class BaseScript {
         if (parsedErrorText.includes('maximum number of executions')) return VerificationState.maxReached;
         if (parsedErrorText.includes('not enough gas in the tank')) return VerificationState.gasTankEmpty;
         if (parsedErrorText.includes('enough balance')) return VerificationState.noBalance;
+        if (parsedErrorText.includes('[frequency condition]')) return VerificationState.cannotBeRunYet;
+
         return VerificationState.otherReason;
     }
 
