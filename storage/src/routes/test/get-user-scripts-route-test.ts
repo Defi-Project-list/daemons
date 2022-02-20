@@ -3,6 +3,7 @@ import supertest from 'supertest';
 import { app } from '../../app';
 import { swapScriptDocumentFactory, transferScriptDocumentFactory } from '../../test-factories/script-factories';
 import { expect } from 'chai';
+import jwt from 'jsonwebtoken';
 import { ISignedSwapAction } from '../../../../messages/definitions/swap-action-messages';
 import { BigNumber, utils } from 'ethers';
 
@@ -14,6 +15,7 @@ describe('GET api/scripts/:userAddress', () => {
     after(async () => await closeTestDb());
 
     const userAddress = '0xb79f76ef2c5f0286176833e7b2eee103b1cc3244';
+    const jwToken = jwt.sign({ userAddress }, process.env.JWT_SECRET as string);
 
     it('returns an empty array if there are no scripts of the given user on the db', async () => {
         // add to the db a couple of scripts from randomly generated users
@@ -21,7 +23,10 @@ describe('GET api/scripts/:userAddress', () => {
         await transferScriptDocumentFactory({});
 
         const chainId = "42";
-        const response = await supertest(app).get(`/api/scripts/${chainId}/${userAddress}`);
+        const response = await supertest(app)
+            .get(`/api/scripts/${chainId}/${userAddress}`)
+            .set('Cookie', `token=${jwToken}`);
+
         const fetchedScripts = response.body as ISignedSwapAction[];
 
         expect(fetchedScripts.length).to.equal(0);
@@ -38,7 +43,10 @@ describe('GET api/scripts/:userAddress', () => {
         await transferScriptDocumentFactory({});
 
         const chainId = "42";
-        const response = await supertest(app).get(`/api/scripts/${chainId}/${userAddress}`);
+        const response = await supertest(app)
+            .get(`/api/scripts/${chainId}/${userAddress}`)
+            .set('Cookie', `token=${jwToken}`);
+
         const fetchedScripts = response.body as ISignedSwapAction[];
 
         expect(fetchedScripts.length).to.equal(2);
@@ -57,7 +65,10 @@ describe('GET api/scripts/:userAddress', () => {
         await transferScriptDocumentFactory({ user: userAddress, chainId: BigNumber.from("15") });
 
         const chainId = "42";
-        const response = await supertest(app).get(`/api/scripts/${chainId}/${userAddress}`);
+        const response = await supertest(app)
+            .get(`/api/scripts/${chainId}/${userAddress}`)
+            .set('Cookie', `token=${jwToken}`);
+
         const fetchedScripts = response.body as ISignedSwapAction[];
 
         expect(fetchedScripts.length).to.equal(2);
@@ -72,12 +83,18 @@ describe('GET api/scripts/:userAddress', () => {
 
         // call the API with a lowercase address
         const lowercaseAddress = userAddress.toLowerCase();
-        const lowercaseAddressResponse = await supertest(app).get(`/api/scripts/42/${lowercaseAddress}`);
+        const lowercaseAddressResponse = await supertest(app)
+            .get(`/api/scripts/42/${lowercaseAddress}`)
+            .set('Cookie', `token=${jwToken}`);
+
         const lowercaseAddressFetchedScripts = lowercaseAddressResponse.body as ISignedSwapAction[];
 
         // call the API with an address with checksum
         const checksumAddress = utils.getAddress(userAddress);
-        const checksumAddressResponse = await supertest(app).get(`/api/scripts/42/${checksumAddress}`);
+        const checksumAddressResponse = await supertest(app)
+            .get(`/api/scripts/42/${checksumAddress}`)
+            .set('Cookie', `token=${jwToken}`);
+
         const checksumAddressFetchedScripts = checksumAddressResponse.body as ISignedSwapAction[];
 
         expect(JSON.stringify(lowercaseAddressFetchedScripts)).to.equal(JSON.stringify(checksumAddressFetchedScripts));

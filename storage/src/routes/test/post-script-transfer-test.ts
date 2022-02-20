@@ -7,17 +7,22 @@ import { utils } from 'ethers';
 import { TransferScript } from '../../models/transfer-script';
 import { truncateAndEscapeText } from '../../models/utils';
 import faker from '@faker-js/faker';
+import jwt from 'jsonwebtoken';
 
 describe('POST api/scripts/transfer', () => {
     before(async () => await connectToTestDb());
     afterEach(async () => await clearTestDb());
     after(async () => await closeTestDb());
 
+    const userAddress = '0xb79f76ef2c5f0286176833e7b2eee103b1cc3244';
+    const jwToken = jwt.sign({ userAddress }, process.env.JWT_SECRET as string);
+
     it('successfully adds a valid transfer script', async () => {
-        const payload = signedTransferActionFactory({});
+        const payload = signedTransferActionFactory({ user: userAddress });
 
         await supertest(app)
             .post("/api/scripts/transfer")
+            .set('Cookie', `token=${jwToken}`)
             .send(payload)
             .expect(200);
 
@@ -27,36 +32,39 @@ describe('POST api/scripts/transfer', () => {
 
     it('fails if payload is incomplete', async () => {
         // set type to 'any' so we can fool the type checker
-        const payload: any = signedTransferActionFactory({});
+        const payload: any = signedTransferActionFactory({ user: userAddress });
         delete payload['signature'];
 
         await supertest(app)
             .post("/api/scripts/transfer")
+            .set('Cookie', `token=${jwToken}`)
             .send(payload)
             .expect(400);
     });
 
     it('fails if script ID is not unique', async () => {
-        const payload = signedTransferActionFactory({ scriptId: '0x00' });
+        const payload = signedTransferActionFactory({ scriptId: '0x00', user: userAddress });
 
         await supertest(app)
             .post("/api/scripts/transfer")
+            .set('Cookie', `token=${jwToken}`)
             .send(payload)
             .expect(200);
 
         await supertest(app)
             .post("/api/scripts/transfer")
+            .set('Cookie', `token=${jwToken}`)
             .send(payload)
             .expect(400);
     });
 
     it('adds the checksum to the user address when it is saved', async () => {
         // whenever a script is saved, the user address should be checksum-med
-        // 0x9a2f243c605e6908d96b18e21fb82bf288b19ef3 -> 0x9A2F243c605e6908D96b18e21Fb82Bf288B19EF3
-        const payload = signedTransferActionFactory({ user: '0x9a2f243c605e6908d96b18e21fb82bf288b19ef3' });
+        const payload = signedTransferActionFactory({ user: userAddress });
 
         await supertest(app)
             .post("/api/scripts/transfer")
+            .set('Cookie', `token=${jwToken}`)
             .send(payload)
             .expect(200);
 
@@ -66,10 +74,11 @@ describe('POST api/scripts/transfer', () => {
     });
 
     it('converts BigNumbers to strings', async () => {
-        const payload = signedTransferActionFactory({ amount: utils.parseEther("3.55") });
+        const payload = signedTransferActionFactory({ amount: utils.parseEther("3.55"), user: userAddress });
 
         await supertest(app)
             .post("/api/scripts/transfer")
+            .set('Cookie', `token=${jwToken}`)
             .send(payload)
             .expect(200);
 
@@ -79,10 +88,11 @@ describe('POST api/scripts/transfer', () => {
     });
 
     it('trims description to 150 characters', async () => {
-        const payload = signedTransferActionFactory({ description: faker.random.words(200) });
+        const payload = signedTransferActionFactory({ description: faker.random.words(200), user: userAddress });
 
         await supertest(app)
             .post("/api/scripts/transfer")
+            .set('Cookie', `token=${jwToken}`)
             .send(payload)
             .expect(200);
 
@@ -91,10 +101,11 @@ describe('POST api/scripts/transfer', () => {
     });
 
     it('escapes dangerous characters from the description', async () => {
-        const payload = signedTransferActionFactory({ description: '<script>window.location.href="dangerous-site"</script>' });
+        const payload = signedTransferActionFactory({ description: '<script>window.location.href="dangerous-site"</script>', user: userAddress });
 
         await supertest(app)
             .post("/api/scripts/transfer")
+            .set('Cookie', `token=${jwToken}`)
             .send(payload)
             .expect(200);
 
