@@ -40,10 +40,14 @@ async function main() {
   await vesting.deployed();
   console.log(`Vesting deployed to: ${vesting.address}`);
 
+  // deploy GasPriceFeed contract
+  const GasPriceFeedContract = await ethers.getContractFactory("GasPriceFeed");
+  const gasPriceFeed = await GasPriceFeedContract.deploy();
+  await gasPriceFeed.deployed();
+  console.log(`GasPriceFeed deployed to: ${gasPriceFeed.address}`);
+
   await gasTank.setTreasury(treasury.address);
   await token.initialize(treasury.address, vesting.address);
-
-  // TODO set up vesting...
 
   // final checks
   await gasTank.preliminaryCheck();

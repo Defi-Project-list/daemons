@@ -7,8 +7,9 @@ import { BigNumber } from 'ethers';
 import { ethers } from "hardhat";
 
 const testRouterAddress = '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506';
-const gasTankAddress = '0x0D2a5C35ad867E6FBeaDD58977FD0ee42Fbb78aD';
-const priceRetrieverAddress = '0x2FbBBd586eDC580F0dB8F9620db6E153b1aD1136';
+const gasTankAddress = '0x7824B232DEF6d1d8a3D381ba50eF681EE0f46Ec7';
+const priceRetrieverAddress = '0xf94EA781F213b1782f89a2F451D45BC6DD896bE7';
+const gasPriceFeedAddress = '0x2C28B423c9ECbB63DdF5cbaa9AbF1C4835c7285E';
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -25,6 +26,7 @@ async function main() {
   await swapperScriptExecutor.setGasTank(gasTankAddress);
   await swapperScriptExecutor.setPriceRetriever(priceRetrieverAddress);
   await swapperScriptExecutor.setExchange(testRouterAddress);
+  await swapperScriptExecutor.setGasFeed(gasPriceFeedAddress);
   console.log(`Secondary contracts have been set`);
 
   // set give executor permissions to access the gas tank methods

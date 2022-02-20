@@ -1,10 +1,12 @@
 const ProductionContracts = {
-    GasTank: '0x0D2a5C35ad867E6FBeaDD58977FD0ee42Fbb78aD',
-    DAEMToken: '0x29Ff4c4297694f8b67df46Fc42216c17dE57f9eB',
+    GasTank: '0x7824B232DEF6d1d8a3D381ba50eF681EE0f46Ec7',
+    DAEMToken: '0x8f3b5065D41Fcf90fA5F426e33F9b20f399F23A4',
+    Treasury: '0x481e74117F2225D458C082C18dA5D3eF3Bc6913A',
+    GasPriceFeed: '0x2C28B423c9ECbB63DdF5cbaa9AbF1C4835c7285E',
     PriceRetriever: '0x2FbBBd586eDC580F0dB8F9620db6E153b1aD1136',
 
-    SwapExecutor: '0xa11AF4FB81E0944302c484166d221E0d4661e6D7',
-    TransferExecutor: '0xd6cB9F771861D7790292D80F1f2ba4Ca4d255c91',
+    SwapExecutor: '0x5edef8c5B45aD89ACDC8919439c3649510c0e36d',
+    TransferExecutor: '0xbcf49f4bdAC6cBFEEF5a3BEe77A386382911d5f1',
 };
 
 export const Contracts = ProductionContracts;
