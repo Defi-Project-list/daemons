@@ -4,6 +4,7 @@ import { app } from '../../app';
 import { expect } from 'chai';
 import { ITokenDocument } from '../../models/token';
 import { tokenDocumentFactory } from '../../test-factories/token-factories';
+import jwt from 'jsonwebtoken';
 
 
 describe('GET /tokens/:chainId', () => {
@@ -12,9 +13,16 @@ describe('GET /tokens/:chainId', () => {
     afterEach(async () => await clearTestDb());
     after(async () => await closeTestDb());
 
+    const userAddress = '0xb79f76ef2c5f0286176833e7b2eee103b1cc3244';
+    const jwToken = jwt.sign({ userAddress }, process.env.JWT_SECRET as string);
+
     it('returns an empty array if there are no tokens on the db', async () => {
         const chainId = "42";
-        const response = await supertest(app).get(`/api/tokens/${chainId}`);
+        const response = await supertest(app)
+            .get(`/api/tokens/${chainId}`)
+            .set('Cookie', `token=${jwToken}`)
+            .expect(200);
+
         const fetchedTokens = response.body as ITokenDocument[];
         console.log(fetchedTokens);
 
@@ -34,7 +42,11 @@ describe('GET /tokens/:chainId', () => {
         await tokenDocumentFactory({ chainId: "16665" });
 
         const chainId = "42";
-        const response = await supertest(app).get(`/api/tokens/${chainId}`);
+        const response = await supertest(app)
+            .get(`/api/tokens/${chainId}`)
+            .set('Cookie', `token=${jwToken}`)
+            .expect(200);
+
         const fetchedTokens = response.body as ITokenDocument[];
         console.log(fetchedTokens);
 
@@ -42,5 +54,12 @@ describe('GET /tokens/:chainId', () => {
         expect(addresses).to.include(fetchedTokens[0].address.toLowerCase());
         expect(addresses).to.include(fetchedTokens[1].address.toLowerCase());
         expect(addresses).to.include(fetchedTokens[2].address.toLowerCase());
+    });
+
+    it('returns a 401 error if trying to fetch tokens while not authenticated', async () => {
+        const chainId = "42";
+        await supertest(app)
+            .get(`/api/tokens/${chainId}`)
+            .expect(401);
     });
 });

@@ -5,6 +5,7 @@ import { swapScriptDocumentFactory, transferScriptDocumentFactory } from '../../
 import { expect } from 'chai';
 import { ISignedSwapAction } from '../../../../messages/definitions/swap-action-messages';
 import { BigNumber } from 'ethers';
+import jwt from 'jsonwebtoken';
 
 
 describe('GET api/scripts', () => {
@@ -13,9 +14,16 @@ describe('GET api/scripts', () => {
     afterEach(async () => await clearTestDb());
     after(async () => await closeTestDb());
 
+    const userAddress = '0xb79f76ef2c5f0286176833e7b2eee103b1cc3244';
+    const jwToken = jwt.sign({ userAddress }, process.env.JWT_SECRET as string);
+
     it('returns an empty array if there are no scripts on the db', async () => {
         const chainId = "42";
-        const response = await supertest(app).get(`/api/scripts/${chainId}`);
+        const response = await supertest(app)
+            .get(`/api/scripts/${chainId}`)
+            .set('Cookie', `token=${jwToken}`)
+            .expect(200);
+
         const fetchedScripts = response.body as ISignedSwapAction[];
 
         expect(fetchedScripts.length).to.equal(0);
@@ -29,7 +37,11 @@ describe('GET api/scripts', () => {
         const ids = [swapScript1.scriptId, swapScript2.scriptId, transferScript1.scriptId];
 
         const chainId = "42";
-        const response = await supertest(app).get(`/api/scripts/${chainId}`);
+        const response = await supertest(app)
+            .get(`/api/scripts/${chainId}`)
+            .set('Cookie', `token=${jwToken}`)
+            .expect(200);
+
         const fetchedScripts = response.body as ISignedSwapAction[];
 
         expect(fetchedScripts.length).to.equal(3);
@@ -50,11 +62,22 @@ describe('GET api/scripts', () => {
         await swapScriptDocumentFactory({ chainId: BigNumber.from("16665") });
 
         const chainId = "42";
-        const response = await supertest(app).get(`/api/scripts/${chainId}`);
+        const response = await supertest(app)
+            .get(`/api/scripts/${chainId}`)
+            .set('Cookie', `token=${jwToken}`)
+            .expect(200);
+
         const fetchedScripts = response.body as ISignedSwapAction[];
 
         expect(fetchedScripts.length).to.equal(2);
         expect(ids).to.include(fetchedScripts[0].scriptId);
         expect(ids).to.include(fetchedScripts[1].scriptId);
+    });
+
+    it('returns a 401 error if trying to fetch scripts while not authenticated', async () => {
+        const chainId = "42";
+        await supertest(app)
+            .get(`/api/scripts/${chainId}`)
+            .expect(401);
     });
 });
