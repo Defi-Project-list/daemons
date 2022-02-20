@@ -12,7 +12,7 @@ authenticationRouter.get('/is-authenticated/:userAddress', authenticate, async (
     const userAddress = utils.getAddress(req.params.userAddress);
 
     // if the address in the JWT is the same passed as query, we're good to go!
-    if ((req as any).userAddress === userAddress) {
+    if (req.userAddress === userAddress) {
         return res.send(200);
     }
 

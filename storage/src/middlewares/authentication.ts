@@ -10,7 +10,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
     jwt.verify(token, process.env.JWT_SECRET as string, (err: any, payload: any) => {
         if (err) return res.sendStatus(403);
 
-        (req as any).userAddress = utils.getAddress(payload.userAddress);
+        req.userAddress = utils.getAddress(payload.userAddress);
         next();
     });
 }
