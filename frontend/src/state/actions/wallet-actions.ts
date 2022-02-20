@@ -7,4 +7,9 @@ export interface IUpdateWalletAction {
     chainId?: string;
 }
 
-export type WalletAction = IUpdateWalletAction;
+export interface IAuthCheck {
+    type: ActionType.AUTH_CHECK;
+    authenticated: boolean;
+}
+
+export type WalletAction = IUpdateWalletAction | IAuthCheck;

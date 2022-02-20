@@ -15,13 +15,14 @@ interface IScriptsComponentsProps {
     walletConnected: boolean;
     walletAddress?: string;
     walletChainId?: string;
+    authenticated: boolean;
     tokens: Token[];
 }
 
 class Scripts extends Component<IScriptsComponentsProps> {
 
     public render(): ReactNode {
-        if (!this.props.walletConnected) return <DisconnectedPage />;
+        if (!this.props.authenticated) return <DisconnectedPage />;
 
         const scripts = this.props.fetchedScripts.map((script: BaseScript) => (
             <ScriptComponent key={script.getId()} script={script} />
@@ -44,6 +45,7 @@ const mapStateToProps: (state: RootState) => IScriptsComponentsProps = state => 
     walletConnected: state.wallet.connected,
     walletAddress: state.wallet.address,
     walletChainId: state.wallet.chainId,
+    authenticated: state.wallet.authenticated,
     tokens: state.tokens.currentChainTokens,
 });
 

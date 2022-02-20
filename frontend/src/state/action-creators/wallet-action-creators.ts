@@ -1,4 +1,5 @@
-import { Dispatch } from 'redux';;
+import { Dispatch } from 'redux'; import { StorageProxy } from '../../data/storage-proxy';
+;
 import { ActionType } from '../action-types';
 import { WalletAction } from '../actions/wallet-actions';
 
@@ -11,6 +12,17 @@ export const updateWalletAddress = (connected: boolean, address?: string, chainI
             connected,
             address,
             chainId,
+        });
+    };
+};
+
+export const authenticationCheck = (address?: string) => {
+
+    return async (dispatch: Dispatch<WalletAction>) => {
+        dispatch({
+            type: ActionType.AUTH_CHECK,
+            // if no address is provided, we don't even bother asking the server
+            authenticated: !!address && await StorageProxy.checkAuthentication(address),
         });
     };
 };

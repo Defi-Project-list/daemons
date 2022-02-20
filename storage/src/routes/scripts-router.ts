@@ -2,6 +2,7 @@ import { utils } from 'ethers';
 import express, { Request, Response } from 'express';
 import { ISignedSwapAction } from '../../../messages/definitions/swap-action-messages';
 import { ISignedTransferAction } from '../../../messages/definitions/transfer-action-messages';
+import { authenticate } from '../middlewares/authentication';
 import { SwapScript } from '../models/swap-script';
 import { TransferScript } from '../models/transfer-script';
 
@@ -27,7 +28,7 @@ scriptsRouter.get('/:chainId', async (req: Request, res: Response) => {
     return res.send(scripts);
 });
 
-scriptsRouter.get('/:chainId/:userAddress', async (req: Request, res: Response) => {
+scriptsRouter.get('/:chainId/:userAddress', authenticate, async (req: Request, res: Response) => {
     // adds checksum to address (uppercase characters)
     const userAddress = utils.getAddress(req.params.userAddress);
     const chainId = String(req.params.chainId);
@@ -49,7 +50,7 @@ scriptsRouter.get('/:chainId/:userAddress', async (req: Request, res: Response) 
     return res.send(scripts);
 });
 
-scriptsRouter.post('/transfer', async (req: Request, res: Response) => {
+scriptsRouter.post('/transfer', authenticate, async (req: Request, res: Response) => {
     const script: ISignedTransferAction = req.body;
     try {
         await TransferScript.build(script).save();
@@ -59,7 +60,7 @@ scriptsRouter.post('/transfer', async (req: Request, res: Response) => {
     }
 });
 
-scriptsRouter.post('/swap', async (req: Request, res: Response) => {
+scriptsRouter.post('/swap', authenticate, async (req: Request, res: Response) => {
     const script: ISignedSwapAction = req.body;
     try {
         await SwapScript.build(script).save();
@@ -69,7 +70,7 @@ scriptsRouter.post('/swap', async (req: Request, res: Response) => {
     }
 });
 
-scriptsRouter.post('/update-description', async (req: Request, res: Response) => {
+scriptsRouter.post('/update-description', authenticate, async (req: Request, res: Response) => {
     const { scriptId, scriptType, description } = req.body;
 
     try {
@@ -88,7 +89,7 @@ scriptsRouter.post('/update-description', async (req: Request, res: Response) =>
     }
 });
 
-scriptsRouter.post('/revoke', async (req: Request, res: Response) => {
+scriptsRouter.post('/revoke', authenticate, async (req: Request, res: Response) => {
     const { scriptId, scriptType } = req.body;
 
     try {

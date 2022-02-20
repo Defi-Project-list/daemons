@@ -30,6 +30,7 @@ interface INewScriptsComponentsProps {
     walletConnected: boolean;
     walletAddress?: string;
     chainId?: string;
+    authenticated: boolean;
     tokens: Token[];
 }
 
@@ -86,8 +87,8 @@ class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle>
     }
 
     public render(): ReactNode {
-        if (this.state.redirect) return <Navigate to="/scripts" />;
-        if (!this.props.walletConnected) return <DisconnectedPage />;
+        if (this.state.redirect || !this.props.authenticated) return <Navigate to="/scripts" />;
+
         return (
             <div className="new-script">
 
@@ -180,6 +181,7 @@ const mapStateToProps: (state: RootState) => INewScriptsComponentsProps = state 
     walletConnected: state.wallet.connected,
     walletAddress: state.wallet.address,
     chainId: state.wallet.chainId,
+    authenticated: state.wallet.authenticated,
     tokens: state.tokens.currentChainTokens,
 });
 

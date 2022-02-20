@@ -7,6 +7,7 @@ export enum ActionType {
 
     // wallet
     WALLET_UPDATE = "WALLET_UPDATE",
+    AUTH_CHECK = "AUTH_CHECK",
 
     // gas tank
     GAS_TANK_BALANCE = "GAS_TANK_CHECK",

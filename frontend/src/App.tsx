@@ -18,6 +18,7 @@ export const App = ({ children }: { children: any; }) => {
     const dispatch = useDispatch();
     const chainId: string | undefined = useSelector((state: RootState) => state.wallet.chainId);
     const walletAddress: string | undefined = useSelector((state: RootState) => state.wallet.address);
+    const authenticated: boolean = useSelector((state: RootState) => state.wallet.authenticated);
 
     // menu selection classes
     const queueLinkClassName = `menu__entry ${document.location.href.endsWith('/queue') ? 'menu__entry--selected' : ''}`;
@@ -26,22 +27,29 @@ export const App = ({ children }: { children: any; }) => {
     const scriptsLinkClassName = `menu__entry ${document.location.href.endsWith('/') || document.location.href.endsWith('/scripts') ? 'menu__entry--selected' : ''}`;
 
     useEffect(() => {
-        // reload the user scripts and balance each time the chain or the address change
+        if (authenticated && walletAddress) {
+            dispatch(fetchUserScripts(chainId, walletAddress));
+            dispatch(fetchGasTankBalance(walletAddress));
+        }
+    }, [chainId, walletAddress, authenticated]);
+
+    useEffect(() => {
         dispatch(fetchChainTokens(chainId));
-        dispatch(fetchUserScripts(chainId, walletAddress));
-        dispatch(fetchGasTankBalance(walletAddress));
-    }, [chainId, walletAddress]);
+    }, [chainId]);
 
     return (
         <div>
             <div className="header">
                 <img src={logo} alt='Daemons logo' className="page-logo" />
-                <div className="menu">
-                    <Link className={scriptsLinkClassName} to="/scripts">Scripts</Link>
-                    <Link className={newScriptLinkClassName} to="/new-script">New Script</Link>
-                    <Link className={gasTankLinkClassName} to="/gas-tank">Gas Tank</Link>
-                    <Link className={queueLinkClassName} to="/queue">Queue</Link>
-                </div>
+                {
+                    authenticated &&
+                    <div className="menu">
+                        <Link className={scriptsLinkClassName} to="/scripts">Scripts</Link>
+                        <Link className={newScriptLinkClassName} to="/new-script">New Script</Link>
+                        <Link className={gasTankLinkClassName} to="/gas-tank">Gas Tank</Link>
+                        <Link className={queueLinkClassName} to="/queue">Queue</Link>
+                    </div>
+                }
 
                 <div className="menu__entry menu__entry--gas"><GasIndicator /></div>
                 <div className="wallet-control"><MetaMaskProvider> <ConnectWalletButton /> </MetaMaskProvider></div>

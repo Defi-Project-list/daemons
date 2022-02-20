@@ -34,6 +34,7 @@ export abstract class BaseScript {
         const executor = await this.getExecutor();
         const message = this.getMessage();
         try {
+            this.verificationState = VerificationState.loading;
             await executor.verify(message, this.R, this.S, this.V);
             this.verificationState = VerificationState.valid;
         } catch (error: any) {

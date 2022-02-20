@@ -8,6 +8,40 @@ const storageAddress = 'http://localhost:5000/api';
 /** Class used by the Frontend to communicate with the Storage */
 export class StorageProxy {
 
+    // Authentication
+
+    public static async checkAuthentication(userAddress: string): Promise<boolean> {
+        const url = `${storageAddress}/auth/is-authenticated/${userAddress}`;
+        const requestOptions = { method: 'GET', credentials: 'include' };
+        const response = await fetch(url, requestOptions as any);
+        return response.status === 200;
+    }
+
+    public static async getLoginMessage(userAddress: string): Promise<string> {
+        const url = `${storageAddress}/auth/message-to-sign/${userAddress}`;
+        const requestOptions = { method: 'GET', credentials: 'include' };
+        const response = await fetch(url, requestOptions as any);
+        if (response.status !== 200) throw new Error(`Something has gone wrong: ${response.status}`);
+
+        const jsn = await response.json();
+        return jsn.message;
+    }
+
+    public static async login(userAddress: string, signedMessage: string): Promise<void> {
+        const url = `${storageAddress}/auth/login`;
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                userAddress,
+                signedMessage,
+            }),
+        };
+
+        await fetch(url, requestOptions as any);
+    }
+
     // Scripts
 
     public static async saveScript(script: BaseScript): Promise<void> {
@@ -15,10 +49,11 @@ export class StorageProxy {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: script.toJsonString(),
         };
 
-        await fetch(url, requestOptions);
+        await fetch(url, requestOptions as any);
     }
 
     private static getSaveEndpoint(script: BaseScript): string {
@@ -40,7 +75,8 @@ export class StorageProxy {
 
         console.log(`Fetching all scripts for chain ${chainId}`);
         const url = `${storageAddress}/scripts/${chainId}`;
-        const response = await fetch(url);
+        const requestOptions = { method: 'GET', credentials: 'include' };
+        const response = await fetch(url, requestOptions as any);
         const json: any[] = await response.json();
         const scripts: BaseScript[] = [];
         for (const script of json) {
@@ -58,7 +94,11 @@ export class StorageProxy {
 
         console.log(`Fetching user ${user} scripts for chain ${chainId}`);
         const url = `${storageAddress}/scripts/${chainId}/${user}`;
-        const response = await fetch(url);
+
+        const requestOptions = { method: 'GET', credentials: 'include' };
+        const response = await fetch(url, requestOptions as any);
+        if (response.status !== 200) return [];
+
         const json: any[] = await response.json();
         const scripts: BaseScript[] = [];
         for (const script of json) {
@@ -85,10 +125,11 @@ export class StorageProxy {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ scriptId, scriptType, description }),
         };
 
-        await fetch(url, requestOptions);
+        await fetch(url, requestOptions as any);
     }
 
     public static async revokeScript(scriptId: string, scriptType: string): Promise<void> {
@@ -97,10 +138,11 @@ export class StorageProxy {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ scriptId, scriptType }),
         };
 
-        await fetch(url, requestOptions);
+        await fetch(url, requestOptions as any);
     }
 
     // Tokens
@@ -115,7 +157,8 @@ export class StorageProxy {
         if (!this.cachedTokens[chainId]) {
             console.log(`Fetching tokens list for chain ${chainId}`);
             const url = `${storageAddress}/tokens/${chainId}`;
-            const response = await fetch(url);
+            const requestOptions = { method: 'GET', credentials: 'include' };
+            const response = await fetch(url, requestOptions as any);
             const tokens: Token[] = await response.json();
             this.cachedTokens[chainId] = tokens;
         }

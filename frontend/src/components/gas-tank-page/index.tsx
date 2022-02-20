@@ -14,6 +14,7 @@ interface IGasTankComponentsProps {
     balance?: number;
     walletConnected: boolean;
     walletAddress?: string;
+    authenticated: boolean;
 }
 
 class GasTank extends Component<IGasTankComponentsProps> {
@@ -69,7 +70,7 @@ class GasTank extends Component<IGasTankComponentsProps> {
     };
 
     public render(): ReactNode {
-        if (!this.props.walletConnected) return <DisconnectedPage />;
+        if (!this.props.authenticated) return <DisconnectedPage />;
 
         return (
             <div className="outer-component">
@@ -177,6 +178,7 @@ const mapStateToProps: (state: RootState) => IGasTankComponentsProps = state => 
     balance: state.gasTank.balance,
     walletConnected: state.wallet.connected,
     walletAddress: state.wallet.address,
+    authenticated: state.wallet.authenticated,
 });
 
 export default connect(mapStateToProps, { fetchGasTankBalance })(GasTank);
