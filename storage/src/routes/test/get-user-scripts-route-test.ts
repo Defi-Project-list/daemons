@@ -6,6 +6,7 @@ import { expect } from 'chai';
 import jwt from 'jsonwebtoken';
 import { ISignedSwapAction } from '../../../../messages/definitions/swap-action-messages';
 import { BigNumber, utils } from 'ethers';
+import faker from '@faker-js/faker';
 
 
 describe('GET api/scripts/:userAddress', () => {
@@ -98,5 +99,22 @@ describe('GET api/scripts/:userAddress', () => {
         const checksumAddressFetchedScripts = checksumAddressResponse.body as ISignedSwapAction[];
 
         expect(JSON.stringify(lowercaseAddressFetchedScripts)).to.equal(JSON.stringify(checksumAddressFetchedScripts));
+    });
+
+    it('returns a 403 error if trying to fetch scripts belonging to other users', async () => {
+        const chainId = "42";
+        const randomUser = faker.finance.ethereumAddress();
+
+        await supertest(app)
+            .get(`/api/scripts/${chainId}/${randomUser}`)
+            .set('Cookie', `token=${jwToken}`)
+            .expect(403);
+    });
+
+    it('returns a 401 error if trying to fetch scripts while not authenticated', async () => {
+        const chainId = "42";
+        await supertest(app)
+            .get(`/api/scripts/${chainId}/${userAddress}`)
+            .expect(401);
     });
 });

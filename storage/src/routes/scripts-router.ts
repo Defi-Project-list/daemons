@@ -31,6 +31,10 @@ scriptsRouter.get('/:chainId', async (req: Request, res: Response) => {
 scriptsRouter.get('/:chainId/:userAddress', authenticate, async (req: Request, res: Response) => {
     // adds checksum to address (uppercase characters)
     const userAddress = utils.getAddress(req.params.userAddress);
+    if (req.userAddress !== userAddress) {
+        return res.sendStatus(403);
+    }
+
     const chainId = String(req.params.chainId);
 
     const scripts = await SwapScript.aggregate([
