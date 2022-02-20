@@ -25,8 +25,8 @@ const transferScriptSchema = new mongoose.Schema({
     },
     frequency: {
         enabled: { type: Boolean, required: true },
-        blocks: { type: String, required: true, set: stringifyBigNumber },
-        startBlock: { type: String, required: true, set: stringifyBigNumber },
+        delay: { type: String, required: true, set: stringifyBigNumber },
+        start: { type: String, required: true, set: stringifyBigNumber },
     },
     price: {
         enabled: { type: Boolean, required: true },

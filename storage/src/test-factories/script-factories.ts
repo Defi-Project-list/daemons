@@ -33,8 +33,8 @@ function priceConditionFactory(args: any): IPriceCondition {
 function frequencyConditionFactory(args: any): IFrequencyCondition {
     return {
         enabled: args.enabled ?? false,
-        blocks: args.blocks ?? randomBigNumber(),
-        startBlock: args.startBlock ?? randomBigNumber(),
+        delay: args.blocks ?? randomBigNumber(),
+        start: args.startBlock ?? randomBigNumber(),
     };
 }
 
