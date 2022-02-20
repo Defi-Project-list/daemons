@@ -45,7 +45,6 @@ authenticationRouter.post('/login', async (req: Request, res: Response) => {
     const message = composeMessage(userAddress, otp);
 
     const decodedAddress = utils.verifyMessage(message, signedMessage);
-    console.log(message);
 
     if (userAddress !== decodedAddress) {
         return res.status(403).send("Invalid signature");

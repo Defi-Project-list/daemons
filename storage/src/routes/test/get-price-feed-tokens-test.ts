@@ -27,7 +27,6 @@ describe('GET /tokens/price-feed-tokens/:chainId', () => {
         const chainId = "42";
         const response = await supertest(app).get(`/api/tokens/price-feed-tokens/${chainId}`);
         const fetchedTokens = response.body as ITokenDocument[];
-        console.log(fetchedTokens);
 
         expect(fetchedTokens.length).to.equal(3);
         expect(addresses).to.include(fetchedTokens[0].address.toLowerCase());

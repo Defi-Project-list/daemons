@@ -29,7 +29,6 @@ export const FollowCondition = ({ form, update }: { form: IFollowConditionForm; 
                                 onChange={(e) => {
                                     input.onChange(e);
                                     const script: BaseScript | undefined = userScripts.find(script => script.getId() === e.target.value);
-                                    console.log(script);
                                     if (script) update({
                                         ...form,
                                         parentScriptId: script.getId(),
