@@ -76,10 +76,16 @@ scriptsRouter.post('/update-description', authenticate, async (req: Request, res
     try {
         switch (scriptType) {
             case "SwapScript":
-                await SwapScript.updateOne({ scriptId: scriptId }, { $set: { description } });
+                await SwapScript.updateOne(
+                    { user: req.userAddress, scriptId: scriptId },
+                    { $set: { description } }
+                );
                 return res.send();
             case "TransferScript":
-                await TransferScript.updateOne({ scriptId: scriptId }, { $set: { description } });
+                await TransferScript.updateOne(
+                    { user: req.userAddress, scriptId: scriptId },
+                    { $set: { description } }
+                );
                 return res.send();
             default:
                 return res.status(400).send(`Unsupported script type ${scriptType}`);
