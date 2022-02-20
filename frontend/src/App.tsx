@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ConnectWalletButton } from './components/connect-wallet';
+import { ConnectWalletButton } from './components/wallet-connector';
 import { MetaMaskProvider } from "metamask-react";
 import { Link } from 'react-router-dom';
 import logo from './assets/logo.png';

@@ -1,0 +1,28 @@
+.wallet-connector {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    column-gap: 15px;
+}
+
+.wallet-connector__chain {
+    height: 30px;
+}
+
+.wallet-connector__chain-image {
+    height: 30px;
+    width: 30px;
+    border-radius: 100%;
+}
+
+.wallet-connector__address {
+    border: 1px solid gray;
+    padding: 5px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.wallet-connector__address--unauthenticated {
+    cursor: pointer;
+}

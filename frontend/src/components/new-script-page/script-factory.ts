@@ -1,5 +1,5 @@
 import { BigNumber, Contract, utils } from 'ethers';
-import { ChainInfo, ZeroAddress } from '../../data/chain-info';
+import { ChainInfo, GetCurrentChain, ZeroAddress } from '../../data/chain-info';
 import { Contracts } from '../../data/contracts';
 import { BaseScript } from '../../data/script/base-script';
 import { SwapScript } from '../../data/script/swap-script';
@@ -135,7 +135,7 @@ export class ScriptFactory {
         // TODO not sure at all!
         const ticksPerWeek = frequencyCondition.unit / frequencyCondition.ticks;
         const ticksPerDay = ticksPerWeek / 7;
-        const blocksPerDay = ChainInfo.Kovan.blocksPerDay;
+        const blocksPerDay = GetCurrentChain(this.chainId).blocksPerDay;
         const blocks = BigNumber.from(Math.trunc(blocksPerDay / ticksPerDay));
 
         const currentBlock = BigNumber.from(await this.provider.getBlockNumber());
