@@ -35,7 +35,9 @@ export const App = ({ children }: { children: any; }) => {
     }, [chainId, walletAddress, authenticated]);
 
     useEffect(() => {
-        dispatch(fetchChainTokens(chainId));
+        if (authenticated && walletAddress && supportedChain) {
+            dispatch(fetchChainTokens(chainId));
+        }
     }, [chainId]);
 
     return (
