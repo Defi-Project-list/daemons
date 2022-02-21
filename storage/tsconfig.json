@@ -1,4 +1,5 @@
 {
+    "ts-node": { "files": true },
     "compilerOptions": {
         "target": "es2018",
         "module": "commonjs",
@@ -12,5 +13,5 @@
         "outDir": "dist",
     },
     "exclude": [ "node_modules"],
-    "include": ["./src", "./global.d.ts"]
-  }
+    "include": ["./src", "./global.d.ts"],
+}
