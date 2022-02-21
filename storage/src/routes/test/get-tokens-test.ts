@@ -7,7 +7,7 @@ import { tokenDocumentFactory } from '../../test-factories/token-factories';
 import jwt from 'jsonwebtoken';
 
 
-describe('GET /tokens/:chainId', () => {
+describe('GET api/tokens/:chainId', () => {
 
     before(async () => await connectToTestDb());
     afterEach(async () => await clearTestDb());
