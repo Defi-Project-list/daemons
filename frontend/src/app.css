@@ -1,12 +1,14 @@
 @font-face {
-    font-family: DMSans;
-    src: url('./assets/DMSans-Regular.ttf');
+    font-family: Gilroy;
+    src: url('./assets/Gilroy-Regular.woff2') format("woff2"),
+        url('./assets/Gilroy-Regular.woff') format("woff");
+    font-display: swap;
 }
 
 body {
     background-color: var(--body-background);
     color: rgb(48, 48, 48);
-    font-family: DMSans;
+    font-family: Gilroy;
     margin: 0;
 }
 
@@ -95,7 +97,7 @@ select {
     padding: 5px;
     background: transparent;
     font-size: 16px;
-    font-family: DMSans;
+    font-family: Gilroy;
 }
 
 .wallet-control__connect-bt:hover {
