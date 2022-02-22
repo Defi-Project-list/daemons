@@ -96,7 +96,6 @@ export const BalanceCondition = ({ form, update }: { form: IBalanceConditionForm
                         </Field>
 
                     </div>
-                    <pre>{JSON.stringify(form, null, " ")}</pre>
                 </form>
             )}
         />

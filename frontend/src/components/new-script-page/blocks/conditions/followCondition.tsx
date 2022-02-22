@@ -53,7 +53,6 @@ export const FollowCondition = ({ form, update }: { form: IFollowConditionForm; 
                             </select>}
                         </Field>
                     </div >
-                    <pre>{JSON.stringify(form, null, ' ')}</pre>
                 </form>
             )}
         />

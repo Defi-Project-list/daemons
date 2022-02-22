@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { ConnectWalletButton } from './components/wallet-connector';
 import { MetaMaskProvider } from "metamask-react";
 import { Link } from 'react-router-dom';
-import logo from './assets/logo.png';
+import logo from './assets/logo.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from './state';
 import GasIndicator from './components/gas-indicator';

@@ -5,32 +5,28 @@
     flex-direction: row;
     justify-content: center;
     column-gap: 50px;
-    align-items: center;
 }
 
 .new-script__step {
     border-radius: 5px;
-    border: 1px solid #555;
     margin: 20px;
     padding: 25px;
-    height: 65vh;
+    background: var(--secondary-background);
+    box-shadow: 0 1px 15px rgb(0 0 0 / 4%), 0 1px 6px rgb(0 0 0 / 4%);
+    /* height: fit-content; */
 }
 
 .new-script__block-title {
     margin-bottom: 25px;
-    text-align: center;
     font-size: 20px;
-}
-
-.new-script__step--condition .script-block__accordion {
-    padding: 0px 15px;
+    color: var(--primary-colour);
+    font-weight: bolder;
 }
 
 
 /* Blocks */
 
 .script-block {
-    border: 1px solid #888;
     margin-bottom: 15px;
     width: 270px;
     border-radius: 5px;
@@ -42,24 +38,16 @@
     height: 40px;
     display: flex;
     flex-direction: row;
-    justify-content: center;
     align-items: center;
 }
 
 .script-block__title {
     line-height: 30px;
-}
-
-.script-block__selection-checkbox {
-    margin-left: auto;
+    font-weight: bolder;
 }
 
 .script-block--selected .script-block__title {
     font-weight: bold;
-}
-
-.script-block--selected .script-block__panel {
-    padding: 15px;
 }
 
 .script-block__panel--row {
@@ -68,10 +56,10 @@
     column-gap: 10px;
 }
 
-
 .script-block__field--error {
     border: 2px solid red;
 }
+
 
 /* Balance Block */
 
@@ -83,13 +71,9 @@
     width: 50px;
 }
 
-.balance-block__amount {
-    width: 70px;
-    text-align: right;
-}
-
 .balance-block .balance-block__amount {
-    width: 50%;
+    width: 45%;
+    text-align: center;
 }
 
 
@@ -106,7 +90,7 @@
 
 .frequency-block .frequency-block__ticks {
     width: 50%;
-    padding: 3px 7px;
+    text-align: center;
 }
 
 .frequency-block .frequency-block__time-unit {
@@ -122,7 +106,8 @@
 /* Price Block */
 
 .price-block .price-block__value {
-    width: 50%;
+    width: 45%;
+    text-align: center;
 }
 
 
@@ -134,6 +119,14 @@
 
 .transfer-block .balance-block__amount {
     width: 60%;
+    text-align: center;
+}
+
+
+/* Repetitions Block */
+
+.repetitions-block__ticks {
+    text-align: center;
 }
 
 
@@ -146,7 +139,7 @@
 
 .balance-block .balance-block__comparison,
 .price-block .price-block__comparison {
-    width: 15%;
+    width: 20%;
 }
 
 .script-block__panel pre {
@@ -154,14 +147,11 @@
     word-wrap: break-word;
 }
 
-.swap-block .swap-block__token-from-address,
-.swap-block .swap-block__token-to-address,
 .farms-block .farms-block__protocol,
 .farms-block .farms-block__action {
     width: 50%;
 }
 
-.swap-block .balance-block__amount,
 .transfer-block .transfer-block__token,
 .farms-block .farms-block__pool,
 .dao-block .dao-block__dao,
@@ -171,15 +161,26 @@
     box-sizing: border-box;
 }
 
+.swap-block .swap-block__token-from-address,
+.swap-block .swap-block__token-to-address {
+    width: 33%;
+}
+
+.swap-block .balance-block__amount {
+    width: 34%;
+    box-sizing: border-box;
+}
+
 .new-script__button {
-    padding: 10px 15px;
+    padding: 8px 15px;
     border-radius: 10px;
     color: white;
     border: none;
-    background-image: linear-gradient(to right, #ff748e, #f6e276);
+    background-color: var(--primary-colour);
     font-size: 15px;
-    font-weight: bold;
     cursor: pointer;
+    height: fit-content;
+    margin: auto 70px;
 }
 
 .new-script__button:disabled {

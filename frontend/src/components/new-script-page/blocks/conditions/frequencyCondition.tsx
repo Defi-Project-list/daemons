@@ -78,7 +78,6 @@ export const FrequencyCondition = ({ form, update }: { form: IFrequencyCondition
                         </Field>
 
                     </div >
-                    <pre>{JSON.stringify(form, null, ' ')}</pre>
                 </form>
             )}
         />

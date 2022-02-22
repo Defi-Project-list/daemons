@@ -83,32 +83,32 @@ export const SwapAction = ({ form, update }: { form: ISwapActionForm; update: (n
                                     }
                                 </select>}
                             </Field>
-                        </div>
 
-                        <Field name="floatAmount"
-                            component="input"
-                            type="number"
-                            placeholder='1.00'
-                            validate={amountValidation}
-                        >
-                            {({ input, meta }) =>
-                                <input
-                                    {...input}
-                                    className={`balance-block__amount ${meta.error ? 'script-block__field--error' : null}`}
-                                    onChange={(e) => {
-                                        e.target.value = Number(e.target.value) < 0 ? '0' : e.target.value;
-                                        input.onChange(e);
-                                        update({ ...form, floatAmount: Number(e.target.value) });
-                                    }}
-                                    onBlur={(e) => {
-                                        input.onBlur(e);
-                                        update({ ...form, valid });
-                                    }}
-                                />
-                            }
-                        </Field>
+                            
+                            <Field name="floatAmount"
+                                component="input"
+                                type="number"
+                                placeholder='1.00'
+                                validate={amountValidation}
+                            >
+                                {({ input, meta }) =>
+                                    <input
+                                        {...input}
+                                        className={`balance-block__amount ${meta.error ? 'script-block__field--error' : null}`}
+                                        onChange={(e) => {
+                                            e.target.value = Number(e.target.value) < 0 ? '0' : e.target.value;
+                                            input.onChange(e);
+                                            update({ ...form, floatAmount: Number(e.target.value) });
+                                        }}
+                                        onBlur={(e) => {
+                                            input.onBlur(e);
+                                            update({ ...form, valid });
+                                        }}
+                                    />
+                                }
+                            </Field>
+                        </div>
                     </div >
-                    <pre>{JSON.stringify(form, null, ' ')}</pre>
                 </form>
             )}
         />

@@ -139,9 +139,6 @@ class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle>
 
                 </div>
 
-                {/* Separator */}
-                <div className='new-script__arrow'>▶</div>
-
                 {/* Action Block */}
                 <div className="new-script__step">
                     <div className="new-script__block-title">Action</div>
@@ -171,7 +168,6 @@ class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle>
                 >
                     {"Sign & Deploy"}
                 </button>
-                <pre>{JSON.stringify(this.state, null, ' ')}</pre>
             </div >
         );
     }

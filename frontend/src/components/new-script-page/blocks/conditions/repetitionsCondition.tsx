@@ -43,7 +43,6 @@ export const RepetitionsCondition = ({ form, update }: { form: IRepetitionsCondi
                         </Field>
 
                     </div >
-                    <pre>{JSON.stringify(form, null, ' ')}</pre>
                 </form>
             )}
         />

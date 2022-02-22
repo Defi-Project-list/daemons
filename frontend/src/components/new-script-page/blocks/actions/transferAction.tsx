@@ -113,7 +113,6 @@ export const TransferAction = ({ form, update }: { form: ITransferActionForm; up
                         </Field>
 
                     </div >
-                    <pre>{JSON.stringify(form, null, ' ')}</pre>
                 </form>
             )}
         />

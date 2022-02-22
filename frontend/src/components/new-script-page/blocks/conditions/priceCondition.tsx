@@ -99,7 +99,6 @@ export const PriceCondition = ({ form, update }: { form: IPriceConditionForm; up
                         </Field>
 
                     </div>
-                    {/* <pre>{JSON.stringify(form)}</pre> */}
                 </form>
             )}
         />
