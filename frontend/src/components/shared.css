@@ -23,6 +23,10 @@
     color: var(--primary-colour);
 }
 
+.card__subtitle {
+    margin-bottom: 25px;
+}
+
 .card__button {
     padding: 8px 15px;
     border-radius: 10px;

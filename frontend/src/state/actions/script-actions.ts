@@ -6,6 +6,10 @@ export interface IFetchScriptsAction {
     payload: BaseScript[];
 }
 
+export interface IToggleLoading {
+    type: ActionType.SET_LOADING;
+}
+
 export interface INewScriptsAction {
     type: ActionType.NEW_SCRIPT;
     payload: BaseScript;
@@ -16,4 +20,4 @@ export interface IRemoveScriptsAction {
     payload: BaseScript;
 }
 
-export type ScriptAction = IFetchScriptsAction | INewScriptsAction | IRemoveScriptsAction;
+export type ScriptAction = IFetchScriptsAction | IToggleLoading | INewScriptsAction | IRemoveScriptsAction;

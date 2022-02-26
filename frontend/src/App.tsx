@@ -22,7 +22,7 @@ export const App = ({ children }: { children: any; }) => {
     const supportedChain: boolean = useSelector((state: RootState) => state.wallet.supportedChain);
 
     // menu selection classes
-    const queueLinkClassName = `menu__entry ${document.location.href.endsWith('/queue') ? 'menu__entry--selected' : ''}`;
+    const executeLinkClassName = `menu__entry ${document.location.href.endsWith('/execute') ? 'menu__entry--selected' : ''}`;
     const myPageLinkClassName = `menu__entry ${document.location.href.endsWith('/') || document.location.href.endsWith('/my-page') ? 'menu__entry--selected' : ''}`;
 
     useEffect(() => {
@@ -46,7 +46,7 @@ export const App = ({ children }: { children: any; }) => {
                     authenticated &&
                     <div className="menu">
                         <Link className={myPageLinkClassName} to="/my-page">My Page</Link>
-                        <Link className={queueLinkClassName} to="/queue">Queue</Link>
+                        <Link className={executeLinkClassName} to="/execute">Execute</Link>
                     </div>
                 }
 

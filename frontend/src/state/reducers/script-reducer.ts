@@ -3,13 +3,15 @@ import { ActionType } from "../action-types/index";
 import { ScriptAction } from "../actions/script-actions";
 
 export type ScriptState = {
-    userScripts: BaseScript[],
+    userScripts: BaseScript[];
     allScripts: BaseScript[];
+    loading: boolean;
 };
 
 const initialState: ScriptState = {
     userScripts: [],
     allScripts: [],
+    loading: false,
 };
 
 export const scriptReducer = (state: ScriptState = initialState, action: ScriptAction): ScriptState => {
@@ -23,6 +25,7 @@ export const scriptReducer = (state: ScriptState = initialState, action: ScriptA
             return {
                 ...state,
                 allScripts: action.payload,
+                loading: false,
             };
         case ActionType.NEW_SCRIPT:
             return {
@@ -34,6 +37,11 @@ export const scriptReducer = (state: ScriptState = initialState, action: ScriptA
             return {
                 ...state,
                 userScripts: state.userScripts.filter(script => script.getId() !== scriptToRemove),
+            };
+        case ActionType.SET_LOADING:
+            return {
+                ...state,
+                loading: true,
             };
         default:
             return state;

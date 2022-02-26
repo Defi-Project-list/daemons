@@ -4,6 +4,7 @@ export enum ActionType {
     FETCH_ALL_SCRIPTS = "FETCH_ALL_SCRIPTS",
     NEW_SCRIPT = "NEW_SCRIPT",
     REMOVE_SCRIPT = "REMOVE_SCRIPT",
+    SET_LOADING = "SET_LOADING",
 
     // wallet
     WALLET_UPDATE = "WALLET_UPDATE",
