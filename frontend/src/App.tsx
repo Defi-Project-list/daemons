@@ -31,14 +31,10 @@ export const App = ({ children }: { children: any; }) => {
             dispatch(fetchUserScripts(chainId, walletAddress));
             dispatch(fetchGasTankBalance(walletAddress));
             dispatch(fetchGasTankClaimable(walletAddress));
+            dispatch(fetchChainTokens(chainId));
+
         }
     }, [chainId, walletAddress, authenticated]);
-
-    useEffect(() => {
-        if (authenticated && walletAddress && supportedChain) {
-            dispatch(fetchChainTokens(chainId));
-        }
-    }, [chainId]);
 
     return (
         <div>
