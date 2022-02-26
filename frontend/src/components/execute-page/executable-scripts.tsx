@@ -13,15 +13,17 @@ export function ExecutableScriptsContainer() {
     const fetchedScripts = useSelector((state: RootState) => state.script.allScripts);
     const loading = useSelector((state: RootState) => state.script.loading);
 
-    useEffect(() => {
-        dispatch(toggleScriptsLoading());
-        dispatch(fetchAllScripts(walletChainId));
-    }, [walletChainId]);
-
     const reloadScripts = async () => {
         dispatch(toggleScriptsLoading());
         dispatch(fetchAllScripts(walletChainId));
     };
+
+    useEffect(() => {
+        if (fetchedScripts.length === 0) {
+            reloadScripts();
+        }
+    }, [walletChainId]);
+
 
     const scripts = fetchedScripts.map((script: BaseScript) => (
         <QueueScriptComponent key={script.getId()} script={script} />
