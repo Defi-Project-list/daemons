@@ -88,7 +88,7 @@ class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle>
 
     public render(): ReactNode {
         const shouldRedirect = this.state.redirect || !this.props.authenticated || !this.props.supportedChain;
-        if (shouldRedirect) return <Navigate to="/scripts" />;
+        if (shouldRedirect) return <Navigate to="/my-page" />;
 
         return (
             <div className="new-script">
