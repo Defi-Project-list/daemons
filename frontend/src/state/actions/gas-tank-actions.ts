@@ -5,4 +5,9 @@ export interface IGasTankBalanceAction {
     balance?: number;
 }
 
-export type GasTankAction = IGasTankBalanceAction;
+export interface IGasTankClaimableAction {
+    type: ActionType.GAS_TANK_CLAIMABLE;
+    balance?: number;
+}
+
+export type GasTankAction = IGasTankBalanceAction | IGasTankClaimableAction;

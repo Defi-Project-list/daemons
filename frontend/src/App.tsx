@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from './state';
 import { GasIndicator } from './components/gas-indicator';
 import { fetchUserScripts } from './state/action-creators/script-action-creators';
-import { fetchGasTankBalance } from './state/action-creators/gas-tank-action-creators';
+import { fetchGasTankBalance, fetchGasTankClaimable } from './state/action-creators/gas-tank-action-creators';
 import { fetchChainTokens } from './state/action-creators/tokens-action-creators';
 
 import "./constants.css";
@@ -30,6 +30,7 @@ export const App = ({ children }: { children: any; }) => {
         if (authenticated && walletAddress && supportedChain) {
             dispatch(fetchUserScripts(chainId, walletAddress));
             dispatch(fetchGasTankBalance(walletAddress));
+            dispatch(fetchGasTankClaimable(walletAddress));
         }
     }, [chainId, walletAddress, authenticated]);
 

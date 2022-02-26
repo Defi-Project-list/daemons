@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../state';
 import { DisconnectedPage } from '../error-pages/disconnected-page';
 import { UnsupportedChainPage } from '../error-pages/unsupported-chain-page';
+import { ClaimRewards } from './claim-reward';
 import { ExecutableScriptsContainer } from './executable-scripts';
 import './styles.css';
 
@@ -23,7 +24,7 @@ export function ExecutePage() {
                     <ExecutableScriptsContainer />
                 </div>
                 <div className='execute-page__right-panel'>
-                    <div className='card'><div className='card__title'>Profits</div>Getting there...</div>
+                    <ClaimRewards />
                     <div className='card'><div className='card__title'>Stake</div>Getting there...</div>
                     <div className='card'><div className='card__title'>APY</div>Getting there...</div>
                 </div>

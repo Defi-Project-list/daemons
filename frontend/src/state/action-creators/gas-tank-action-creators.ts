@@ -34,3 +34,33 @@ export const fetchGasTankBalance = (address?: string) => {
         });
     };
 };
+
+export const fetchGasTankClaimable = (address?: string) => {
+
+    return async (dispatch: Dispatch<GasTankAction>) => {
+        if (!address) {
+            console.log('Address missing, balance check aborted');
+            dispatch({
+                type: ActionType.GAS_TANK_CLAIMABLE,
+                balance: undefined,
+            });
+            return;
+        }
+
+        console.log('Checking claimable DAEM for', address);
+        const ethers = require('ethers');
+        const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+
+        const contractAddress = Contracts.GasTank;
+        const contractAbi = await getAbiFor('GasTank');
+
+        const gasTank = new ethers.Contract(contractAddress, contractAbi, provider);
+        const rawBalance: BigNumber = await gasTank.claimable(address);
+        const balance = rawBalance.div(BigNumber.from(10).pow(14)).toNumber() / 10000; // let's keep 4 digits precision
+
+        dispatch({
+            type: ActionType.GAS_TANK_CLAIMABLE,
+            balance,
+        });
+    };
+};

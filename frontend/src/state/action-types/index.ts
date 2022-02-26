@@ -11,7 +11,8 @@ export enum ActionType {
     AUTH_CHECK = "AUTH_CHECK",
 
     // gas tank
-    GAS_TANK_BALANCE = "GAS_TANK_CHECK",
+    GAS_TANK_BALANCE = "GAS_TANK_BALANCE",
+    GAS_TANK_CLAIMABLE = "GAS_TANK_CLAIMABLE",
 
     // tokens
     FETCH_TOKENS = "FETCH_TOKENS",
