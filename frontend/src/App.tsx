@@ -22,8 +22,9 @@ export const App = ({ children }: { children: any; }) => {
     const supportedChain: boolean = useSelector((state: RootState) => state.wallet.supportedChain);
 
     // menu selection classes
+    const dashboardLinkClassName = `menu__entry ${document.location.href.endsWith('/') ? 'menu__entry--selected' : ''}`;
+    const myPageLinkClassName = `menu__entry ${document.location.href.endsWith('/my-page') ? 'menu__entry--selected' : ''}`;
     const executeLinkClassName = `menu__entry ${document.location.href.endsWith('/execute') ? 'menu__entry--selected' : ''}`;
-    const myPageLinkClassName = `menu__entry ${document.location.href.endsWith('/') || document.location.href.endsWith('/my-page') ? 'menu__entry--selected' : ''}`;
 
     useEffect(() => {
         if (authenticated && walletAddress && supportedChain) {
@@ -45,6 +46,7 @@ export const App = ({ children }: { children: any; }) => {
                 {
                     authenticated &&
                     <div className="menu">
+                        <Link className={dashboardLinkClassName} to="/">Dashboard</Link>
                         <Link className={myPageLinkClassName} to="/my-page">My Page</Link>
                         <Link className={executeLinkClassName} to="/execute">Execute</Link>
                     </div>
