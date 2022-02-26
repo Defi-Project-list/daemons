@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import logo from './assets/logo.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from './state';
-import GasIndicator from './components/gas-indicator';
+import { GasIndicator } from './components/gas-indicator';
 import { fetchUserScripts } from './state/action-creators/script-action-creators';
 import { fetchGasTankBalance } from './state/action-creators/gas-tank-action-creators';
 import { fetchChainTokens } from './state/action-creators/tokens-action-creators';

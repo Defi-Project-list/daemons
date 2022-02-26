@@ -2,14 +2,14 @@ interface IChainInfo {
     name: string;
     hex: string;
     iconPath: string;
-    blocksPerDay: number;
+    coinSymbol: string;
 }
 
 const unsupportedChain: IChainInfo = {
     name: "Unsupported",
     hex: "0x00",
     iconPath: "",
-    blocksPerDay: 0,
+    coinSymbol: 'ETH',
 };
 
 export const ChainInfo: { [chainId: string]: IChainInfo; } = {
@@ -17,7 +17,7 @@ export const ChainInfo: { [chainId: string]: IChainInfo; } = {
         name: "Kovan",
         hex: "0x2a",
         iconPath: "/icons/kovan.jpg",
-        blocksPerDay: 6300
+        coinSymbol: 'ETH',
     },
 };
 
