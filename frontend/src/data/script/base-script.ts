@@ -1,5 +1,6 @@
 import { BigNumber, ethers } from 'ethers';
 import { Contract } from 'ethers';
+import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { AllowanceHelper } from '../../utils/allowance-helper';
 import { StorageProxy } from '../storage-proxy';
 
@@ -48,11 +49,11 @@ export abstract class BaseScript {
         return this.verificationState;
     }
 
-    public async execute(): Promise<void> {
+    public async execute(): Promise<TransactionResponse | undefined> {
         const executor = await this.getExecutor();
         const message = this.getMessage();
         try {
-            await executor.execute(message, this.R, this.S, this.V);
+            return await executor.execute(message, this.R, this.S, this.V);
         } catch (error: any) {
             if (!error.data) throw error;
 

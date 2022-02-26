@@ -6,7 +6,7 @@ export const QueueScriptComponent = ({ script }: { script: BaseScript; }) => {
     const [verificationState, setVerificationState] = useState(script.getVerificationState());
 
     const verifyScript = async () => { setVerificationState(await script.verify()); };
-    const executeScript = async () => { await script.execute(); };
+    const executeScript = async () => { console.log(await script.execute()); };
 
     if (verificationState === VerificationState.unverified) {
         verifyScript();
