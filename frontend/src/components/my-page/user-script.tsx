@@ -4,7 +4,7 @@ import { BaseScript, VerificationState } from '../../data/script/base-script';
 import { removeScript } from '../../state/action-creators/script-action-creators';
 
 
-export const ScriptComponent = ({ script }: { script: BaseScript; }) => {
+export const MyPageScript = ({ script }: { script: BaseScript; }) => {
     const [verificationState, setVerificationState] = useState(script.getVerificationState());
     const dispatch = useDispatch();
 

@@ -1,3 +1,30 @@
+.my-page__layout {
+    display: grid;
+    grid-template-columns: 65fr 35fr;
+    column-gap: 20px;
+}
+
+.my-page__right-panel {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    row-gap: 20px;
+}
+
+.add-new-script-button {
+    width: 90px;
+    text-align: center;
+    line-height: 15px;
+    height: 15px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    color: white;
+    border: none;
+    background-color: var(--primary-colour);
+    cursor: pointer;
+    margin-left: auto;
+    text-decoration: none;
+}
+
 .scripts-container {
     padding: 25px;
     display: flex;
@@ -41,4 +68,8 @@
     outline: none;
     border: 1px solid gray;
     cursor: pointer;
+}
+
+.history {
+    height: 100%;
 }
