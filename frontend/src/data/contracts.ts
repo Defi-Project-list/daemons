@@ -5,8 +5,9 @@ const ProductionContracts = {
     GasPriceFeed: '0x2C28B423c9ECbB63DdF5cbaa9AbF1C4835c7285E',
     PriceRetriever: '0x2FbBBd586eDC580F0dB8F9620db6E153b1aD1136',
 
-    SwapExecutor: '0x5edef8c5B45aD89ACDC8919439c3649510c0e36d',
-    TransferExecutor: '0xbcf49f4bdAC6cBFEEF5a3BEe77A386382911d5f1',
+    SwapExecutor: '0x0D24A691A2Ba2d3092187b9c1eA7Bd88bCEe9900',
+    TransferExecutor: '0xf7E90380d91648d5bBd34456AD85cf79EaAF43b6',
+    TransferPctExecutor: '0x46264c48D467913b2C006AE57A1D6D4a8264927f',
 };
 
 export const Contracts = ProductionContracts;

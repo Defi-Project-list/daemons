@@ -25,6 +25,9 @@ abstract contract ConditionsChecker is Ownable {
     bytes32 internal constant EIP712_DOMAIN_TYPEHASH =
         keccak256(abi.encodePacked(EIP712_DOMAIN));
 
+    // events
+    event Executed(bytes32 id, uint256 cost);
+
     /* ========== CONSTRUCTOR ========== */
 
     constructor() {

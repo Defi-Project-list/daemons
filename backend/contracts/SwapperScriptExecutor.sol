@@ -7,7 +7,7 @@ import "./Messages.sol";
 import "./interfaces/UniswapV2.sol";
 
 contract SwapperScriptExecutor is ConditionsChecker {
-    uint256 public GAS_COST = 125;
+    uint256 public GAS_COST = 300000000000000; // 0.00030 ETH
     address private exchange;
     mapping(address => mapping(IERC20 => bool)) private allowances;
 
@@ -131,6 +131,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
             message.user,
             _msgSender()
         );
+        emit Executed(message.scriptId, GAS_COST * gasPriceFeed.lastGasPrice());
     }
 
     function giveAllowance(IERC20 _token, address _exchange) private {

@@ -7,7 +7,7 @@ import "./Messages.sol";
 import "./interfaces/UniswapV2.sol";
 
 contract TransferPctScriptExecutor is ConditionsChecker {
-    uint256 public GAS_COST = 125;
+    uint256 public GAS_COST = 150000000000000; // 0.00015 ETH
 
     /* ========== HASH FUNCTIONS ========== */
 
@@ -125,5 +125,6 @@ contract TransferPctScriptExecutor is ConditionsChecker {
             message.user,
             _msgSender()
         );
+        emit Executed(message.scriptId, GAS_COST * gasPriceFeed.lastGasPrice());
     }
 }
