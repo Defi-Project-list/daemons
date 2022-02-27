@@ -1,6 +1,6 @@
 import { utils } from 'ethers';
 import mongoose from 'mongoose';
-import { ISignedSwapAction } from '../../../messages/definitions/swap-action-messages';
+import { ISignedSwapAction } from '../../../shared-definitions/scripts/swap-action-messages';
 import { stringifyBigNumber, truncateAndEscapeText } from './utils';
 
 

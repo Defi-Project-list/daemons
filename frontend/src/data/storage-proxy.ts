@@ -1,7 +1,7 @@
 import { BaseScript } from './script/base-script';
 import { SwapScript } from './script/swap-script';
 import { TransferScript } from './script/transfer-script';
-import { ITransaction, TransactionOutcome } from '../../../messages/transactions/transaction';
+import { ITransaction, TransactionOutcome } from '../../../shared-definitions/transactions/transaction';
 import { Token } from './tokens';
 import { TransactionResponse, TransactionReceipt } from '@ethersproject/abstract-provider';
 import { utils } from 'ethers';

@@ -1,5 +1,5 @@
 import React, { Component, ReactNode } from 'react';
-import { ComparisonType } from '../../../../messages/definitions/condition-messages';
+import { ComparisonType } from '../../../../shared-definitions/scripts/condition-messages';
 import { INewScriptBundle } from './i-new-script-form';
 import { ScriptFactory } from './script-factory';
 import { RootState } from '../../state';

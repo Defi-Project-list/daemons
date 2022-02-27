@@ -1,7 +1,7 @@
 import { utils } from 'ethers';
 import express, { Request, Response } from 'express';
-import { ISignedSwapAction } from '../../../messages/definitions/swap-action-messages';
-import { ISignedTransferAction } from '../../../messages/definitions/transfer-action-messages';
+import { ISignedSwapAction } from '../../../shared-definitions/scripts/swap-action-messages';
+import { ISignedTransferAction } from '../../../shared-definitions/scripts/transfer-action-messages';
 import { authenticate } from '../middlewares/authentication';
 import { SwapScript } from '../models/swap-script';
 import { TransferScript } from '../models/transfer-script';

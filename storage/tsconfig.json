@@ -14,4 +14,9 @@
     },
     "exclude": [ "node_modules"],
     "include": ["./src", "./global.d.ts"],
+    "references": [
+        {
+           "path": "../shared-definitions/tsconfig.json"
+        }
+     ]
 }

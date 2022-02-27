@@ -1,6 +1,6 @@
 import { utils } from 'ethers';
 import mongoose from 'mongoose';
-import { TransactionOutcome, ITransaction } from '../../../messages/transactions/transaction';
+import { TransactionOutcome, ITransaction } from '../../../shared-definitions/transactions/transaction';
 import { stringifyBigNumber, truncateAndEscapeText } from './utils';
 
 

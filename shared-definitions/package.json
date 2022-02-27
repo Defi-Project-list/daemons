@@ -1,0 +1,12 @@
+{
+  "name": "daemons.shared-definitions",
+  "version": "1.0.0",
+  "description": "Shared definitions for Daemons dapp",
+  "main": "",
+  "scripts": {},
+  "author": "Daemons Finance",
+  "license": "ISC",
+  "dependencies": {
+    "ethers": "^5.5.2"
+  }
+}

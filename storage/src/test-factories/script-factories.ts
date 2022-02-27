@@ -1,7 +1,7 @@
 import { BigNumber, utils } from 'ethers';
-import { ComparisonType, IBalanceCondition, IFollowCondition, IFrequencyCondition, IMaxRepetitionsCondition, IPriceCondition } from '../../../messages/definitions/condition-messages';
-import { ISignedSwapAction } from '../../../messages/definitions/swap-action-messages';
-import { ISignedTransferAction } from '../../../messages/definitions/transfer-action-messages';
+import { ComparisonType, IBalanceCondition, IFollowCondition, IFrequencyCondition, IMaxRepetitionsCondition, IPriceCondition } from '../../../shared-definitions/scripts/condition-messages';
+import { ISignedSwapAction } from '../../../shared-definitions/scripts/swap-action-messages';
+import { ISignedTransferAction } from '../../../shared-definitions/scripts/transfer-action-messages';
 import { SwapScript } from '../models/swap-script';
 import { TransferScript } from '../models/transfer-script';
 import faker from '@faker-js/faker';

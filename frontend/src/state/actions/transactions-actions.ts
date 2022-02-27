@@ -1,4 +1,4 @@
-import { ITransaction } from '../../../../messages/transactions/transaction';
+import { ITransaction } from '../../../../shared-definitions/transactions/transaction';
 import { ActionType } from "../action-types/index";
 
 export interface IFetchTransactionsAction {

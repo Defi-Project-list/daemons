@@ -2,8 +2,8 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from "chai";
 import { BigNumber, Contract } from 'ethers';
 import { ethers } from 'hardhat';
-import { ComparisonType } from '../../messages/definitions/condition-messages';
-import { domain, ITransferAction, types } from "../../messages/definitions/transfer-action-messages";
+import { ComparisonType } from '../../shared-definitions/scripts/condition-messages';
+import { domain, ITransferAction, types } from "../../shared-definitions/scripts/transfer-action-messages";
 
 describe("TransferScriptExecutor", function () {
 

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { ISignedTransferAction } from '../../../messages/definitions/transfer-action-messages';
+import { ISignedTransferAction } from '../../../shared-definitions/scripts/transfer-action-messages';
 import { utils } from 'ethers';
 import { stringifyBigNumber, truncateAndEscapeText } from './utils';
 

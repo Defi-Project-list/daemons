@@ -12,8 +12,8 @@
   "exclude": [ "node_modules"],
   "files": ["./hardhat.config.ts"],
   "references": [
-    {
-       "path": "../messages/tsconfig.json"
-    }
- ]
+      {
+         "path": "../shared-definitions/tsconfig.json"
+      }
+   ]
 }

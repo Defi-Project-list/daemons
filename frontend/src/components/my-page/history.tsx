@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { TransactionReceipt } from '@ethersproject/abstract-provider';
-import { ITransaction, TransactionOutcome } from '../../../../messages/transactions/transaction';
+import { ITransaction, TransactionOutcome } from '../../../../shared-definitions/transactions/transaction';
 import { GetCurrentChain } from '../../data/chain-info';
 import { StorageProxy } from '../../data/storage-proxy';
 import { RootState } from '../../state';

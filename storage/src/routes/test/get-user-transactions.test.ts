@@ -7,7 +7,7 @@ import { BigNumber, utils } from 'ethers';
 import faker from '@faker-js/faker';
 import { transactionDocumentFactory, transactionFactory } from '../../test-factories/transactions-factories';
 import { Transaction } from '../../models/transaction';
-import { ITransaction } from '../../../../messages/transactions/transaction';
+import { ITransaction } from '../../../../shared-definitions/transactions/transaction';
 
 
 describe('GET api/transactions/:chainId/:userAddress', () => {

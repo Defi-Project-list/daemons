@@ -1,5 +1,5 @@
 import { BigNumber, Contract } from 'ethers';
-import { ISwapAction } from '../../../../messages/definitions/swap-action-messages';
+import { ISwapAction } from '../../../../shared-definitions/scripts/swap-action-messages';
 import { getAbiFor } from '../../utils/get-abi';
 import { Token } from '../tokens';
 import { BaseScript } from './base-script';

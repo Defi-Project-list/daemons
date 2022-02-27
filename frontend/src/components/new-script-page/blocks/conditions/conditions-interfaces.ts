@@ -1,4 +1,4 @@
-import { ComparisonType } from '../../../../../../messages/definitions/condition-messages';
+import { ComparisonType } from '../../../../../../shared-definitions/scripts/condition-messages';
 import { BaseScript } from '../../../../data/script/base-script';
 import { INewScriptForm } from '../../i-new-script-form';
 

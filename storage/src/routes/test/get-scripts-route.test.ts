@@ -3,7 +3,7 @@ import supertest from 'supertest';
 import { app } from '../../app';
 import { swapScriptDocumentFactory, transferScriptDocumentFactory } from '../../test-factories/script-factories';
 import { expect } from 'chai';
-import { ISignedSwapAction } from '../../../../messages/definitions/swap-action-messages';
+import { ISignedSwapAction } from '../../../../shared-definitions/scripts/swap-action-messages';
 import { BigNumber } from 'ethers';
 import jwt from 'jsonwebtoken';
 
