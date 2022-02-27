@@ -13,7 +13,7 @@ authenticationRouter.get('/is-authenticated/:userAddress', authenticate, async (
 
     // if the address in the JWT is the same passed as query, we're good to go!
     if (req.userAddress === userAddress) {
-        return res.send(200);
+        return res.sendStatus(200);
     }
 
     // otherwise let's delete the cookie altogether
