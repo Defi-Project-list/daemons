@@ -51,3 +51,19 @@ transactionsRouter.post('/:hash/update', authenticate, async (req: Request, res:
     transaction.save();
     return res.send(transaction);
 });
+
+
+transactionsRouter.get('/:chainId/:userAddress', authenticate, async (req: Request, res: Response) => {
+    // adds checksum to address (uppercase characters)
+    const userAddress = utils.getAddress(req.params.userAddress);
+    if (req.userAddress !== userAddress) {
+        return res.sendStatus(403);
+    }
+
+    const chainId = String(req.params.chainId);
+
+    const transactions = await Transaction
+        .find({ chainId, beneficiaryUser: userAddress })
+        .sort({ date: 'desc' });
+    return res.send(transactions);
+});
