@@ -164,6 +164,8 @@ export class StorageProxy {
         console.log(`Adding transaction ${txResponse.hash}`);
         const transaction: ITransaction = {
             hash: txResponse.hash,
+            scriptId: script.getId(),
+            description: script.getDescription(),
             chainId: script.getMessage().chainId,
             executingUser: utils.getAddress(executingUser),
             beneficiaryUser: utils.getAddress(script.getUser()),
@@ -192,7 +194,7 @@ export class StorageProxy {
     ): Promise<ITransaction> {
         console.log(`Confirming transaction ${txHash}`);
         console.log(txReceipt);
-        const transactionOutcome = {
+        const transactionAdditionalInfo = {
             outcome: this.extractOutcomeFromStatus(txReceipt.status),
         };
 
@@ -201,7 +203,7 @@ export class StorageProxy {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify(transactionOutcome),
+            body: JSON.stringify(transactionAdditionalInfo),
         };
 
         const response = await fetch(url, requestOptions as any);

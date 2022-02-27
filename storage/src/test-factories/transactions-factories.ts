@@ -10,6 +10,8 @@ const randomOutcome = () => faker.random.arrayElement(Object.values(TransactionO
 export function transactionFactory(args: any): ITransaction {
     return {
         hash: args.hash ?? utils.hexlify(utils.randomBytes(32)),
+        scriptId: args.scriptId ?? utils.hexlify(utils.randomBytes(32)),
+        description: args.description ?? faker.random.words(4),
         chainId: args.chainId ?? BigNumber.from("42"),
         executingUser: args.executingUser ?? faker.finance.ethereumAddress(),
         beneficiaryUser: args.beneficiaryUser ?? faker.finance.ethereumAddress(),

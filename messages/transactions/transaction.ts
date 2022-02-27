@@ -8,10 +8,12 @@ export enum TransactionOutcome {
 }
 
 export interface ITransaction {
-    hash: string,
-    chainId: BigNumber,
-    executingUser: string,
-    beneficiaryUser: string,
-    date: Date,
-    outcome: TransactionOutcome,
+    hash: string;
+    chainId: BigNumber;
+    scriptId: string;
+    description: string;
+    executingUser: string;
+    beneficiaryUser: string;
+    date: Date;
+    outcome: TransactionOutcome;
 }

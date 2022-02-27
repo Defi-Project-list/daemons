@@ -1,12 +1,14 @@
 import { utils } from 'ethers';
 import mongoose from 'mongoose';
 import { TransactionOutcome, ITransaction } from '../../../messages/transactions/transaction';
-import { stringifyBigNumber } from './utils';
+import { stringifyBigNumber, truncateAndEscapeText } from './utils';
 
 
 const transactionSchema = new mongoose.Schema({
     hash: { type: String, required: true, index: { unique: true } },
     chainId: { type: String, required: true, set: stringifyBigNumber },
+    scriptId: { type: String, required: true },
+    description: { type: String, required: true, maxlength: 150, set: truncateAndEscapeText },
     executingUser: { type: String, required: true, set: utils.getAddress },
     beneficiaryUser: { type: String, required: true, index: true, set: utils.getAddress },
     date: { type: Date, required: true },
