@@ -1,16 +1,30 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { BaseScript, VerificationState } from '../../data/script/base-script';
+import { StorageProxy } from '../../data/storage-proxy';
+import { RootState } from '../../state';
+import { fetchGasTankClaimable } from '../../state/action-creators/gas-tank-action-creators';
 
 
 export const QueueScriptComponent = ({ script }: { script: BaseScript; }) => {
+    const dispatch = useDispatch();
     const [verificationState, setVerificationState] = useState(script.getVerificationState());
+    const walletAddress = useSelector((state: RootState) => state.wallet.address);
 
     const verifyScript = async () => { setVerificationState(await script.verify()); };
-    const executeScript = async () => { console.log(await script.execute()); };
+    const executeScript = async () => {
+        const transactionResponse = await script.execute();
+        if (!transactionResponse) return;
 
-    if (verificationState === VerificationState.unverified) {
-        verifyScript();
-    }
+        await StorageProxy.addTransaction(transactionResponse, script, walletAddress!);
+        transactionResponse.wait().then(() => dispatch(fetchGasTankClaimable(walletAddress)));
+    };
+
+    useEffect(() => {
+        if (verificationState === VerificationState.unverified) {
+            verifyScript();
+        }
+    }, []);
 
     return (
         <div className="queue-script">

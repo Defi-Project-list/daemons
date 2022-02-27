@@ -1,7 +1,11 @@
 import { BaseScript } from './script/base-script';
 import { SwapScript } from './script/swap-script';
 import { TransferScript } from './script/transfer-script';
+import { ITransaction, TransactionOutcome } from '../../../messages/transactions/transaction';
 import { Token } from './tokens';
+import { TransactionResponse, TransactionReceipt } from '@ethersproject/abstract-provider';
+import { utils } from 'ethers';
+
 
 const storageAddress = 'http://localhost:5000/api';
 
@@ -145,7 +149,80 @@ export class StorageProxy {
         await fetch(url, requestOptions as any);
     }
 
+
+    // Transactions
+
+    /**
+     * Informs the storage that a transaction has been executed.
+     * Some values are unknown yet, but will be verified by the tx beneficiary.
+     * */
+    public static async addTransaction(
+        txResponse: TransactionResponse,
+        script: BaseScript,
+        executingUser: string
+    ): Promise<void> {
+        console.log(`Adding transaction ${txResponse.hash}`);
+        const transaction: ITransaction = {
+            hash: txResponse.hash,
+            chainId: script.getMessage().chainId,
+            executingUser: utils.getAddress(executingUser),
+            beneficiaryUser: utils.getAddress(script.getUser()),
+            date: new Date(),
+            outcome: TransactionOutcome.Waiting,
+        };
+
+        const url = `${storageAddress}/transactions`;
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(transaction),
+        };
+
+        await fetch(url, requestOptions as any);
+    }
+
+    /**
+     * Fills up the missing info from the transaction.
+     * Can only be executed by the tx beneficiary.
+     * */
+    public static async confirmTransaction(
+        txHash: string,
+        txReceipt: TransactionReceipt,
+    ): Promise<ITransaction> {
+        console.log(`Confirming transaction ${txHash}`);
+        console.log(txReceipt);
+        const transactionOutcome = {
+            outcome: this.extractOutcomeFromStatus(txReceipt.status),
+        };
+
+        const url = `${storageAddress}/transactions/${txHash}/update`;
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(transactionOutcome),
+        };
+
+        const response = await fetch(url, requestOptions as any);
+        return await response.json();
+    }
+
+    private static extractOutcomeFromStatus(status?: number): TransactionOutcome {
+        switch (status) {
+            case undefined:
+                return TransactionOutcome.NotFound;
+            case 0:
+                return TransactionOutcome.Failed;
+            case 1:
+                return TransactionOutcome.Confirmed;
+            default:
+                return TransactionOutcome.NotFound;
+        };
+    }
+
     // Tokens
+
     private static cachedTokens: { [chainId: string]: Token[]; } = {};
 
     public static async fetchTokens(chainId?: string): Promise<Token[]> {
