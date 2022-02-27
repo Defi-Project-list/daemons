@@ -45,3 +45,9 @@ NOTE: **You need to have mongodb installed locally**
 ### Messages
 
 The messages directory contains the definitions of the messages used by the other projects to communicate with each other.
+
+### Admin
+
+The admin directory contains tasks that will run periodically to save stats for the admin.
+
+- `npm run dev` to run the project
