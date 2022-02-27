@@ -38,7 +38,7 @@ export const scriptReducer = (state: ScriptState = initialState, action: ScriptA
                 ...state,
                 userScripts: state.userScripts.filter(script => script.getId() !== scriptToRemove),
             };
-        case ActionType.SET_LOADING:
+        case ActionType.SET_SCRIPTS_LOADING:
             return {
                 ...state,
                 loading: true,

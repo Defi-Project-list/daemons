@@ -223,6 +223,23 @@ export class StorageProxy {
         };
     }
 
+    public static async fetchUserTransactions(chainId?: string, user?: string, page?: number): Promise<ITransaction[]> {
+        if (!user || !chainId) {
+            console.warn("Missing user or chain id. User transactions fetch aborted");
+            return [];
+        }
+
+        console.log(`Fetching user ${user} transactions for chain ${chainId}`);
+        const url = `${storageAddress}/transactions/${chainId}/${user}`;
+
+        const requestOptions = { method: 'GET', credentials: 'include' };
+        const response = await fetch(url, requestOptions as any);
+        if (response.status !== 200) return [];
+
+        const transactions: ITransaction[] = await response.json();
+        return transactions;
+    }
+
     // Tokens
 
     private static cachedTokens: { [chainId: string]: Token[]; } = {};

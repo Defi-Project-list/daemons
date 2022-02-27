@@ -48,7 +48,7 @@ export const removeScript = (script: BaseScript) => {
 export const toggleScriptsLoading = () => {
     return async (dispatch: Dispatch<ScriptAction>) => {
         dispatch({
-            type: ActionType.SET_LOADING
+            type: ActionType.SET_SCRIPTS_LOADING
         });
     };
 };

@@ -3,6 +3,7 @@ interface IChainInfo {
     hex: string;
     iconPath: string;
     coinSymbol: string;
+    explorerTxUrl: string;
 }
 
 const unsupportedChain: IChainInfo = {
@@ -10,6 +11,7 @@ const unsupportedChain: IChainInfo = {
     hex: "0x00",
     iconPath: "",
     coinSymbol: 'ETH',
+    explorerTxUrl: 'https://kovan.etherscan.io/tx/'
 };
 
 export const ChainInfo: { [chainId: string]: IChainInfo; } = {
@@ -18,6 +20,7 @@ export const ChainInfo: { [chainId: string]: IChainInfo; } = {
         hex: "0x2a",
         iconPath: "/icons/kovan.jpg",
         coinSymbol: 'ETH',
+        explorerTxUrl: 'https://kovan.etherscan.io/tx/'
     },
 };
 

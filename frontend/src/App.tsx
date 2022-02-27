@@ -12,6 +12,7 @@ import { fetchChainTokens } from './state/action-creators/tokens-action-creators
 
 import "./constants.css";
 import "./app.css";
+import { fetchUserHistory } from './state/action-creators/transactions-action-creators';
 
 export const App = ({ children }: { children: any; }) => {
     // redux
@@ -32,7 +33,7 @@ export const App = ({ children }: { children: any; }) => {
             dispatch(fetchGasTankBalance(walletAddress));
             dispatch(fetchGasTankClaimable(walletAddress));
             dispatch(fetchChainTokens(chainId));
-
+            dispatch(fetchUserHistory(chainId, walletAddress));
         }
     }, [chainId, walletAddress, authenticated]);
 
