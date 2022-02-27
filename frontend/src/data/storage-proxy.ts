@@ -192,8 +192,11 @@ export class StorageProxy {
         txHash: string,
         txReceipt: TransactionReceipt,
     ): Promise<ITransaction> {
+        if (!txReceipt) {
+            throw new Error('Tx Receipt is empty, cannot verify');
+        }
+
         console.log(`Confirming transaction ${txHash}`);
-        console.log(txReceipt);
         const transactionAdditionalInfo = {
             outcome: this.extractOutcomeFromStatus(txReceipt.status),
         };

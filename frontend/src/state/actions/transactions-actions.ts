@@ -6,8 +6,13 @@ export interface IFetchTransactionsAction {
     payload: ITransaction[];
 }
 
+export interface IUpdateTransactionAction {
+    type: ActionType.UPDATE_TRANSACTION;
+    payload: ITransaction;
+}
+
 export interface IToggleTransactionsLoading {
     type: ActionType.SET_TRANSACTIONS_LOADING;
 }
 
-export type TransactionAction = IFetchTransactionsAction | IToggleTransactionsLoading;
+export type TransactionAction = IFetchTransactionsAction | IUpdateTransactionAction | IToggleTransactionsLoading;

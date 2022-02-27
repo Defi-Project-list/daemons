@@ -1,6 +1,6 @@
 import { utils } from 'ethers';
 import express, { Request, Response } from 'express';
-import { ITransaction } from '../../../messages/transactions/transaction';
+import { ITransaction, TransactionOutcome } from '../../../messages/transactions/transaction';
 import { authenticate } from '../middlewares/authentication';
 import { Transaction } from '../models/transaction';
 
@@ -42,8 +42,12 @@ transactionsRouter.post('/:hash/update', authenticate, async (req: Request, res:
     if (!transaction || !req.userAddress || transaction.beneficiaryUser !== req.userAddress) {
         // only the owner of each transaction is allowed to verify it,
         // this to prevent other users from fabricating false transactions.
-
         return res.sendStatus(403);
+    }
+
+    if (transaction.outcome !== TransactionOutcome.Waiting) {
+        // only waiting transactions can be updated
+        return res.sendStatus(400);
     }
 
     const updatedValues = req.body;

@@ -20,6 +20,17 @@ export const historyReducer = (state: TransactionState = initialState, action: T
                 userTransactions: action.payload,
                 loading: false,
             };
+        case ActionType.UPDATE_TRANSACTION:
+            const newTransaction = action.payload;
+            const indexOfTransaction = state.userTransactions.findIndex(tx => tx.hash === newTransaction.hash);
+            if (indexOfTransaction === -1) return state;
+
+            const updatedTransactions = [...state.userTransactions];
+            updatedTransactions[indexOfTransaction] = newTransaction;
+            return {
+                ...state,
+                userTransactions: updatedTransactions,
+            };
         case ActionType.SET_TRANSACTIONS_LOADING:
             return {
                 ...state,
