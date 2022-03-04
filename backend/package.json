@@ -23,5 +23,11 @@
   },
   "dependencies": {
     "dotenv": "^10.0.0"
+  },
+  "mocha": {
+    "spec": "./**/*test.ts",
+    "ignore": "./node_modules/**",
+    "require": "ts-node/register/files",
+    "timeout": 20000
   }
 }
