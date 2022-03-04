@@ -2,7 +2,7 @@ import { BigNumber, Contract } from 'ethers';
 import { IFollowCondition } from '../../../../shared-definitions/scripts/condition-messages';
 import { IFollowConditionForm } from '../../components/new-script-page/blocks/conditions/conditions-interfaces';
 import { getAbiFor } from '../../utils/get-abi';
-import { ZeroAddress } from '../chain-info';
+import { ZeroAddress, ZeroId } from '../chain-info';
 
 
 export class FollowConditionFactory {
@@ -10,7 +10,7 @@ export class FollowConditionFactory {
     /** A disabled frequency condition */
     public static empty = (): IFollowCondition => ({
         enabled: false,
-        scriptId: '0x0000000000000000000000000000000000000000000000000000000000000000',
+        scriptId: ZeroId,
         executor: ZeroAddress,
         shift: BigNumber.from(0),
     });
@@ -31,6 +31,7 @@ export class FollowConditionFactory {
         if (!form.enabled || !form.parentScriptId || !form.parentScriptExecutor) {
             return this.empty();
         }
+        if (!form.valid) throw new Error('Cannot build Follow condition from invalid form');
 
         // calculate shift (difference between the number of executions of the parent and the child)
         const executorContract = await this.getExecutor(form.parentScriptExecutor);

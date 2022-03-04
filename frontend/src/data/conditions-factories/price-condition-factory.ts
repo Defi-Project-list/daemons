@@ -29,6 +29,7 @@ export class PriceConditionFactory {
     /** A price condition built from user inputs */
     public static fromForm = (form: IPriceConditionForm, tokens: Token[]): IPriceCondition => {
         if (!form.enabled) return this.empty();
+        if (!form.valid) throw new Error('Cannot build Price condition from invalid form');
 
         const token = tokens.filter(token => token.address === form.tokenAddress)[0];
         const value = utils.parseUnits(form.floatValue.toString(), token.decimals);

@@ -23,6 +23,7 @@ export class RepetitionsConditionFactory {
     /** A repetitions condition built from user inputs */
     public static fromForm = (form: IRepetitionsConditionForm): IMaxRepetitionsCondition => {
         if (!form.enabled) return this.empty();
+        if (!form.valid) throw new Error('Cannot build Repetitions condition from invalid form');
 
         return {
             enabled: true,

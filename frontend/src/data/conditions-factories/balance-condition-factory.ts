@@ -29,6 +29,7 @@ export class BalanceConditionFactory {
     /** A balance condition built from user inputs */
     public static fromForm = (form: IBalanceConditionForm, tokens: Token[]): IBalanceCondition => {
         if (!form.enabled) return this.empty();
+        if (!form.valid) throw new Error('Cannot build Balance condition from invalid form');
 
         const token = tokens.filter(token => token.address === form.tokenAddress)[0];
         const amount = utils.parseUnits(form.floatAmount.toString(), token.decimals);

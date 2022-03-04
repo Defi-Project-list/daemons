@@ -25,6 +25,8 @@ export class FrequencyConditionFactory {
     /** A frequency condition built from user inputs */
     public static fromForm = async (form: IFrequencyConditionForm, provider: any): Promise<IFrequencyCondition> => {
         if (!form.enabled) return this.empty();
+        if (!form.valid) throw new Error('Cannot build Frequency condition from invalid form');
+
         const delay = BigNumber.from(form.unit).mul(BigNumber.from(form.ticks));
 
         // getting timestamp

@@ -32,3 +32,4 @@ export const IsChainSupported = (chainId: string): boolean =>
 
 
 export const ZeroAddress = '0x0000000000000000000000000000000000000000';
+export const ZeroId = '0x0000000000000000000000000000000000000000000000000000000000000000';
