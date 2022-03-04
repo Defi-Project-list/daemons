@@ -1,6 +1,11 @@
 import { BigNumber, Contract } from 'ethers';
 import { ISwapAction } from '../../../../shared-definitions/scripts/swap-action-messages';
 import { getAbiFor } from '../../utils/get-abi';
+import { BalanceConditionFactory } from '../conditions-factories/balance-condition-factory';
+import { FollowConditionFactory } from '../conditions-factories/follow-condition-factory';
+import { FrequencyConditionFactory } from '../conditions-factories/frequency-condition-factory';
+import { PriceConditionFactory } from '../conditions-factories/price-condition-factory';
+import { RepetitionsConditionFactory } from '../conditions-factories/repetitions-condition-factory';
 import { Token } from '../tokens';
 import { BaseScript } from './base-script';
 
@@ -41,12 +46,12 @@ export class SwapScript extends BaseScript {
         // complex objects are broken down and need to be recreated. Sigh.
         message.chainId = BigNumber.from(object.chainId);
         message.amount = BigNumber.from(object.amount);
-        message.balance.amount = BigNumber.from(object.balance.amount);
-        message.price.value = BigNumber.from(object.price.value);
-        message.frequency.delay = BigNumber.from(object.frequency.delay);
-        message.frequency.start = BigNumber.from(object.frequency.start);
-        message.repetitions.amount = BigNumber.from(object.repetitions.amount);
-        message.follow.shift = BigNumber.from(object.follow.shift);
+
+        message.balance = BalanceConditionFactory.fromJson(message.balance);
+        message.frequency = FrequencyConditionFactory.fromJson(message.frequency);
+        message.price = PriceConditionFactory.fromJson(message.price);
+        message.repetitions = RepetitionsConditionFactory.fromJson(message.repetitions);
+        message.follow = FollowConditionFactory.fromJson(object.follow);
 
         return new SwapScript(message, object.signature, object.description);
     }
