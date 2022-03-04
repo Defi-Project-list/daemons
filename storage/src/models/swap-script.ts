@@ -1,7 +1,8 @@
 import { utils } from 'ethers';
 import mongoose from 'mongoose';
 import { ISignedSwapAction } from '../../../shared-definitions/scripts/swap-action-messages';
-import { stringifyBigNumber, truncateAndEscapeText } from './utils';
+import { balanceCondition, followCondition, frequencyCondition, priceCondition, repetitionsCondition } from './script-conditions';
+import { removeIfEmpty, stringifyBigNumber, truncateAndEscapeText } from './utils';
 
 
 const swapScriptSchema = new mongoose.Schema({
@@ -17,33 +18,11 @@ const swapScriptSchema = new mongoose.Schema({
     user: { type: String, required: true, index: true, set: utils.getAddress },
     executor: { type: String, required: true, set: utils.getAddress },
     chainId: { type: String, required: true, set: stringifyBigNumber },
-    balance: {
-        enabled: { type: Boolean, required: true },
-        token: { type: String, required: true },
-        comparison: { type: Number, required: true },
-        amount: { type: String, required: true, set: stringifyBigNumber },
-    },
-    frequency: {
-        enabled: { type: Boolean, required: true },
-        delay: { type: String, required: true, set: stringifyBigNumber },
-        start: { type: String, required: true, set: stringifyBigNumber },
-    },
-    price: {
-        enabled: { type: Boolean, required: true },
-        token: { type: String, required: true },
-        comparison: { type: Number, required: true },
-        value: { type: String, required: true, set: stringifyBigNumber },
-    },
-    repetitions: {
-        enabled: { type: Boolean, required: true },
-        amount: { type: String, required: true, set: stringifyBigNumber },
-    },
-    follow: {
-        enabled: { type: Boolean, required: true },
-        scriptId: { type: String, required: true, set: stringifyBigNumber },
-        executor: { type: String, required: true, set: utils.getAddress },
-        shift: { type: String, required: true, set: stringifyBigNumber },
-    },
+    balance: { type: balanceCondition, set: removeIfEmpty },
+    frequency: { type: frequencyCondition, set: removeIfEmpty },
+    price: { type: priceCondition, set: removeIfEmpty },
+    repetitions: { type: repetitionsCondition, set: removeIfEmpty },
+    follow: { type: followCondition, set: removeIfEmpty },
 });
 
 interface ISwapScriptDocument extends ISignedSwapAction, mongoose.Document { }

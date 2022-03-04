@@ -24,3 +24,11 @@ export function stringifyBigNumber(bigNumber: any): string {
 export const truncateAndEscapeText = (text: string, length: number = 150): string => {
     return text.substring(0, length).replace(/[~`!@#$%^&*()+={}\[\];:\'\"<>,\/\\\?-]/g, '');
 };
+
+/**
+ * Removes the condition if it is not enabled.
+ * This will save quite some space on the db.
+ */
+export const removeIfEmpty = (condition: any): any | undefined => (
+    condition.enabled ? condition : undefined
+);
