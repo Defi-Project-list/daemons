@@ -14,3 +14,10 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
         next();
     });
 }
+
+export function authenticateAdmin(req: Request, res: Response, next: NextFunction) {
+    const token = req.headers.api_key;
+    if (!token || token !== process.env.ADMIN_KEY as string) return res.sendStatus(401);
+
+    next();
+}
