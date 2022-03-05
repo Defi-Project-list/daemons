@@ -83,9 +83,9 @@ function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element 
 }
 
 async function triggerLogin(walletAddress: string, dispatch: Dispatch<any>): Promise<void> {
-    const message = await StorageProxy.authentication.getLoginMessage(walletAddress);
+    const message = await StorageProxy.auth.getLoginMessage(walletAddress);
     const signedMessage = await getSignature(message);
-    await StorageProxy.authentication.login(walletAddress, signedMessage);
+    await StorageProxy.auth.login(walletAddress, signedMessage);
     dispatch(authenticationCheck(walletAddress));
 }
 

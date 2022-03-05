@@ -27,7 +27,7 @@ export const authenticationCheck = (address?: string) => {
         dispatch({
             type: ActionType.AUTH_CHECK,
             // if no address is provided, we don't even bother asking the server
-            authenticated: !!address && await StorageProxy.authentication.checkAuthentication(address),
+            authenticated: !!address && await StorageProxy.auth.checkAuthentication(address),
         });
     };
 };

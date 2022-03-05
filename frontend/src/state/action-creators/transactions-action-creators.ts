@@ -9,7 +9,7 @@ export const fetchUserHistory = (chainId?: string, address?: string, page?: numb
     return async (dispatch: Dispatch<TransactionAction>) => {
         dispatch({
             type: ActionType.FETCH_TRANSACTIONS,
-            payload: await StorageProxy.transaction.fetchUserTransactions(chainId, address, page),
+            payload: await StorageProxy.txs.fetchUserTransactions(chainId, address, page),
         });
     };
 };
