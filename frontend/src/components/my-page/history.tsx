@@ -55,7 +55,7 @@ function HistoryEntry({ transaction, selected, setSelected, explorerTxUrl }: IHi
 
         if (receipt) {
             // receipt is found, the tx can be confirmed and updated
-            const tx = await StorageProxy.confirmTransaction(transaction.hash, receipt);
+            const tx = await StorageProxy.transaction.confirmTransaction(transaction.hash, receipt);
             dispatch(updateSingleTransaction(tx));
         }
 

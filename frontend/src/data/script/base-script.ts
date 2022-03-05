@@ -70,7 +70,7 @@ export abstract class BaseScript {
             window.onbeforeunload = () => true;
             const tx = await executor.revoke(this.getId());
             await tx.wait();
-            await StorageProxy.revokeScript(this.getId(), this.ScriptType);
+            await StorageProxy.script.revokeScript(this.getId(), this.ScriptType);
             // remove "are you sure you want to leave" message
             window.onbeforeunload = null;
         } catch (error: any) {

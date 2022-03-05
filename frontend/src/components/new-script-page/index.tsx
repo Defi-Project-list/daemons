@@ -81,7 +81,7 @@ class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle>
         if (!await script.hasAllowance()) {
             await script.requestAllowance();
         }
-        await StorageProxy.saveScript(script);
+        await StorageProxy.script.saveScript(script);
         this.props.addNewScript(script);
         this.setState({ redirect: true });
     }

@@ -9,7 +9,7 @@ export const fetchChainTokens = (chainId?: string) => {
     return async (dispatch: Dispatch<TokenAction>) => {
         dispatch({
             type: ActionType.FETCH_TOKENS,
-            payload: await StorageProxy.fetchTokens(chainId),
+            payload: await StorageProxy.tokens.fetchTokens(chainId),
         });
     };
 };
