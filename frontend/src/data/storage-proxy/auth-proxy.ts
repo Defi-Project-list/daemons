@@ -1,6 +1,8 @@
 import { storageAddress } from '.';
+import fetch from 'cross-fetch';
 
-export class AuthenticationProxy {
+
+export class AuthProxy {
 
     public static async checkAuthentication(userAddress: string): Promise<boolean> {
         const url = `${storageAddress}/auth/is-authenticated/${userAddress}`;

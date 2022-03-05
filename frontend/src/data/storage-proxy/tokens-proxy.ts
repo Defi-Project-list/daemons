@@ -1,5 +1,7 @@
 import { storageAddress } from '.';
-import { Token } from '../tokens';
+import { IToken, Token } from '../tokens';
+import fetch from 'cross-fetch';
+
 
 export class TokenProxy {
 
@@ -16,7 +18,7 @@ export class TokenProxy {
             const url = `${storageAddress}/tokens/${chainId}`;
             const requestOptions = { method: 'GET', credentials: 'include' };
             const response = await fetch(url, requestOptions as any);
-            const tokens: Token[] = await response.json();
+            const tokens: IToken[] = await response.json();
             this.cachedTokens[chainId] = tokens;
         }
 
