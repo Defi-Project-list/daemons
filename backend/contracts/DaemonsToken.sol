@@ -3,9 +3,10 @@ pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./interfaces/ITreasury.sol";
 
 contract DaemonsToken is ERC20, Ownable {
-    uint256 public MAX_SUPPLY = 10**27; // 1 Billion
+    uint256 public MAX_SUPPLY = 1e9 * 1e18; // 1 Billion
 
     address private treasury;
     address private vestingContract;
@@ -39,6 +40,9 @@ contract DaemonsToken is ERC20, Ownable {
      * as they are not accessible to anyone and will be slowly released.
      */
     function circulatingSupply() public view returns (uint256) {
-        return totalSupply() - balanceOf(treasury) - balanceOf(vestingContract);
+        return
+            totalSupply() -
+            ITreasury(treasury).tokensForDistribution() -
+            balanceOf(vestingContract);
     }
 }

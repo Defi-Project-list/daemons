@@ -1,7 +1,7 @@
 import { BaseProvider } from '@ethersproject/providers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from "chai";
-import { Contract } from 'ethers';
+import { BigNumber, Contract } from 'ethers';
 import { ethers } from 'hardhat';
 
 describe("GasTank", function () {
@@ -147,6 +147,31 @@ describe("GasTank", function () {
             // user2 received some tokens
             const expectedReward = rewardAmount;
             expect(await fooToken.balanceOf(user2.address)).to.equal(expectedReward);
+        });
+
+        it("when staking reward, ETH will be sent to treasury", async () => {
+            // user 1: 0.95ETH as balance, user 2: 0.05ETH as claimable
+            const oneEth = ethers.utils.parseEther("1.0");
+            const rewardAmount = ethers.utils.parseEther("0.05");
+            await gasTank.connect(user1).deposit({ value: oneEth });
+            await gasTank.connect(owner).addReward(rewardAmount, user1.address, user2.address);
+
+            // user 2 claim their reward
+            await gasTank.connect(user2).claimAndStakeReward();
+
+            // treasury received the funds
+            const treasuryTotalBalance = await provider.getBalance(treasury.address);
+            expect(treasuryTotalBalance).to.equal(rewardAmount);
+
+            // claimable amount is now 0
+            expect((await gasTank.claimable(user2.address)).toNumber()).to.equal(0);
+
+            // user2 did *NOT* receive tokens
+            const expectedReward = rewardAmount;
+            expect(await fooToken.balanceOf(user2.address)).to.equal(BigNumber.from(0));
+
+            // instead the funds are added to the user's balance of the treasury
+            expect(await treasury.balanceOf(user2.address)).to.equal(expectedReward);
         });
     });
 

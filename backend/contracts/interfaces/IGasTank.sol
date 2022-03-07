@@ -29,4 +29,7 @@ interface IGasTank {
 
     /** Claims the token received as payment for an executor work */
     function claimReward() external;
+
+    /** Immediately deposits the user's claimable amount into the treasury for staking purposes */
+    function claimAndStakeReward() external;
 }

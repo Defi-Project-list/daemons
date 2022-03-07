@@ -5,7 +5,6 @@ import { Contract } from 'ethers';
 import { ethers, network } from 'hardhat';
 
 const chai = require('chai');
-chai.use(chaiAlmost(5)); // we have a tolerance of 5 WEY
 
 describe("Vesting contract", function () {
 
@@ -142,6 +141,7 @@ describe("Vesting contract", function () {
     });
 
     it('just after the start date, tokens start getting vested', async () => {
+      chai.use(chaiAlmost(5)); // we have a tolerance of 5 WEY
       const twoDays = oneDay() + oneDay();
       const vestingContract = await initializeVestingContract(tomorrow(), twoDays);
       await fooToken.mint(vestingContract.address, 200000);
@@ -176,6 +176,7 @@ describe("Vesting contract", function () {
   });
 
   it('releases to the beneficiary its due amount', async () => {
+    chai.use(chaiAlmost(5)); // we have a tolerance of 5 WEY
     const twoDays = oneDay() + oneDay();
     const vestingContract = await initializeVestingContract(tomorrow(), twoDays);
     await fooToken.mint(vestingContract.address, 200000);

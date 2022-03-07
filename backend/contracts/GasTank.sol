@@ -76,4 +76,12 @@ contract GasTank is IGasTank, Ownable {
         reward[msg.sender] = 0;
         treasury.requestPayout{value: due}(msg.sender);
     }
+
+    function claimAndStakeReward() external override {
+        uint256 due = reward[msg.sender];
+        require(due > 0, "Nothing to claim");
+
+        reward[msg.sender] = 0;
+        treasury.stakePayout{value: due}(msg.sender);
+    }
 }

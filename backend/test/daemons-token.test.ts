@@ -6,29 +6,30 @@ import { ethers } from 'hardhat';
 describe("DAEM Token", function () {
 
   let owner: SignerWithAddress;
-  let treasury: SignerWithAddress;
   let vesting: SignerWithAddress;
   let otherUser: SignerWithAddress;
+  let gasTank: SignerWithAddress;
+  let treasury: Contract;
   let DAEM: Contract;
 
   this.beforeEach(async () => {
     // get some wallets
-    [owner, treasury, vesting, otherUser] = await ethers.getSigners();
+    [owner, vesting, otherUser, gasTank] = await ethers.getSigners();
 
     // instantiate BAL token contract
     const DaemonsTokenContract = await ethers.getContractFactory("DaemonsToken");
     DAEM = await DaemonsTokenContract.deploy();
+
+    // instantiate treasury
+    const TreasuryContract = await ethers.getContractFactory("Treasury");
+    treasury = await TreasuryContract.deploy(DAEM.address, gasTank.address);
   });
 
   it('has the right attributes', async () => {
     expect(await DAEM.symbol()).to.equal("DAEM");
     expect(await DAEM.name()).to.equal("Daemons");
     expect(await DAEM.owner()).to.equal(owner.address);
-  });
-
-  it("Total and Circulating supply are 0 before initialization", async function () {
-    expect(await DAEM.totalSupply()).to.equal(BigNumber.from(0));
-    expect(await DAEM.circulatingSupply()).to.equal(BigNumber.from(0));
+    expect(await DAEM.MAX_SUPPLY()).to.equal(ethers.utils.parseEther('1000000000'));
   });
 
   it("mints with the specified proportions when initialized", async function () {
