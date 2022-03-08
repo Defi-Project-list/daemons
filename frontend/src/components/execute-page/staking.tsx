@@ -1,45 +1,96 @@
-import React, { useState } from 'react';
+import { ethers } from 'ethers';
+import React, { useEffect, useState } from 'react';
 import { Field, Form } from 'react-final-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Contracts } from '../../data/contracts';
 import { RootState } from '../../state';
+import { fetchStakingBalance, fetchStakingClaimable } from '../../state/action-creators/staking-action-creators';
+import { AllowanceHelper } from '../../utils/allowance-helper';
 import { getAbiFor } from '../../utils/get-abi';
 import './staking.css';
 
 
 export function Staking() {
     const dispatch = useDispatch();
-    const claimable = 0.12345;// useSelector((state: RootState) => state.gasTank.claimable);
-    const balance = 0.98765;
+    const balance = useSelector((state: RootState) => state.staking.balance);
+    const claimable = useSelector((state: RootState) => state.staking.claimable);
     const walletAddress = useSelector((state: RootState) => state.wallet.address);
+    const chainId = useSelector((state: RootState) => state.wallet.chainId);
     const [toggleDeposit, setToggleDeposit] = useState<boolean>(true);
-    const nothingToClaim = !claimable;
-    const nothingDeposited = !balance;
+    const [needsAllowance, setNeedsAllowance] = useState<boolean>(true);
+
+    const checkForAllowance = async () => {
+        const allowanceHelper = new AllowanceHelper();
+        const hasAllowance = await allowanceHelper.checkForAllowance(
+            walletAddress!,
+            Contracts.DAEMToken,
+            Contracts.Treasury,
+            ethers.utils.parseEther("100000")
+        );
+        console.log('hasAllowance', hasAllowance);
+        setNeedsAllowance(!hasAllowance);
+    };
+
+    useEffect(() => {
+        dispatch(fetchStakingBalance(walletAddress, chainId));
+        dispatch(fetchStakingClaimable(walletAddress, chainId));
+        checkForAllowance();
+    }, []);
 
     const exit = async () => {
-        if (nothingToClaim && nothingDeposited) return;
+        if (!claimable && !balance) {
+            alert("No balance, nor anything claimable");
+            return;
+        }
+
         const treasury = await getTreasuryContract();
         const tx = await treasury.exit();
         await tx.wait();
 
-        //dispatch(fetchGasTankClaimable(walletAddress));
+        dispatch(fetchStakingBalance(walletAddress, chainId));
+        dispatch(fetchStakingClaimable(walletAddress, chainId));
     };
 
-    const deposit = async () => {
+    const requestAllowance = async () => {
+        const allowanceHelper = new AllowanceHelper();
+        const tx = await allowanceHelper.requestAllowance(Contracts.DAEMToken, Contracts.Treasury);
+        await tx.wait();
+        await checkForAllowance();
+    };
 
+    const stake = async () => {
+        const amount = parseFloat((document.getElementById('id-amount') as HTMLInputElement).value);
+
+        const treasury = await getTreasuryContract();
+        const tx = await treasury.stake(ethers.utils.parseEther(amount.toString()));
+        await tx.wait();
+
+        dispatch(fetchStakingBalance(walletAddress, chainId));
+        (document.getElementById('id-amount') as HTMLInputElement).value = '';
     };
 
     const withdraw = async () => {
+        const amount = parseFloat((document.getElementById('id-amount') as HTMLInputElement).value);
 
+        const treasury = await getTreasuryContract();
+        const tx = await treasury.withdraw(ethers.utils.parseEther(amount.toString()));
+        await tx.wait();
+
+        dispatch(fetchStakingBalance(walletAddress, chainId));
+        (document.getElementById('id-amount') as HTMLInputElement).value = '';
     };
 
     const claim = async () => {
-        if (nothingToClaim) return;
+        if (!claimable) {
+            alert("Nothing to claim");
+            return;
+        }
+
         const treasury = await getTreasuryContract();
         const tx = await treasury.getReward();
         await tx.wait();
 
-        //dispatch(fetchGasTankClaimable(walletAddress));
+        dispatch(fetchStakingClaimable(walletAddress, chainId));
     };
 
     const getTreasuryContract = async () => {
@@ -65,7 +116,7 @@ export function Staking() {
         return (
             <Form
                 className='staking__form'
-                onSubmit={deposit}
+                onSubmit={() => {/* Handled in the buttons */ }}
                 render={({ handleSubmit }) => (
                     <form onSubmit={handleSubmit}>
                         <Field
@@ -77,7 +128,11 @@ export function Staking() {
                             placeholder="0.0"
                         />
                         <div className='staking__buttons-container'>
-                            <input className='staking__button' type="submit" value="Deposit" />
+                            {
+                                needsAllowance
+                                    ? <input className='staking__button' type="submit" onClick={requestAllowance} value="Request Allowance" />
+                                    : <input className='staking__button' type="submit" onClick={stake} value="Stake" />
+                            }
                         </div>
                     </form>
                 )}
@@ -101,8 +156,8 @@ export function Staking() {
                             placeholder="0.0"
                         />
                         <div className='staking__buttons-container'>
-                            <input className='staking__button' type="submit" onClick={withdraw} value="Withdraw" />
-                            <input className='staking__button' type="submit" onClick={exit} value="Withdraw All" />
+                            <input disabled={!balance} className='staking__button' type="submit" onClick={withdraw} value="Unstake" />
+                            <input disabled={!balance} className='staking__button' type="submit" onClick={exit} value="Unstake &amp; Claim" />
                         </div>
                     </form>
                 )}
@@ -156,7 +211,7 @@ export function Staking() {
                             : '??'
                     }
                 </div>
-                <input className='staking__button staking__button--small' type="submit" onClick={claim} value="Claim" />
+                <input disabled={!claimable} className='staking__button staking__button--small' type="submit" onClick={claim} value="Claim" />
             </div>
         </div>
     );

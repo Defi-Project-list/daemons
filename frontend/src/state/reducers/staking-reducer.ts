@@ -8,7 +8,7 @@ export type StakingState = {
 
 const initialState: StakingState = {};
 
-export const gasTankReducer = (state: StakingState = initialState, action: StakingAction): StakingState => {
+export const stakingReducer = (state: StakingState = initialState, action: StakingAction): StakingState => {
     switch (action.type) {
         case ActionType.STAKING_BALANCE:
             return {

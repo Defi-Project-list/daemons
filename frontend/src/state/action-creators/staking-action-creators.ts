@@ -13,11 +13,11 @@ const getTreasuryContract = async (): Promise<Contract> => {
     return new ethers.Contract(contractAddress, contractAbi, provider);
 };
 
-export const fetchStakingBalance = (address?: string) => {
+export const fetchStakingBalance = (address?: string, chainId?: string) => {
 
     return async (dispatch: Dispatch<StakingAction>) => {
-        if (!address) {
-            console.log('Address missing, staking balance check aborted');
+        if (!address || !chainId) {
+            console.log('Address or ChainId missing, staking balance check aborted');
             dispatch({
                 type: ActionType.STAKING_BALANCE,
                 balance: undefined,
@@ -38,11 +38,11 @@ export const fetchStakingBalance = (address?: string) => {
     };
 };
 
-export const fetchGasTankClaimable = (address?: string) => {
+export const fetchStakingClaimable = (address?: string, chainId?: string) => {
 
     return async (dispatch: Dispatch<StakingAction>) => {
-        if (!address) {
-            console.log('Address missing, staking claimable check aborted');
+        if (!address || !chainId) {
+            console.log('Address or ChainId missing, staking claimable check aborted');
             dispatch({
                 type: ActionType.STAKING_CLAIMABLE,
                 balance: undefined,
