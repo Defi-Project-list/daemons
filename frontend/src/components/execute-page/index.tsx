@@ -5,6 +5,7 @@ import { DisconnectedPage } from '../error-pages/disconnected-page';
 import { UnsupportedChainPage } from '../error-pages/unsupported-chain-page';
 import { ClaimRewards } from './claim-reward';
 import { ExecutableScriptsContainer } from './executable-scripts';
+import { Staking } from './staking';
 import './styles.css';
 
 
@@ -25,7 +26,7 @@ export function ExecutePage() {
                 </div>
                 <div className='execute-page__right-panel'>
                     <ClaimRewards />
-                    <div className='card'><div className='card__title'>Stake</div>Getting there...</div>
+                    <Staking />
                     <div className='card'><div className='card__title'>APY</div>Getting there...</div>
                 </div>
             </div>

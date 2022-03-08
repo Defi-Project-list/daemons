@@ -1,0 +1,65 @@
+.staking__header {
+    margin-bottom: 30px;
+}
+
+.staking__title {
+    display: grid;
+    grid-template-columns: 0.25fr 0.75fr;
+}
+
+.staking__switch {
+    margin-left: auto;
+    display: flex;
+    flex-direction: row;
+    column-gap: 10px;
+}
+
+.staking__balance {
+    border-radius: 5px;
+    margin: 15px 0;
+    padding: 5px;
+    border: 1px solid #AAA;
+    background-color: #FFF;
+    cursor: not-allowed;
+}
+
+
+.staking__input {
+    height: 30px;
+    box-sizing: border-box;
+    width: 100%;
+    border-radius: 5px;
+    border-color: #FFF;
+}
+
+.staking__buttons-container {
+    display: flex;
+    flex-direction: row;
+    margin: 10px 0;
+    column-gap: 15px;
+}
+
+.staking__button {
+    width: 100%;
+    height: 30px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    color: white;
+    border: none;
+    background-color: var(--primary-colour);
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.staking__button--small {
+    width: 120px;
+}
+
+.staking__reward-info {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    justify-content: space-between;
+}
