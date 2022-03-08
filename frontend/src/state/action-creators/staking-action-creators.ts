@@ -2,37 +2,37 @@ import { Dispatch } from 'redux';
 import { ActionType } from '../action-types';
 import { getAbiFor } from '../../utils/get-abi';
 import { Contracts } from '../../data/contracts';
-import { GasTankAction } from '../actions/gas-tank-actions';
 import { BigNumber, Contract } from 'ethers';
+import { StakingAction } from '../actions/staking-actions';
 
-const getGasTankContract = async (): Promise<Contract> => {
+const getTreasuryContract = async (): Promise<Contract> => {
     const ethers = require('ethers');
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-    const contractAddress = Contracts.GasTank;
-    const contractAbi = await getAbiFor('GasTank');
+    const contractAddress = Contracts.Treasury;
+    const contractAbi = await getAbiFor('Treasury');
     return new ethers.Contract(contractAddress, contractAbi, provider);
 };
 
-export const fetchGasTankBalance = (address?: string) => {
+export const fetchStakingBalance = (address?: string) => {
 
-    return async (dispatch: Dispatch<GasTankAction>) => {
+    return async (dispatch: Dispatch<StakingAction>) => {
         if (!address) {
-            console.log('Address missing, balance check aborted');
+            console.log('Address missing, staking balance check aborted');
             dispatch({
-                type: ActionType.GAS_TANK_BALANCE,
+                type: ActionType.STAKING_BALANCE,
                 balance: undefined,
             });
             return;
         }
 
-        console.log('Checking balance in gas tank for', address);
+        console.log('Checking staking balance for', address);
 
-        const gasTank = await getGasTankContract();
-        const rawBalance: BigNumber = await gasTank.balanceOf(address);
+        const treasury = await getTreasuryContract();
+        const rawBalance: BigNumber = await treasury.balanceOf(address);
         const balance = rawBalance.div(BigNumber.from(10).pow(14)).toNumber() / 10000; // let's keep 4 digits precision
 
         dispatch({
-            type: ActionType.GAS_TANK_BALANCE,
+            type: ActionType.STAKING_BALANCE,
             balance,
         });
     };
@@ -40,24 +40,24 @@ export const fetchGasTankBalance = (address?: string) => {
 
 export const fetchGasTankClaimable = (address?: string) => {
 
-    return async (dispatch: Dispatch<GasTankAction>) => {
+    return async (dispatch: Dispatch<StakingAction>) => {
         if (!address) {
-            console.log('Address missing, balance check aborted');
+            console.log('Address missing, staking claimable check aborted');
             dispatch({
-                type: ActionType.GAS_TANK_CLAIMABLE,
+                type: ActionType.STAKING_CLAIMABLE,
                 balance: undefined,
             });
             return;
         }
 
-        console.log('Checking claimable DAEM for', address);
+        console.log('Checking claimable staking reward for', address);
 
-        const gasTank = await getGasTankContract();
-        const rawBalance: BigNumber = await gasTank.claimable(address);
+        const treasury = await getTreasuryContract();
+        const rawBalance: BigNumber = await treasury.earned(address);
         const balance = rawBalance.div(BigNumber.from(10).pow(14)).toNumber() / 10000; // let's keep 4 digits precision
 
         dispatch({
-            type: ActionType.GAS_TANK_CLAIMABLE,
+            type: ActionType.STAKING_CLAIMABLE,
             balance,
         });
     };
