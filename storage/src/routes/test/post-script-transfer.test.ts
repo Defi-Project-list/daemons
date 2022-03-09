@@ -4,7 +4,7 @@ import { app } from '../../app';
 import { signedTransferActionFactory } from '../../test-factories/script-factories';
 import { expect } from 'chai';
 import { utils } from 'ethers';
-import { TransferScript } from '../../models/transfer-script';
+import { TransferScript } from '../../models/scripts/transfer-script';
 import { truncateAndEscapeText } from '../../models/utils';
 import faker from '@faker-js/faker';
 import jwt from 'jsonwebtoken';

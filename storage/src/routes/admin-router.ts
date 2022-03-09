@@ -1,12 +1,12 @@
 import express, { Request, Response } from 'express';
-import { SwapScript } from '../models/swap-script';
-import { IUserStats, UserStats } from '../models/user-stats';
-import { IScriptStats, ScriptStats } from '../models/script-stats';
+import { SwapScript } from '../models/scripts/swap-script';
+import { IUserStats, UserStats } from '../models/stats/user-stats';
+import { IScriptStats, ScriptStats } from '../models/stats/script-stats';
 import { authenticateAdmin } from '../middlewares/authentication';
-import { TransferScript } from '../models/transfer-script';
+import { TransferScript } from '../models/scripts/transfer-script';
 import { Transaction } from '../models/transaction';
-import { ITotalPerChain } from '../models/total-per-chain';
-import { ChainInfo } from '../models/chain-info';
+import { ITotalPerChain } from '../models/stats/total-per-chain';
+import { ChainInfo } from '../models/stats/chain-info';
 
 export const adminRouter = express.Router();
 
@@ -61,13 +61,13 @@ async function updateUserStats(): Promise<void> {
 
     const totalPerChain = totalUsersPerChain.map(t => {
         return { name: ChainInfo[t._id], total: t.total } as ITotalPerChain;
-    })
+    });
 
     const userStats: IUserStats = {
         total: totalUsers[0]?.count,
         totalPerChain,
         date: new Date().toISOString().slice(0, 10)
-    }
+    };
     await UserStats.updateOne(
         { date: { $eq: userStats.date } },
         {
@@ -77,7 +77,7 @@ async function updateUserStats(): Promise<void> {
                 "date": userStats.date
             }
         },
-        { upsert: true })
+        { upsert: true });
 }
 
 async function updateScriptStats(): Promise<void> {
@@ -112,7 +112,7 @@ async function updateScriptStats(): Promise<void> {
         totalExecutions,
         totalPerChain,
         totalExecutionsPerChain,
-    }
+    };
     await ScriptStats.updateOne(
         { date: { $eq: scriptStats.date } },
         {
@@ -124,6 +124,5 @@ async function updateScriptStats(): Promise<void> {
                 "totalExecutionsPerChain": scriptStats.totalExecutionsPerChain
             }
         },
-        { upsert: true })
+        { upsert: true });
 }
-

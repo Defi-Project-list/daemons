@@ -1,6 +1,6 @@
 import { utils } from 'ethers';
 import mongoose from 'mongoose';
-import { removeIfEmpty, stringifyBigNumber } from './utils';
+import { stringifyBigNumber } from '../utils';
 
 
 export const balanceCondition = new mongoose.Schema({

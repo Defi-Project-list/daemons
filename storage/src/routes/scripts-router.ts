@@ -3,8 +3,8 @@ import express, { Request, Response } from 'express';
 import { ISignedSwapAction } from '../../../shared-definitions/scripts/swap-action-messages';
 import { ISignedTransferAction } from '../../../shared-definitions/scripts/transfer-action-messages';
 import { authenticate } from '../middlewares/authentication';
-import { SwapScript } from '../models/swap-script';
-import { TransferScript } from '../models/transfer-script';
+import { SwapScript } from '../models/scripts/swap-script';
+import { TransferScript } from '../models/scripts/transfer-script';
 
 export const scriptsRouter = express.Router();
 

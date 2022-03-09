@@ -3,7 +3,7 @@ import supertest from 'supertest';
 import { app } from '../../app';
 import { transferScriptDocumentFactory } from '../../test-factories/script-factories';
 import { expect } from 'chai';
-import { TransferScript } from '../../models/transfer-script';
+import { TransferScript } from '../../models/scripts/transfer-script';
 import jwt from 'jsonwebtoken';
 
 describe('POST api/scripts/revoke', () => {

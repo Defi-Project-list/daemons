@@ -1,8 +1,8 @@
 import { utils } from 'ethers';
 import mongoose from 'mongoose';
-import { ISignedSwapAction } from '../../../shared-definitions/scripts/swap-action-messages';
+import { ISignedSwapAction } from '../../../../shared-definitions/scripts/swap-action-messages';
 import { balanceCondition, followCondition, frequencyCondition, priceCondition, repetitionsCondition } from './script-conditions';
-import { removeIfEmpty, stringifyBigNumber, truncateAndEscapeText } from './utils';
+import { removeIfEmpty, stringifyBigNumber, truncateAndEscapeText } from '../utils';
 
 
 const swapScriptSchema = new mongoose.Schema({

@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
-import { ISignedTransferAction } from '../../../shared-definitions/scripts/transfer-action-messages';
+import { ISignedTransferAction } from '../../../../shared-definitions/scripts/transfer-action-messages';
 import { utils } from 'ethers';
 import { balanceCondition, followCondition, frequencyCondition, priceCondition, repetitionsCondition } from './script-conditions';
-import { removeIfEmpty, stringifyBigNumber, truncateAndEscapeText } from './utils';
+import { removeIfEmpty, stringifyBigNumber, truncateAndEscapeText } from '../utils';
 
 
 const transferScriptSchema = new mongoose.Schema({

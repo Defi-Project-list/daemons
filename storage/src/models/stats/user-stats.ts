@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { ITotalPerChain, totalPerChain } from './total-per-chain'
+import { ITotalPerChain, totalPerChain } from './total-per-chain';
 
 const userStatsSchema = new mongoose.Schema({
     total: { type: Number, required: true },

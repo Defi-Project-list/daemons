@@ -2,8 +2,8 @@ import { BigNumber, utils } from 'ethers';
 import { ComparisonType, IBalanceCondition, IFollowCondition, IFrequencyCondition, IMaxRepetitionsCondition, IPriceCondition } from '../../../shared-definitions/scripts/condition-messages';
 import { ISignedSwapAction } from '../../../shared-definitions/scripts/swap-action-messages';
 import { ISignedTransferAction } from '../../../shared-definitions/scripts/transfer-action-messages';
-import { SwapScript } from '../models/swap-script';
-import { TransferScript } from '../models/transfer-script';
+import { SwapScript } from '../models/scripts/swap-script';
+import { TransferScript } from '../models/scripts/transfer-script';
 import faker from '@faker-js/faker';
 
 const randomEthAmount = () => utils.parseEther(faker.datatype.number({ min: 0.01, max: 10, precision: 0.01 }).toString());

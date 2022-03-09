@@ -5,8 +5,7 @@ import { expect } from 'chai';
 import jwt from 'jsonwebtoken';
 import { BigNumber, utils } from 'ethers';
 import faker from '@faker-js/faker';
-import { transactionDocumentFactory, transactionFactory } from '../../test-factories/transactions-factories';
-import { Transaction } from '../../models/transaction';
+import { transactionDocumentFactory } from '../../test-factories/transactions-factories';
 import { ITransaction } from '../../../../shared-definitions/transactions/transaction';
 
 

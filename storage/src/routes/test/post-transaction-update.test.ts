@@ -3,7 +3,7 @@ import { app } from '../../app';
 import { expect } from 'chai';
 import { connectToTestDb, closeTestDb, clearTestDb } from '../../test/test-db-handler';
 import jwt from 'jsonwebtoken';
-import { transactionDocumentFactory, transactionFactory } from '../../test-factories/transactions-factories';
+import { transactionDocumentFactory } from '../../test-factories/transactions-factories';
 import { Transaction } from '../../models/transaction';
 import { TransactionOutcome } from '../../../../shared-definitions/transactions/transaction';
 

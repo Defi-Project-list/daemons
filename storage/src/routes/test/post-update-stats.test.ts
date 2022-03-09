@@ -2,8 +2,8 @@ import { connectToTestDb, closeTestDb, clearTestDb } from '../../test/test-db-ha
 import supertest from 'supertest';
 import { app } from '../../app';
 import { expect } from 'chai';
-import { UserStats } from '../../models/user-stats';
-import { ScriptStats } from '../../models/script-stats';
+import { UserStats } from '../../models/stats/user-stats';
+import { ScriptStats } from '../../models/stats/script-stats';
 import { transferScriptDocumentFactory } from '../../test-factories/script-factories';
 import { transactionDocumentFactory } from '../../test-factories/transactions-factories';
 
@@ -31,16 +31,16 @@ describe('POST api/admin/update-stats', () => {
         const userStats = await UserStats.findOne({ date: new Date().toISOString().slice(0, 10) });
         expect(userStats).to.not.be.null;
         expect(userStats?.total).to.equal(2);
-        const kovanUsers = userStats?.totalPerChain.find(t => t.name === "Kovan")
+        const kovanUsers = userStats?.totalPerChain.find(t => t.name === "Kovan");
         expect(kovanUsers?.total).to.equal(1);
 
         const scriptStats = await ScriptStats.findOne({ date: new Date().toISOString().slice(0, 10) });
         expect(scriptStats).to.not.be.null;
         expect(scriptStats?.total).to.equal(3);
         expect(scriptStats?.totalExecutions).to.equal(3);
-        const totalKovan = scriptStats?.totalPerChain.find(t => t.name === "Kovan")
+        const totalKovan = scriptStats?.totalPerChain.find(t => t.name === "Kovan");
         expect(totalKovan?.total).to.equal(2);
-        const totalExecutionsKovan = scriptStats?.totalExecutionsPerChain.find(t => t.name === "Kovan")
+        const totalExecutionsKovan = scriptStats?.totalExecutionsPerChain.find(t => t.name === "Kovan");
         expect(totalExecutionsKovan?.total).to.equal(1);
     });
 
@@ -53,15 +53,15 @@ describe('POST api/admin/update-stats', () => {
         // confirming first values
         const userStatsBefore = await UserStats.findOne({ date: new Date().toISOString().slice(0, 10) });
         expect(userStatsBefore?.total).to.equal(2);
-        const totalKovanUsersBefore = userStatsBefore?.totalPerChain.find(t => t.name === "Kovan")
+        const totalKovanUsersBefore = userStatsBefore?.totalPerChain.find(t => t.name === "Kovan");
         expect(totalKovanUsersBefore?.total).to.equal(1);
 
         const scriptStatsBefore = await ScriptStats.findOne({ date: new Date().toISOString().slice(0, 10) });
         expect(scriptStatsBefore?.total).to.equal(3);
         expect(scriptStatsBefore?.totalExecutions).to.equal(3);
-        const totalKovanScriptsBefore = scriptStatsBefore?.totalPerChain.find(t => t.name === "Kovan")
+        const totalKovanScriptsBefore = scriptStatsBefore?.totalPerChain.find(t => t.name === "Kovan");
         expect(totalKovanScriptsBefore?.total).to.equal(2);
-        const totalExecutionsKovanBefore = scriptStatsBefore?.totalExecutionsPerChain.find(t => t.name === "Kovan")
+        const totalExecutionsKovanBefore = scriptStatsBefore?.totalExecutionsPerChain.find(t => t.name === "Kovan");
         expect(totalExecutionsKovanBefore?.total).to.equal(1);
 
         // Adding and executing scripts
@@ -77,15 +77,15 @@ describe('POST api/admin/update-stats', () => {
         // checking after update
         const userStatsAfter = await UserStats.findOne({ date: new Date().toISOString().slice(0, 10) });
         expect(userStatsAfter?.total).to.equal(3);
-        const totalKovanUsersAfter = userStatsAfter?.totalPerChain.find(t => t.name === "Kovan")
+        const totalKovanUsersAfter = userStatsAfter?.totalPerChain.find(t => t.name === "Kovan");
         expect(totalKovanUsersAfter?.total).to.equal(2);
 
         const scriptStatsAfter = await ScriptStats.findOne({ date: new Date().toISOString().slice(0, 10) });
         expect(scriptStatsAfter?.total).to.equal(4);
         expect(scriptStatsAfter?.totalExecutions).to.equal(5);
-        const totalKovanScriptsAfter = scriptStatsAfter?.totalPerChain.find(t => t.name === "Kovan")
+        const totalKovanScriptsAfter = scriptStatsAfter?.totalPerChain.find(t => t.name === "Kovan");
         expect(totalKovanScriptsAfter?.total).to.equal(3);
-        const totalExecutionsKovanAfter = scriptStatsAfter?.totalExecutionsPerChain.find(t => t.name === "Kovan")
+        const totalExecutionsKovanAfter = scriptStatsAfter?.totalExecutionsPerChain.find(t => t.name === "Kovan");
         expect(totalExecutionsKovanAfter?.total).to.equal(3);
     });
 });
