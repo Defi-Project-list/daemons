@@ -2,7 +2,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from "chai";
 import { BigNumber, Contract } from 'ethers';
 import { ethers } from 'hardhat';
-import { ComparisonType } from '../../shared-definitions/scripts/condition-messages';
+import { AmountType, ComparisonType } from '../../shared-definitions/scripts/condition-messages';
 import { domain, ISwapAction, types } from "../../shared-definitions/scripts/swap-action-messages";
 
 describe("SwapperScriptExecutor", function () {
@@ -27,6 +27,7 @@ describe("SwapperScriptExecutor", function () {
         scriptId: '0x7465737400000000000000000000000000000000000000000000000000000000',
         tokenFrom: '',
         tokenTo: '',
+        typeAmt: AmountType.Absolute,
         amount: ethers.utils.parseEther("145"),
         user: '',
         executor: '',
@@ -162,7 +163,7 @@ describe("SwapperScriptExecutor", function () {
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('Wrong chain');
     });
 
-    it('swaps the tokens', async () => {
+    it('swaps the tokens - ABS', async () => {
         let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message = await initialize(message);
         await fooToken.mint(owner.address, ethers.utils.parseEther("55"));
@@ -172,6 +173,20 @@ describe("SwapperScriptExecutor", function () {
         // check final amounts. Note that 145 were generated during initialization
         expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("55"));
         expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("145"));
+    });
+
+    it('swaps the tokens - PRC', async () => {
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
+        message.typeAmt = AmountType.Percentage;
+        message.amount = BigNumber.from(5000); // 50%
+        message = await initialize(message);
+        await fooToken.mint(owner.address, ethers.utils.parseEther("55"));
+
+        await executor.execute(message, sigR, sigS, sigV);
+
+        // check final amounts. Note that 145 were generated during initialization
+        expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("100"));
+        expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("100"));
     });
 
     it('swapping triggers reward in gas tank', async () => {
@@ -188,7 +203,27 @@ describe("SwapperScriptExecutor", function () {
         expect((await gasTank.claimable(user1.address)).toNumber()).to.not.equal(0);
     });
 
-    it('swapping is cheap', async () => {
+    it('swapping is cheap - ABS', async () => {
+        // At the time this test was last checked, the gas spent to
+        // execute the script was 0.000282913270269640 ETH.
+        // NOTE: the swap contract is mocked, so this measures all the rest.
+
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
+        message.typeAmt = AmountType.Percentage;
+        message.amount = BigNumber.from(5000); // 50%
+        message = await initialize(message);
+        await fooToken.mint(owner.address, ethers.utils.parseEther("200"));
+
+        const initialBalance = await owner.getBalance();
+        await executor.execute(message, sigR, sigS, sigV);
+        const spentAmount = initialBalance.sub(await owner.getBalance());
+
+        const threshold = ethers.utils.parseEther("0.0003");
+        console.log("Spent for swapping:", spentAmount.toString());
+        expect(spentAmount.lte(threshold)).to.equal(true);
+    });
+
+    it('swapping is cheap - PRC', async () => {
         // At the time this test was last checked, the gas spent to
         // execute the script was 0.000282913270269640 ETH.
         // NOTE: the swap contract is mocked, so this measures all the rest.
@@ -204,7 +239,6 @@ describe("SwapperScriptExecutor", function () {
         console.log("Spent for swapping:", spentAmount.toString());
         expect(spentAmount.lte(threshold)).to.equal(true);
     });
-
     it('sets the lastExecution value during execution', async () => {
         let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
 

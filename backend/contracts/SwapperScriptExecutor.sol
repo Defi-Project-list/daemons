@@ -23,7 +23,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
         bytes32 eip712DomainHash = keccak256(
             abi.encode(
                 EIP712_DOMAIN_TYPEHASH,
-                keccak256(bytes("Daemons-Swap-v1"))
+                keccak256(bytes("Daemons-Swap-v01"))
             )
         );
 
@@ -34,6 +34,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
                     swap.scriptId,
                     swap.tokenFrom,
                     swap.tokenTo,
+                    swap.typeAmt,
                     swap.amount,
                     swap.user,
                     swap.executor,
@@ -76,11 +77,16 @@ contract SwapperScriptExecutor is ConditionsChecker {
     ) public view {
         verifyRevocation(message.user, message.scriptId);
         verifySignature(message, r, s, v);
+
+        // the minimum amount in order to have the transfer going through.
+        // if typeAmt==Absolute -> it's the amount in the message,
+        // otherwise it's enough if the user has more than 0 in the wallet.
+        uint256 minAmount = message.typeAmt == 0 ? message.amount - 1 : 0;
         require(
-            ERC20(message.tokenFrom).balanceOf(message.user) >
-                message.amount - 1,
+            ERC20(message.tokenFrom).balanceOf(message.user) > minAmount,
             "User doesn't have enough balance"
         );
+
         verifyRepetitions(message.repetitions, message.scriptId);
         verifyFollow(message.follow, message.scriptId);
         verifyFrequency(message.frequency, message.scriptId);
@@ -105,7 +111,10 @@ contract SwapperScriptExecutor is ConditionsChecker {
 
         // step 0 get the tokens from the user
         IERC20 tokenFrom = IERC20(message.tokenFrom);
-        tokenFrom.transferFrom(message.user, address(this), message.amount);
+        uint256 amount = message.typeAmt == 0 // absolute type: just return the given amount
+            ? message.amount // percentage type: the amount represents a percentage on 10000
+            : (tokenFrom.balanceOf(message.user) * message.amount) / 10000;
+        tokenFrom.transferFrom(message.user, address(this), amount);
 
         // step 1: get the path
         address[] memory path = new address[](2);
@@ -118,7 +127,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
 
         // step 3: swap
         IUniswapV2Router01(exchange).swapExactTokensForTokens(
-            message.amount,
+            amount,
             0,
             path,
             message.user,
