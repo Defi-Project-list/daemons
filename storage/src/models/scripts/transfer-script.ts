@@ -14,6 +14,7 @@ const transferScriptSchema = new mongoose.Schema({
     scriptId: { type: String, required: true, unique: true, index: { unique: true } },
     token: { type: String, required: true },
     destination: { type: String, required: true },
+    typeAmt: { type: Number, required: true },
     amount: { type: String, required: true, set: stringifyBigNumber },
     user: { type: String, required: true, index: true, set: utils.getAddress },
     executor: { type: String, required: true, set: utils.getAddress },

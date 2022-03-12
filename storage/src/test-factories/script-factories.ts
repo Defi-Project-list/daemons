@@ -1,5 +1,5 @@
 import { BigNumber, utils } from 'ethers';
-import { ComparisonType, IBalanceCondition, IFollowCondition, IFrequencyCondition, IMaxRepetitionsCondition, IPriceCondition } from '../../../shared-definitions/scripts/condition-messages';
+import { AmountType, ComparisonType, IBalanceCondition, IFollowCondition, IFrequencyCondition, IMaxRepetitionsCondition, IPriceCondition } from '../../../shared-definitions/scripts/condition-messages';
 import { ISignedSwapAction } from '../../../shared-definitions/scripts/swap-action-messages';
 import { ISignedTransferAction } from '../../../shared-definitions/scripts/transfer-action-messages';
 import { SwapScript } from '../models/scripts/swap-script';
@@ -84,6 +84,7 @@ export function signedTransferActionFactory(args: any): ISignedTransferAction {
         scriptId: args.scriptId ?? utils.hexlify(utils.randomBytes(32)),
         token: args.tokenFrom ?? faker.finance.ethereumAddress(),
         destination: args.tokenTo ?? faker.finance.ethereumAddress(),
+        typeAmt: args.typeAmt ?? AmountType.Absolute,
         amount: args.amount ?? randomEthAmount(),
         user: args.user ?? faker.finance.ethereumAddress(),
         executor: args.executor ?? faker.finance.ethereumAddress(),
