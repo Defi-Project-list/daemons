@@ -1,3 +1,4 @@
+import { AmountType } from '../../../../../../shared-definitions/scripts/condition-messages';
 import { INewScriptForm } from '../../i-new-script-form';
 
 export enum ScriptAction {
@@ -21,6 +22,7 @@ export interface ISwapActionForm extends IScriptActionForm {
 export interface ITransferActionForm extends IScriptActionForm {
     tokenAddress: string;
     destinationAddress: string;
+    amountType: AmountType;
     floatAmount: number;
 }
 

@@ -1,5 +1,5 @@
 import React, { Component, ReactNode } from 'react';
-import { ComparisonType } from '../../../../shared-definitions/scripts/condition-messages';
+import { AmountType, ComparisonType } from '../../../../shared-definitions/scripts/condition-messages';
 import { INewScriptBundle } from './i-new-script-form';
 import { ScriptFactory } from './script-factory';
 import { RootState } from '../../state';
@@ -35,7 +35,7 @@ interface INewScriptsComponentsProps {
 }
 
 const noActionForm: INoActionForm = { action: ScriptAction.None, valid: false };
-const transferActionForm: ITransferActionForm = { action: ScriptAction.Transfer, valid: false, tokenAddress: '', destinationAddress: '', floatAmount: 0 };
+const transferActionForm: ITransferActionForm = { action: ScriptAction.Transfer, valid: false, tokenAddress: '', destinationAddress: '', amountType: AmountType.Absolute, floatAmount: 0 };
 const swapActionForm: ISwapActionForm = { action: ScriptAction.Swap, valid: false, tokenFromAddress: '', tokenToAddress: '', floatAmount: 0 };
 
 

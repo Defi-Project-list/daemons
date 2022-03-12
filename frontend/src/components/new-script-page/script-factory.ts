@@ -14,6 +14,7 @@ import { BalanceConditionFactory } from '../../data/conditions-factories/balance
 import { PriceConditionFactory } from '../../data/conditions-factories/price-condition-factory';
 import { RepetitionsConditionFactory } from '../../data/conditions-factories/repetitions-condition-factory';
 import { FollowConditionFactory } from '../../data/conditions-factories/follow-condition-factory';
+import { AmountType } from '../../../../shared-definitions/scripts/condition-messages';
 
 type ScriptDefinition = ISwapAction | ITransferAction;
 
@@ -109,10 +110,20 @@ export class ScriptFactory {
 
         const transferActionForm = bundle.actionForm as ITransferActionForm;
         const token = this.tokens.filter(token => token.address === transferActionForm.tokenAddress)[0];
-        const amount = utils.parseUnits(transferActionForm.floatAmount.toString(), token.decimals);
+
+        let amount: BigNumber;
+        if (transferActionForm.amountType === AmountType.Absolute) {
+            // absolute amount
+            amount = utils.parseUnits(transferActionForm.floatAmount.toString(), token.decimals);
+        }
+        else {
+            // percentage amount
+            amount = BigNumber.from(transferActionForm.floatAmount.toString());
+        }
 
         return {
             scriptId: this.ethers.utils.hexlify(this.ethers.utils.randomBytes(32)),
+            typeAmt: transferActionForm.amountType,
             amount: amount,
             token: token.address,
             destination: transferActionForm.destinationAddress,
