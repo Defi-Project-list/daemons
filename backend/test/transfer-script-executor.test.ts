@@ -2,7 +2,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from "chai";
 import { BigNumber, Contract } from 'ethers';
 import { ethers } from 'hardhat';
-import { ComparisonType } from '../../shared-definitions/scripts/condition-messages';
+import { AmountType, ComparisonType } from '../../shared-definitions/scripts/condition-messages';
 import { domain, ITransferAction, types } from "../../shared-definitions/scripts/transfer-action-messages";
 
 describe("TransferScriptExecutor", function () {
@@ -25,6 +25,7 @@ describe("TransferScriptExecutor", function () {
         scriptId: '0x7465737400000000000000000000000000000000000000000000000000000000',
         token: '',
         destination: '',
+        typeAmt: AmountType.Absolute,
         amount: ethers.utils.parseEther("145"),
         user: '',
         executor: '',
@@ -154,7 +155,7 @@ describe("TransferScriptExecutor", function () {
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith('Wrong chain');
     });
 
-    it('transfers the tokens', async () => {
+    it('transfers the tokens - ABS', async () => {
         let message: ITransferAction = JSON.parse(JSON.stringify(baseMessage));
         message = await initialize(message);
         await fooToken.mint(owner.address, ethers.utils.parseEther("55"));
@@ -166,6 +167,21 @@ describe("TransferScriptExecutor", function () {
 
         // the destination got his tokens
         expect(await fooToken.balanceOf(otherWallet.address)).to.equal(ethers.utils.parseEther("145"));
+    });
+
+    it('transfers the tokens - PRC', async () => {
+        let message: ITransferAction = JSON.parse(JSON.stringify(baseMessage));
+        message.typeAmt = AmountType.Percentage;
+        message.amount = BigNumber.from(5000);
+        message = await initialize(message);
+
+        await executor.execute(message, sigR, sigS, sigV);
+
+        // check post-balance.
+        expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("72.5"));
+
+        // the destination got his tokens
+        expect(await fooToken.balanceOf(otherWallet.address)).to.equal(ethers.utils.parseEther("72.5"));
     });
 
     it('transferring triggers reward in gas tank', async () => {
@@ -182,7 +198,25 @@ describe("TransferScriptExecutor", function () {
         expect((await gasTank.claimable(otherWallet.address)).toNumber()).to.not.equal(0);
     });
 
-    it('transferring is cheap', async () => {
+    it('transferring is cheap - ABS', async () => {
+        // At the time this test was last checked, the gas spent to
+        // execute the script was 0.000175302855780080 ETH.
+
+        let message: ITransferAction = JSON.parse(JSON.stringify(baseMessage));
+        message.typeAmt = AmountType.Percentage;
+        message.amount = BigNumber.from(5000);
+        message = await initialize(message);
+
+        const initialBalance = await owner.getBalance();
+        await executor.execute(message, sigR, sigS, sigV);
+        const spentAmount = initialBalance.sub(await owner.getBalance());
+
+        const threshold = ethers.utils.parseEther("0.0002");
+        console.log("Spent for transfer:", spentAmount.toString());
+        expect(spentAmount.lte(threshold)).to.equal(true);
+    });
+
+    it('transferring is cheap - PRC', async () => {
         // At the time this test was last checked, the gas spent to
         // execute the script was 0.000175302855780080 ETH.
 

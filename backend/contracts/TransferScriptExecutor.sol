@@ -15,7 +15,7 @@ contract TransferScriptExecutor is ConditionsChecker {
         bytes32 eip712DomainHash = keccak256(
             abi.encode(
                 EIP712_DOMAIN_TYPEHASH,
-                keccak256(bytes("Daemons-Transfer-v1"))
+                keccak256(bytes("Daemons-Transfer-v01"))
             )
         );
 
@@ -26,6 +26,7 @@ contract TransferScriptExecutor is ConditionsChecker {
                     transfer.scriptId,
                     transfer.token,
                     transfer.destination,
+                    transfer.typeAmt,
                     transfer.amount,
                     transfer.user,
                     transfer.executor,
@@ -71,8 +72,12 @@ contract TransferScriptExecutor is ConditionsChecker {
         verifyRevocation(message.user, message.scriptId);
         verifySignature(message, r, s, v);
 
+        // the minimum amount in order to have the transfer going through.
+        // if typeAmt==Absolute -> it's the amount in the message,
+        // otherwise it's enough if the user has more than 0 in the wallet.
+        uint256 minAmount = message.typeAmt == 0 ? message.amount - 1 : 0;
         require(
-            ERC20(message.token).balanceOf(message.user) > message.amount - 1,
+            ERC20(message.token).balanceOf(message.user) > minAmount,
             "User doesn't have enough balance"
         );
 
@@ -97,15 +102,16 @@ contract TransferScriptExecutor is ConditionsChecker {
         lastExecutions[message.scriptId] = block.timestamp;
         repetitionsCount[message.scriptId] += 1;
 
-        // step 0 transfer the tokens to the destination
+        // define how much should be transferred
         IERC20 tokenFrom = IERC20(message.token);
-        tokenFrom.transferFrom(
-            message.user,
-            message.destination,
-            message.amount
-        );
+        uint256 amount = message.typeAmt == 0 // absolute type: just return the given amount
+            ? message.amount // percentage type: the amount represents a percentage on 10000
+            : (tokenFrom.balanceOf(message.user) * message.amount) / 10000;
 
-        // step 4: reward executor
+        // transfer the tokens to the destination
+        tokenFrom.transferFrom(message.user, message.destination, amount);
+
+        // reward executor
         gasTank.addReward(
             GAS_COST * gasPriceFeed.lastGasPrice(),
             message.user,
