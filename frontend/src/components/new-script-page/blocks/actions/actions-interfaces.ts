@@ -16,6 +16,7 @@ export interface IScriptActionForm extends INewScriptForm {
 export interface ISwapActionForm extends IScriptActionForm {
     tokenFromAddress: string;
     tokenToAddress: string;
+    amountType: AmountType;
     floatAmount: number;
 }
 

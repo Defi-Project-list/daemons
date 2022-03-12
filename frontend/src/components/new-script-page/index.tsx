@@ -36,7 +36,7 @@ interface INewScriptsComponentsProps {
 
 const noActionForm: INoActionForm = { action: ScriptAction.None, valid: false };
 const transferActionForm: ITransferActionForm = { action: ScriptAction.Transfer, valid: false, tokenAddress: '', destinationAddress: '', amountType: AmountType.Absolute, floatAmount: 0 };
-const swapActionForm: ISwapActionForm = { action: ScriptAction.Swap, valid: false, tokenFromAddress: '', tokenToAddress: '', floatAmount: 0 };
+const swapActionForm: ISwapActionForm = { action: ScriptAction.Swap, valid: false, tokenFromAddress: '', tokenToAddress: '', amountType: AmountType.Absolute, floatAmount: 0 };
 
 
 const buttonDisabled = (state: INewScriptBundle) => {

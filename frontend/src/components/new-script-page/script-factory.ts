@@ -83,10 +83,20 @@ export class ScriptFactory {
 
         const swapActionForm = bundle.actionForm as ISwapActionForm;
         const tokenFrom = this.tokens.filter(token => token.address === swapActionForm.tokenFromAddress)[0];
-        const amount = utils.parseUnits(swapActionForm.floatAmount.toString(), tokenFrom.decimals);
+
+        let amount: BigNumber;
+        if (swapActionForm.amountType === AmountType.Absolute) {
+            // absolute amount
+            amount = utils.parseUnits(swapActionForm.floatAmount.toString(), tokenFrom.decimals);
+        }
+        else {
+            // percentage amount
+            amount = BigNumber.from(swapActionForm.floatAmount.toString());
+        }
 
         return {
             scriptId: this.ethers.utils.hexlify(this.ethers.utils.randomBytes(32)),
+            typeAmt: swapActionForm.amountType,
             amount: amount,
             tokenFrom: tokenFrom.address,
             tokenTo: swapActionForm.tokenToAddress,
