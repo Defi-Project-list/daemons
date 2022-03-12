@@ -14,6 +14,7 @@ const swapScriptSchema = new mongoose.Schema({
     scriptId: { type: String, required: true, index: { unique: true } },
     tokenFrom: { type: String, required: true },
     tokenTo: { type: String, required: true },
+    typeAmt: { type: Number, required: true },
     amount: { type: String, required: true, set: stringifyBigNumber },
     user: { type: String, required: true, index: true, set: utils.getAddress },
     executor: { type: String, required: true, set: utils.getAddress },

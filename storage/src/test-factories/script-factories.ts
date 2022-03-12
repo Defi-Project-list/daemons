@@ -64,6 +64,7 @@ export function signedSwapActionFactory(args: any): ISignedSwapAction {
         scriptId: args.scriptId ?? utils.hexlify(utils.randomBytes(32)),
         tokenFrom: args.tokenFrom ?? faker.finance.ethereumAddress(),
         tokenTo: args.tokenTo ?? faker.finance.ethereumAddress(),
+        typeAmt: args.typeAmt ?? AmountType.Absolute,
         amount: args.amount ?? randomEthAmount(),
         user: args.user ?? faker.finance.ethereumAddress(),
         executor: args.executor ?? faker.finance.ethereumAddress(),
