@@ -5,6 +5,8 @@ import { ISignedTransferAction } from '../../../shared-definitions/scripts/trans
 import { SwapScript } from '../models/scripts/swap-script';
 import { TransferScript } from '../models/scripts/transfer-script';
 import faker from '@faker-js/faker';
+import { BaseMoneyMarketActionType, ISignedMMBaseAction } from '../../../shared-definitions/scripts/mm-base-action-messages';
+import { MmBaseScript } from '../models/scripts/mm-base-script';
 
 const randomEthAmount = () => utils.parseEther(faker.datatype.number({ min: 0.01, max: 10, precision: 0.01 }).toString());
 const randomBigNumber = () => BigNumber.from(faker.datatype.number({ min: 0, max: 10000 }).toString());
@@ -77,14 +79,26 @@ export function signedSwapActionFactory(args: any): ISignedSwapAction {
     };
 }
 
+/** Adds a SwapScript to mongo and returns it */
+export async function swapScriptDocumentFactory(args: any): Promise<ISignedSwapAction> {
+    const signedScript = signedSwapActionFactory(args);
+
+    // this step simulates the transformation the object goes through when it is passed into
+    // the body of a POST (i.e. BigNumber fields are serialized and not deserialized to the original object)
+    const jsonTransformedScript = JSON.parse(JSON.stringify(signedScript));
+
+    return await SwapScript.build(jsonTransformedScript).save();
+}
+
+
 /** Returns a randomized signed transfer action */
 export function signedTransferActionFactory(args: any): ISignedTransferAction {
     return {
         signature: args.signature ?? utils.hexlify(utils.randomBytes(40)),
         description: args.description ?? faker.random.words(4),
         scriptId: args.scriptId ?? utils.hexlify(utils.randomBytes(32)),
-        token: args.tokenFrom ?? faker.finance.ethereumAddress(),
-        destination: args.tokenTo ?? faker.finance.ethereumAddress(),
+        token: args.token ?? faker.finance.ethereumAddress(),
+        destination: args.destination ?? faker.finance.ethereumAddress(),
         typeAmt: args.typeAmt ?? AmountType.Absolute,
         amount: args.amount ?? randomEthAmount(),
         user: args.user ?? faker.finance.ethereumAddress(),
@@ -98,17 +112,6 @@ export function signedTransferActionFactory(args: any): ISignedTransferAction {
     };
 }
 
-/** Adds a SwapScript to mongo and returns it */
-export async function swapScriptDocumentFactory(args: any): Promise<ISignedSwapAction> {
-    const signedScript = signedSwapActionFactory(args);
-
-    // this step simulates the transformation the object goes through when it is passed into
-    // the body of a POST (i.e. BigNumber fields are serialized and not deserialized to the original object)
-    const jsonTransformedScript = JSON.parse(JSON.stringify(signedScript));
-
-    return await SwapScript.build(jsonTransformedScript).save();
-}
-
 /** Adds a TransferScript to mongo and returns it */
 export async function transferScriptDocumentFactory(args: any): Promise<ISignedTransferAction> {
     const signedScript = signedTransferActionFactory(args);
@@ -118,4 +121,39 @@ export async function transferScriptDocumentFactory(args: any): Promise<ISignedT
     const jsonTransformedScript = JSON.parse(JSON.stringify(signedScript));
 
     return await TransferScript.build(jsonTransformedScript).save();
+}
+
+
+/** Returns a randomized signed mmBase action */
+export function signedMmBaseActionFactory(args: any): ISignedMMBaseAction {
+    return {
+        signature: args.signature ?? utils.hexlify(utils.randomBytes(40)),
+        description: args.description ?? faker.random.words(4),
+        scriptId: args.scriptId ?? utils.hexlify(utils.randomBytes(32)),
+        token: args.token ?? faker.finance.ethereumAddress(),
+        aToken: args.aToken ?? faker.finance.ethereumAddress(),
+        action: args.typeAmt ?? BaseMoneyMarketActionType.Deposit,
+        typeAmt: args.typeAmt ?? AmountType.Absolute,
+        amount: args.amount ?? randomEthAmount(),
+        user: args.user ?? faker.finance.ethereumAddress(),
+        kontract: args.kontract ?? faker.finance.ethereumAddress(),
+        executor: args.executor ?? faker.finance.ethereumAddress(),
+        chainId: args.chainId ?? BigNumber.from("42"),
+        balance: balanceConditionFactory(args.balance ?? {}),
+        frequency: frequencyConditionFactory(args.frequency ?? {}),
+        price: priceConditionFactory(args.price ?? {}),
+        repetitions: repetitionsConditionFactory(args.repetitions ?? {}),
+        follow: followConditionFactory(args.follow ?? {}),
+    };
+}
+
+/** Adds a MmBaseScript to mongo and returns it */
+export async function mmBaseScriptDocumentFactory(args: any): Promise<ISignedMMBaseAction> {
+    const signedScript = signedMmBaseActionFactory(args);
+
+    // this step simulates the transformation the object goes through when it is passed into
+    // the body of a POST (i.e. BigNumber fields are serialized and not deserialized to the original object)
+    const jsonTransformedScript = JSON.parse(JSON.stringify(signedScript));
+
+    return await MmBaseScript.build(jsonTransformedScript).save();
 }

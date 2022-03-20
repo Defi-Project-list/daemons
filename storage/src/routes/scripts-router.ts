@@ -1,29 +1,41 @@
 import { utils } from 'ethers';
 import express, { Request, Response } from 'express';
+import { ISignedMMBaseAction } from '../../../shared-definitions/scripts/mm-base-action-messages';
 import { ISignedSwapAction } from '../../../shared-definitions/scripts/swap-action-messages';
 import { ISignedTransferAction } from '../../../shared-definitions/scripts/transfer-action-messages';
 import { authenticate } from '../middlewares/authentication';
 import { SwapScript } from '../models/scripts/swap-script';
 import { TransferScript } from '../models/scripts/transfer-script';
+import { MmBaseScript } from '../models/scripts/mm-base-script';
 
 export const scriptsRouter = express.Router();
 
 scriptsRouter.get('/:chainId', authenticate, async (req: Request, res: Response) => {
     const chainId = String(req.params.chainId);
 
-    const scripts = await SwapScript.aggregate([
-        { $addFields: { type: "SwapScript" } },
-        { $match: { chainId: chainId } },
-        {
-            $unionWith: {
-                coll: "transferscripts",
-                pipeline: [
-                    { $addFields: { type: "TransferScript" } },
-                    { $match: { chainId: chainId } },
-                ]
-            }
-        },
-    ]);
+    const scripts = await SwapScript
+        .aggregate([
+            { $addFields: { type: "SwapScript" } },
+            { $match: { chainId: chainId } },
+            {
+                $unionWith: {
+                    coll: "transferscripts",
+                    pipeline: [
+                        { $addFields: { type: "TransferScript" } },
+                        { $match: { chainId: chainId } },
+                    ]
+                }
+            },
+            {
+                $unionWith: {
+                    coll: "mmbasescripts",
+                    pipeline: [
+                        { $addFields: { type: "MmBaseScript" } },
+                        { $match: { chainId: chainId } },
+                    ]
+                }
+            },
+        ]);
 
     return res.send(scripts);
 });
@@ -45,6 +57,15 @@ scriptsRouter.get('/:chainId/:userAddress', authenticate, async (req: Request, r
                 coll: "transferscripts",
                 pipeline: [
                     { $addFields: { type: "TransferScript" } },
+                    { $match: { user: userAddress, chainId: chainId } }
+                ]
+            }
+        },
+        {
+            $unionWith: {
+                coll: "mmbasescripts",
+                pipeline: [
+                    { $addFields: { type: "MmBaseScript" } },
                     { $match: { user: userAddress, chainId: chainId } }
                 ]
             }
@@ -82,6 +103,20 @@ scriptsRouter.post('/swap', authenticate, async (req: Request, res: Response) =>
     }
 });
 
+scriptsRouter.post('/mm-base', authenticate, async (req: Request, res: Response) => {
+    const script: ISignedMMBaseAction = req.body;
+    if (req.userAddress !== utils.getAddress(script.user)) {
+        return res.sendStatus(403);
+    }
+
+    try {
+        await MmBaseScript.build(script).save();
+        return res.send();
+    } catch (error) {
+        return res.status(400).send(error);
+    }
+});
+
 scriptsRouter.post('/update-description', authenticate, async (req: Request, res: Response) => {
     const { scriptId, scriptType, description } = req.body;
 
@@ -95,6 +130,12 @@ scriptsRouter.post('/update-description', authenticate, async (req: Request, res
                 return res.send();
             case "TransferScript":
                 await TransferScript.updateOne(
+                    { user: req.userAddress, scriptId: scriptId },
+                    { $set: { description } }
+                );
+                return res.send();
+            case "MmBaseScript":
+                await MmBaseScript.updateOne(
                     { user: req.userAddress, scriptId: scriptId },
                     { $set: { description } }
                 );
@@ -117,6 +158,9 @@ scriptsRouter.post('/revoke', authenticate, async (req: Request, res: Response) 
                 return res.send();
             case "TransferScript":
                 await TransferScript.deleteOne({ user: req.userAddress, scriptId: scriptId });
+                return res.send();
+            case "MmBaseScript":
+                await MmBaseScript.deleteOne({ user: req.userAddress, scriptId: scriptId });
                 return res.send();
             default:
                 return res.status(400).send(`Unsupported script type ${scriptType}`);

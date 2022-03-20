@@ -1,7 +1,7 @@
 import { connectToTestDb, closeTestDb, clearTestDb } from '../../test/test-db-handler';
 import supertest from 'supertest';
 import { app } from '../../app';
-import { swapScriptDocumentFactory, transferScriptDocumentFactory } from '../../test-factories/script-factories';
+import { mmBaseScriptDocumentFactory, swapScriptDocumentFactory, transferScriptDocumentFactory } from '../../test-factories/script-factories';
 import { expect } from 'chai';
 import { ISignedSwapAction } from '../../../../shared-definitions/scripts/swap-action-messages';
 import { BigNumber } from 'ethers';
@@ -34,7 +34,8 @@ describe('GET api/scripts', () => {
         const swapScript1 = await swapScriptDocumentFactory({});
         const swapScript2 = await swapScriptDocumentFactory({});
         const transferScript1 = await transferScriptDocumentFactory({});
-        const ids = [swapScript1.scriptId, swapScript2.scriptId, transferScript1.scriptId];
+        const mmBaseScript1 = await mmBaseScriptDocumentFactory({});
+        const ids = [swapScript1.scriptId, swapScript2.scriptId, transferScript1.scriptId, mmBaseScript1.scriptId];
 
         const chainId = "42";
         const response = await supertest(app)
@@ -44,17 +45,19 @@ describe('GET api/scripts', () => {
 
         const fetchedScripts = response.body as ISignedSwapAction[];
 
-        expect(fetchedScripts.length).to.equal(3);
+        expect(fetchedScripts.length).to.equal(4);
         expect(ids).to.include(fetchedScripts[0].scriptId);
         expect(ids).to.include(fetchedScripts[1].scriptId);
         expect(ids).to.include(fetchedScripts[2].scriptId);
+        expect(ids).to.include(fetchedScripts[3].scriptId);
     });
 
     it('only fetches scripts with the given chain', async () => {
         // add to the db some scripts on the desired chain
         const swapScript = await swapScriptDocumentFactory({ chainId: BigNumber.from("42") });
         const transferScript = await transferScriptDocumentFactory({ chainId: BigNumber.from("42") });
-        const ids = [swapScript.scriptId, transferScript.scriptId];
+        const mmBaseScript = await mmBaseScriptDocumentFactory({ chainId: BigNumber.from("42") });
+        const ids = [swapScript.scriptId, transferScript.scriptId, mmBaseScript.scriptId];
 
         // and some on other chains
         await transferScriptDocumentFactory({ chainId: BigNumber.from("1") });
@@ -69,9 +72,10 @@ describe('GET api/scripts', () => {
 
         const fetchedScripts = response.body as ISignedSwapAction[];
 
-        expect(fetchedScripts.length).to.equal(2);
+        expect(fetchedScripts.length).to.equal(3);
         expect(ids).to.include(fetchedScripts[0].scriptId);
         expect(ids).to.include(fetchedScripts[1].scriptId);
+        expect(ids).to.include(fetchedScripts[2].scriptId);
     });
 
     it('returns a 401 error if trying to fetch scripts while not authenticated', async () => {

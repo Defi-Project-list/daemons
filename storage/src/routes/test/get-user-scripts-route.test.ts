@@ -1,7 +1,7 @@
 import { connectToTestDb, closeTestDb, clearTestDb } from '../../test/test-db-handler';
 import supertest from 'supertest';
 import { app } from '../../app';
-import { swapScriptDocumentFactory, transferScriptDocumentFactory } from '../../test-factories/script-factories';
+import { mmBaseScriptDocumentFactory, swapScriptDocumentFactory, transferScriptDocumentFactory } from '../../test-factories/script-factories';
 import { expect } from 'chai';
 import jwt from 'jsonwebtoken';
 import { ISignedSwapAction } from '../../../../shared-definitions/scripts/swap-action-messages';
@@ -22,6 +22,7 @@ describe('GET api/scripts/:userAddress', () => {
         // add to the db a couple of scripts from randomly generated users
         await swapScriptDocumentFactory({});
         await transferScriptDocumentFactory({});
+        await mmBaseScriptDocumentFactory({});
 
         const chainId = "42";
         const response = await supertest(app)
@@ -37,7 +38,8 @@ describe('GET api/scripts/:userAddress', () => {
         // add to the db a couple of scripts from the known user address
         const swapScript1 = await swapScriptDocumentFactory({ user: userAddress });
         const transferScript1 = await transferScriptDocumentFactory({ user: userAddress });
-        const ids = [swapScript1.scriptId, transferScript1.scriptId];
+        const mmBaseScript1 = await mmBaseScriptDocumentFactory({ user: userAddress });
+        const ids = [swapScript1.scriptId, transferScript1.scriptId, mmBaseScript1.scriptId];
 
         // and another couple from random addresses
         await swapScriptDocumentFactory({});
@@ -50,9 +52,10 @@ describe('GET api/scripts/:userAddress', () => {
 
         const fetchedScripts = response.body as ISignedSwapAction[];
 
-        expect(fetchedScripts.length).to.equal(2);
+        expect(fetchedScripts.length).to.equal(3);
         expect(ids).to.include(fetchedScripts[0].scriptId);
         expect(ids).to.include(fetchedScripts[1].scriptId);
+        expect(ids).to.include(fetchedScripts[2].scriptId);
     });
 
     it('only fetches scripts targeting the specified chain', async () => {
