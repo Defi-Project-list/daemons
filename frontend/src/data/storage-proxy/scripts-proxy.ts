@@ -1,5 +1,6 @@
 import { storageAddress } from '.';
 import { BaseScript } from '../script/base-script';
+import { MmBaseScript } from '../script/mm-base-script';
 import { SwapScript } from '../script/swap-script';
 import { TransferScript } from '../script/transfer-script';
 
@@ -23,6 +24,8 @@ export class ScriptProxy {
                 return 'swap';
             case 'TransferScript':
                 return 'transfer';
+            case 'MmBaseScript':
+                return 'mm-base';
             default:
                 throw new Error("Unsupported script type: " + script.ScriptType);
         }
@@ -75,6 +78,8 @@ export class ScriptProxy {
                 return await SwapScript.fromStorageJson(script);
             case 'TransferScript':
                 return await TransferScript.fromStorageJson(script);
+            case 'MmBaseScript':
+                return await MmBaseScript.fromStorageJson(script);
             default:
                 throw new Error("Unsupported script type: " + script.ScriptType);
         }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ISwapActionForm } from './actions-interfaces';
+import { IBaseMMActionForm } from './actions-interfaces';
 import { Form, Field } from 'react-final-form';
 import { Token } from '../../../../data/tokens';
 import { useSelector } from 'react-redux';
@@ -16,7 +16,7 @@ const tokenValidation = (value: string) => {
     return undefined;
 };
 
-export const SwapAction = ({ form, update }: { form: ISwapActionForm; update: (next: ISwapActionForm) => void; }) => {
+export const MmBaseAction = ({ form, update }: { form: IBaseMMActionForm; update: (next: IBaseMMActionForm) => void; }) => {
     const tokens: Token[] = useSelector((state: RootState) => state.tokens.currentChainTokens);
 
     return (
@@ -26,19 +26,20 @@ export const SwapAction = ({ form, update }: { form: ISwapActionForm; update: (n
             render={({ handleSubmit, valid }) => (
                 <form onSubmit={handleSubmit}>
 
-                    <div className='swap-block'>
-                        <div className='script-block__panel--row'>
+                    <div className='transfer-block'>
+                        <div className="script-block__panel--row">
+
                             <Field
-                                name="tokenFromAddress"
+                                name="tokenAddress"
                                 component="select"
                                 validate={tokenValidation}
                             >
                                 {({ input, meta }) => <select
                                     {...input}
-                                    className={`swap-block__token-from-address ${meta.error ? 'script-block__field--error' : null}`}
+                                    className={`transfer-block__token-address ${meta.error ? 'script-block__field--error' : null}`}
                                     onChange={(e) => {
                                         input.onChange(e);
-                                        update({ ...form, tokenFromAddress: e.target.value });
+                                        update({ ...form, tokenAddress: e.target.value });
                                     }}
                                     onBlur={(e) => {
                                         input.onBlur(e);
@@ -55,35 +56,6 @@ export const SwapAction = ({ form, update }: { form: ISwapActionForm; update: (n
                                     }
                                 </select>}
                             </Field>
-
-                            <Field
-                                name="tokenToAddress"
-                                component="select"
-                                validate={tokenValidation}
-                            >
-                                {({ input, meta }) => <select
-                                    {...input}
-                                    className={`swap-block__token-to-address ${meta.error ? 'script-block__field--error' : null}`}
-                                    onChange={(e) => {
-                                        input.onChange(e);
-                                        update({ ...form, tokenToAddress: e.target.value });
-                                    }}
-                                    onBlur={(e) => {
-                                        input.onBlur(e);
-                                        update({ ...form, valid });
-                                    }}
-                                >
-                                    <option key={0} value="" disabled ></option>
-                                    {
-                                        tokens.map(token => (
-                                            <option key={token.address} value={token.address}>
-                                                {token.symbol}
-                                            </option>
-                                        ))
-                                    }
-                                </select>}
-                            </Field>
-
 
                             <Field name="floatAmount"
                                 component="input"
@@ -94,7 +66,7 @@ export const SwapAction = ({ form, update }: { form: ISwapActionForm; update: (n
                                 {({ input, meta }) =>
                                     <input
                                         {...input}
-                                        className={`balance-block__amount ${meta.error ? 'script-block__field--error' : null}`}
+                                        className={`'balance-block__amount ${meta.error ? 'script-block__field--error' : null}`}
                                         onChange={(e) => {
                                             e.target.value = Number(e.target.value) < 0 ? '0' : e.target.value;
                                             input.onChange(e);
@@ -104,14 +76,18 @@ export const SwapAction = ({ form, update }: { form: ISwapActionForm; update: (n
                                             input.onBlur(e);
                                             update({ ...form, valid });
                                         }}
+                                        placeholder="Amount"
                                     />
                                 }
                             </Field>
+
                         </div>
                         <div>
                             TODO
                             <ul>
                                 <li>Add amount type toggle (absolute/percentage)</li>
+                                <li>Add action type toggle (deposit/withdraw)</li>
+                                <li>Only display tokens with aToken associated</li>
                             </ul>
                         </div >
                     </div >

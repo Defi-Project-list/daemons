@@ -1,5 +1,4 @@
 import { BigNumber, Contract } from 'ethers';
-import { ITransferAction } from '../../../../shared-definitions/scripts/transfer-action-messages';
 import { getAbiFor } from '../../utils/get-abi';
 import { BaseScript } from './base-script';
 import { BalanceConditionFactory } from '../conditions-factories/balance-condition-factory';
@@ -8,20 +7,30 @@ import { FrequencyConditionFactory } from '../conditions-factories/frequency-con
 import { PriceConditionFactory } from '../conditions-factories/price-condition-factory';
 import { RepetitionsConditionFactory } from '../conditions-factories/repetitions-condition-factory';
 import { Token } from '../tokens';
+import { BaseMoneyMarketActionType, IMMBaseAction } from '../../../../shared-definitions/scripts/mm-base-action-messages';
 
-export class TransferScript extends BaseScript {
-    public constructor(private readonly message: ITransferAction, signature: string, private readonly description: string) {
+export class MmBaseScript extends BaseScript {
+    public constructor(private readonly message: IMMBaseAction, signature: string, private readonly description: string) {
         super(signature);
     }
 
-    public readonly ScriptType = "TransferScript";
+    public readonly ScriptType = "MmBaseScript";
     public getMessage = () => this.message;
     public getUser = () => this.message.user;
     public getId = () => this.message.scriptId;
     public getDescription = () => this.description;
     public getExecutorAddress = () => this.message.executor;
     protected getAmount = () => this.message.amount;
-    protected getTokenForAllowance = () => this.message.token;
+    protected getTokenForAllowance = () => {
+        switch (this.message.action) {
+            case BaseMoneyMarketActionType.Deposit:
+                return this.message.token;
+            case BaseMoneyMarketActionType.Withdraw:
+                return this.message.aToken;
+            default:
+                throw new Error(`Unsupported action ${this.message.action}`);
+        }
+    };
 
     public async getExecutor(): Promise<Contract> {
         const ethers = require('ethers');
@@ -29,17 +38,26 @@ export class TransferScript extends BaseScript {
         const signer = provider.getSigner();
 
         const contractAddress = this.message.executor;
-        const contractAbi = await getAbiFor('TransferScriptExecutor');
+        const contractAbi = await getAbiFor('MmBaseScriptExecutor');
         return new ethers.Contract(contractAddress, contractAbi, signer);
     }
 
-    public static getDefaultDescription(message: ITransferAction, tokens: Token[]): string {
+    public static getDefaultDescription(message: IMMBaseAction, tokens: Token[]): string {
         const token = tokens.filter(t => t.address === message.token)[0]?.symbol ?? message.token;
-        return `Transfer ${token} to ${message.destination.substring(0, 8) + "..."}`;
+        switch (message.action) {
+            case BaseMoneyMarketActionType.Deposit:
+                return `Deposit ${token} in AAVE`;
+
+            case BaseMoneyMarketActionType.Withdraw:
+                return `Withdraw ${token} from AAVE`;
+
+            default:
+                throw new Error(`Unsupported action ${message.action}`);
+        }
     }
 
     public static async fromStorageJson(object: any) {
-        const message: ITransferAction = object;
+        const message: IMMBaseAction = object;
 
         // complex objects are broken down and need to be recreated. Sigh.
         message.chainId = BigNumber.from(object.chainId);
@@ -51,6 +69,6 @@ export class TransferScript extends BaseScript {
         message.repetitions = RepetitionsConditionFactory.fromJson(message.repetitions);
         message.follow = FollowConditionFactory.fromJson(object.follow);
 
-        return new TransferScript(message, object.signature, object.description);
+        return new MmBaseScript(message, object.signature, object.description);
     }
 }

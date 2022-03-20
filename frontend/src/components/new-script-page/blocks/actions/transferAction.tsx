@@ -112,6 +112,12 @@ export const TransferAction = ({ form, update }: { form: ITransferActionForm; up
                             }
                         </Field>
 
+                        <div>
+                            TODO
+                            <ul>
+                                <li>Add amount type toggle (absolute/percentage)</li>
+                            </ul>
+                        </div >
                     </div >
                 </form>
             )}

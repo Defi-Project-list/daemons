@@ -5,7 +5,8 @@ import { SwapScript } from '../../data/script/swap-script';
 import { TransferScript } from '../../data/script/transfer-script';
 import { ISwapAction, domain as swapDomain, types as swapTypes } from '../../../../shared-definitions/scripts/swap-action-messages';
 import { ITransferAction, domain as transferDomain, types as transferTypes } from '../../../../shared-definitions/scripts/transfer-action-messages';
-import { ISwapActionForm, ITransferActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
+import { IMMBaseAction, domain as mmBaseDomain, types as mmBaseTypes } from '../../../../shared-definitions/scripts/mm-base-action-messages';
+import { IBaseMMActionForm, ISwapActionForm, ITransferActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
 import { INewScriptBundle } from './i-new-script-form';
 import { Token } from '../../data/tokens';
 import { getAbiFor } from '../../utils/get-abi';
@@ -15,8 +16,9 @@ import { PriceConditionFactory } from '../../data/conditions-factories/price-con
 import { RepetitionsConditionFactory } from '../../data/conditions-factories/repetitions-condition-factory';
 import { FollowConditionFactory } from '../../data/conditions-factories/follow-condition-factory';
 import { AmountType } from '../../../../shared-definitions/scripts/condition-messages';
+import { MmBaseScript } from '../../data/script/mm-base-script';
 
-type ScriptDefinition = ISwapAction | ITransferAction;
+type ScriptDefinition = ISwapAction | ITransferAction | IMMBaseAction;
 
 interface IMessage {
     script: ScriptDefinition;
@@ -67,6 +69,16 @@ export class ScriptFactory {
                 const transferScriptSignature = await getSignature(transferMessage);
                 const transferScriptDescription = TransferScript.getDefaultDescription(transferMessage.script, this.tokens);
                 return new TransferScript(transferMessage.script, transferScriptSignature, transferScriptDescription);
+
+            case ScriptAction.MmBase:
+                const mmBaseMessage = {
+                    script: await this.createMmBaseScript(bundle),
+                    domain: mmBaseDomain,
+                    types: mmBaseTypes
+                };
+                const mmBaseScriptSignature = await getSignature(mmBaseMessage);
+                const mmBaseScriptDescription = MmBaseScript.getDefaultDescription(mmBaseMessage.script, this.tokens);
+                return new MmBaseScript(mmBaseMessage.script, mmBaseScriptSignature, mmBaseScriptDescription);
 
             default:
                 throw new Error("Not implemented");
@@ -138,6 +150,46 @@ export class ScriptFactory {
             token: token.address,
             destination: transferActionForm.destinationAddress,
             user: await this.signer.getAddress(),
+            frequency: frequencyCondition,
+            balance: balanceCondition,
+            price: priceCondition,
+            repetitions: maxRepetitions,
+            follow: followCondition,
+            executor: Contracts[this.chainId].TransferExecutor,
+            chainId: BigNumber.from(this.chainId),
+        };
+    }
+
+    private async createMmBaseScript(bundle: INewScriptBundle): Promise<IMMBaseAction> {
+        const frequencyCondition = await FrequencyConditionFactory.fromForm(bundle.frequencyCondition, this.provider);
+        const balanceCondition = BalanceConditionFactory.fromForm(bundle.balanceCondition, this.tokens);
+        const priceCondition = PriceConditionFactory.fromForm(bundle.priceCondition, this.tokens);
+        const maxRepetitions = RepetitionsConditionFactory.fromForm(bundle.repetitionsCondition);
+        const followCondition = await FollowConditionFactory.fromForm(bundle.followCondition);
+
+        const mmBaseActionForm = bundle.actionForm as IBaseMMActionForm;
+        const token = this.tokens.filter(token => token.address === mmBaseActionForm.tokenAddress)[0];
+
+        let amount: BigNumber;
+        if (mmBaseActionForm.amountType === AmountType.Absolute) {
+            // absolute amount
+            amount = utils.parseUnits(mmBaseActionForm.floatAmount.toString(), token.decimals);
+        }
+        else {
+            // percentage amount
+            amount = BigNumber.from(mmBaseActionForm.floatAmount.toString());
+        }
+
+        // TODO: add right aToken! (DAEM-156)
+        return {
+            scriptId: this.ethers.utils.hexlify(this.ethers.utils.randomBytes(32)),
+            typeAmt: mmBaseActionForm.amountType,
+            amount: amount,
+            action: mmBaseActionForm.actionType,
+            token: mmBaseActionForm.tokenAddress,
+            aToken: mmBaseActionForm.tokenAddress,  // <-- TODO: DAEM-156!!
+            user: await this.signer.getAddress(),
+            kontract: Contracts[this.chainId].AavePool,
             frequency: frequencyCondition,
             balance: balanceCondition,
             price: priceCondition,

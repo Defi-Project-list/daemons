@@ -1,10 +1,12 @@
 import { AmountType } from '../../../../../../shared-definitions/scripts/condition-messages';
+import { BaseMoneyMarketActionType } from '../../../../../../shared-definitions/scripts/mm-base-action-messages';
 import { INewScriptForm } from '../../i-new-script-form';
 
 export enum ScriptAction {
     None,
     Swap,
     Transfer,
+    MmBase,
     Dao,
     Farm,
 }
@@ -23,6 +25,13 @@ export interface ISwapActionForm extends IScriptActionForm {
 export interface ITransferActionForm extends IScriptActionForm {
     tokenAddress: string;
     destinationAddress: string;
+    amountType: AmountType;
+    floatAmount: number;
+}
+
+export interface IBaseMMActionForm extends IScriptActionForm {
+    tokenAddress: string;
+    actionType: BaseMoneyMarketActionType;
     amountType: AmountType;
     floatAmount: number;
 }

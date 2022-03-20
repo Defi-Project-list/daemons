@@ -12,7 +12,7 @@ import { BalanceCondition } from './blocks/conditions/balanceCondition';
 import { PriceCondition } from './blocks/conditions/priceCondition';
 import { RepetitionsCondition } from './blocks/conditions/repetitionsCondition';
 import { FollowCondition } from './blocks/conditions/followCondition';
-import { INoActionForm, ISwapActionForm, ITransferActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
+import { IBaseMMActionForm, INoActionForm, ISwapActionForm, ITransferActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
 import { ActionBlock } from './blocks/actions/actionBlock';
 import { TransferAction } from './blocks/actions/transferAction';
 import { SwapAction } from './blocks/actions/swapAction';
@@ -22,6 +22,8 @@ import { addNewScript } from '../../state/action-creators/script-action-creators
 import { Token } from '../../data/tokens';
 import { BaseScript } from '../../data/script/base-script';
 import { Navigate } from 'react-router-dom';
+import { BaseMoneyMarketActionType } from '../../../../shared-definitions/scripts/mm-base-action-messages';
+import { MmBaseAction } from './blocks/actions/mmBaseAction';
 
 
 interface INewScriptsComponentsProps {
@@ -37,7 +39,7 @@ interface INewScriptsComponentsProps {
 const noActionForm: INoActionForm = { action: ScriptAction.None, valid: false };
 const transferActionForm: ITransferActionForm = { action: ScriptAction.Transfer, valid: false, tokenAddress: '', destinationAddress: '', amountType: AmountType.Absolute, floatAmount: 0 };
 const swapActionForm: ISwapActionForm = { action: ScriptAction.Swap, valid: false, tokenFromAddress: '', tokenToAddress: '', amountType: AmountType.Absolute, floatAmount: 0 };
-
+const mmBaseActionForm: IBaseMMActionForm = { action: ScriptAction.MmBase, valid: false, tokenAddress: '', amountType: AmountType.Absolute, floatAmount: 0, actionType: BaseMoneyMarketActionType.Deposit };
 
 const buttonDisabled = (state: INewScriptBundle) => {
     const actionIsInvalid = !state.actionForm.valid;
@@ -72,6 +74,9 @@ class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle>
     private updateTransferAction = (next: ITransferActionForm) => { this.setState({ actionForm: next }); };
     private setSwapActionAsSelected = () => { if (this.state.actionForm.action !== ScriptAction.Swap) this.setState({ actionForm: swapActionForm }); };
     private updateSwapAction = (next: ISwapActionForm) => { this.setState({ actionForm: next }); };
+    private setMmBaseActionAsSelected = () => { if (this.state.actionForm.action !== ScriptAction.MmBase) this.setState({ actionForm: mmBaseActionForm }); };
+    private updateMmBaseAction = (next: IBaseMMActionForm) => { this.setState({ actionForm: next }); };
+
 
     private async createAndSignScript() {
         if (!this.props.chainId) throw new Error("Cannot create the script! The chain is unknown");
@@ -157,6 +162,14 @@ class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle>
                         toggleEnabled={this.setSwapActionAsSelected}
                     >
                         <SwapAction form={this.state.actionForm as ISwapActionForm} update={this.updateSwapAction} />
+                    </ActionBlock>
+
+                    <ActionBlock
+                        title="Money Market - Base"
+                        enabled={this.state.actionForm.action === ScriptAction.MmBase}
+                        toggleEnabled={this.setMmBaseActionAsSelected}
+                    >
+                        <MmBaseAction form={this.state.actionForm as IBaseMMActionForm} update={this.updateMmBaseAction} />
                     </ActionBlock>
 
                 </div>

@@ -82,7 +82,7 @@ export abstract class BaseScript {
         const allowanceHelper = new AllowanceHelper();
         return await allowanceHelper.checkForAllowance(
             this.getUser(),
-            this.getToken(),
+            this.getTokenForAllowance(),
             this.getExecutorAddress(),
             this.getAmount());
     }
@@ -92,7 +92,7 @@ export abstract class BaseScript {
 
         // add "are you sure you want to leave" message
         window.onbeforeunload = () => true;
-        const tx = await allowanceHelper.requestAllowance(this.getToken(), this.getExecutorAddress());
+        const tx = await allowanceHelper.requestAllowance(this.getTokenForAllowance(), this.getExecutorAddress());
         await tx.wait();
         // remove "are you sure you want to leave" message
         window.onbeforeunload = null;
@@ -106,7 +106,7 @@ export abstract class BaseScript {
     public abstract getId(): string;
     public abstract getDescription(): string;
     protected abstract getAmount(): BigNumber;
-    protected abstract getToken(): string;
+    protected abstract getTokenForAllowance(): string;
 
     public toJsonString(): string {
         return JSON.stringify({
