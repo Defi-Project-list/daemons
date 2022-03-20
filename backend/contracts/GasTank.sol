@@ -33,32 +33,38 @@ contract GasTank is IGasTank, Ownable {
 
     /* ========== VIEWS ========== */
 
+    /// @inheritdoc IGasTank
     function balanceOf(address user) external view override returns (uint256) {
         return balances[user];
     }
 
+    /// @inheritdoc IGasTank
     function claimable(address user) external view override returns (uint256) {
         return reward[user];
     }
 
     /* ========== EXTERNAL FUNCTIONS ========== */
 
+    /// @inheritdoc IGasTank
     function deposit() external payable override {
         balances[msg.sender] = balances[msg.sender] + msg.value;
     }
 
+    /// @inheritdoc IGasTank
     function withdraw(uint256 amount) external override {
         require(balances[msg.sender] >= amount);
         balances[msg.sender] = balances[msg.sender] - amount;
         payable(msg.sender).transfer(amount);
     }
 
+    /// @inheritdoc IGasTank
     function withdrawAll() external override {
         uint256 amount = balances[msg.sender];
         balances[msg.sender] = 0;
         payable(msg.sender).transfer(amount);
     }
 
+    /// @inheritdoc IGasTank
     function addReward(
         uint256 amount,
         address user,
@@ -69,6 +75,7 @@ contract GasTank is IGasTank, Ownable {
         reward[executor] += amount;
     }
 
+    /// @inheritdoc IGasTank
     function claimReward() external override {
         uint256 due = reward[msg.sender];
         require(due > 0, "Nothing to claim");
@@ -77,6 +84,7 @@ contract GasTank is IGasTank, Ownable {
         treasury.requestPayout{value: due}(msg.sender);
     }
 
+    /// @inheritdoc IGasTank
     function claimAndStakeReward() external override {
         uint256 due = reward[msg.sender];
         require(due > 0, "Nothing to claim");

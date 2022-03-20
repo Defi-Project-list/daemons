@@ -7,7 +7,8 @@ const ProductionContracts = {
 
     SwapExecutor: '0x3F0061750a2396e458A419eDB93bde5598024B66',
     TransferExecutor: '0x8B1bEF69edcF8a70fC3feeA72F7230e2e9489002',
-    TransferPctExecutor: '0x46264c48D467913b2C006AE57A1D6D4a8264927f',
+    MmBaseExecutor: '0x9b2F98AEdbB31Bbd5E443aCB1f2A61a1CBB4318a',
+    MmAdvancedExecutor: '0x074cC149D5fdF427c65a1f3E83dde9815DCa3376',
 };
 
 export const Contracts = ProductionContracts;

@@ -5,7 +5,7 @@ import { ethers } from 'hardhat';
 import { AmountType, ComparisonType } from '../../shared-definitions/scripts/condition-messages';
 import { domain, ITransferAction, types } from "../../shared-definitions/scripts/transfer-action-messages";
 
-describe("TransferScriptExecutor", function () {
+describe("ScriptExecutor - Transfer", function () {
 
     let owner: SignerWithAddress;
     let otherWallet: SignerWithAddress;
@@ -172,7 +172,7 @@ describe("TransferScriptExecutor", function () {
     it('transfers the tokens - PRC', async () => {
         let message: ITransferAction = JSON.parse(JSON.stringify(baseMessage));
         message.typeAmt = AmountType.Percentage;
-        message.amount = BigNumber.from(5000);
+        message.amount = BigNumber.from(5000); // 50%
         message = await initialize(message);
 
         await executor.execute(message, sigR, sigS, sigV);

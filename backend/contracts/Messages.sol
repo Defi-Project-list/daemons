@@ -96,3 +96,44 @@ struct Transfer {
 }
 string constant TRANSFER_TYPE = "Transfer(bytes32 scriptId,address token,address destination,bytes1 typeAmt,uint256 amount,address user,address executor,uint256 chainId,Balance balance,Frequency frequency,Price price,Repetitions repetitions,Follow follow)Balance(bool enabled,address token,bytes1 comparison,uint256 amount)Follow(bool enabled,uint256 shift,bytes32 scriptId,address executor)Frequency(bool enabled,uint256 delay,uint256 start)Price(bool enabled,address token,bytes1 comparison,uint256 value)Repetitions(bool enabled,uint32 amount)";
 bytes32 constant TRANSFER_TYPEHASH = keccak256(abi.encodePacked(TRANSFER_TYPE));
+
+struct MmBase {
+    bytes32 scriptId;
+    address token;
+    address aToken;
+    bytes1 action;
+    bytes1 typeAmt;
+    uint256 amount;
+    address user;
+    address kontract;
+    address executor;
+    uint256 chainId;
+    Balance balance;
+    Frequency frequency;
+    Price price;
+    Repetitions repetitions;
+    Follow follow;
+}
+string constant MM_BASE_TYPE = "MmBase(bytes32 scriptId,address token,address aToken,bytes1 action,bytes1 typeAmt,uint256 amount,address user,address kontract,address executor,uint256 chainId,Balance balance,Frequency frequency,Price price,Repetitions repetitions,Follow follow)Balance(bool enabled,address token,bytes1 comparison,uint256 amount)Follow(bool enabled,uint256 shift,bytes32 scriptId,address executor)Frequency(bool enabled,uint256 delay,uint256 start)Price(bool enabled,address token,bytes1 comparison,uint256 value)Repetitions(bool enabled,uint32 amount)";
+bytes32 constant MM_BASE_TYPEHASH = keccak256(abi.encodePacked(MM_BASE_TYPE));
+
+struct MmAdvanced {
+    bytes32 scriptId;
+    address token;
+    bytes1 action;
+    bytes1 rateMode;
+    uint256 amount;
+    address user;
+    address kontract;
+    address executor;
+    uint256 chainId;
+    Balance balance;
+    Frequency frequency;
+    Price price;
+    Repetitions repetitions;
+    Follow follow;
+}
+string constant MM_ADVANCED_TYPE = "MmAdvanced(bytes32 scriptId,address token,bytes1 action,bytes1 rateMode,uint256 amount,address user,address kontract,address executor,uint256 chainId,Balance balance,Frequency frequency,Price price,Repetitions repetitions,Follow follow)Balance(bool enabled,address token,bytes1 comparison,uint256 amount)Follow(bool enabled,uint256 shift,bytes32 scriptId,address executor)Frequency(bool enabled,uint256 delay,uint256 start)Price(bool enabled,address token,bytes1 comparison,uint256 value)Repetitions(bool enabled,uint32 amount)";
+bytes32 constant MM_ADVANCED_TYPEHASH = keccak256(
+    abi.encodePacked(MM_ADVANCED_TYPE)
+);
