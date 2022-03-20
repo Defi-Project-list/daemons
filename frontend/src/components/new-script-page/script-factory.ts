@@ -106,7 +106,7 @@ export class ScriptFactory {
             price: priceCondition,
             repetitions: maxRepetitions,
             follow: followCondition,
-            executor: Contracts.SwapExecutor,
+            executor: Contracts[this.chainId].SwapExecutor,
             chainId: BigNumber.from(this.chainId),
         };
     }
@@ -143,7 +143,7 @@ export class ScriptFactory {
             price: priceCondition,
             repetitions: maxRepetitions,
             follow: followCondition,
-            executor: Contracts.TransferExecutor,
+            executor: Contracts[this.chainId].TransferExecutor,
             chainId: BigNumber.from(this.chainId),
         };
     }

@@ -5,19 +5,19 @@ import { Contracts } from '../../data/contracts';
 import { GasTankAction } from '../actions/gas-tank-actions';
 import { BigNumber, Contract } from 'ethers';
 
-const getGasTankContract = async (): Promise<Contract> => {
+const getGasTankContract = async (chainId: string): Promise<Contract> => {
     const ethers = require('ethers');
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-    const contractAddress = Contracts.GasTank;
+    const contractAddress = Contracts[chainId].GasTank;
     const contractAbi = await getAbiFor('GasTank');
     return new ethers.Contract(contractAddress, contractAbi, provider);
 };
 
-export const fetchGasTankBalance = (address?: string) => {
+export const fetchGasTankBalance = (address?: string, chainId?: string) => {
 
     return async (dispatch: Dispatch<GasTankAction>) => {
-        if (!address) {
-            console.log('Address missing, balance check aborted');
+        if (!address || !chainId) {
+            console.log('Address or chainId missing, balance check aborted');
             dispatch({
                 type: ActionType.GAS_TANK_BALANCE,
                 balance: undefined,
@@ -27,7 +27,7 @@ export const fetchGasTankBalance = (address?: string) => {
 
         console.log('Checking balance in gas tank for', address);
 
-        const gasTank = await getGasTankContract();
+        const gasTank = await getGasTankContract(chainId);
         const rawBalance: BigNumber = await gasTank.balanceOf(address);
         const balance = rawBalance.div(BigNumber.from(10).pow(14)).toNumber() / 10000; // let's keep 4 digits precision
 
@@ -38,11 +38,11 @@ export const fetchGasTankBalance = (address?: string) => {
     };
 };
 
-export const fetchGasTankClaimable = (address?: string) => {
+export const fetchGasTankClaimable = (address?: string, chainId?: string) => {
 
     return async (dispatch: Dispatch<GasTankAction>) => {
-        if (!address) {
-            console.log('Address missing, balance check aborted');
+        if (!address || !chainId) {
+            console.log('Address or chainId missing, balance check aborted');
             dispatch({
                 type: ActionType.GAS_TANK_CLAIMABLE,
                 balance: undefined,
@@ -52,7 +52,7 @@ export const fetchGasTankClaimable = (address?: string) => {
 
         console.log('Checking claimable DAEM for', address);
 
-        const gasTank = await getGasTankContract();
+        const gasTank = await getGasTankContract(chainId);
         const rawBalance: BigNumber = await gasTank.claimable(address);
         const balance = rawBalance.div(BigNumber.from(10).pow(14)).toNumber() / 10000; // let's keep 4 digits precision
 

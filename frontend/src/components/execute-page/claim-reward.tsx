@@ -12,6 +12,7 @@ export function ClaimRewards() {
     const dispatch = useDispatch();
     const claimable = useSelector((state: RootState) => state.gasTank.claimable);
     const walletAddress = useSelector((state: RootState) => state.wallet.address);
+    const chainId = useSelector((state: RootState) => state.wallet.chainId);
     const nothingToClaim = !claimable;
 
     const claim = async () => {
@@ -38,7 +39,7 @@ export function ClaimRewards() {
         const provider = new ethers.providers.Web3Provider((window as any).ethereum);
         const signer = provider.getSigner();
 
-        const contractAddress = Contracts.GasTank;
+        const contractAddress = Contracts[chainId!].GasTank;
         const contractAbi = await getAbiFor('GasTank');
         const gasTank = new ethers.Contract(contractAddress, contractAbi, signer);
         return gasTank;

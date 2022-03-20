@@ -1,4 +1,18 @@
-const ProductionContracts = {
+interface IContractsList {
+    GasTank: string;
+    DAEMToken: string;
+    Treasury: string;
+    GasPriceFeed: string;
+    PriceRetriever: string;
+
+    // executors
+    SwapExecutor: string;
+    TransferExecutor: string;
+    MmBaseExecutor: string;
+    MmAdvancedExecutor: string;
+}
+
+const KovanContracts: IContractsList = {
     GasTank: '0x9E3B12384b0394Eb4AdD62E0Fd417B4281C02116',
     DAEMToken: '0x568f91A0d586C03B59de93EC2964CBdE05b53FB4',
     Treasury: '0x9624Ed062eA9C416F196324872b1cD7fF3c149B8',
@@ -11,4 +25,6 @@ const ProductionContracts = {
     MmAdvancedExecutor: '0x074cC149D5fdF427c65a1f3E83dde9815DCa3376',
 };
 
-export const Contracts = ProductionContracts;
+export const Contracts: { [chain: string]: IContractsList; } = {
+    "42": KovanContracts,
+};

@@ -5,10 +5,10 @@ import { Contracts } from '../../data/contracts';
 import { BigNumber, Contract } from 'ethers';
 import { StakingAction } from '../actions/staking-actions';
 
-const getTreasuryContract = async (): Promise<Contract> => {
+const getTreasuryContract = async (chainId: string): Promise<Contract> => {
     const ethers = require('ethers');
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-    const contractAddress = Contracts.Treasury;
+    const contractAddress = Contracts[chainId].Treasury;
     const contractAbi = await getAbiFor('Treasury');
     return new ethers.Contract(contractAddress, contractAbi, provider);
 };
@@ -27,7 +27,7 @@ export const fetchStakingBalance = (address?: string, chainId?: string) => {
 
         console.log('Checking staking balance for', address);
 
-        const treasury = await getTreasuryContract();
+        const treasury = await getTreasuryContract(chainId);
         const rawBalance: BigNumber = await treasury.balanceOf(address);
         const balance = rawBalance.div(BigNumber.from(10).pow(14)).toNumber() / 10000; // let's keep 4 digits precision
 
@@ -52,7 +52,7 @@ export const fetchStakingClaimable = (address?: string, chainId?: string) => {
 
         console.log('Checking claimable staking reward for', address);
 
-        const treasury = await getTreasuryContract();
+        const treasury = await getTreasuryContract(chainId);
         const rawBalance: BigNumber = await treasury.earned(address);
         const balance = rawBalance.div(BigNumber.from(10).pow(14)).toNumber() / 10000; // let's keep 4 digits precision
 

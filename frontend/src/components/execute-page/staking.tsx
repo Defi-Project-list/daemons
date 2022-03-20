@@ -23,8 +23,8 @@ export function Staking() {
         const allowanceHelper = new AllowanceHelper();
         const hasAllowance = await allowanceHelper.checkForAllowance(
             walletAddress!,
-            Contracts.DAEMToken,
-            Contracts.Treasury,
+            Contracts[chainId!].DAEMToken,
+            Contracts[chainId!].Treasury,
             ethers.utils.parseEther("100000")
         );
         console.log('hasAllowance', hasAllowance);
@@ -53,7 +53,10 @@ export function Staking() {
 
     const requestAllowance = async () => {
         const allowanceHelper = new AllowanceHelper();
-        const tx = await allowanceHelper.requestAllowance(Contracts.DAEMToken, Contracts.Treasury);
+        const tx = await allowanceHelper.requestAllowance(
+            Contracts[chainId!].DAEMToken,
+            Contracts[chainId!].Treasury
+        );
         await tx.wait();
         await checkForAllowance();
     };
@@ -98,7 +101,7 @@ export function Staking() {
         const provider = new ethers.providers.Web3Provider((window as any).ethereum);
         const signer = provider.getSigner();
 
-        const contractAddress = Contracts.Treasury;
+        const contractAddress = Contracts[chainId!].Treasury;
         const contractAbi = await getAbiFor('Treasury');
         const treasury = new ethers.Contract(contractAddress, contractAbi, signer);
         return treasury;

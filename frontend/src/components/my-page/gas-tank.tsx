@@ -13,6 +13,7 @@ export function GasTank(): JSX.Element {
     const dispatch = useDispatch();
     const balance = useSelector((state: RootState) => state.gasTank.balance);
     const walletAddress = useSelector((state: RootState) => state.wallet.address);
+    const chainId = useSelector((state: RootState) => state.wallet.chainId);
     const [toggleDeposit, setToggleDeposit] = useState<boolean>(true);
 
 
@@ -21,7 +22,7 @@ export function GasTank(): JSX.Element {
         const provider = new ethers.providers.Web3Provider((window as any).ethereum);
         const signer = provider.getSigner();
 
-        const contractAddress = Contracts.GasTank;
+        const contractAddress = Contracts[chainId!].GasTank;
         const contractAbi = await getAbiFor('GasTank');
         const gasTank = new ethers.Contract(contractAddress, contractAbi, signer);
         return gasTank;
