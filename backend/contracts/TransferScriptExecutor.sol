@@ -87,7 +87,7 @@ contract TransferScriptExecutor is ConditionsChecker {
         verifyBalance(message.balance, message.user);
         verifyPrice(message.price);
         verifyGasTank(message.user);
-        verifyAllowance(message.user, message.token, message.amount);
+        verifyAllowance(message.user, message.token, minAmount);
     }
 
     /* ========== EXECUTION FUNCTIONS ========== */

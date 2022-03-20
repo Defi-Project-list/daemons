@@ -93,7 +93,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
         verifyBalance(message.balance, message.user);
         verifyPrice(message.price);
         verifyGasTank(message.user);
-        verifyAllowance(message.user, message.tokenFrom, message.amount);
+        verifyAllowance(message.user, message.tokenFrom, minAmount);
     }
 
     /* ========== EXECUTION FUNCTIONS ========== */
