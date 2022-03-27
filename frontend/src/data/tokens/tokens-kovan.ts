@@ -110,7 +110,36 @@ const LINK = {
     hasPriceFeed: false,
 };
 
+const AaveDAI = {
+    name: "DAI Stablecoin",
+    symbol: "AaveDAI",
+    address: "0x58Cd851c28dF05Edc7F018B533C0257DE57673f7",
+    decimals: 18,
+    logoURI: "https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png",
+    chainId: '42',
+    hasPriceFeed: false,
+};
+
+const aDAI = {
+    name: "AAVE aDAI",
+    symbol: "aDAI",
+    address: "0xE101EcB2283Acf0C91e05A428DDD8833Ac66B572",
+    decimals: 18,
+    logoURI: "https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png",
+    chainId: '42',
+    hasPriceFeed: false,
+};
+
+const aWETH = {
+    name: "AAVE aWETH",
+    symbol: "aWETH",
+    address: "0x87b1f4cf9bd63f7bbd3ee1ad04e8f52540349347",
+    decimals: 18,
+    logoURI: "https://tokens.1inch.io/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+    chainId: '42',
+    hasPriceFeed: true,
+};
 
 export const kovanTokens: Token[] = [
-    WETH, wBTC, USDC, USDT, DAI, MANA, MKR, BAT, LINK, BUSD, UNI
+    WETH, wBTC, USDC, USDT, DAI, MANA, MKR, BAT, LINK, BUSD, UNI, AaveDAI
 ];
