@@ -30,8 +30,8 @@ export const App = ({ children }: { children: any; }) => {
     useEffect(() => {
         if (authenticated && walletAddress && supportedChain) {
             dispatch(fetchUserScripts(chainId, walletAddress));
-            dispatch(fetchGasTankBalance(walletAddress));
-            dispatch(fetchGasTankClaimable(walletAddress));
+            dispatch(fetchGasTankBalance(walletAddress, chainId));
+            dispatch(fetchGasTankClaimable(walletAddress, chainId));
             dispatch(fetchChainTokens(chainId));
             dispatch(fetchUserHistory(chainId, walletAddress));
         }
