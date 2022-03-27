@@ -1,9 +1,13 @@
+import { Token } from './tokens';
+import { kovanTokens } from './tokens/tokens-kovan';
+
 interface IChainInfo {
     name: string;
     hex: string;
     iconPath: string;
     coinSymbol: string;
     explorerTxUrl: string;
+    tokens: Token[];
 }
 
 const unsupportedChain: IChainInfo = {
@@ -11,7 +15,8 @@ const unsupportedChain: IChainInfo = {
     hex: "0x00",
     iconPath: "",
     coinSymbol: 'ETH',
-    explorerTxUrl: 'https://kovan.etherscan.io/tx/'
+    explorerTxUrl: 'https://kovan.etherscan.io/tx/',
+    tokens: [],
 };
 
 export const ChainInfo: { [chainId: string]: IChainInfo; } = {
@@ -20,7 +25,8 @@ export const ChainInfo: { [chainId: string]: IChainInfo; } = {
         hex: "0x2a",
         iconPath: "/icons/kovan.jpg",
         coinSymbol: 'ETH',
-        explorerTxUrl: 'https://kovan.etherscan.io/tx/'
+        explorerTxUrl: 'https://kovan.etherscan.io/tx/',
+        tokens: kovanTokens,
     },
 };
 
