@@ -195,7 +195,7 @@ export class ScriptFactory {
             price: priceCondition,
             repetitions: maxRepetitions,
             follow: followCondition,
-            executor: Contracts[this.chainId].TransferExecutor,
+            executor: Contracts[this.chainId].MmBaseExecutor,
             chainId: BigNumber.from(this.chainId),
         };
     }
