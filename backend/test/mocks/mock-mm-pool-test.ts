@@ -29,7 +29,7 @@ describe("Mock Money Market Pool", function () {
         await fooToken.mint(owner.address, 150000);
         await fooToken.approve(mockMoneyMarketPool.address, ethers.utils.parseEther("500"));
 
-        await mockMoneyMarketPool.supply(fooToken.address, 100000, otherUser.address, 0);
+        await mockMoneyMarketPool.deposit(fooToken.address, 100000, otherUser.address, 0);
 
         // 100000 tokens should have been taken from owner
         expect((await fooToken.balanceOf(owner.address)).toNumber()).to.be.equal(50000);

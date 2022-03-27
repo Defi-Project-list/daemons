@@ -13,7 +13,7 @@ contract MockMoneyMarketPool is IMoneyMarket {
         aToken = MockToken(_aToken);
     }
 
-    function supply(
+    function deposit(
         address asset,
         uint256 amount,
         address onBehalfOf,
@@ -35,7 +35,7 @@ contract MockMoneyMarketPool is IMoneyMarket {
         address asset,
         uint256 amount,
         address to
-    ) external override {
+    ) external override returns (uint256) {
         require(asset == address(token), "Always specify token, not aToken");
 
         // burn message sender aTokens
@@ -43,6 +43,8 @@ contract MockMoneyMarketPool is IMoneyMarket {
 
         // mint tokens into the user's address
         token.mint(to, amount);
+
+        return 0;
     }
 
     function borrow(
@@ -63,7 +65,7 @@ contract MockMoneyMarketPool is IMoneyMarket {
         uint256 amount,
         uint256 interestRateMode,
         address onBehalfOf
-    ) external override {
+    ) external override returns (uint256) {
         require(asset == address(token), "Always specify token, not aToken");
 
         // get tokens from the executor
@@ -71,6 +73,8 @@ contract MockMoneyMarketPool is IMoneyMarket {
 
         // burn them, for simplicity
         token.burn(amount);
+
+        return 0;
     }
 
     function getUserAccountData(address user)

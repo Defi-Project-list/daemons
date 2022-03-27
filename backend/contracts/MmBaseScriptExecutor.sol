@@ -158,7 +158,7 @@ contract MmBaseScriptExecutor is ConditionsChecker {
             giveAllowance(tokenFrom, message.kontract);
 
         // step 2 call supply function
-        IMoneyMarket(message.kontract).supply(
+        IMoneyMarket(message.kontract).deposit(
             message.token,
             amount,
             message.user,
