@@ -27,14 +27,14 @@ export const TokensModal = ({ tokens, setFormToken }: TokensModalProps) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
 
     useEffect(() => {
-        setDisplayedTokens(tokens)
+        setDisplayedTokens(tokens);
         const randomIndex = Math.floor(Math.random() * tokens.length);
         setSelectedToken(tokens[randomIndex]);
-        setFormToken(tokens[randomIndex].address)
+        setFormToken(tokens[randomIndex].address);
     }, [tokens]);
 
     useEffect(() => {
-        setFormToken(selectedToken.address)
+        setFormToken(selectedToken.address);
     }, [selectedToken]);
 
     const closeModal = () => {
@@ -50,13 +50,13 @@ export const TokensModal = ({ tokens, setFormToken }: TokensModalProps) => {
         value = value.toLowerCase();
         const filteredTokens = tokens.filter(t => t.name?.toLowerCase().includes(value) || t.symbol?.toLowerCase().includes(value));
         setDisplayedTokens(filteredTokens);
-    }
+    };
 
     return (
         <>
             {selectedToken &&
                 <div className={`token-address ${!tokens[0]?.address ? 'script-block__field--error' : null}`}
-                    onClick={(e) => { setModalIsOpen(true) }}>
+                    onClick={(e) => { setModalIsOpen(true); }}>
                     <img className='token-img' src={selectedToken.logoURI} alt={`${selectedToken?.symbol} logo`} />
                     <div>{selectedToken?.symbol}</div>
                     <i className="arrow-down"></i>
@@ -72,14 +72,15 @@ export const TokensModal = ({ tokens, setFormToken }: TokensModalProps) => {
                 <div className='tokens-modal'>
                     <div className='tokens-modal_search'>
                         <input
-                            onChange={(e) => { filterDisplayedTokens(e.target.value) }} />
+                            autoFocus
+                            onChange={(e) => { filterDisplayedTokens(e.target.value); }} />
                     </div>
                     <div className='tokens-modal_list'>
                         {
                             displayedTokens.map((token, i) => (
                                 <div key={i} className='tokens-modal_item' onClick={(e) => {
                                     setSelectedToken(token);
-                                    closeModal()
+                                    closeModal();
                                 }}>
                                     <img className='token-img' src={token.logoURI} />
                                     <div>
@@ -92,5 +93,5 @@ export const TokensModal = ({ tokens, setFormToken }: TokensModalProps) => {
                     </div>
                 </div>
             </Modal></>
-    )
-}
+    );
+};
