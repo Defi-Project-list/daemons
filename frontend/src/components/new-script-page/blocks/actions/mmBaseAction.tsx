@@ -4,6 +4,9 @@ import { Form, Field } from 'react-final-form';
 import { Token } from '../../../../data/tokens';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../state';
+import { ToggleButtonField } from '../shared/toggle-button';
+import { BaseMoneyMarketActionType } from '../../../../../../shared-definitions/scripts/mm-base-action-messages';
+
 
 const amountValidation = (value: string) => {
     if (!value || value === '') return 'required';
@@ -27,6 +30,15 @@ export const MmBaseAction = ({ form, update }: { form: IBaseMMActionForm; update
                 <form onSubmit={handleSubmit}>
 
                     <div className='transfer-block'>
+                        <div className="script-block__panel--row">
+                            <ToggleButtonField
+                                name='actionType'
+                                valuesEnum={BaseMoneyMarketActionType}
+                                updateFunction={(newValue) => { update({ ...form, actionType: newValue }); }}
+                                initial={form.actionType}
+                            />
+                        </div>
+
                         <div className="script-block__panel--row">
 
                             <Field
@@ -86,7 +98,6 @@ export const MmBaseAction = ({ form, update }: { form: IBaseMMActionForm; update
                             TODO
                             <ul>
                                 <li>Add amount type toggle (absolute/percentage)</li>
-                                <li>Add action type toggle (deposit/withdraw)</li>
                                 <li>Only display tokens with aToken associated</li>
                             </ul>
                         </div >
