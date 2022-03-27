@@ -4,6 +4,7 @@ import { Form, Field } from 'react-final-form';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../state';
 import { Token } from '../../../../data/tokens';
+import { TokensModal } from "../../../tokens-modal";
 
 const tokenValidation = (value: string) => {
     if (!value || value === '') return 'required';
@@ -19,6 +20,10 @@ const amountValidation = (value: string) => {
 export const BalanceCondition = ({ form, update }: { form: IBalanceConditionForm; update: (next: IBalanceConditionForm) => void; }) => {
     const tokens: Token[] = useSelector((state: RootState) => state.tokens.currentChainTokens);
 
+    const setFormToken = (value: string) => {
+        update({ ...form, tokenAddress: value });
+    }
+
     return (
         <Form
             initialValues={form}
@@ -27,33 +32,9 @@ export const BalanceCondition = ({ form, update }: { form: IBalanceConditionForm
                 <form onSubmit={handleSubmit}>
                     <div className='script-block__panel--row balance-block'>
 
-                        <Field
-                            name="tokenAddress"
-                            component="select"
-                            validate={tokenValidation}
-                        >
-                            {({ input, meta }) => <select
-                                {...input}
-                                onChange={(e) => {
-                                    input.onChange(e);
-                                    update({ ...form, tokenAddress: e.target.value });
-                                }}
-                                onBlur={(e) => {
-                                    input.onBlur(e);
-                                    update({ ...form, valid });
-                                }}
-                                className={`balance-block__token-address ${meta.error ? 'script-block__field--error' : null}`}
-                            >
-                                <option key={0} value="" disabled ></option>
-                                {
-                                    tokens.map(token => (
-                                        <option key={token.address} value={token.address}>
-                                            {token.symbol}
-                                        </option>
-                                    ))
-                                }
-                            </select>}
-                        </Field>
+                        <TokensModal
+                            tokens={tokens}
+                            setFormToken={setFormToken} />
 
                         <Field
                             name="comparison"

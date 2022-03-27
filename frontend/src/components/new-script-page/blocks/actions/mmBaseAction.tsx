@@ -4,6 +4,7 @@ import { Form, Field } from 'react-final-form';
 import { Token } from '../../../../data/tokens';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../state';
+import { TokensModal } from "../../../tokens-modal";
 import { ToggleButtonField } from '../shared/toggle-button';
 import { BaseMoneyMarketActionType } from '../../../../../../shared-definitions/scripts/mm-base-action-messages';
 
@@ -21,6 +22,10 @@ const tokenValidation = (value: string) => {
 
 export const MmBaseAction = ({ form, update }: { form: IBaseMMActionForm; update: (next: IBaseMMActionForm) => void; }) => {
     const tokens: Token[] = useSelector((state: RootState) => state.tokens.currentChainTokens);
+
+    const setFormToken = (value: string) => {
+        update({ ...form, tokenAddress: value });
+    }
 
     return (
         <Form
@@ -41,33 +46,9 @@ export const MmBaseAction = ({ form, update }: { form: IBaseMMActionForm; update
 
                         <div className="script-block__panel--row">
 
-                            <Field
-                                name="tokenAddress"
-                                component="select"
-                                validate={tokenValidation}
-                            >
-                                {({ input, meta }) => <select
-                                    {...input}
-                                    className={`transfer-block__token-address ${meta.error ? 'script-block__field--error' : null}`}
-                                    onChange={(e) => {
-                                        input.onChange(e);
-                                        update({ ...form, tokenAddress: e.target.value });
-                                    }}
-                                    onBlur={(e) => {
-                                        input.onBlur(e);
-                                        update({ ...form, valid });
-                                    }}
-                                >
-                                    <option key={0} value="" disabled ></option>
-                                    {
-                                        tokens.map(token => (
-                                            <option key={token.address} value={token.address}>
-                                                {token.symbol}
-                                            </option>
-                                        ))
-                                    }
-                                </select>}
-                            </Field>
+                            <TokensModal
+                                tokens={tokens}
+                                setFormToken={setFormToken} />
 
                             <Field name="floatAmount"
                                 component="input"
@@ -78,7 +59,7 @@ export const MmBaseAction = ({ form, update }: { form: IBaseMMActionForm; update
                                 {({ input, meta }) =>
                                     <input
                                         {...input}
-                                        className={`'balance-block__amount ${meta.error ? 'script-block__field--error' : null}`}
+                                        className={`balance-block__amount ${meta.error ? 'script-block__field--error' : null}`}
                                         onChange={(e) => {
                                             e.target.value = Number(e.target.value) < 0 ? '0' : e.target.value;
                                             input.onChange(e);

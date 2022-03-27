@@ -4,6 +4,7 @@ import { Form, Field } from 'react-final-form';
 import { Token } from '../../../../data/tokens';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../state';
+import { TokensModal } from "../../../tokens-modal";
 
 const amountValidation = (value: string) => {
     if (!value || value === '') return 'required';
@@ -19,6 +20,13 @@ const tokenValidation = (value: string) => {
 export const SwapAction = ({ form, update }: { form: ISwapActionForm; update: (next: ISwapActionForm) => void; }) => {
     const tokens: Token[] = useSelector((state: RootState) => state.tokens.currentChainTokens);
 
+    const setFromAddressToken = (value: string) => {
+        update({ ...form, tokenFromAddress: value });
+    }
+    const setToAddressToken = (value: string) => {
+        update({ ...form, tokenToAddress: value });
+    }
+
     return (
         <Form
             initialValues={form}
@@ -28,63 +36,15 @@ export const SwapAction = ({ form, update }: { form: ISwapActionForm; update: (n
 
                     <div className='swap-block'>
                         <div className='script-block__panel--row'>
-                            <Field
-                                name="tokenFromAddress"
-                                component="select"
-                                validate={tokenValidation}
-                            >
-                                {({ input, meta }) => <select
-                                    {...input}
-                                    className={`swap-block__token-from-address ${meta.error ? 'script-block__field--error' : null}`}
-                                    onChange={(e) => {
-                                        input.onChange(e);
-                                        update({ ...form, tokenFromAddress: e.target.value });
-                                    }}
-                                    onBlur={(e) => {
-                                        input.onBlur(e);
-                                        update({ ...form, valid });
-                                    }}
-                                >
-                                    <option key={0} value="" disabled ></option>
-                                    {
-                                        tokens.map(token => (
-                                            <option key={token.address} value={token.address}>
-                                                {token.symbol}
-                                            </option>
-                                        ))
-                                    }
-                                </select>}
-                            </Field>
+                            <TokensModal
+                                tokens={tokens}
+                                setFormToken={setFromAddressToken} />
 
-                            <Field
-                                name="tokenToAddress"
-                                component="select"
-                                validate={tokenValidation}
-                            >
-                                {({ input, meta }) => <select
-                                    {...input}
-                                    className={`swap-block__token-to-address ${meta.error ? 'script-block__field--error' : null}`}
-                                    onChange={(e) => {
-                                        input.onChange(e);
-                                        update({ ...form, tokenToAddress: e.target.value });
-                                    }}
-                                    onBlur={(e) => {
-                                        input.onBlur(e);
-                                        update({ ...form, valid });
-                                    }}
-                                >
-                                    <option key={0} value="" disabled ></option>
-                                    {
-                                        tokens.map(token => (
-                                            <option key={token.address} value={token.address}>
-                                                {token.symbol}
-                                            </option>
-                                        ))
-                                    }
-                                </select>}
-                            </Field>
-
-
+                            <TokensModal
+                                tokens={tokens}
+                                setFormToken={setToAddressToken} />
+                        </div>
+                        <div className='script-block__panel--row'>
                             <Field name="floatAmount"
                                 component="input"
                                 type="number"

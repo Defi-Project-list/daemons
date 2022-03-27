@@ -124,12 +124,8 @@
 
 /* Transfer Block */
 
-.transfer-block .transfer-block__token-address {
-    width: 40%;
-}
-
 .transfer-block .balance-block__amount {
-    width: 60%;
+    width: 50%;
     text-align: center;
 }
 
@@ -178,8 +174,9 @@
 }
 
 .swap-block .balance-block__amount {
-    width: 34%;
+    width: 100%;
     box-sizing: border-box;
+    margin-top: 15px;
 }
 
 .new-script__button {
@@ -197,4 +194,16 @@
 .new-script__button:disabled {
     opacity: 0.7;
     cursor: not-allowed;
+}
+
+.arrow-down {
+    border: solid black;
+    border-width: 0 1.5px 1.5px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: rotate(45deg);
+    right: 10px;
+    position: absolute;
+    bottom: auto;
+    margin-bottom: 3px;
 }
