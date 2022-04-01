@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { IBalanceConditionForm } from './conditions-interfaces';
 import { Form, Field } from 'react-final-form';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../state';
-import { Token } from '../../../../data/tokens';
-import { TokensModal } from "../../../tokens-modal";
+import { IToken, Token } from '../../../../data/tokens';
+import { TokensModal } from "../shared/tokens-modal";
 
 const tokenValidation = (value: string) => {
     if (!value || value === '') return 'required';
@@ -19,10 +19,16 @@ const amountValidation = (value: string) => {
 
 export const BalanceCondition = ({ form, update }: { form: IBalanceConditionForm; update: (next: IBalanceConditionForm) => void; }) => {
     const tokens: Token[] = useSelector((state: RootState) => state.tokens.currentChainTokens);
+    const [selectedToken, setSelectedToken] = useState<IToken | undefined>();
 
-    const setFormToken = (value: string) => {
-        update({ ...form, tokenAddress: value });
-    }
+    useEffect(() => {
+        setSelectedToken(tokens[0]);
+    }, [tokens]);
+
+    useEffect(() => {
+        if (selectedToken)
+            update({ ...form, tokenAddress: selectedToken.address });
+    }, [selectedToken]);
 
     return (
         <Form
@@ -34,7 +40,9 @@ export const BalanceCondition = ({ form, update }: { form: IBalanceConditionForm
 
                         <TokensModal
                             tokens={tokens}
-                            setFormToken={setFormToken} />
+                            selectedToken={selectedToken}
+                            setSelectedToken={setSelectedToken}
+                        />
 
                         <Field
                             name="comparison"

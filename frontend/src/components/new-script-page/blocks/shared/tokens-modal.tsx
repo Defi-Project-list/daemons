@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { IToken } from '../../data/tokens';
+import { IToken } from '../../../../data/tokens';
 import Modal from "react-modal";
-import './styles.css';
+import './tokens-modal.css';
 
 const modalStyles: any = {
     content: {
@@ -17,25 +17,18 @@ const modalStyles: any = {
 };
 
 interface TokensModalProps {
-    tokens: IToken[],
-    setFormToken: (value: string) => void;
+    tokens: IToken[];
+    selectedToken?: IToken;
+    setSelectedToken: (token: IToken) => void;
 }
 
-export const TokensModal = ({ tokens, setFormToken }: TokensModalProps) => {
-    const [selectedToken, setSelectedToken] = useState<IToken>(tokens[0]);
+export const TokensModal = ({ tokens, selectedToken, setSelectedToken }: TokensModalProps) => {
     const [displayedTokens, setDisplayedTokens] = useState<IToken[]>([]);
     const [modalIsOpen, setModalIsOpen] = useState(false);
 
     useEffect(() => {
         setDisplayedTokens(tokens);
-        const randomIndex = Math.floor(Math.random() * tokens.length);
-        setSelectedToken(tokens[randomIndex]);
-        setFormToken(tokens[randomIndex].address);
     }, [tokens]);
-
-    useEffect(() => {
-        setFormToken(selectedToken.address);
-    }, [selectedToken]);
 
     const closeModal = () => {
         setDisplayedTokens(tokens);
@@ -54,14 +47,19 @@ export const TokensModal = ({ tokens, setFormToken }: TokensModalProps) => {
 
     return (
         <>
-            {selectedToken &&
-                <div className={`token-address ${!tokens[0]?.address ? 'script-block__field--error' : null}`}
-                    onClick={(e) => { setModalIsOpen(true); }}>
-                    <img className='token-img' src={selectedToken.logoURI} alt={`${selectedToken?.symbol} logo`} />
-                    <div>{selectedToken?.symbol}</div>
-                    <i className="arrow-down"></i>
-                </div>
-            }
+            <div className={`token-address ${tokens?.length === 0 ? 'script-block__field--error' : null}`}
+                onClick={() => { if (tokens?.length > 0) setModalIsOpen(true); }}>
+                {tokens?.length > 0 ?
+                    <>
+                        <img className='token-img' src={selectedToken?.logoURI} alt={`${selectedToken?.symbol} logo`} />
+                        <div>{selectedToken?.symbol}</div>
+                    </> :
+                    <>
+                        <div className='missing-img'></div>
+                    </>
+                }
+                <i className="arrow-down"></i>
+            </div>
 
             <Modal
                 isOpen={modalIsOpen}

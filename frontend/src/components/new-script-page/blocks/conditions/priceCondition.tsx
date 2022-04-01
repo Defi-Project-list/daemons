@@ -4,7 +4,7 @@ import { Form, Field } from 'react-final-form';
 import { IToken, Token } from '../../../../data/tokens';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../state';
-import { TokensModal } from "../../../tokens-modal";
+import { TokensModal } from "../shared/tokens-modal";
 
 
 const tokenValidation = (value: string) => {
@@ -21,15 +21,18 @@ const valueValidation = (value: string) => {
 export const PriceCondition = ({ form, update }: { form: IPriceConditionForm; update: (next: IPriceConditionForm) => void; }) => {
     const tokens: Token[] = useSelector((state: RootState) => state.tokens.currentChainTokens);
     const [filteredTokens, setFilteredTokens] = useState<IToken[]>([]);
+    const [selectedToken, setSelectedToken] = useState<IToken | undefined>();
 
     useEffect(() => {
         const tokensWithPriceFeed = tokens.filter(token => token.hasPriceFeed);
-        setFilteredTokens(tokensWithPriceFeed)
+        setFilteredTokens(tokensWithPriceFeed);
+        setSelectedToken(tokensWithPriceFeed[0]);
     }, [tokens]);
 
-    const setFormToken = (value: string) => {
-        update({ ...form, tokenAddress: value });
-    }
+    useEffect(() => {
+        if (selectedToken)
+            update({ ...form, tokenAddress: selectedToken.address });
+    }, [selectedToken]);
 
     return (
         <Form
@@ -41,7 +44,10 @@ export const PriceCondition = ({ form, update }: { form: IPriceConditionForm; up
 
                         {filteredTokens?.length > 0 && <TokensModal
                             tokens={filteredTokens}
-                            setFormToken={setFormToken} />}
+                            selectedToken={selectedToken}
+                            setSelectedToken={setSelectedToken}
+                        />
+                        }
 
                         <Field
                             name="comparison"

@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ISwapActionForm } from './actions-interfaces';
 import { Form, Field } from 'react-final-form';
-import { Token } from '../../../../data/tokens';
+import { IToken, Token } from '../../../../data/tokens';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../state';
-import { TokensModal } from "../../../tokens-modal";
+import { TokensModal } from "../shared/tokens-modal";
 
 const amountValidation = (value: string) => {
     if (!value || value === '') return 'required';
@@ -19,12 +19,28 @@ const tokenValidation = (value: string) => {
 
 export const SwapAction = ({ form, update }: { form: ISwapActionForm; update: (next: ISwapActionForm) => void; }) => {
     const tokens: Token[] = useSelector((state: RootState) => state.tokens.currentChainTokens);
+    const [selectedTokenFrom, setSelectedTokenFrom] = useState<IToken | undefined>();
+    const [selectedTokenTo, setSelectedTokenTo] = useState<IToken | undefined>();
 
-    const setFromAddressToken = (value: string) => {
-        update({ ...form, tokenFromAddress: value });
+    useEffect(() => {
+        if (tokens?.length > 2) {
+            setSelectedTokenFrom(tokens[0]);
+            setSelectedTokenTo(tokens[1]);
+        }
+    }, [tokens]);
+
+    const onSetSelectedTokenFrom = (tokenFrom: IToken) => {
+        if (tokenFrom.address !== selectedTokenTo?.address) {
+            update({ ...form, tokenFromAddress: tokenFrom.address });
+            setSelectedTokenFrom(tokenFrom)
+        }
     }
-    const setToAddressToken = (value: string) => {
-        update({ ...form, tokenToAddress: value });
+    const onSetSelectedTokenTo = (tokenTo: IToken) => {
+        if (tokenTo.address !== selectedTokenFrom?.address) {
+            update({ ...form, tokenToAddress: tokenTo.address });
+            setSelectedTokenTo(tokenTo)
+
+        }
     }
 
     return (
@@ -37,12 +53,16 @@ export const SwapAction = ({ form, update }: { form: ISwapActionForm; update: (n
                     <div className='swap-block'>
                         <div className='script-block__panel--row'>
                             <TokensModal
-                                tokens={tokens}
-                                setFormToken={setFromAddressToken} />
+                                tokens={tokens.filter(t => t.address !== selectedTokenTo?.address)}
+                                selectedToken={selectedTokenFrom}
+                                setSelectedToken={onSetSelectedTokenFrom}
+                            />
 
                             <TokensModal
-                                tokens={tokens}
-                                setFormToken={setToAddressToken} />
+                                tokens={tokens.filter(t => t.address !== selectedTokenFrom?.address)}
+                                selectedToken={selectedTokenTo}
+                                setSelectedToken={onSetSelectedTokenTo}
+                            />
                         </div>
                         <div className='script-block__panel--row'>
                             <Field name="floatAmount"

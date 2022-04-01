@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { IBaseMMActionForm } from './actions-interfaces';
 import { Form, Field } from 'react-final-form';
-import { Token } from '../../../../data/tokens';
+import { IToken, Token } from '../../../../data/tokens';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../state';
-import { TokensModal } from "../../../tokens-modal";
+import { TokensModal } from "../shared/tokens-modal";
 import { ToggleButtonField } from '../shared/toggle-button';
 import { BaseMoneyMarketActionType } from '../../../../../../shared-definitions/scripts/mm-base-action-messages';
 
@@ -22,10 +22,16 @@ const tokenValidation = (value: string) => {
 
 export const MmBaseAction = ({ form, update }: { form: IBaseMMActionForm; update: (next: IBaseMMActionForm) => void; }) => {
     const tokens: Token[] = useSelector((state: RootState) => state.tokens.currentChainTokens);
+    const [selectedToken, setSelectedToken] = useState<IToken | undefined>();
 
-    const setFormToken = (value: string) => {
-        update({ ...form, tokenAddress: value });
-    }
+    useEffect(() => {
+        setSelectedToken(tokens[0]);
+    }, [tokens]);
+
+    useEffect(() => {
+        if (selectedToken)
+            update({ ...form, tokenAddress: selectedToken.address });
+    }, [selectedToken]);
 
     return (
         <Form
@@ -48,7 +54,9 @@ export const MmBaseAction = ({ form, update }: { form: IBaseMMActionForm; update
 
                             <TokensModal
                                 tokens={tokens}
-                                setFormToken={setFormToken} />
+                                selectedToken={selectedToken}
+                                setSelectedToken={setSelectedToken}
+                            />
 
                             <Field name="floatAmount"
                                 component="input"

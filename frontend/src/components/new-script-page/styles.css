@@ -207,3 +207,17 @@
     bottom: auto;
     margin-bottom: 3px;
 }
+
+.missing-img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-right: 8px;
+    border: solid 1px;
+    line-height: 1.7rem;
+    font-size: 1rem;
+}
+
+.missing-img::after {
+    content: "?";
+}

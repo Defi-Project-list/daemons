@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ITransferActionForm } from './actions-interfaces';
 import { Form, Field } from 'react-final-form';
 import { ethers } from 'ethers';
-import { Token } from '../../../../data/tokens';
+import { IToken, Token } from '../../../../data/tokens';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../state';
-import { TokensModal } from "../../../tokens-modal";
+import { TokensModal } from "../shared/tokens-modal";
 
 const amountValidation = (value: string) => {
     if (!value || value === '') return 'required';
@@ -21,10 +21,16 @@ const addressValidation = (value: string) => {
 
 export const TransferAction = ({ form, update }: { form: ITransferActionForm; update: (next: ITransferActionForm) => void; }) => {
     const tokens: Token[] = useSelector((state: RootState) => state.tokens.currentChainTokens);
+    const [selectedToken, setSelectedToken] = useState<IToken | undefined>();
 
-    const setFormToken = (value: string) => {
-        update({ ...form, tokenAddress: value });
-    }
+    useEffect(() => {
+        setSelectedToken(tokens[0]);
+    }, [tokens]);
+
+    useEffect(() => {
+        if (selectedToken)
+            update({ ...form, tokenAddress: selectedToken.address });
+    }, [selectedToken]);
 
     return (
         <Form
@@ -38,7 +44,9 @@ export const TransferAction = ({ form, update }: { form: ITransferActionForm; up
 
                             <TokensModal
                                 tokens={tokens}
-                                setFormToken={setFormToken} />
+                                selectedToken={selectedToken}
+                                setSelectedToken={setSelectedToken}
+                            />
 
                             <Field name="floatAmount"
                                 component="input"
