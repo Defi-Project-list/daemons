@@ -7,11 +7,6 @@ import { RootState } from '../../../../state';
 import { TokensModal } from "../shared/tokens-modal";
 
 
-const tokenValidation = (value: string) => {
-    if (!value || value === '') return 'required';
-    return undefined;
-};
-
 const valueValidation = (value: string) => {
     if (!value || value === '') return 'required';
     if (Number(value) <= 0) return 'required > 0';

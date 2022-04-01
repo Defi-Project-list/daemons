@@ -1,4 +1,4 @@
-import { BigNumber, Contract, utils } from 'ethers';
+import { BigNumber, utils } from 'ethers';
 import { Contracts } from '../../data/contracts';
 import { BaseScript } from '../../data/script/base-script';
 import { SwapScript } from '../../data/script/swap-script';
@@ -9,7 +9,6 @@ import { IMMBaseAction, domain as mmBaseDomain, types as mmBaseTypes } from '../
 import { IBaseMMActionForm, ISwapActionForm, ITransferActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
 import { INewScriptBundle } from './i-new-script-form';
 import { Token } from '../../data/tokens';
-import { getAbiFor } from '../../utils/get-abi';
 import { FrequencyConditionFactory } from '../../data/conditions-factories/frequency-condition-factory';
 import { BalanceConditionFactory } from '../../data/conditions-factories/balance-condition-factory';
 import { PriceConditionFactory } from '../../data/conditions-factories/price-condition-factory';
@@ -168,7 +167,9 @@ export class ScriptFactory {
         const followCondition = await FollowConditionFactory.fromForm(bundle.followCondition);
 
         const mmBaseActionForm = bundle.actionForm as IBaseMMActionForm;
-        const token = this.tokens.filter(token => token.address === mmBaseActionForm.tokenAddress)[0];
+        const moneyMarket = mmBaseActionForm.moneyMarket;
+        const token = moneyMarket.supportedTokens.filter(token => token.address === mmBaseActionForm.tokenAddress)[0];
+        const aToken = moneyMarket.aTokens[token.address];
 
         let amount: BigNumber;
         if (mmBaseActionForm.amountType === AmountType.Absolute) {
@@ -180,16 +181,15 @@ export class ScriptFactory {
             amount = BigNumber.from(mmBaseActionForm.floatAmount.toString());
         }
 
-        // TODO: add right aToken! (DAEM-156)
         return {
             scriptId: this.ethers.utils.hexlify(this.ethers.utils.randomBytes(32)),
             typeAmt: mmBaseActionForm.amountType,
             amount: amount,
             action: mmBaseActionForm.actionType,
             token: mmBaseActionForm.tokenAddress,
-            aToken: mmBaseActionForm.tokenAddress,  // <-- TODO: DAEM-156!!
+            aToken: aToken.address,
             user: await this.signer.getAddress(),
-            kontract: Contracts[this.chainId].AavePool,
+            kontract: moneyMarket.poolAddress,
             frequency: frequencyCondition,
             balance: balanceCondition,
             price: priceCondition,

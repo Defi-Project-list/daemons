@@ -6,14 +6,10 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../../state';
 import { TokensModal } from "../shared/tokens-modal";
 
+
 const amountValidation = (value: string) => {
     if (!value || value === '') return 'required';
     if (Number(value) <= 0) return 'required > 0';
-    return undefined;
-};
-
-const tokenValidation = (value: string) => {
-    if (!value || value === '') return 'required';
     return undefined;
 };
 
@@ -32,16 +28,16 @@ export const SwapAction = ({ form, update }: { form: ISwapActionForm; update: (n
     const onSetSelectedTokenFrom = (tokenFrom: IToken) => {
         if (tokenFrom.address !== selectedTokenTo?.address) {
             update({ ...form, tokenFromAddress: tokenFrom.address });
-            setSelectedTokenFrom(tokenFrom)
+            setSelectedTokenFrom(tokenFrom);
         }
-    }
+    };
     const onSetSelectedTokenTo = (tokenTo: IToken) => {
         if (tokenTo.address !== selectedTokenFrom?.address) {
             update({ ...form, tokenToAddress: tokenTo.address });
-            setSelectedTokenTo(tokenTo)
+            setSelectedTokenTo(tokenTo);
 
         }
-    }
+    };
 
     return (
         <Form

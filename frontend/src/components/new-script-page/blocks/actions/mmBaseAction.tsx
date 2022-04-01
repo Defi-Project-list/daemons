@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { IBaseMMActionForm } from './actions-interfaces';
 import { Form, Field } from 'react-final-form';
-import { IToken, Token } from '../../../../data/tokens';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../../state';
+import { IToken } from '../../../../data/tokens';
 import { TokensModal } from "../shared/tokens-modal";
 import { ToggleButtonField } from '../shared/toggle-button';
 import { BaseMoneyMarketActionType } from '../../../../../../shared-definitions/scripts/mm-base-action-messages';
@@ -15,13 +13,8 @@ const amountValidation = (value: string) => {
     return undefined;
 };
 
-const tokenValidation = (value: string) => {
-    if (!value || value === '') return 'required';
-    return undefined;
-};
-
 export const MmBaseAction = ({ form, update }: { form: IBaseMMActionForm; update: (next: IBaseMMActionForm) => void; }) => {
-    const tokens: Token[] = useSelector((state: RootState) => state.tokens.currentChainTokens);
+    const tokens = form.moneyMarket.supportedTokens;
     const [selectedToken, setSelectedToken] = useState<IToken | undefined>();
 
     useEffect(() => {

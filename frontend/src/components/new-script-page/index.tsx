@@ -24,8 +24,10 @@ import { BaseScript } from '../../data/script/base-script';
 import { Navigate } from 'react-router-dom';
 import { BaseMoneyMarketActionType } from '../../../../shared-definitions/scripts/mm-base-action-messages';
 import { MmBaseAction } from './blocks/actions/mmBaseAction';
+import { GetCurrentChain } from '../../data/chain-info';
 
 
+// TODO - use useSelector instead of this hot mess
 interface INewScriptsComponentsProps {
     addNewScript: (script: BaseScript) => any;
     walletConnected: boolean;
@@ -36,10 +38,10 @@ interface INewScriptsComponentsProps {
     tokens: Token[];
 }
 
+// TODO - Move these guys inside the class
 const noActionForm: INoActionForm = { action: ScriptAction.None, valid: false };
 const transferActionForm: ITransferActionForm = { action: ScriptAction.Transfer, valid: false, tokenAddress: '', destinationAddress: '', amountType: AmountType.Absolute, floatAmount: 0 };
 const swapActionForm: ISwapActionForm = { action: ScriptAction.Swap, valid: false, tokenFromAddress: '', tokenToAddress: '', amountType: AmountType.Absolute, floatAmount: 0 };
-const mmBaseActionForm: IBaseMMActionForm = { action: ScriptAction.MmBase, valid: false, tokenAddress: '', amountType: AmountType.Absolute, floatAmount: 0, actionType: BaseMoneyMarketActionType.Deposit };
 
 const buttonDisabled = (state: INewScriptBundle) => {
     const actionIsInvalid = !state.actionForm.valid;
@@ -49,6 +51,9 @@ const buttonDisabled = (state: INewScriptBundle) => {
 
 class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle> {
 
+    private aaveBaseActionForm: IBaseMMActionForm = { action: ScriptAction.MmBase, valid: false, tokenAddress: '', amountType: AmountType.Absolute, floatAmount: 0, actionType: BaseMoneyMarketActionType.Deposit, moneyMarket: GetCurrentChain(this.props.chainId!).moneyMarket };
+
+    // TODO - use useState instead of this
     state: INewScriptBundle = {
         frequencyCondition: { valid: true, enabled: false, ticks: 1, unit: FrequencyUnits.Hours, startNow: true },
         balanceCondition: { valid: false, enabled: false, comparison: ComparisonType.GreaterThan, floatAmount: 0 },
@@ -74,7 +79,7 @@ class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle>
     private updateTransferAction = (next: ITransferActionForm) => { this.setState({ actionForm: next }); };
     private setSwapActionAsSelected = () => { if (this.state.actionForm.action !== ScriptAction.Swap) this.setState({ actionForm: swapActionForm }); };
     private updateSwapAction = (next: ISwapActionForm) => { this.setState({ actionForm: next }); };
-    private setMmBaseActionAsSelected = () => { if (this.state.actionForm.action !== ScriptAction.MmBase) this.setState({ actionForm: mmBaseActionForm }); };
+    private setMmBaseActionAsSelected = () => { if (this.state.actionForm.action !== ScriptAction.MmBase) this.setState({ actionForm: this.aaveBaseActionForm }); };
     private updateMmBaseAction = (next: IBaseMMActionForm) => { this.setState({ actionForm: next }); };
 
 
@@ -165,7 +170,7 @@ class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle>
                     </ActionBlock>
 
                     <ActionBlock
-                        title="Money Market - Base"
+                        title="Aave - Base"
                         enabled={this.state.actionForm.action === ScriptAction.MmBase}
                         toggleEnabled={this.setMmBaseActionAsSelected}
                     >
@@ -186,6 +191,7 @@ class NewScripts extends Component<INewScriptsComponentsProps, INewScriptBundle>
     }
 }
 
+// TODO - get rid with useSelector
 const mapStateToProps: (state: RootState) => INewScriptsComponentsProps = state => ({
     addNewScript: addNewScript,
     walletConnected: state.wallet.connected,
@@ -196,4 +202,5 @@ const mapStateToProps: (state: RootState) => INewScriptsComponentsProps = state 
     tokens: state.tokens.currentChainTokens,
 });
 
+// TODO - get rid with useSelector
 export default connect(mapStateToProps, { addNewScript: addNewScript })(NewScripts);

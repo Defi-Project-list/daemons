@@ -9,13 +9,9 @@ export interface IToken {
 
 export type Token = IToken;
 
-export type TokenWithAToken = {
-    token: Token;
-    aToken: Token;
-};
-
-export type MarketMaker = {
+export type MoneyMarket = {
     name: string;
     poolAddress: string;
-    supportedTokens: TokenWithAToken[];
+    supportedTokens: Token[];
+    aTokens: { [tokenAddress: string]: Token; };
 };

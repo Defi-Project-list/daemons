@@ -1,5 +1,5 @@
-import { Token } from './tokens';
-import { kovanTokens } from './tokens/tokens-kovan';
+import { MoneyMarket, Token } from './tokens';
+import { kovanAaveMM, kovanTokens } from './tokens/tokens-kovan';
 
 interface IChainInfo {
     name: string;
@@ -8,6 +8,7 @@ interface IChainInfo {
     coinSymbol: string;
     explorerTxUrl: string;
     tokens: Token[];
+    moneyMarket: MoneyMarket;
 }
 
 const unsupportedChain: IChainInfo = {
@@ -17,6 +18,7 @@ const unsupportedChain: IChainInfo = {
     coinSymbol: 'ETH',
     explorerTxUrl: 'https://kovan.etherscan.io/tx/',
     tokens: [],
+    moneyMarket: { aTokens: {}, name: "Unsupported", supportedTokens: [], poolAddress: '' },
 };
 
 export const ChainInfo: { [chainId: string]: IChainInfo; } = {
@@ -27,6 +29,7 @@ export const ChainInfo: { [chainId: string]: IChainInfo; } = {
         coinSymbol: 'ETH',
         explorerTxUrl: 'https://kovan.etherscan.io/tx/',
         tokens: kovanTokens,
+        moneyMarket: kovanAaveMM,
     },
 };
 

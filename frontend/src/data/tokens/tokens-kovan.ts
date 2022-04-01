@@ -1,4 +1,4 @@
-import { Token } from '.';
+import { MoneyMarket, Token } from '.';
 
 const WETH = {
     name: "Wrapped Ether",
@@ -110,7 +110,7 @@ const LINK = {
     hasPriceFeed: false,
 };
 
-const AaveDAI = {
+const aaveDAI = {
     name: "DAI Stablecoin",
     symbol: "AaveDAI",
     address: "0x58Cd851c28dF05Edc7F018B533C0257DE57673f7",
@@ -141,5 +141,15 @@ const aWETH = {
 };
 
 export const kovanTokens: Token[] = [
-    WETH, wBTC, USDC, USDT, DAI, MANA, MKR, BAT, LINK, BUSD, UNI, AaveDAI
+    WETH, wBTC, USDC, USDT, DAI, MANA, MKR, BAT, LINK, BUSD, UNI, aaveDAI
 ];
+
+export const kovanAaveMM: MoneyMarket = {
+    name: "AAVE",
+    poolAddress: "0xE0fBa4Fc209b4948668006B2bE61711b7f465bAe",
+    supportedTokens: [aaveDAI, WETH],
+    aTokens: {
+        "0x58Cd851c28dF05Edc7F018B533C0257DE57673f7": aDAI,
+        "0xd0a1e359811322d97991e03f863a0c30c2cf029c": aWETH,
+    }
+};

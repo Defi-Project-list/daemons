@@ -1,5 +1,6 @@
 import { AmountType } from '../../../../../../shared-definitions/scripts/condition-messages';
 import { BaseMoneyMarketActionType } from '../../../../../../shared-definitions/scripts/mm-base-action-messages';
+import { MoneyMarket } from '../../../../data/tokens';
 import { INewScriptForm } from '../../i-new-script-form';
 
 export enum ScriptAction {
@@ -34,6 +35,7 @@ export interface IBaseMMActionForm extends IScriptActionForm {
     actionType: BaseMoneyMarketActionType;
     amountType: AmountType;
     floatAmount: number;
+    moneyMarket: MoneyMarket;
 }
 
 export interface IDAOActionForm extends IScriptActionForm {
