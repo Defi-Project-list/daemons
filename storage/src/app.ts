@@ -11,6 +11,7 @@ dotenv.config();
 
 if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET was not set');
 if (!process.env.ADMIN_KEY) throw new Error('ADMIN_KEY was not set');
+if (!process.env.MONGO_DB_CONN_STRING) throw new Error('MONGO_DB_CONN_STRING was not set');
 
 export const app = express();
 

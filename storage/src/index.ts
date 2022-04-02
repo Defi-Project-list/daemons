@@ -3,7 +3,7 @@ import { app } from './app';
 
 
 mongoose
-    .connect("mongodb://127.0.0.1:27017/daemons")
+    .connect(process.env.MONGO_DB_CONN_STRING!)
     .then(() => {
         app.listen(5000, () => {
             console.log("Storage has started!");
