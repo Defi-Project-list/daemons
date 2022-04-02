@@ -12,5 +12,4 @@ export interface INewScriptBundle {
     repetitionsCondition: IRepetitionsConditionForm;
     followCondition: IFollowConditionForm;
     actionForm: IScriptActionForm;
-    redirect: boolean;
 }
