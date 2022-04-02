@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers';
-import { IFrequencyCondition } from '../../../../shared-definitions/scripts/condition-messages';
+import { IFrequencyCondition } from '@daemons-fi/shared-definitions';
 import { IFrequencyConditionForm } from '../../components/new-script-page/blocks/conditions/conditions-interfaces';
 
 

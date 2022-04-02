@@ -1,8 +1,8 @@
 import { utils } from 'ethers';
 import express, { Request, Response } from 'express';
-import { ISignedMMBaseAction } from '../../../shared-definitions/scripts/mm-base-action-messages';
-import { ISignedSwapAction } from '../../../shared-definitions/scripts/swap-action-messages';
-import { ISignedTransferAction } from '../../../shared-definitions/scripts/transfer-action-messages';
+import { ISignedMMBaseAction } from '@daemons-fi/shared-definitions';
+import { ISignedSwapAction } from '@daemons-fi/shared-definitions';
+import { ISignedTransferAction } from '@daemons-fi/shared-definitions';
 import { authenticate } from '../middlewares/authentication';
 import { SwapScript } from '../models/scripts/swap-script';
 import { TransferScript } from '../models/scripts/transfer-script';

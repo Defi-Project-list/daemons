@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 import { BigNumber, utils } from 'ethers';
 import faker from '@faker-js/faker';
 import { transactionDocumentFactory } from '../../test-factories/transactions-factories';
-import { ITransaction } from '../../../../shared-definitions/transactions/transaction';
+import { ITransaction } from '@daemons-fi/shared-definitions';
 
 
 describe('GET api/transactions/:chainId/:userAddress', () => {

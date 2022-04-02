@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai';
 import { ethers, utils } from 'ethers';
 import itParam from 'mocha-param';
-import { ComparisonType, IBalanceCondition } from '../../../../../shared-definitions/scripts/condition-messages';
+import { ComparisonType, IBalanceCondition } from '@daemons-fi/shared-definitions';
 import { IBalanceConditionForm } from '../../../components/new-script-page/blocks/conditions/conditions-interfaces';
 import { ZeroAddress } from '../../chain-info';
 import { Token } from '../../tokens';

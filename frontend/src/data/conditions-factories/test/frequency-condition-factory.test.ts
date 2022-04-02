@@ -1,6 +1,6 @@
 import { assert, expect } from 'chai';
 import { BigNumber } from 'ethers';
-import { IFrequencyCondition } from '../../../../../shared-definitions/scripts/condition-messages';
+import { IFrequencyCondition } from '@daemons-fi/shared-definitions';
 import { FrequencyUnits, IFrequencyConditionForm } from '../../../components/new-script-page/blocks/conditions/conditions-interfaces';
 import { FrequencyConditionFactory } from '../frequency-condition-factory';
 import itParam from 'mocha-param';

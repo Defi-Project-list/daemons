@@ -1,5 +1,5 @@
 import { BigNumber, utils } from 'ethers';
-import { IPriceCondition } from '../../../../shared-definitions/scripts/condition-messages';
+import { IPriceCondition } from '@daemons-fi/shared-definitions';
 import { IPriceConditionForm } from '../../components/new-script-page/blocks/conditions/conditions-interfaces';
 import { ZeroAddress } from '../chain-info';
 import { Token } from '../tokens';

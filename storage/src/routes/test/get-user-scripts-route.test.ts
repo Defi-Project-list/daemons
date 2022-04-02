@@ -4,7 +4,7 @@ import { app } from '../../app';
 import { mmBaseScriptDocumentFactory, swapScriptDocumentFactory, transferScriptDocumentFactory } from '../../test-factories/script-factories';
 import { expect } from 'chai';
 import jwt from 'jsonwebtoken';
-import { ISignedSwapAction } from '../../../../shared-definitions/scripts/swap-action-messages';
+import { ISignedSwapAction } from '@daemons-fi/shared-definitions';
 import { BigNumber, utils } from 'ethers';
 import faker from '@faker-js/faker';
 

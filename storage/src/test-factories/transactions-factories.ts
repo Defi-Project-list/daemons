@@ -1,5 +1,5 @@
 import { BigNumber, utils } from 'ethers';
-import { ITransaction, TransactionOutcome } from '../../../shared-definitions/transactions/transaction';
+import { ITransaction, TransactionOutcome } from '@daemons-fi/shared-definitions';
 import { Transaction } from '../models/transaction';
 import faker from '@faker-js/faker';
 

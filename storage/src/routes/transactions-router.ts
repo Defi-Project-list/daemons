@@ -1,6 +1,6 @@
 import { utils } from 'ethers';
 import express, { Request, Response } from 'express';
-import { ITransaction, TransactionOutcome } from '../../../shared-definitions/transactions/transaction';
+import { ITransaction, TransactionOutcome } from '@daemons-fi/shared-definitions';
 import { authenticate } from '../middlewares/authentication';
 import { Transaction } from '../models/transaction';
 

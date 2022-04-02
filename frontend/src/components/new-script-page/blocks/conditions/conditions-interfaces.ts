@@ -1,5 +1,4 @@
-import { ComparisonType } from '../../../../../../shared-definitions/scripts/condition-messages';
-import { BaseScript } from '../../../../data/script/base-script';
+import { ComparisonType } from '@daemons-fi/shared-definitions';
 import { INewScriptForm } from '../../i-new-script-form';
 
 interface IScriptConditionForm extends INewScriptForm {

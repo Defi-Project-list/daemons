@@ -1,6 +1,6 @@
 import { utils } from 'ethers';
 import mongoose from 'mongoose';
-import { ISignedMMBaseAction } from '../../../../shared-definitions/scripts/mm-base-action-messages';
+import { ISignedMMBaseAction } from '@daemons-fi/shared-definitions';
 import { balanceCondition, followCondition, frequencyCondition, priceCondition, repetitionsCondition } from './script-conditions';
 import { removeIfEmpty, stringifyBigNumber, truncateAndEscapeText } from '../utils';
 

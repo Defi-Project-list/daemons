@@ -2,8 +2,8 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from "chai";
 import { BigNumber, Contract } from 'ethers';
 import { ethers } from 'hardhat';
-import { AmountType, ComparisonType } from '../../shared-definitions/scripts/condition-messages';
-import { domain, IMMAdvancedAction, AdvancedMoneyMarketActionType, types, InterestRateMode } from "../../shared-definitions/scripts/mm-adv-action-messages";
+import { ComparisonType } from '@daemons-fi/shared-definitions';
+import { mmAdvDomain, IMMAdvancedAction, AdvancedMoneyMarketActionType, mmAdvTypes, InterestRateMode } from "@daemons-fi/shared-definitions";
 
 describe("ScriptExecutor - Money Market Advanced", function () {
 
@@ -131,7 +131,7 @@ describe("ScriptExecutor - Money Market Advanced", function () {
         message.follow.executor = executor.address; // following itself, it'll never be executed when condition is enabled
 
         // Sign message
-        const signature = await owner._signTypedData(domain, types, message);
+        const signature = await owner._signTypedData(mmAdvDomain, mmAdvTypes, message);
         const split = ethers.utils.splitSignature(signature);
         [sigR, sigS, sigV] = [split.r, split.s, split.v];
 

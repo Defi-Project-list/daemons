@@ -7,7 +7,7 @@ import { FrequencyConditionFactory } from '../conditions-factories/frequency-con
 import { PriceConditionFactory } from '../conditions-factories/price-condition-factory';
 import { RepetitionsConditionFactory } from '../conditions-factories/repetitions-condition-factory';
 import { Token } from '../tokens';
-import { BaseMoneyMarketActionType, IMMBaseAction } from '../../../../shared-definitions/scripts/mm-base-action-messages';
+import { BaseMoneyMarketActionType, IMMBaseAction } from '@daemons-fi/shared-definitions';
 
 export class MmBaseScript extends BaseScript {
     public constructor(private readonly message: IMMBaseAction, signature: string, private readonly description: string) {

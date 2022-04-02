@@ -1,4 +1,4 @@
-import { ITransaction } from '../../../../shared-definitions/transactions/transaction';
+import { ITransaction } from '@daemons-fi/shared-definitions';
 import { ActionType } from "../action-types/index";
 
 export interface IFetchTransactionsAction {

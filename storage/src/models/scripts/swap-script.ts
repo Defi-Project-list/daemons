@@ -1,6 +1,6 @@
 import { utils } from 'ethers';
 import mongoose from 'mongoose';
-import { ISignedSwapAction } from '../../../../shared-definitions/scripts/swap-action-messages';
+import { ISignedSwapAction } from '@daemons-fi/shared-definitions';
 import { balanceCondition, followCondition, frequencyCondition, priceCondition, repetitionsCondition } from './script-conditions';
 import { removeIfEmpty, stringifyBigNumber, truncateAndEscapeText } from '../utils';
 

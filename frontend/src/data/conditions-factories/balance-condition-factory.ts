@@ -1,5 +1,5 @@
 import { BigNumber, utils } from 'ethers';
-import { IBalanceCondition } from '../../../../shared-definitions/scripts/condition-messages';
+import { IBalanceCondition } from '@daemons-fi/shared-definitions';
 import { IBalanceConditionForm } from '../../components/new-script-page/blocks/conditions/conditions-interfaces';
 import { ZeroAddress } from '../chain-info';
 import { Token } from '../tokens';

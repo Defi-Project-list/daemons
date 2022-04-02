@@ -5,7 +5,7 @@ import { connectToTestDb, closeTestDb, clearTestDb } from '../../test/test-db-ha
 import jwt from 'jsonwebtoken';
 import { transactionDocumentFactory } from '../../test-factories/transactions-factories';
 import { Transaction } from '../../models/transaction';
-import { TransactionOutcome } from '../../../../shared-definitions/transactions/transaction';
+import { TransactionOutcome } from '@daemons-fi/shared-definitions';
 
 
 describe('POST api/transactions/:hash/update', () => {

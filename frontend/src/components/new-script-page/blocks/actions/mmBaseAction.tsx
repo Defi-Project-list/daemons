@@ -4,7 +4,7 @@ import { Form, Field } from 'react-final-form';
 import { IToken } from '../../../../data/tokens';
 import { TokensModal } from "../shared/tokens-modal";
 import { ToggleButtonField } from '../shared/toggle-button';
-import { BaseMoneyMarketActionType } from '../../../../../../shared-definitions/scripts/mm-base-action-messages';
+import { BaseMoneyMarketActionType } from '@daemons-fi/shared-definitions';
 
 
 const amountValidation = (value: string) => {

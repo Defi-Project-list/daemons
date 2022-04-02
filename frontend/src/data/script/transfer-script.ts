@@ -1,5 +1,5 @@
 import { BigNumber, Contract } from 'ethers';
-import { ITransferAction } from '../../../../shared-definitions/scripts/transfer-action-messages';
+import { ITransferAction } from '@daemons-fi/shared-definitions';
 import { getAbiFor } from '../../utils/get-abi';
 import { BaseScript } from './base-script';
 import { BalanceConditionFactory } from '../conditions-factories/balance-condition-factory';

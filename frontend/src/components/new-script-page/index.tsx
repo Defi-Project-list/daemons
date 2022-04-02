@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AmountType, ComparisonType } from '../../../../shared-definitions/scripts/condition-messages';
+import { AmountType, ComparisonType } from '@daemons-fi/shared-definitions';
 import { INewScriptBundle } from './i-new-script-form';
 import { ScriptFactory } from './script-factory';
 import { RootState } from '../../state';
@@ -21,7 +21,7 @@ import './styles.css';
 import { addNewScript } from '../../state/action-creators/script-action-creators';
 import { IToken } from '../../data/tokens';
 import { Navigate } from 'react-router-dom';
-import { BaseMoneyMarketActionType } from '../../../../shared-definitions/scripts/mm-base-action-messages';
+import { BaseMoneyMarketActionType } from '@daemons-fi/shared-definitions';
 import { MmBaseAction } from './blocks/actions/mmBaseAction';
 import { GetCurrentChain } from '../../data/chain-info';
 

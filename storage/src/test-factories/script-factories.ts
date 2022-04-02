@@ -1,11 +1,11 @@
 import { BigNumber, utils } from 'ethers';
-import { AmountType, ComparisonType, IBalanceCondition, IFollowCondition, IFrequencyCondition, IMaxRepetitionsCondition, IPriceCondition } from '../../../shared-definitions/scripts/condition-messages';
-import { ISignedSwapAction } from '../../../shared-definitions/scripts/swap-action-messages';
-import { ISignedTransferAction } from '../../../shared-definitions/scripts/transfer-action-messages';
+import { AmountType, ComparisonType, IBalanceCondition, IFollowCondition, IFrequencyCondition, IMaxRepetitionsCondition, IPriceCondition } from '@daemons-fi/shared-definitions';
+import { ISignedSwapAction } from '@daemons-fi/shared-definitions';
+import { ISignedTransferAction } from '@daemons-fi/shared-definitions';
 import { SwapScript } from '../models/scripts/swap-script';
 import { TransferScript } from '../models/scripts/transfer-script';
 import faker from '@faker-js/faker';
-import { BaseMoneyMarketActionType, ISignedMMBaseAction } from '../../../shared-definitions/scripts/mm-base-action-messages';
+import { BaseMoneyMarketActionType, ISignedMMBaseAction } from '@daemons-fi/shared-definitions';
 import { MmBaseScript } from '../models/scripts/mm-base-script';
 
 const randomEthAmount = () => utils.parseEther(faker.datatype.number({ min: 0.01, max: 10, precision: 0.01 }).toString());

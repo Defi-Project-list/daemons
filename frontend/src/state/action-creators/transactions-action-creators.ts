@@ -1,5 +1,5 @@
 import { Dispatch } from 'redux';
-import { ITransaction } from '../../../../shared-definitions/transactions/transaction';
+import { ITransaction } from '@daemons-fi/shared-definitions';
 import { StorageProxy } from '../../data/storage-proxy';
 import { ActionType } from '../action-types';
 import { TransactionAction } from '../actions/transactions-actions';

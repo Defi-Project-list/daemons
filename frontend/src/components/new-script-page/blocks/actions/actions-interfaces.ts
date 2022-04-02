@@ -1,5 +1,5 @@
-import { AmountType } from '../../../../../../shared-definitions/scripts/condition-messages';
-import { BaseMoneyMarketActionType } from '../../../../../../shared-definitions/scripts/mm-base-action-messages';
+import { AmountType } from '@daemons-fi/shared-definitions';
+import { BaseMoneyMarketActionType } from '@daemons-fi/shared-definitions';
 import { MoneyMarket } from '../../../../data/tokens';
 import { INewScriptForm } from '../../i-new-script-form';
 

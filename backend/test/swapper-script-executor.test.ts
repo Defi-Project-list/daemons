@@ -2,8 +2,8 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from "chai";
 import { BigNumber, Contract } from 'ethers';
 import { ethers } from 'hardhat';
-import { AmountType, ComparisonType } from '../../shared-definitions/scripts/condition-messages';
-import { domain, ISwapAction, types } from "../../shared-definitions/scripts/swap-action-messages";
+import { AmountType, ComparisonType } from '@daemons-fi/shared-definitions';
+import { swapDomain, ISwapAction, swapTypes } from "@daemons-fi/shared-definitions";
 
 describe("ScriptExecutor - Swapper", function () {
 
@@ -132,7 +132,7 @@ describe("ScriptExecutor - Swapper", function () {
         message.follow.executor = executor.address; // following itself, it'll never be executed when condition is enabled
 
         // Sign message
-        const signature = await owner._signTypedData(domain, types, message);
+        const signature = await owner._signTypedData(swapDomain, swapTypes, message);
         const split = ethers.utils.splitSignature(signature);
         [sigR, sigS, sigV] = [split.r, split.s, split.v];
 

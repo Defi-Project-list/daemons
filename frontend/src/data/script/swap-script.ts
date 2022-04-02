@@ -1,5 +1,5 @@
 import { BigNumber, Contract } from 'ethers';
-import { ISwapAction } from '../../../../shared-definitions/scripts/swap-action-messages';
+import { ISwapAction } from '@daemons-fi/shared-definitions';
 import { getAbiFor } from '../../utils/get-abi';
 import { BalanceConditionFactory } from '../conditions-factories/balance-condition-factory';
 import { FollowConditionFactory } from '../conditions-factories/follow-condition-factory';

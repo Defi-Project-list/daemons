@@ -10,10 +10,5 @@
   },
   "include": ["./test", "./src", "./scripts"],
   "exclude": [ "node_modules"],
-  "files": ["./hardhat.config.ts"],
-  "references": [
-      {
-         "path": "../shared-definitions/tsconfig.json"
-      }
-   ]
+  "files": ["./hardhat.config.ts"]
 }

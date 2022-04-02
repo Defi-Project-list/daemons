@@ -1,5 +1,5 @@
 import { BaseScript } from '../script/base-script';
-import { ITransaction, TransactionOutcome } from '../../../../shared-definitions/transactions/transaction';
+import { ITransaction, TransactionOutcome } from '@daemons-fi/shared-definitions';
 import { TransactionResponse, TransactionReceipt } from '@ethersproject/abstract-provider';
 import { utils } from 'ethers';
 import { storageAddress } from '.';

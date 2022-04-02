@@ -3,9 +3,9 @@ import { Contracts } from '../../data/contracts';
 import { BaseScript } from '../../data/script/base-script';
 import { SwapScript } from '../../data/script/swap-script';
 import { TransferScript } from '../../data/script/transfer-script';
-import { ISwapAction, domain as swapDomain, types as swapTypes } from '../../../../shared-definitions/scripts/swap-action-messages';
-import { ITransferAction, domain as transferDomain, types as transferTypes } from '../../../../shared-definitions/scripts/transfer-action-messages';
-import { IMMBaseAction, domain as mmBaseDomain, types as mmBaseTypes } from '../../../../shared-definitions/scripts/mm-base-action-messages';
+import { ISwapAction, swapDomain, swapTypes } from '@daemons-fi/shared-definitions';
+import { ITransferAction, transferDomain, transferTypes } from '@daemons-fi/shared-definitions';
+import { IMMBaseAction, mmBaseDomain, mmBaseTypes } from '@daemons-fi/shared-definitions';
 import { IBaseMMActionForm, ISwapActionForm, ITransferActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
 import { INewScriptBundle } from './i-new-script-form';
 import { Token } from '../../data/tokens';
@@ -14,7 +14,7 @@ import { BalanceConditionFactory } from '../../data/conditions-factories/balance
 import { PriceConditionFactory } from '../../data/conditions-factories/price-condition-factory';
 import { RepetitionsConditionFactory } from '../../data/conditions-factories/repetitions-condition-factory';
 import { FollowConditionFactory } from '../../data/conditions-factories/follow-condition-factory';
-import { AmountType } from '../../../../shared-definitions/scripts/condition-messages';
+import { AmountType } from '@daemons-fi/shared-definitions';
 import { MmBaseScript } from '../../data/script/mm-base-script';
 
 type ScriptDefinition = ISwapAction | ITransferAction | IMMBaseAction;

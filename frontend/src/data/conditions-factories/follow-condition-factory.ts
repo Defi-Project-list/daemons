@@ -1,5 +1,5 @@
 import { BigNumber, Contract } from 'ethers';
-import { IFollowCondition } from '../../../../shared-definitions/scripts/condition-messages';
+import { IFollowCondition } from '@daemons-fi/shared-definitions';
 import { IFollowConditionForm } from '../../components/new-script-page/blocks/conditions/conditions-interfaces';
 import { getAbiFor } from '../../utils/get-abi';
 import { ZeroAddress, ZeroId } from '../chain-info';

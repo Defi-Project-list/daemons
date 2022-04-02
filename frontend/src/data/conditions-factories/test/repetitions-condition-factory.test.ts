@@ -1,6 +1,6 @@
 import { assert, expect } from 'chai';
 import { BigNumber } from 'ethers';
-import { IMaxRepetitionsCondition } from '../../../../../shared-definitions/scripts/condition-messages';
+import { IMaxRepetitionsCondition } from '@daemons-fi/shared-definitions';
 import { IRepetitionsConditionForm } from '../../../components/new-script-page/blocks/conditions/conditions-interfaces';
 import { RepetitionsConditionFactory } from '../repetitions-condition-factory';
 
