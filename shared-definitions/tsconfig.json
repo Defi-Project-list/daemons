@@ -6,13 +6,13 @@
         "esModuleInterop": true,
         "declaration": true,
         "declarationMap": true,
-        "rootDir": ".",
+        "rootDir": "./src",
+        "outDir": "./build",
         "composite": true,
         "moduleResolution": "node",
         "lib": [ "dom", "esnext"],
         "sourceMap": true
     },
-    "exclude": [ "node_modules"],
-    "include": ["./src", "./global.d.ts"],
-    "references": []
+    "exclude": [ "node_modules", "./build"],
+    "include": [ "./src" ]
   }

@@ -45,6 +45,13 @@ Currently all swaps go through the same AMM, but in the future the user will hav
 
 Sends a certain amount of tokens to the specified address.
 
+### MM Base
+
+Allows the deposit/withdraw actions for an Aave-compatible Money Market.
+
+### MM Adv
+
+Allows the borrow/repay actions for an Aave-compatible Money Market.
 
 ## NOTE:
 

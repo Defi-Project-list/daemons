@@ -42,11 +42,11 @@ const Swap = [
     { name: "follow", type: "Follow" },                       // condition: follow script
 ];
 
-export const domain = {
+export const swapDomain = {
     name: "Daemons-Swap-v01"
 };
 
-export const types = {
+export const swapTypes = {
     Frequency,
     Balance,
     Swap,

@@ -42,11 +42,11 @@ const Transfer = [
     { name: "follow", type: "Follow" },                       // condition: after script
 ];
 
-export const domain = {
+export const transferDomain = {
     name: "Daemons-Transfer-v01"
 };
 
-export const types = {
+export const transferTypes = {
     Follow,
     Frequency,
     Balance,
