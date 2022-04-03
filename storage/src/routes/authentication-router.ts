@@ -52,6 +52,6 @@ authenticationRouter.post('/login', async (req: Request, res: Response) => {
 
     // generate JWT and send back
     const authToken = jwt.sign({ userAddress }, process.env.JWT_SECRET as string, { expiresIn: '2592000s' });
-    res.cookie('token', authToken, { httpOnly: true, secure: true });
+    res.cookie('token', authToken, { httpOnly: true, secure: true, sameSite: "none" });
     return res.send();
 });
