@@ -1,6 +1,7 @@
 const prod = process.env.NODE_ENV === 'production';
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
@@ -38,9 +39,8 @@ module.exports = {
     },
     devtool: prod ? undefined : 'source-map',
     plugins: [
-        new HtmlWebpackPlugin({
-            template: 'index.html',
-        }),
+        new HtmlWebpackPlugin({ template: 'index.html' }),
+        new CopyWebpackPlugin({ patterns: [{ from: "public" }] }),
         new MiniCssExtractPlugin(),
     ],
 };
