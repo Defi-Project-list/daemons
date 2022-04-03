@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha ./**/*test.ts",
-    "start": "webpack serve --port 3000",
-    "build": "NODE_ENV=production webpack"
+    "start": "echo started?",
+    "dev": "webpack serve --port 3000",
+    "heroku-postbuild": "NODE_ENV=production webpack"
   },
   "author": "Daemons Finance",
   "license": "ISC",

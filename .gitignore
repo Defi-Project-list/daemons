@@ -8,3 +8,6 @@ typechain
 cache
 artifacts
 typechain-types/
+
+#Compiled filed
+dist/
