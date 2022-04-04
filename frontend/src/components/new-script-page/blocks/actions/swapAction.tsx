@@ -20,8 +20,15 @@ export const SwapAction = ({ form, update }: { form: ISwapActionForm; update: (n
 
     useEffect(() => {
         if (tokens?.length > 2) {
-            setSelectedTokenFrom(tokens[0]);
-            setSelectedTokenTo(tokens[1]);
+            const initialTokenFrom = tokens[0];
+            const initialTokenTo = tokens[1];
+            setSelectedTokenFrom(initialTokenFrom);
+            setSelectedTokenTo(initialTokenTo);
+            update({
+                ...form,
+                tokenFromAddress: initialTokenFrom.address,
+                tokenToAddress: initialTokenTo.address
+            });
         }
     }, [tokens]);
 
@@ -35,7 +42,6 @@ export const SwapAction = ({ form, update }: { form: ISwapActionForm; update: (n
         if (tokenTo.address !== selectedTokenFrom?.address) {
             update({ ...form, tokenToAddress: tokenTo.address });
             setSelectedTokenTo(tokenTo);
-
         }
     };
 
