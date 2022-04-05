@@ -14,7 +14,7 @@ interface IChainInfo {
 const unsupportedChain: IChainInfo = {
     name: "Unsupported",
     hex: "0x00",
-    iconPath: "",
+    iconPath: "/icons/unknown.png",
     coinSymbol: 'ETH',
     explorerTxUrl: 'https://kovan.etherscan.io/tx/',
     tokens: [],
