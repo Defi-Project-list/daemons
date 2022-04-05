@@ -43,7 +43,7 @@ export const MmBaseAction = ({ form, update }: { form: IBaseMMActionForm; update
                             />
                         </div>
 
-                        <div className="script-block__panel--row">
+                        <div className="script-block__panel--two-columns">
 
                             <TokensModal
                                 tokens={tokens}
@@ -80,7 +80,6 @@ export const MmBaseAction = ({ form, update }: { form: IBaseMMActionForm; update
                             TODO
                             <ul>
                                 <li>Add amount type toggle (absolute/percentage)</li>
-                                <li>Only display tokens with aToken associated</li>
                             </ul>
                         </div >
                     </div >

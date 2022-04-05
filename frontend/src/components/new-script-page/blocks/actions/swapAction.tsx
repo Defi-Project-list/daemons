@@ -53,7 +53,7 @@ export const SwapAction = ({ form, update }: { form: ISwapActionForm; update: (n
                 <form onSubmit={handleSubmit}>
 
                     <div className='swap-block'>
-                        <div className='script-block__panel--row'>
+                        <div className='script-block__panel--two-columns'>
                             <TokensModal
                                 tokens={tokens.filter(t => t.address !== selectedTokenTo?.address)}
                                 selectedToken={selectedTokenFrom}

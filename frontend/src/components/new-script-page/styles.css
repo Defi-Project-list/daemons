@@ -50,11 +50,22 @@
     font-weight: bold;
 }
 
+.script-block__panel--two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 10px;
+}
+
+.script-block__panel--three-columns {
+    display: grid;
+    grid-template-columns: 1fr 0.4fr 1fr;
+    column-gap: 10px;
+}
+
 .script-block__panel--row {
     display: flex;
     flex-direction: row;
     column-gap: 10px;
-    margin-bottom: 5px;
 }
 
 .script-block__field--error {
@@ -82,8 +93,7 @@
     width: 50px;
 }
 
-.balance-block .balance-block__amount {
-    width: 45%;
+.balance-block__amount {
     text-align: center;
 }
 
@@ -99,36 +109,46 @@
     text-align: right;
 }
 
-.frequency-block .frequency-block__ticks {
+.frequency-block__ticks {
     width: 50%;
     text-align: center;
 }
 
-.frequency-block .frequency-block__time-unit {
+.frequency-block__time-unit {
     width: 35%;
     padding: 5px;
 }
 
-.frequency-block .frequency-block__starting-point {
+.frequency-block__starting-point {
     margin: auto 3px;
 }
 
 
 /* Price Block */
 
-.price-block .price-block__value {
-    width: 45%;
+.price-block__value {
+    width: 100%;
     text-align: center;
+    box-sizing: border-box;
 }
 
 
 /* Transfer Block */
 
-.transfer-block .balance-block__amount {
-    width: 50%;
+
+.transfer-block__amount {
     text-align: center;
 }
 
+.transfer-block__slider-container {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    align-items: center;
+}
+
+.transfer-block__slider-value {
+    text-align: center;
+}
 
 /* Repetitions Block */
 
@@ -139,14 +159,16 @@
 
 /* Shared */
 
-.balance-block .balance-block__token-address,
-.price-block .price-block__token-address {
-    width: 35%;
+.swap-block,
+.transfer-block {
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
 }
 
-.balance-block .balance-block__comparison,
-.price-block .price-block__comparison {
-    width: 20%;
+.balance-block__token-address,
+.price-block__token-address {
+    width: 35%;
 }
 
 .script-block__panel pre {
@@ -154,29 +176,27 @@
     word-wrap: break-word;
 }
 
-.farms-block .farms-block__protocol,
-.farms-block .farms-block__action {
+.farms-block__protocol,
+.farms-block__action {
     width: 50%;
 }
 
-.transfer-block .transfer-block__token,
-.farms-block .farms-block__pool,
-.dao-block .dao-block__dao,
-.dao-block .dao-block__action {
+.transfer-block__token,
+.farms-block__pool,
+.dao-block__dao,
+.dao-block__action {
     width: 100%;
-    margin-top: 15px;
     box-sizing: border-box;
 }
 
-.swap-block .swap-block__token-from-address,
-.swap-block .swap-block__token-to-address {
+.swap-block__token-from-address,
+.swap-block__token-to-address {
     width: 33%;
 }
 
-.swap-block .balance-block__amount {
+.balance-block__amount {
     width: 100%;
     box-sizing: border-box;
-    margin-top: 15px;
 }
 
 .new-script__button {

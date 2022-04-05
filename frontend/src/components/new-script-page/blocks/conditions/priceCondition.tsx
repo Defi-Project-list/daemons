@@ -35,7 +35,7 @@ export const PriceCondition = ({ form, update }: { form: IPriceConditionForm; up
             onSubmit={() => { /** Individual forms are not submitted */ }}
             render={({ handleSubmit, valid }) => (
                 <form onSubmit={handleSubmit}>
-                    <div className='script-block__panel--row price-block'>
+                    <div className='script-block__panel--three-columns price-block'>
 
                         {filteredTokens?.length > 0 && <TokensModal
                             tokens={filteredTokens}

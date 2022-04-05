@@ -36,6 +36,14 @@ select {
     padding: 5px 7px;
 }
 
+input[type=range] {
+    border-radius: 0;
+    border: none;
+    height: 26px;
+    box-shadow: none;
+    padding: 0;
+}
+
 .header {
     padding: 10px 80px;
     display: flex;

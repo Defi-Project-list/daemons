@@ -32,7 +32,7 @@ export const BalanceCondition = ({ form, update }: { form: IBalanceConditionForm
             onSubmit={() => { /** Individual forms are not submitted */ }}
             render={({ handleSubmit, valid }) => (
                 <form onSubmit={handleSubmit}>
-                    <div className='script-block__panel--row balance-block'>
+                    <div className='script-block__panel--three-columns balance-block'>
 
                         <TokensModal
                             tokens={tokens}

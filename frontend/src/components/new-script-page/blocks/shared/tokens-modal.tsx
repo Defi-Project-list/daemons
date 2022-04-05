@@ -47,7 +47,7 @@ export const TokensModal = ({ tokens, selectedToken, setSelectedToken }: TokensM
 
     return (
         <>
-            <div className={`token-address ${tokens?.length === 0 ? 'script-block__field--error' : null}`}
+            <div className={`token-address ${tokens?.length === 0 ? 'script-block__field--error' : ''}`}
                 onClick={() => { if (tokens?.length > 0) setModalIsOpen(true); }}>
                 {tokens?.length > 0 ?
                     <>
