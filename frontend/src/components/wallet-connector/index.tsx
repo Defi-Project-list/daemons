@@ -1,11 +1,11 @@
-import React, { Dispatch, useEffect } from 'react';
+import React, { Dispatch, useEffect, useState } from 'react';
 import { useMetaMask } from "metamask-react";
 import { authenticationCheck, updateWalletAddress } from '../../state/action-creators/wallet-action-creators';
 import { useDispatch, useSelector } from 'react-redux';
 import { BigNumber } from 'ethers';
 import { RootState } from '../../state';
 import { StorageProxy } from '../../data/storage-proxy';
-import { GetCurrentChain, IsChainSupported } from '../../data/chain-info';
+import { GetAvailableChains, GetCurrentChain, IChainInfo, IsChainSupported } from '../../data/chain-info';
 import './styles.css';
 
 
@@ -46,11 +46,16 @@ function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element 
     const address = walletAddress!.substring(0, 16) + "...";
     const authenticated: boolean = useSelector((state: RootState) => state.wallet.authenticated);
     const chainInfo = GetCurrentChain(chainId);
+    const [displayChains, setDisplayChains] = useState<boolean>(false);
 
     return (
         <div className='wallet-connector'>
             <div className='wallet-connector__chain'>
-                <img className='wallet-connector__chain-image' src={chainInfo.iconPath} />
+                <img className='wallet-connector__chain-image'
+                    src={chainInfo.iconPath}
+                    onClick={() => setDisplayChains(!displayChains)}
+                />
+                {displayChains && availableChainsDialog(() => setDisplayChains(false))}
             </div>
 
             {
@@ -68,18 +73,30 @@ function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element 
             }
         </div >
     );
+}
 
 
-    if (!authenticated) {
-        return <button onClick={() => triggerLogin(walletAddress, dispatch)}>Login</button>;
-    }
+function availableChainsDialog(hideDialog: () => void): JSX.Element | null {
+    const chainComponent = (chain: IChainInfo): JSX.Element => {
+        return (
+            <div key={chain.hex} className='chains-dialog__chain-entry'
+                onClick={() => {
+                    promptChainChange(chain);
+                    hideDialog();
+                }}
+            >
+                <img className='wallet-connector__chain-image' src={chain.iconPath}></img>
+                <div className='chains-dialog__chain-name'>{chain.name}</div>
+            </div>
+        );
+    };
 
+    const chains = GetAvailableChains();
     return (
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div>Connected! ({walletAddress!.substring(0, 8) + "..."})</div>
+        <div className='chains-dialog'>
+            {chains.map(chainComponent)}
         </div>
     );
-
 }
 
 async function triggerLogin(walletAddress: string, dispatch: Dispatch<any>): Promise<void> {
@@ -95,4 +112,40 @@ async function getSignature(message: string): Promise<any> {
     const signer = provider.getSigner();
     const signature = await signer.signMessage(message);
     return signature;
+}
+
+async function promptChainChange(chain: IChainInfo): Promise<void> {
+    const switchChain = async () => {
+        await (window as any).ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: chain.hex }]
+        });
+    };
+
+    const addChain = async () => {
+        await (window as any).ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [{
+                chainId: chain.hex,
+                rpcUrls: [chain.defaultRPC],
+                chainName: chain.name,
+                nativeCurrency: {
+                    name: chain.coinName,
+                    symbol: chain.coinSymbol,
+                    decimals: chain.coinDecimals
+                },
+                blockExplorerUrls: [chain.explorerUrl]
+            }]
+        });
+    };
+
+    try {
+        await switchChain();
+    } catch (switchError: any) {
+        if (switchError.code === 4902) {
+            await addChain();
+        } else {
+            throw switchError;
+        }
+    }
 }

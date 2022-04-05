@@ -8,12 +8,14 @@
 
 .wallet-connector__chain {
     height: 30px;
+    position: relative;
 }
 
 .wallet-connector__chain-image {
     height: 30px;
     width: 30px;
     border-radius: 100%;
+    cursor: pointer;
 }
 
 .wallet-connector__address {
@@ -24,5 +26,20 @@
 }
 
 .wallet-connector__address--unauthenticated {
+    cursor: pointer;
+}
+
+.chains-dialog {
+    position: absolute;
+    background: #efefef;
+    padding: 5px;
+    border: 1px solid #555;
+}
+
+.chains-dialog__chain-entry {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 10px;
     cursor: pointer;
 }
