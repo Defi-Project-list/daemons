@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { IPriceConditionForm } from './conditions-interfaces';
 import { Form, Field } from 'react-final-form';
-import { IToken, Token } from '../../../../data/tokens';
+import { Token } from '../../../../data/tokens';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../state';
 import { TokensModal } from "../shared/tokens-modal";
@@ -30,7 +30,7 @@ export const PriceCondition = ({ form, update }: { form: IPriceConditionForm; up
     useEffect(() => {
         if (!form.tokenAddress) {
             const filteredTokens = tokens.filter(token => token.hasPriceFeed);
-            update({ ...form, tokenAddress: filteredTokens[0].address });
+            update({ ...form, tokenAddress: filteredTokens[0]?.address });
         }
     }, []);
 

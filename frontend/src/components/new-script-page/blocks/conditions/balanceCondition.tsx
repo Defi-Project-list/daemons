@@ -29,7 +29,7 @@ export const BalanceCondition = ({ form, update }: { form: IBalanceConditionForm
 
     useEffect(() => {
         if (!form.tokenAddress)
-            update({ ...form, tokenAddress: tokens[0].address });
+            update({ ...form, tokenAddress: tokens[0]?.address });
     }, []);
 
     return (
