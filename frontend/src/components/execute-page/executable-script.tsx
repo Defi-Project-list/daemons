@@ -10,6 +10,7 @@ export const QueueScriptComponent = ({ script }: { script: BaseScript; }) => {
     const dispatch = useDispatch();
     const [verificationState, setVerificationState] = useState(script.getVerificationState());
     const walletAddress = useSelector((state: RootState) => state.wallet.address);
+    const chainId = useSelector((state: RootState) => state.wallet.chainId);
 
     const verifyScript = async () => { setVerificationState(await script.verify()); };
     const executeScript = async () => {
@@ -17,7 +18,7 @@ export const QueueScriptComponent = ({ script }: { script: BaseScript; }) => {
         if (!transactionResponse) return;
 
         await StorageProxy.txs.addTransaction(transactionResponse, script, walletAddress!);
-        transactionResponse.wait().then(() => dispatch(fetchGasTankClaimable(walletAddress)));
+        transactionResponse.wait().then(() => dispatch(fetchGasTankClaimable(walletAddress, chainId)));
     };
 
     useEffect(() => {

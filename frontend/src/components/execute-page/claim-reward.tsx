@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Contracts } from '../../data/contracts';
 import { RootState } from '../../state';
 import { fetchGasTankClaimable } from '../../state/action-creators/gas-tank-action-creators';
-import { fetchStakingClaimable } from '../../state/action-creators/staking-action-creators';
+import { fetchStakingBalance, fetchStakingClaimable } from '../../state/action-creators/staking-action-creators';
 import { getAbiFor } from '../../utils/get-abi';
 import './claim-reward.css';
 
@@ -21,7 +21,7 @@ export function ClaimRewards() {
         const tx = await gasTank.claimReward();
         await tx.wait();
 
-        dispatch(fetchGasTankClaimable(walletAddress));
+        dispatch(fetchGasTankClaimable(walletAddress, chainId));
     };
 
     const claimAndStake = async () => {
@@ -30,8 +30,9 @@ export function ClaimRewards() {
         const tx = await gasTank.claimAndStakeReward();
         await tx.wait();
 
-        dispatch(fetchGasTankClaimable(walletAddress));
-        dispatch(fetchStakingClaimable(walletAddress));
+        dispatch(fetchGasTankClaimable(walletAddress, chainId));
+        dispatch(fetchStakingClaimable(walletAddress, chainId));
+        dispatch(fetchStakingBalance(walletAddress, chainId));
     };
 
     const getGasTankContract = async () => {
