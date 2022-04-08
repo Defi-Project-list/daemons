@@ -1,6 +1,6 @@
 import { AmountType } from '@daemons-fi/shared-definitions';
 import { BaseMoneyMarketActionType } from '@daemons-fi/shared-definitions';
-import { MoneyMarket } from '../../../../data/tokens';
+import { MoneyMarket } from '../../../../data/chains-data/interfaces';
 import { INewScriptForm } from '../../i-new-script-form';
 
 export enum ScriptAction {

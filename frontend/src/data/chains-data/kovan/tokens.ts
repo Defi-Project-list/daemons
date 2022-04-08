@@ -1,4 +1,4 @@
-import { MoneyMarket, Token } from '.';
+import { MoneyMarket, Token } from '../interfaces';
 
 const WETH = {
     name: "Wrapped Ether",

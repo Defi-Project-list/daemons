@@ -3,8 +3,8 @@ import { IBalanceConditionForm } from './conditions-interfaces';
 import { Form, Field } from 'react-final-form';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../state';
-import { Token } from '../../../../data/tokens';
 import { TokensModal } from "../shared/tokens-modal";
+import { Token } from '../../../../data/chains-data/interfaces';
 
 
 const validateForm = (form: IBalanceConditionForm) => {

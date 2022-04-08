@@ -1,5 +1,5 @@
-import { Token } from '../tokens';
 import { GetCurrentChain } from '../chain-info';
+import { Token } from '../chains-data/interfaces';
 
 
 export class TokenProxy {

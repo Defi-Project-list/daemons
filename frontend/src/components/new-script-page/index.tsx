@@ -19,11 +19,11 @@ import { SwapAction } from './blocks/actions/swapAction';
 import { StorageProxy } from '../../data/storage-proxy';
 import './styles.css';
 import { addNewScript } from '../../state/action-creators/script-action-creators';
-import { IToken } from '../../data/tokens';
 import { Navigate } from 'react-router-dom';
 import { BaseMoneyMarketActionType } from '@daemons-fi/shared-definitions';
 import { MmBaseAction } from './blocks/actions/mmBaseAction';
 import { GetCurrentChain } from '../../data/chain-info';
+import { IToken } from '../../data/chains-data/interfaces';
 
 
 export function NewScriptPage(): JSX.Element {

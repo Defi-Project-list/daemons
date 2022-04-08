@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { IToken } from '../../../../data/tokens';
 import Modal from "react-modal";
+import { IToken } from '../../../../data/chains-data/interfaces';
 import './tokens-modal.css';
 
 const modalStyles: any = {

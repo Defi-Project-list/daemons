@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import { ITransferActionForm } from './actions-interfaces';
 import { Form, Field } from 'react-final-form';
 import { ethers } from 'ethers';
-import { Token } from '../../../../data/tokens';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../state';
 import { TokensModal } from "../shared/tokens-modal";
 import { AmountType } from '@daemons-fi/shared-definitions/build';
 import { ToggleButtonField } from '../shared/toggle-button';
+import { Token } from '../../../../data/chains-data/interfaces';
 
 
 const validateForm = (values: ITransferActionForm) => {

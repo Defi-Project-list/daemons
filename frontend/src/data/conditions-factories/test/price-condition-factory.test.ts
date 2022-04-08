@@ -4,8 +4,8 @@ import itParam from 'mocha-param';
 import { ComparisonType, IPriceCondition } from '@daemons-fi/shared-definitions';
 import { IPriceConditionForm } from '../../../components/new-script-page/blocks/conditions/conditions-interfaces';
 import { ZeroAddress } from '../../chain-info';
-import { Token } from '../../tokens';
 import { PriceConditionFactory } from '../price-condition-factory';
+import { Token } from '../../chains-data/interfaces';
 
 
 describe('Price Condition Factory', () => {

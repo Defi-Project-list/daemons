@@ -6,8 +6,8 @@ import { FollowConditionFactory } from '../conditions-factories/follow-condition
 import { FrequencyConditionFactory } from '../conditions-factories/frequency-condition-factory';
 import { PriceConditionFactory } from '../conditions-factories/price-condition-factory';
 import { RepetitionsConditionFactory } from '../conditions-factories/repetitions-condition-factory';
-import { Token } from '../tokens';
 import { BaseMoneyMarketActionType, IMMBaseAction } from '@daemons-fi/shared-definitions';
+import { Token } from '../chains-data/interfaces';
 
 export class MmBaseScript extends BaseScript {
     public constructor(private readonly message: IMMBaseAction, signature: string, private readonly description: string) {

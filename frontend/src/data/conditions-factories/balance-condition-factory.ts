@@ -2,7 +2,7 @@ import { BigNumber, utils } from 'ethers';
 import { IBalanceCondition } from '@daemons-fi/shared-definitions';
 import { IBalanceConditionForm } from '../../components/new-script-page/blocks/conditions/conditions-interfaces';
 import { ZeroAddress } from '../chain-info';
-import { Token } from '../tokens';
+import { Token } from '../chains-data/interfaces';
 
 
 export class BalanceConditionFactory {

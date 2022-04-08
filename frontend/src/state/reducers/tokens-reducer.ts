@@ -1,4 +1,4 @@
-import { Token } from '../../data/tokens';
+import { Token } from '../../data/chains-data/interfaces';
 import { ActionType } from "../action-types/index";
 import { TokenAction } from '../actions/tokens-actions';
 

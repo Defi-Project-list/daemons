@@ -7,7 +7,7 @@ import { FollowConditionFactory } from '../conditions-factories/follow-condition
 import { FrequencyConditionFactory } from '../conditions-factories/frequency-condition-factory';
 import { PriceConditionFactory } from '../conditions-factories/price-condition-factory';
 import { RepetitionsConditionFactory } from '../conditions-factories/repetitions-condition-factory';
-import { Token } from '../tokens';
+import { Token } from '../chains-data/interfaces';
 
 export class TransferScript extends BaseScript {
     public constructor(private readonly message: ITransferAction, signature: string, private readonly description: string) {

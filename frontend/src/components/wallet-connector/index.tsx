@@ -5,8 +5,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { BigNumber } from 'ethers';
 import { RootState } from '../../state';
 import { StorageProxy } from '../../data/storage-proxy';
-import { GetAvailableChains, GetCurrentChain, IChainInfo, IsChainSupported } from '../../data/chain-info';
+import { GetAvailableChains, GetCurrentChain, IsChainSupported } from '../../data/chain-info';
 import './styles.css';
+import { IChainInfo } from '../../data/chains-data/interfaces';
 
 
 export function ConnectWalletButton() {

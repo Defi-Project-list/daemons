@@ -15,3 +15,18 @@ export type MoneyMarket = {
     supportedTokens: Token[];
     aTokens: { [tokenAddress: string]: Token; };
 };
+
+export interface IChainInfo {
+    name: string;
+    id: string;
+    hex: string;
+    defaultRPC: string;
+    iconPath: string;
+    coinName: string;
+    coinSymbol: string;
+    coinDecimals: number;
+    explorerUrl: string;
+    explorerTxUrl: string;
+    tokens: Token[];
+    moneyMarket: MoneyMarket;
+}

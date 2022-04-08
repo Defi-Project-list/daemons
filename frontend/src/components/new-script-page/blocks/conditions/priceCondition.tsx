@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { IPriceConditionForm } from './conditions-interfaces';
 import { Form, Field } from 'react-final-form';
-import { Token } from '../../../../data/tokens';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../state';
 import { TokensModal } from "../shared/tokens-modal";
+import { Token } from '../../../../data/chains-data/interfaces';
 
 
 const validateForm = (form: IPriceConditionForm) => {

@@ -4,8 +4,8 @@ import itParam from 'mocha-param';
 import { ComparisonType, IBalanceCondition } from '@daemons-fi/shared-definitions';
 import { IBalanceConditionForm } from '../../../components/new-script-page/blocks/conditions/conditions-interfaces';
 import { ZeroAddress } from '../../chain-info';
-import { Token } from '../../tokens';
 import { BalanceConditionFactory } from '../balance-condition-factory';
+import { Token } from '../../chains-data/interfaces';
 
 
 describe('Balance Condition Factory', () => {

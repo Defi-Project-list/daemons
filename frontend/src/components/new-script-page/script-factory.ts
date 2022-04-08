@@ -8,7 +8,6 @@ import { ITransferAction, transferDomain, transferTypes } from '@daemons-fi/shar
 import { IMMBaseAction, mmBaseDomain, mmBaseTypes } from '@daemons-fi/shared-definitions';
 import { IBaseMMActionForm, ISwapActionForm, ITransferActionForm, ScriptAction } from './blocks/actions/actions-interfaces';
 import { INewScriptBundle } from './i-new-script-form';
-import { Token } from '../../data/tokens';
 import { FrequencyConditionFactory } from '../../data/conditions-factories/frequency-condition-factory';
 import { BalanceConditionFactory } from '../../data/conditions-factories/balance-condition-factory';
 import { PriceConditionFactory } from '../../data/conditions-factories/price-condition-factory';
@@ -16,6 +15,7 @@ import { RepetitionsConditionFactory } from '../../data/conditions-factories/rep
 import { FollowConditionFactory } from '../../data/conditions-factories/follow-condition-factory';
 import { AmountType } from '@daemons-fi/shared-definitions';
 import { MmBaseScript } from '../../data/script/mm-base-script';
+import { Token } from '../../data/chains-data/interfaces';
 
 type ScriptDefinition = ISwapAction | ITransferAction | IMMBaseAction;
 
