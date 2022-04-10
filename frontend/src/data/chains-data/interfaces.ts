@@ -1,3 +1,7 @@
+import { IScriptActionForm } from './action-form-interfaces';
+import { IScriptConditionForm } from './condition-form-interfaces';
+
+
 export interface IToken {
     name: string;
     symbol: string;
@@ -16,6 +20,41 @@ export type MoneyMarket = {
     aTokens: { [tokenAddress: string]: Token; };
 };
 
+export interface IContractsList {
+    GasTank: string;
+    DAEMToken: string;
+    Treasury: string;
+    GasPriceFeed: string;
+    PriceRetriever: string;
+
+    // executors
+    SwapExecutor: string;
+    TransferExecutor: string;
+    MmBaseExecutor: string;
+    MmAdvancedExecutor: string;
+}
+
+export interface IAction {
+    title: string;
+    description: string;
+    conditions: ICondition[];
+    form: IScriptActionForm;
+}
+
+export interface ICondition {
+    title: string;
+    description: string;
+    form: IScriptConditionForm;
+}
+
+export enum ConditionTitles {
+    FREQUENCY = "Frequency",
+    BALANCE = "Balance",
+    PRICE = "Price",
+    REPETITIONS = "Repetitions",
+    FOLLOW = "Chain Scripts",
+}
+
 export interface IChainInfo {
     name: string;
     id: string;
@@ -28,5 +67,7 @@ export interface IChainInfo {
     explorerUrl: string;
     explorerTxUrl: string;
     tokens: Token[];
-    moneyMarket: MoneyMarket;
+    contracts: IContractsList;
+    moneyMarket: MoneyMarket;  // TO BE DELETED
+    actions: IAction[];
 }
