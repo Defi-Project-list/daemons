@@ -12,7 +12,6 @@ export enum ScriptConditions {
 export interface IScriptConditionForm {
     type: ScriptConditions;
     valid: boolean;
-    enabled: boolean;
 }
 
 export enum FrequencyUnits { Seconds = 1, Minutes = 60, Hours = 3600, Days = 86400, Weeks = 604800 };

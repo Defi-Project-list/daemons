@@ -27,7 +27,6 @@ export const kovanInfo: IChainInfo = {
     explorerUrl: 'https://kovan.etherscan.io/',
     explorerTxUrl: 'https://kovan.etherscan.io/tx/',
     tokens: kovanTokens,
-    moneyMarket: kovanAaveMM,
     contracts: kovanContracts,
     actions: [TransferAction, SwapAction, AaveMMBaseAction]
 };

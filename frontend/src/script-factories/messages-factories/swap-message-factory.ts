@@ -17,7 +17,9 @@ export class SwapMessageFactory {
     ): Promise<ISwapAction> {
         const swapActionForm = bundle.action.form as ISwapActionForm;
         if (swapActionForm.type !== ScriptAction.SWAP)
-            throw new Error(`Cannot build Swap message with this form: ${swapActionForm}`);
+            throw new Error(
+                `Cannot build Swap message with this form: ${JSON.stringify(swapActionForm)}`
+            );
 
         if (!swapActionForm.valid)
             throw new Error(`Cannot build Swap message with an invalid form`);

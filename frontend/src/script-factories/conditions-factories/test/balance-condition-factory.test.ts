@@ -2,10 +2,12 @@ import { assert, expect } from 'chai';
 import { ethers, utils } from 'ethers';
 import itParam from 'mocha-param';
 import { ComparisonType, IBalanceCondition } from '@daemons-fi/shared-definitions';
-import { IBalanceConditionForm } from '../../../components/new-script-page/blocks/conditions/conditions-interfaces';
 import { ZeroAddress } from '../../../data/chain-info';
 import { BalanceConditionFactory } from '../balance-condition-factory';
 import { Token } from '../../../data/chains-data/interfaces';
+import { IBalanceConditionForm, ScriptConditions } from "../../../data/chains-data/condition-form-interfaces";
+import { ICurrentScript } from "../../i-current-script";
+import { ScriptAction } from "../../../data/chains-data/action-form-interfaces";
 
 
 describe('Balance Condition Factory', () => {
@@ -48,22 +50,10 @@ describe('Balance Condition Factory', () => {
         assert.deepEqual(condition, originalCondition);
     });
 
-    it('returns an empty condition when trying to build from disabled form', async () => {
-        const form: IBalanceConditionForm = {
-            enabled: false,
-            valid: true,
-            tokenAddress: tokens[0].address,
-            comparison: ComparisonType.GreaterThan,
-            floatAmount: 125.554,
-        };
-        const condition = BalanceConditionFactory.fromForm(form, tokens);
-
-        assert.deepEqual(condition, BalanceConditionFactory.empty());
-    });
 
     it('throws error if form is enabled but not valid', async () => {
         const form: IBalanceConditionForm = {
-            enabled: true,
+            type: ScriptConditions.BALANCE,
             valid: false,
             tokenAddress: tokens[0].address,
             comparison: ComparisonType.GreaterThan,
@@ -74,9 +64,9 @@ describe('Balance Condition Factory', () => {
         expect(gonnaThrow).to.throw('Cannot build Balance condition from invalid form');
     });
 
-    describe('creates a condition from an enabled form', () => {
+    describe('creates a condition from a form', () => {
         const form: IBalanceConditionForm = {
-            enabled: true,
+            type: ScriptConditions.BALANCE,
             valid: true,
             tokenAddress: tokens[0].address,
             comparison: ComparisonType.GreaterThan,
@@ -114,4 +104,56 @@ describe('Balance Condition Factory', () => {
             });
     });
 
+
+    describe('creates a condition from a bundle', () => {
+        const form: IBalanceConditionForm = {
+            type: ScriptConditions.BALANCE,
+            valid: true,
+            tokenAddress: tokens[0].address,
+            comparison: ComparisonType.GreaterThan,
+            floatAmount: 125.554,
+        };
+
+        it('happy flow', async () => {
+            const bundle: ICurrentScript = {
+                action: {
+                    title: "FakeAction",
+                    description: "Whatevs",
+                    conditions: [],
+                    form: { type: ScriptAction.NONE, valid: true}
+                },
+                conditions: {
+                    "Balance": {
+                        title: "Balance",
+                        description: "Whatevs",
+                        form
+                    }
+                }
+            }
+
+            const condition = BalanceConditionFactory.fromBundle(bundle, tokens);
+
+            expect(condition.enabled).to.be.true;
+            expect(condition.comparison).to.be.equal(ComparisonType.GreaterThan);
+            expect(condition.token).to.be.equal(tokens[0].address);
+            expect(condition.amount.toHexString()).to.be.equal(ethers.utils.parseEther('125.554').toHexString());
+        });
+
+        it('returns an empty form if the balance condition is missing from the bundle', async () => {
+            const emptyBundle: ICurrentScript = {
+                action: {
+                    title: "FakeAction",
+                    description: "Whatevs",
+                    conditions: [],
+                    form: { type: ScriptAction.NONE, valid: true}
+                },
+                conditions: {}
+            }
+
+            const condition = BalanceConditionFactory.fromBundle(emptyBundle, tokens);
+
+            assert.deepEqual(condition, BalanceConditionFactory.empty());
+        });
+
+    });
 });

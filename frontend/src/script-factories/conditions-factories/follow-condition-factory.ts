@@ -1,10 +1,10 @@
 import { BigNumber, Contract } from "ethers";
 import { IFollowCondition } from "@daemons-fi/shared-definitions";
-import { IFollowConditionForm } from "../../components/new-script-page/blocks/conditions/conditions-interfaces";
 import { getAbiFor } from "../../utils/get-abi";
 import { ZeroAddress, ZeroId } from "../../data/chain-info";
 import { ICurrentScript } from "../i-current-script";
 import { ConditionTitles } from "../../data/chains-data/interfaces";
+import { IFollowConditionForm } from "../../data/chains-data/condition-form-interfaces";
 
 export class FollowConditionFactory {
     /** A disabled frequency condition */
@@ -38,7 +38,7 @@ export class FollowConditionFactory {
         const shift = await executorContract.getRepetitions(form.parentScriptId);
 
         return {
-            enabled: form.enabled,
+            enabled: true,
             scriptId: form.parentScriptId,
             executor: form.parentScriptExecutor,
             shift: shift

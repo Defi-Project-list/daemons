@@ -68,6 +68,5 @@ export interface IChainInfo {
     explorerTxUrl: string;
     tokens: Token[];
     contracts: IContractsList;
-    moneyMarket: MoneyMarket;  // TO BE DELETED
     actions: IAction[];
 }

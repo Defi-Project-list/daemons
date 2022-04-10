@@ -5,7 +5,6 @@ import { store } from './state';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import { App } from './App';
-import { NewScriptPage } from './components/new-script-page';
 import { DashboardPage } from './components/dashboard-page';
 import { MyPage } from './components/my-page';
 import { ExecutePage } from './components/execute-page';

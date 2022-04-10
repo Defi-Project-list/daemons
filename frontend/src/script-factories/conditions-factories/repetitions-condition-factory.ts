@@ -1,8 +1,8 @@
 import { BigNumber } from 'ethers';
 import { IMaxRepetitionsCondition } from '@daemons-fi/shared-definitions';
-import { IRepetitionsConditionForm } from '../../components/new-script-page/blocks/conditions/conditions-interfaces';
 import { ICurrentScript } from "../i-current-script";
 import { ConditionTitles } from "../../data/chains-data/interfaces";
+import { IRepetitionsConditionForm } from "../../data/chains-data/condition-form-interfaces";
 
 
 export class RepetitionsConditionFactory {

@@ -1,9 +1,9 @@
 import { BigNumber, utils } from "ethers";
 import { IPriceCondition } from "@daemons-fi/shared-definitions";
-import { IPriceConditionForm } from "../../components/new-script-page/blocks/conditions/conditions-interfaces";
 import { ZeroAddress } from "../../data/chain-info";
 import { ConditionTitles, Token } from "../../data/chains-data/interfaces";
 import { ICurrentScript } from "../i-current-script";
+import { IPriceConditionForm } from "../../data/chains-data/condition-form-interfaces";
 
 export class PriceConditionFactory {
     /** A disabled price condition */

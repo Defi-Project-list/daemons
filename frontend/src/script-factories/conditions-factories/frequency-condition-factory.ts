@@ -1,9 +1,9 @@
 import { BigNumber } from "ethers";
 import { IFrequencyCondition } from "@daemons-fi/shared-definitions";
-import { IFrequencyConditionForm } from "../../components/new-script-page/blocks/conditions/conditions-interfaces";
 import { ICurrentScript } from "../i-current-script";
 import { FrequencyCondition } from "../../data/chains-data/kovan/condition-forms";
 import { ConditionTitles } from "../../data/chains-data/interfaces";
+import { IFrequencyConditionForm } from "../../data/chains-data/condition-form-interfaces";
 
 export class FrequencyConditionFactory {
     /** A disabled frequency condition */

@@ -7,7 +7,10 @@ const localStorageAddress = 'http://localhost:5000/api';
 const productionStorageAddress = 'https://daemonsfi-storage.herokuapp.com/api';
 
 // define storage URL depending on frontend URL
-export const storageAddress = window.location.href.includes('localhost')
+const isTest = typeof window === "undefined";
+const isDev = !isTest && window.location.href.includes('localhost');
+
+export const storageAddress = isTest || isDev
     ? localStorageAddress
     : productionStorageAddress;
 

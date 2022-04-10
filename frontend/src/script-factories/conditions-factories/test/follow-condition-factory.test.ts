@@ -1,11 +1,13 @@
 import { assert, expect } from 'chai';
 import { BigNumber } from 'ethers';
 import { IFollowCondition } from '@daemons-fi/shared-definitions';
-import { IFollowConditionForm } from '../../../components/new-script-page/blocks/conditions/conditions-interfaces';
 import chai from 'chai';
 import { ZeroAddress, ZeroId } from '../../../data/chain-info';
 import { FollowConditionFactory } from '../follow-condition-factory';
 import Sinon from 'sinon';
+import { IFollowConditionForm, ScriptConditions } from "../../../data/chains-data/condition-form-interfaces";
+import { ICurrentScript } from "../../i-current-script";
+import { ScriptAction } from "../../../data/chains-data/action-form-interfaces";
 const sinon = require('sinon');
 
 chai.use(require('chai-as-promised'));
@@ -15,6 +17,21 @@ describe('Follow Condition Factory', () => {
 
     const AnAddress = '0x0001000100010001000100010001000100010001';
     const AnId = '0x0001000100010001000100010001000100010001000100010001000100010001';
+
+    let stubCall: Sinon.SinonStub<[], any>;
+
+    const fakeExecutor = {
+        getRepetitions: (_: string) => Promise.resolve(BigNumber.from(2))
+    };
+
+    before(() => {
+        stubCall = sinon.stub(FollowConditionFactory, 'getExecutor');
+        stubCall.callsFake(() => fakeExecutor);
+    });
+
+    after(() => {
+        stubCall.reset();
+    });
 
     it('creates an empty condition', async () => {
         const empty = FollowConditionFactory.empty();
@@ -44,21 +61,9 @@ describe('Follow Condition Factory', () => {
         assert.deepEqual(condition, originalCondition);
     });
 
-    it('returns an empty condition when trying to build from disabled form', async () => {
-        const form: IFollowConditionForm = {
-            enabled: false,
-            valid: true,
-            parentScriptId: AnId,
-            parentScriptExecutor: AnAddress,
-        };
-        const condition = await FollowConditionFactory.fromForm(form);
-
-        assert.deepEqual(condition, FollowConditionFactory.empty());
-    });
-
     it('throws error if form is enabled but not valid', async () => {
         const form: IFollowConditionForm = {
-            enabled: true,
+            type: ScriptConditions.FOLLOW,
             valid: false,
             parentScriptId: AnId,
             parentScriptExecutor: AnAddress,
@@ -69,26 +74,12 @@ describe('Follow Condition Factory', () => {
     });
 
     describe('creates a condition from an enabled form', () => {
-        let stubCall: Sinon.SinonStub<[], any>;
         const form: IFollowConditionForm = {
-            enabled: true,
+            type: ScriptConditions.FOLLOW,
             valid: true,
             parentScriptId: AnId,
             parentScriptExecutor: AnAddress,
         };
-
-        const fakeExecutor = {
-            getRepetitions: (_: string) => Promise.resolve(BigNumber.from(2))
-        };
-
-        beforeEach(() => {
-            stubCall = sinon.stub(FollowConditionFactory, 'getExecutor');
-            stubCall.callsFake(() => fakeExecutor);
-        });
-
-        afterEach(() => {
-            stubCall.reset();
-        });
 
         it('happy flow', async () => {
             const condition = await FollowConditionFactory.fromForm(form);
@@ -98,5 +89,56 @@ describe('Follow Condition Factory', () => {
             expect(condition.executor).to.be.equal(AnAddress);
             expect(condition.shift.toNumber()).to.be.equal(2);
         });
+    });
+
+    describe('creates a condition from a bundle', () => {
+        const form: IFollowConditionForm = {
+            type: ScriptConditions.FOLLOW,
+            valid: true,
+            parentScriptId: AnId,
+            parentScriptExecutor: AnAddress,
+        };
+
+        it('happy flow', async () => {
+            const bundle: ICurrentScript = {
+                action: {
+                    title: "FakeAction",
+                    description: "Whatevs",
+                    conditions: [],
+                    form: { type: ScriptAction.NONE, valid: true}
+                },
+                conditions: {
+                    "Chain Scripts": {
+                        title: "Chain Scripts",
+                        description: "Whatevs",
+                        form
+                    }
+                }
+            }
+
+            const condition = await FollowConditionFactory.fromBundle(bundle);
+
+            expect(condition.enabled).to.be.true;
+            expect(condition.scriptId).to.be.equal(AnId);
+            expect(condition.executor).to.be.equal(AnAddress);
+            expect(condition.shift.toNumber()).to.be.equal(2);
+        });
+
+        it('returns an empty form if the balance condition is missing from the bundle', async () => {
+            const emptyBundle: ICurrentScript = {
+                action: {
+                    title: "FakeAction",
+                    description: "Whatevs",
+                    conditions: [],
+                    form: { type: ScriptAction.NONE, valid: true}
+                },
+                conditions: {}
+            }
+
+            const condition = await FollowConditionFactory.fromBundle(emptyBundle);
+
+            assert.deepEqual(condition, FollowConditionFactory.empty());
+        });
+
     });
 });

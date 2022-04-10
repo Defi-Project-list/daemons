@@ -2,10 +2,12 @@ import { assert, expect } from 'chai';
 import { ethers, utils } from 'ethers';
 import itParam from 'mocha-param';
 import { ComparisonType, IPriceCondition } from '@daemons-fi/shared-definitions';
-import { IPriceConditionForm } from '../../../components/new-script-page/blocks/conditions/conditions-interfaces';
 import { ZeroAddress } from '../../../data/chain-info';
 import { PriceConditionFactory } from '../price-condition-factory';
 import { Token } from '../../../data/chains-data/interfaces';
+import { IPriceConditionForm, ScriptConditions } from "../../../data/chains-data/condition-form-interfaces";
+import { ICurrentScript } from "../../i-current-script";
+import { ScriptAction } from "../../../data/chains-data/action-form-interfaces";
 
 
 describe('Price Condition Factory', () => {
@@ -48,22 +50,9 @@ describe('Price Condition Factory', () => {
         assert.deepEqual(condition, originalCondition);
     });
 
-    it('returns an empty condition when trying to build from disabled form', async () => {
-        const form: IPriceConditionForm = {
-            enabled: false,
-            valid: true,
-            tokenAddress: tokens[0].address,
-            comparison: ComparisonType.GreaterThan,
-            floatValue: 125.554,
-        };
-        const condition = PriceConditionFactory.fromForm(form, tokens);
-
-        assert.deepEqual(condition, PriceConditionFactory.empty());
-    });
-
     it('throws error if form is enabled but not valid', async () => {
         const form: IPriceConditionForm = {
-            enabled: true,
+            type: ScriptConditions.PRICE,
             valid: false,
             tokenAddress: tokens[0].address,
             comparison: ComparisonType.GreaterThan,
@@ -76,7 +65,7 @@ describe('Price Condition Factory', () => {
 
     describe('creates a condition from an enabled form', () => {
         const form: IPriceConditionForm = {
-            enabled: true,
+            type: ScriptConditions.PRICE,
             valid: true,
             tokenAddress: tokens[0].address,
             comparison: ComparisonType.GreaterThan,
@@ -111,5 +100,58 @@ describe('Price Condition Factory', () => {
                 const expectedAmount = utils.parseUnits(form.floatValue.toString(), decimals);
                 expect(condition.value.toHexString()).to.be.equal(expectedAmount.toHexString());
             });
+    });
+
+
+    describe('creates a condition from a bundle', () => {
+        const form: IPriceConditionForm = {
+            type: ScriptConditions.PRICE,
+            valid: true,
+            tokenAddress: tokens[0].address,
+            comparison: ComparisonType.GreaterThan,
+            floatValue: 125.554,
+        };
+
+        it('happy flow', async () => {
+            const bundle: ICurrentScript = {
+                action: {
+                    title: "FakeAction",
+                    description: "Whatevs",
+                    conditions: [],
+                    form: { type: ScriptAction.NONE, valid: true}
+                },
+                conditions: {
+                    "Price": {
+                        title: "Price",
+                        description: "Whatevs",
+                        form
+                    }
+                }
+            }
+
+            const condition = PriceConditionFactory.fromBundle(bundle, tokens);
+
+            expect(condition.enabled).to.be.true;
+            expect(condition.comparison).to.be.equal(ComparisonType.GreaterThan);
+            expect(condition.token).to.be.equal(tokens[0].address);
+            expect(condition.value.toHexString()).to.be.equal(ethers.utils.parseEther('125.554').toHexString());
+        });
+
+        it('returns an empty form if the balance condition is missing from the bundle', async () => {
+            const emptyBundle: ICurrentScript = {
+                action: {
+                    title: "FakeAction",
+                    description: "Whatevs",
+                    conditions: [],
+                    form: { type: ScriptAction.NONE, valid: true}
+                },
+                conditions: {}
+            }
+
+            const condition = PriceConditionFactory.fromBundle(emptyBundle, tokens);
+
+            assert.deepEqual(condition, PriceConditionFactory.empty());
+        });
+
     });
 });

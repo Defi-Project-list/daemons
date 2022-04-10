@@ -1,9 +1,9 @@
 import { BigNumber, utils } from "ethers";
 import { IBalanceCondition } from "@daemons-fi/shared-definitions";
-import { IBalanceConditionForm } from "../../components/new-script-page/blocks/conditions/conditions-interfaces";
 import { ZeroAddress } from "../../data/chain-info";
 import { ConditionTitles, Token } from "../../data/chains-data/interfaces";
 import { ICurrentScript } from "../i-current-script";
+import { IBalanceConditionForm } from "../../data/chains-data/condition-form-interfaces";
 
 export class BalanceConditionFactory {
     /** A disabled balance condition */

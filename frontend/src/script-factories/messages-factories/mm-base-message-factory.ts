@@ -17,7 +17,9 @@ export class MmBaseMessageFactory {
     ): Promise<IMMBaseAction> {
         const mmBaseActionForm = bundle.action.form as IBaseMMActionForm;
         if (mmBaseActionForm.type !== ScriptAction.MMBASE)
-            throw new Error(`Cannot build MmBase message with this form: ${mmBaseActionForm}`);
+            throw new Error(
+                `Cannot build MmBase message with this form: ${JSON.stringify(mmBaseActionForm)}`
+            );
 
         if (!mmBaseActionForm.valid)
             throw new Error(`Cannot build MmBase message with an invalid form`);

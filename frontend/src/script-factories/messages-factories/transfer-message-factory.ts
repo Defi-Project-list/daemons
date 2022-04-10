@@ -17,7 +17,11 @@ export class TransferMessageFactory {
     ): Promise<ITransferAction> {
         const transferActionForm = bundle.action.form as ITransferActionForm;
         if (transferActionForm.type !== ScriptAction.TRANSFER)
-            throw new Error(`Cannot build Transfer message with this form: ${transferActionForm}`);
+            throw new Error(
+                `Cannot build Transfer message with this form: ${JSON.stringify(
+                    transferActionForm
+                )}`
+            );
 
         if (!transferActionForm.valid)
             throw new Error(`Cannot build Transfer message with an invalid form`);
