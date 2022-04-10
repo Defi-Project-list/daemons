@@ -1,16 +1,15 @@
 import mongoose from 'mongoose';
-import { ITotalPerChain, totalPerChain } from './total-per-chain';
 
 const userStatsSchema = new mongoose.Schema({
-    total: { type: Number, required: true },
-    totalPerChain: { type: [totalPerChain], required: true },
     date: { type: String, required: true },
+    amount: { type: Number, required: true },
+    chain: { type: String, required: true },
 });
 
 export interface IUserStats {
-    total: number;
-    totalPerChain: ITotalPerChain[];
     date: string;
+    amount: number;
+    chain: string;
 }
 
 export interface IUserStatsDocument extends IUserStats, mongoose.Document { }

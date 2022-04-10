@@ -1,20 +1,17 @@
 import mongoose from 'mongoose';
-import { ITotalPerChain, totalPerChain } from './total-per-chain';
 
 const scriptStatsSchema = new mongoose.Schema({
-    total: { type: Number, required: true },
-    totalExecutions: { type: Number, required: true },
-    totalPerChain: { type: [totalPerChain], required: true },
-    totalExecutionsPerChain: { type: [totalPerChain], required: true },
     date: { type: String, required: true },
+    amount: { type: Number, required: true },
+    chain: { type: String, required: true },
+    kind: { type: String, required: true },
 });
 
 export interface IScriptStats {
-    total: number;
-    totalExecutions: number;
-    totalPerChain: ITotalPerChain[];
-    totalExecutionsPerChain: ITotalPerChain[];
     date: string;
+    amount: number;
+    chain: string;
+    kind: string;
 }
 
 export interface IScriptStatsDocument extends IScriptStats, mongoose.Document { }
