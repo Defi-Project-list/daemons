@@ -11,6 +11,7 @@ export interface ITransaction {
     hash: string;
     chainId: BigNumber;
     scriptId: string;
+    scriptType: string;
     description: string;
     executingUser: string;
     beneficiaryUser: string;
