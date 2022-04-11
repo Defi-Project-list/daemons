@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import { ScriptStats } from "../../models/stats/script-stats";
 import { UserStats } from "../../models/stats/user-stats";
 import { mmBaseScriptDocumentFactory } from "../../test-factories/script-factories";
 import { transferScriptDocumentFactory } from "../../test-factories/script-factories";

@@ -20,6 +20,7 @@ export class TransactionProxy {
         const transaction: ITransaction = {
             hash: txResponse.hash,
             scriptId: script.getId(),
+            scriptType: script.ScriptType,
             description: script.getDescription(),
             chainId: script.getMessage().chainId,
             executingUser: utils.getAddress(executingUser),
