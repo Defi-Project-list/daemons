@@ -8,7 +8,7 @@ import { App } from './App';
 import { DashboardPage } from './components/dashboard-page';
 import { MyPage } from './components/my-page';
 import { ExecutePage } from './components/execute-page';
-import { ScriptDesignerPage } from "./components/new-script-page-v2";
+import { ScriptDesignerPage } from "./components/script-designer-page";
 
 ReactDOM.render(
     <Provider store={store}>
