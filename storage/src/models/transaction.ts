@@ -11,7 +11,7 @@ const transactionSchema = new mongoose.Schema({
     description: { type: String, required: true, maxlength: 150, set: truncateAndEscapeText },
     executingUser: { type: String, required: true, set: utils.getAddress },
     beneficiaryUser: { type: String, required: true, index: true, set: utils.getAddress },
-    date: { type: Date, required: true },
+    date: { type: Date, required: false, set: () => new Date() }, // set date on server side
     outcome: { type: String, enum: TransactionOutcome, default: TransactionOutcome.Waiting }
 });
 
