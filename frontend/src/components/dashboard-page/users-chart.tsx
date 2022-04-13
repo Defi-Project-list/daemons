@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { StorageProxy } from "../../data/storage-proxy";
 import { IUserStat } from "../../data/storage-proxy/stats-proxy";
 import { RootState } from "../../state";
+import { userStatsToLineChartData } from "./data-processing";
 
 const options = {
     maintainAspectRatio: true,
@@ -24,27 +25,13 @@ export function UsersChart(): JSX.Element {
         setData(data);
     };
 
-    const prepareData = (): any => {
-        const sorted = data.sort((s1, s2) => (s1.date < s2.date ? 1 : -1));
-        const labels = sorted.map((d) => d.date);
-        const datasets = [
-            {
-                label: "Users",
-                data: sorted.map((d) => d.amount),
-                fill: true,
-                tension: 0.1
-            }
-        ];
-        return { labels, datasets };
-    };
-
     useEffect(() => {
         fetchData();
     }, []);
 
     return (
         <div className="dashboard-chart">
-            <Line data={prepareData()} height={200} options={options}></Line>
+            <Line data={userStatsToLineChartData(data)} height={150} options={options}></Line>
         </div>
     );
 }

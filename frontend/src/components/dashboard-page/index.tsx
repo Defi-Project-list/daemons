@@ -5,6 +5,7 @@ import { UnsupportedChainPage } from "../error-pages/unsupported-chain-page";
 import "./styles.css";
 import { UsersChart } from "./users-chart";
 import {Chart, registerables } from 'chart.js';
+import { ScriptsChart } from "./scripts-chart";
 Chart.register(...registerables);
 
 
@@ -23,7 +24,8 @@ export function DashboardPage() {
                 </div>
 
                 <div className="card">
-                    <div className="card__title">Scripts</div>Getting there...
+                    <div className="card__title">Scripts</div>
+                    <ScriptsChart/>
                 </div>
 
                 <div className="card">
