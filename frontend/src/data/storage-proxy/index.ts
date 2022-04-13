@@ -1,5 +1,6 @@
 import { AuthProxy } from './auth-proxy';
 import { ScriptProxy } from './scripts-proxy';
+import { StatsProxy } from "./stats-proxy";
 import { TokenProxy } from './tokens-proxy';
 import { TransactionProxy } from './transaction-proxy';
 
@@ -21,4 +22,5 @@ export class StorageProxy {
     public static get tokens() { return TokenProxy; }
     public static get script() { return ScriptProxy; }
     public static get txs() { return TransactionProxy; }
+    public static get stats() { return StatsProxy; }
 }
