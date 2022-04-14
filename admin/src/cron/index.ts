@@ -1,8 +1,13 @@
-import cron from "node-cron";
+import { CronJob } from "cron";
 import { updateStorageStats } from "./update-storage-stats";
 
 export const scheduler = () => {
     console.log("Admin scheduler started");
 
-    cron.schedule("18 17 * * *", () => updateStorageStats()).start(); //every day at 00.05
+    const cronjobs = [new CronJob("40 7 * * *", () => updateStorageStats(), null, true, "UTC")];
+
+    cronjobs.forEach((cronjob) => {
+        console.log("Next job time:", cronjob.nextDates().toISOString());
+        cronjob.start();
+    });
 };
