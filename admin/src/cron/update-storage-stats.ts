@@ -4,7 +4,6 @@ export const updateStorageStats = async (): Promise<void> => {
     console.log("updateStorageStats - Starting");
 
     const url = `${process.env.STORAGE_ENDPOINT}/admin/update-stats/`;
-    console.log(url);
     const requestOptions = {
         method: "POST",
         headers: {
