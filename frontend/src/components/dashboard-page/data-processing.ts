@@ -1,5 +1,11 @@
 import { IScriptStats, IUserStat } from "../../data/storage-proxy/stats-proxy";
 
+const colors: { [k: string]: string } = {
+    Swap: "#90be6d",
+    Transfer: "#43aa8b",
+    MmBase: "#4d908e"
+};
+
 export const userStatsToLineChartData = (userStats: IUserStat[]): any => {
     const sorted = userStats.sort((s1, s2) => (s1.date > s2.date ? 1 : -1));
     const labels = sorted.map((d) => d.date);
@@ -16,13 +22,8 @@ export const userStatsToLineChartData = (userStats: IUserStat[]): any => {
 };
 
 export const scriptStatsToBarChartData = (scriptStats: IScriptStats[]): any => {
-    const allDates = new Set<string>(scriptStats.map((d) => d.date));
+    const sortedDates = Array.from(new Set<string>(scriptStats.map((d) => d.date))).sort();
     const allKinds = new Set<string>(scriptStats.map((d) => d.kind));
-    const colors: { [k: string]: string } = {
-        Swap: "#90be6d",
-        Transfer: "#43aa8b",
-        MmBase: "#4d908e"
-    };
     const grouped: { [date: string]: { [kind: string]: number } } = {};
 
     scriptStats.forEach((d) => {
@@ -33,7 +34,6 @@ export const scriptStatsToBarChartData = (scriptStats: IScriptStats[]): any => {
         grouped[d.date][d.kind] = d.amount;
     });
 
-    const sortedDates = [...allDates].sort((d1, d2) => (d1 > d2 ? 1 : -1));
     const sortedAndGrouped: { [kind: string]: number[] } = {};
     allKinds.forEach((kind) => (sortedAndGrouped[kind] = []));
     allKinds.forEach((kind) =>
@@ -47,9 +47,5 @@ export const scriptStatsToBarChartData = (scriptStats: IScriptStats[]): any => {
         backgroundColor: colors[kind]
     }));
 
-    console.log(labels);
-    console.log(datasets);
-    console.log(allKinds);
-    console.log(sortedAndGrouped);
     return { labels, datasets };
 };
