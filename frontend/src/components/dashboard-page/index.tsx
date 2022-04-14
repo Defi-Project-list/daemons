@@ -7,6 +7,7 @@ import { UsersChart } from "./users-chart";
 import {Chart, registerables } from 'chart.js';
 import { ScriptsChart } from "./scripts-chart";
 import { TransactionsChart } from "./transactions-chart";
+import { TreasuryData } from "./treasury-data";
 Chart.register(...registerables);
 
 
@@ -21,7 +22,8 @@ export function DashboardPage() {
 
             <div className="dashboard-page__layout">
                 <div className="card">
-                    <div className="card__title">Treasury</div>Getting there...
+                    <div className="card__title">Treasury</div>
+                    <TreasuryData/>
                 </div>
 
                 <div className="card">

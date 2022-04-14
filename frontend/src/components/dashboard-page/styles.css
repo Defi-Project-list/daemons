@@ -5,3 +5,32 @@
     column-gap: 20px;
     row-gap: 20px;
 }
+
+
+/* Treasury stats */
+
+.treasury-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    align-items: center;
+    justify-items: center;
+    justify-content: center;
+    height: 80%;
+    align-content: space-between;
+}
+
+.treasury-stats__group {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.treasury-stats__title {
+    font-size: 1.5rem;
+}
+
+.treasury-stats__value {
+    font-size: 2rem;
+    font-weight: bold;
+}
