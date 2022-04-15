@@ -3,8 +3,10 @@ pragma solidity ^0.8.4;
 
 import "hardhat/console.sol";
 import "./interfaces/ITreasury.sol";
+import "./interfaces/UniswapV2.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+
 
 /**
  * Contract taking care of:
@@ -16,6 +18,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract Treasury is ITreasury, Ownable {
     address private gasTank;
     IERC20 private token;
+    address private lpRouter;
 
     uint16 public PERCENTAGE_COMMISSION = 100;
     uint16 public PERCENTAGE_POL = 4900;
@@ -24,10 +27,12 @@ contract Treasury is ITreasury, Ownable {
     uint256 public redistributionPool;
     uint256 public commissionsPool;
     uint256 public polPool;
+    bool private polIsInitialized;
 
     // staking vars
     uint256 public redistributionInterval = 180 days;
     uint256 public stakedAmount;
+    uint256 public distributed;
     uint256 private lastUpdateTime;
     uint256 private rewardPerTokenStored;
     mapping(address => uint256) private balances;
@@ -36,10 +41,11 @@ contract Treasury is ITreasury, Ownable {
 
     /* ========== CONSTRUCTOR ========== */
 
-    constructor(address _token, address _gasTank) {
+    constructor(address _token, address _gasTank, address _lpRouter) {
         require(_token != address(0));
         token = IERC20(_token);
         gasTank = _gasTank;
+        lpRouter = _lpRouter;
     }
 
     /* ========== VIEWS STAKING ========== */
@@ -106,6 +112,7 @@ contract Treasury is ITreasury, Ownable {
         uint256 reward = rewards[msg.sender];
         rewards[msg.sender] = 0;
         payable(msg.sender).transfer(reward);
+        distributed = distributed + reward;
     }
 
     function exit() external {
@@ -142,6 +149,32 @@ contract Treasury is ITreasury, Ownable {
         redistributionInterval = newInterval;
     }
 
+    /** Creates the Protocol-owned-Liquidity LP */
+    function createLP() external onlyOwner {
+        require(!polIsInitialized, "PoL already initialized");
+
+        // set allowance
+        token.approve(
+            lpRouter,
+            0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+        );
+
+        // during initialization, we send all the ETH in the treasury to the LP
+        // and an equal amount of DAEM to have a 1:1 ratio
+        addLiquidity(address(this).balance, address(this).balance);
+        polIsInitialized = true;
+    }
+
+    /** Adds funds to the Protocol-owned-Liquidity LP */
+    function fundLP() external onlyOwner {
+        require(polIsInitialized, "PoL not initialized yet");
+        // we send all the polPool ETH to the LP.
+        // The amount of DAEM will be automatically decided by the LP to keep the ratio.
+
+        addLiquidity(polPool, token.balanceOf(address(this)));
+        polPool = 0;
+    }
+
     function claimCommission() external onlyOwner {
         uint256 amount = commissionsPool;
         commissionsPool = 0;
@@ -160,6 +193,8 @@ contract Treasury is ITreasury, Ownable {
         stakeFor(user, calculatePayout());
     }
 
+    receive() external payable {}
+
     /* ========== PRIVATE FUNCTIONS ========== */
 
     function calculatePayout() private returns (uint256) {
@@ -173,6 +208,17 @@ contract Treasury is ITreasury, Ownable {
         // calculate payout
         //TODO: currently transferring 1:1
         return msg.value;
+    }
+
+    function addLiquidity(uint256 amountETH, uint256 amountDAEM) private {
+        IUniswapV2Router01(lpRouter).addLiquidityETH{value: amountETH}(
+            address(token),
+            amountDAEM,
+            0,
+            0,
+            address(this),
+            block.timestamp
+        );
     }
 
     /* ========== MODIFIERS ========== */

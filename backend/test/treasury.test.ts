@@ -33,9 +33,13 @@ describe("Treasury", function () {
         const FooTokenContract = await ethers.getContractFactory("MockToken");
         fooToken = await FooTokenContract.deploy("Foo Token", "FOO");
 
+        // Mock router contract
+        const MockRouterContract = await ethers.getContractFactory("MockRouter");
+        const mockRouter = await MockRouterContract.deploy();
+
         // Treasury contract
         const TreasuryContract = await ethers.getContractFactory("Treasury");
-        treasury = await TreasuryContract.deploy(fooToken.address, gasTank.address);
+        treasury = await TreasuryContract.deploy(fooToken.address, gasTank.address, mockRouter.address);
 
         // add some tokens to treasury
         fooToken.mint(treasury.address, ethers.utils.parseEther("100"));
@@ -299,6 +303,27 @@ describe("Treasury", function () {
             expect(earnedRewardAfterClaim.toNumber()).to.be.almost.equal(0);
         });
 
+        it('rewards are accounted each time are claimed', async () => {
+            // stake payout for user1 and wait some time
+            const amount = ethers.utils.parseEther("1.0");
+            await treasury.connect(gasTank).stakePayout(user1.address, { value: amount });
+            await network.provider.send("evm_setNextBlockTimestamp", [now() + oneDay]);
+            await network.provider.send("evm_mine");
+
+            // from previous test, we know that after 1 day the reward is
+            // (almost) equal to 2777713477338878
+            chai.use(chaiAlmost(32150205761 * 2));
+            const earnedReward: BigNumber = await treasury.earned(user1.address);
+            expect(earnedReward.sub("2777713477338878").abs().toNumber()).to.be.almost.equal(0);
+
+            // let's claim the reward
+            await treasury.connect(user1).getReward();
+
+            // the 'distributed' variable should have been increased;
+            const distributed: BigNumber = await treasury.distributed();
+            expect(distributed.sub("2777713477338878").abs().toNumber()).to.be.almost.equal(0);
+        });
+
         it('exit function gets both reward and staked amount', async () => {
             // add 1 DAEM that will stay in the treasury
             await treasury.connect(gasTank).stakePayout(owner.address, { value: 1 });
@@ -393,6 +418,58 @@ describe("Treasury", function () {
             // we just check they have more than what they started with)
             const ownerFinalBalance = await provider.getBalance(owner.address);
             expect(ownerFinalBalance.gt(ownerInitialBalance)).to.be.true;
+        });
+    });
+
+
+    describe("Protocol Owned Liquidity", function () {
+
+        it("LP creation can only be executed by admin", async () => {
+            await expect(treasury.connect(user1).createLP()).to.be.revertedWith('Ownable: caller is not the owner');
+        });
+
+        it("LP funding can only be executed by admin", async () => {
+            await expect(treasury.connect(user1).fundLP()).to.be.revertedWith('Ownable: caller is not the owner');
+        });
+
+        it("LP creation can only be executed once", async () => {
+            // send some ETH to the treasury for the LP
+            const ETHamount = ethers.utils.parseEther("1.0");
+            await owner.sendTransaction({ to: treasury.address, value: ETHamount});
+
+            await treasury.connect(owner).createLP();
+            await expect(treasury.connect(owner).createLP()).to.be.revertedWith('PoL already initialized');
+        });
+
+        it("LP creation uses all the ETH in the treasury + an equal amount of DAEM", async () => {
+            // send some ETH to the treasury for the LP
+            const ETHamount = ethers.utils.parseEther("1.0");
+            await owner.sendTransaction({ to: treasury.address, value: ETHamount});
+            expect(await provider.getBalance(treasury.address)).to.equal(ETHamount);
+
+            await treasury.connect(owner).createLP();
+            expect(await provider.getBalance(treasury.address)).to.equal(ethers.utils.parseEther("0"));
+            // as we use a mock we can only verify the ETH
+        });
+
+        it("LP funding cannot be used before of LP creation", async () => {
+            await expect(treasury.connect(owner).fundLP()).to.be.revertedWith('PoL not initialized yet');
+        });
+
+        it("LP funding uses all the ETH in the polPool + a proportional amount of DAEM", async () => {
+            const OneEth = ethers.utils.parseEther("1.0");
+
+            // send some ETH and initialize the LP
+            await owner.sendTransaction({ to: treasury.address, value: OneEth});
+            await treasury.connect(owner).createLP();
+
+            // add funds to the polPool by having the gasTank faking a payout
+            await treasury.connect(gasTank).stakePayout(user1.address, { value: OneEth });
+            expect(await treasury.polPool()).to.equal(ethers.utils.parseEther("0.49"));
+
+            // fund the LP and verify polPool has been emptied
+            await treasury.connect(owner).fundLP();
+            expect(await treasury.polPool()).to.equal(ethers.utils.parseEther("0"));
         });
     });
 });
