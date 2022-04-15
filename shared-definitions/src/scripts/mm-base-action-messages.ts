@@ -4,6 +4,7 @@ import { IPriceCondition, Price } from './condition-messages';
 import { IFrequencyCondition, Frequency } from './condition-messages';
 import { IMaxRepetitionsCondition, Repetitions } from './condition-messages';
 import { IFollowCondition, Follow } from './condition-messages';
+import { IHealthFactorCondition, HealthFactor } from './condition-messages';
 
 export interface ISignedMMBaseAction extends IMMBaseAction {
     signature: string;
@@ -28,6 +29,7 @@ export interface IMMBaseAction {
     price: IPriceCondition;
     repetitions: IMaxRepetitionsCondition;
     follow: IFollowCondition;
+    healthFactor: IHealthFactorCondition;
 }
 
 const MmBase = [
@@ -46,6 +48,7 @@ const MmBase = [
     { name: "price", type: "Price" },                // condition: balance
     { name: "repetitions", type: "Repetitions" },    // condition: max repetitions
     { name: "follow", type: "Follow" },              // condition: follow script
+    { name: "healthFactor", type: "HealthFactor" },  // condition: MM health factor
 ];
 
 export const mmBaseDomain = {
@@ -59,4 +62,5 @@ export const mmBaseTypes = {
     Price,
     Repetitions,
     Follow,
+    HealthFactor,
 };

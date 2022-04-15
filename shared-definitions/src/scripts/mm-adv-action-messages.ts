@@ -4,6 +4,7 @@ import { IPriceCondition, Price } from './condition-messages';
 import { IFrequencyCondition, Frequency } from './condition-messages';
 import { IMaxRepetitionsCondition, Repetitions } from './condition-messages';
 import { IFollowCondition, Follow } from './condition-messages';
+import { IHealthFactorCondition, HealthFactor } from './condition-messages';
 
 export interface ISignedMMAdvancedAction extends IMMAdvancedAction {
     signature: string;
@@ -28,6 +29,7 @@ export interface IMMAdvancedAction {
     price: IPriceCondition;
     repetitions: IMaxRepetitionsCondition;
     follow: IFollowCondition;
+    healthFactor: IHealthFactorCondition;
 }
 
 const MmAdvanced = [
@@ -45,6 +47,7 @@ const MmAdvanced = [
     { name: "price", type: "Price" },                // condition: balance
     { name: "repetitions", type: "Repetitions" },    // condition: max repetitions
     { name: "follow", type: "Follow" },              // condition: follow script
+    { name: "healthFactor", type: "HealthFactor" },  // condition: MM health factor
 ];
 
 export const mmAdvDomain = {
@@ -58,4 +61,5 @@ export const mmAdvTypes = {
     Price,
     Repetitions,
     Follow,
+    HealthFactor,
 };
