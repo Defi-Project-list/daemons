@@ -10,7 +10,7 @@ export function GasIndicator(): JSX.Element {
     const chainId = useSelector((state: RootState) => state.wallet.chainId);
 
     const showBalance = balance !== undefined && walletConnected;
-    const currencySymbol = chainId !== undefined ? GetCurrentChain(chainId).coinSymbol : 'ETH';
+    const currencySymbol = GetCurrentChain(chainId!).coinSymbol;
 
     return <div>Gas: {showBalance ? balance : '??'} {currencySymbol}</div>;
 }
