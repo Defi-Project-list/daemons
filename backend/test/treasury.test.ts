@@ -237,6 +237,9 @@ describe("Treasury", function () {
     const oneDay = 60 * 60 * 24;
 
     it("the user cannot stake funds they don't own", async () => {
+      // give allowance to treasury contract
+      await fooToken.approve(treasury.address, ethers.utils.parseEther("500"));
+
       const amount = ethers.utils.parseEther("1.0");
       await expect(treasury.stake(amount)).to.be.revertedWith(
         "ERC20: transfer amount exceeds balance"
