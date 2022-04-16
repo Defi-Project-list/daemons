@@ -66,6 +66,12 @@ describe("ScriptExecutor - Money Market Advanced", function () {
         "0x0065737400000000000000000000000000000000000000000000000000000000",
       executor: "0x000000000000000000000000000000000000dead",
     },
+    healthFactor: {
+      enabled: false,
+      kontract: "",
+      comparison: ComparisonType.GreaterThan,
+      amount: ethers.utils.parseEther("0"),
+    }
   };
 
   this.beforeEach(async () => {
@@ -154,6 +160,7 @@ describe("ScriptExecutor - Money Market Advanced", function () {
     message.executor = executor.address;
     message.token = fooToken.address;
     message.kontract = mockMoneyMarketPool.address;
+    message.healthFactor.kontract = mockMoneyMarketPool.address;
     message.balance.token = fooToken.address;
     message.price.token = fooToken.address;
     message.follow.executor = executor.address; // following itself, it'll never be executed when condition is enabled
@@ -574,6 +581,36 @@ describe("ScriptExecutor - Money Market Advanced", function () {
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
       "[Follow Condition] The parent script has not been (re)executed yet"
+    );
+  });
+
+  /* ========== HEALTH FACTOR CONDITION CHECK ========== */
+
+  it("fails if current health factor is lower than threshold when looking for GreaterThan", async () => {
+    let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
+    // enabling the health factor condition
+    // the mock MM pool always return current HF:2
+    message.healthFactor.enabled = true;
+    message.healthFactor.amount = ethers.utils.parseEther('2.1');
+    message.healthFactor.comparison = ComparisonType.GreaterThan;
+    message = await initialize(message);
+
+    await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
+      "[HealthFactor Condition] HF lower than threshold"
+    );
+  });
+
+  it("fails if current health factor is higher than threshold when looking for LessThan", async () => {
+    let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
+    // enabling the health factor condition
+    // the mock MM pool always return current HF:2
+    message.healthFactor.enabled = true;
+    message.healthFactor.amount = ethers.utils.parseEther('1.9');
+    message.healthFactor.comparison = ComparisonType.LessThan;
+    message = await initialize(message);
+
+    await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
+      "[HealthFactor Condition] HF higher than threshold"
     );
   });
 });

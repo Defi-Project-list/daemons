@@ -90,6 +90,6 @@ contract MockMoneyMarketPool is IMoneyMarket {
             uint256 healthFactor
         )
     {
-        return (0, 0, 0, 0, 0, 0);
+        return (0, 0, 0, 0, 0, 2e18);
     }
 }

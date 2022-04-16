@@ -2,10 +2,10 @@
 pragma solidity ^0.8.4;
 
 import "./ConditionsChecker.sol";
+import "./ConditionsCheckerForMoneyMarket.sol";
 import "./Messages.sol";
-import "./interfaces/IMoneyMarket.sol";
 
-contract MmAdvancedScriptExecutor is ConditionsChecker {
+contract MmAdvancedScriptExecutor is ConditionsChecker, ConditionsCheckerForMoneyMarket {
     uint256 public GAS_COST = 300000000000000; // 0.00030 ETH
     mapping(address => mapping(IERC20 => bool)) private allowances;
 
@@ -38,7 +38,8 @@ contract MmAdvancedScriptExecutor is ConditionsChecker {
                     hashFrequency(mm.frequency),
                     hashPrice(mm.price),
                     hashRepetitions(mm.repetitions),
-                    hashFollow(mm.follow)
+                    hashFollow(mm.follow),
+                    hashHealthFactor(mm.healthFactor)
                 )
             )
         );
@@ -88,6 +89,7 @@ contract MmAdvancedScriptExecutor is ConditionsChecker {
         verifyPrice(message.price);
         verifyGasTank(message.user);
         verifyAllowance(message.user, message.token, message.amount);
+        verifyHealthFactor(message.healthFactor, message.user);
     }
 
     /* ========== EXECUTION FUNCTIONS ========== */
