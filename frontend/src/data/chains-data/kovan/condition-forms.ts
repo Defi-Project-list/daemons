@@ -1,12 +1,12 @@
 import { ComparisonType } from "@daemons-fi/shared-definitions/build";
-import { FrequencyUnits } from "../condition-form-interfaces";
+import { FrequencyUnits, IHealthFactorConditionForm } from "../condition-form-interfaces";
 import { IBalanceConditionForm } from "../condition-form-interfaces";
-import { IFollowConditionForm } from "../condition-form-interfaces";
 import { IFrequencyConditionForm } from "../condition-form-interfaces";
 import { IPriceConditionForm } from "../condition-form-interfaces";
 import { IRepetitionsConditionForm } from "../condition-form-interfaces";
 import { ScriptConditions } from "../condition-form-interfaces";
 import { ConditionTitles, ICondition } from "../interfaces";
+import { kovanAaveMM } from "./tokens";
 
 export const FrequencyCondition: ICondition = {
     title: ConditionTitles.FREQUENCY,
@@ -15,7 +15,6 @@ export const FrequencyCondition: ICondition = {
     form: {
         type: ScriptConditions.FREQUENCY,
         valid: true,
-        enabled: false,
         ticks: 1,
         unit: FrequencyUnits.Hours,
         startNow: true
@@ -30,7 +29,6 @@ export const BalanceCondition: ICondition = {
     form: {
         type: ScriptConditions.BALANCE,
         valid: false,
-        enabled: false,
         comparison: ComparisonType.GreaterThan,
         floatAmount: 0
     } as IBalanceConditionForm
@@ -43,7 +41,6 @@ export const PriceCondition: ICondition = {
     form: {
         type: ScriptConditions.PRICE,
         valid: false,
-        enabled: false,
         comparison: ComparisonType.GreaterThan,
         floatValue: 0
     } as IPriceConditionForm
@@ -56,7 +53,19 @@ export const RepetitionsCondition: ICondition = {
     form: {
         type: ScriptConditions.REPETITIONS,
         valid: false,
-        enabled: false,
         amount: 0
     } as IRepetitionsConditionForm
 };
+
+export const AaveHealthFactorCondition: ICondition = {
+    title: ConditionTitles.HEALTH_FACTOR,
+    info: "Execute the script when the AAVE health factor passes a threshold.",
+
+    form: {
+        type: ScriptConditions.HEALTH_FACTOR,
+        valid: true,
+        contractAddress: kovanAaveMM.poolAddress,
+        comparison: ComparisonType.LessThan,
+        floatAmount: 1.3,
+    } as IHealthFactorConditionForm
+}

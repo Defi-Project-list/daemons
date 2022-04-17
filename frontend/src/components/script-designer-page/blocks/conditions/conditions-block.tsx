@@ -1,5 +1,5 @@
 import React from "react";
-import { IBalanceConditionForm } from "../../../../data/chains-data/condition-form-interfaces";
+import { IBalanceConditionForm, IHealthFactorConditionForm } from "../../../../data/chains-data/condition-form-interfaces";
 import { IFrequencyConditionForm } from "../../../../data/chains-data/condition-form-interfaces";
 import { IScriptConditionForm } from "../../../../data/chains-data/condition-form-interfaces";
 import { ScriptConditions } from "../../../../data/chains-data/condition-form-interfaces";
@@ -10,6 +10,7 @@ import { ICondition } from "../../../../data/chains-data/interfaces";
 import { BalanceCondition } from "./balance-condition";
 import { FollowCondition } from "./follow-condition";
 import { FrequencyCondition } from "./frequency-condition";
+import { HealthFactorCondition } from "./health-factor-condition";
 import { PriceCondition } from "./price-condition";
 import { RepetitionsCondition } from "./repetitions-condition";
 
@@ -26,7 +27,9 @@ export const ConditionBlock = ({ condition, onUpdate, onRemove }: IConditionBloc
                 return (
                     <FrequencyCondition
                         form={conditionForm as IFrequencyConditionForm}
-                        update={(form) => {onUpdate(condition.title, form)}}
+                        update={(form) => {
+                            onUpdate(condition.title, form);
+                        }}
                     />
                 );
 
@@ -34,7 +37,9 @@ export const ConditionBlock = ({ condition, onUpdate, onRemove }: IConditionBloc
                 return (
                     <BalanceCondition
                         form={conditionForm as IBalanceConditionForm}
-                        update={(form) => {onUpdate(condition.title, form)}}
+                        update={(form) => {
+                            onUpdate(condition.title, form);
+                        }}
                     />
                 );
 
@@ -42,7 +47,9 @@ export const ConditionBlock = ({ condition, onUpdate, onRemove }: IConditionBloc
                 return (
                     <PriceCondition
                         form={conditionForm as IPriceConditionForm}
-                        update={(form) => {onUpdate(condition.title, form)}}
+                        update={(form) => {
+                            onUpdate(condition.title, form);
+                        }}
                     />
                 );
 
@@ -50,7 +57,9 @@ export const ConditionBlock = ({ condition, onUpdate, onRemove }: IConditionBloc
                 return (
                     <RepetitionsCondition
                         form={conditionForm as IRepetitionsConditionForm}
-                        update={(form) => {onUpdate(condition.title, form)}}
+                        update={(form) => {
+                            onUpdate(condition.title, form);
+                        }}
                     />
                 );
 
@@ -58,9 +67,24 @@ export const ConditionBlock = ({ condition, onUpdate, onRemove }: IConditionBloc
                 return (
                     <FollowCondition
                         form={conditionForm as IFollowConditionForm}
-                        update={(form) => {onUpdate(condition.title, form)}}
+                        update={(form) => {
+                            onUpdate(condition.title, form);
+                        }}
                     />
                 );
+
+            case ScriptConditions.HEALTH_FACTOR:
+                return (
+                    <HealthFactorCondition
+                        form={conditionForm as IHealthFactorConditionForm}
+                        update={(form) => {
+                            onUpdate(condition.title, form);
+                        }}
+                    />
+                );
+
+            default:
+                throw new Error(`Unrecognized condition ${conditionForm.type}`);
         }
     };
 

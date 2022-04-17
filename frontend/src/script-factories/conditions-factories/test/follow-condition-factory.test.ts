@@ -18,20 +18,6 @@ describe('Follow Condition Factory', () => {
     const AnAddress = '0x0001000100010001000100010001000100010001';
     const AnId = '0x0001000100010001000100010001000100010001000100010001000100010001';
 
-    let stubCall: Sinon.SinonStub<[], any>;
-
-    const fakeExecutor = {
-        getRepetitions: (_: string) => Promise.resolve(BigNumber.from(2))
-    };
-
-    before(() => {
-        stubCall = sinon.stub(FollowConditionFactory, 'getExecutor');
-        stubCall.callsFake(() => fakeExecutor);
-    });
-
-    after(() => {
-        stubCall.reset();
-    });
 
     it('creates an empty condition', async () => {
         const empty = FollowConditionFactory.empty();
@@ -70,8 +56,8 @@ describe('Follow Condition Factory', () => {
             parentScriptExecutor: AnAddress,
         };
 
-        const gonnaThrowPromise = () => FollowConditionFactory.fromForm(form);
-        await expect(gonnaThrowPromise()).to.be.rejectedWith('Cannot build Follow condition from invalid form');
+        const gonnaThrow = () => FollowConditionFactory.fromForm(form);
+        expect(gonnaThrow).to.throw('Cannot build Follow condition from invalid form');
     });
 
     describe('creates a condition from an enabled form', () => {
@@ -89,7 +75,7 @@ describe('Follow Condition Factory', () => {
             expect(condition.enabled).to.be.true;
             expect(condition.scriptId).to.be.equal(AnId);
             expect(condition.executor).to.be.equal(AnAddress);
-            expect(condition.shift.toNumber()).to.be.equal(2);
+            expect(condition.shift.toNumber()).to.be.equal(0);
         });
     });
 
@@ -97,7 +83,7 @@ describe('Follow Condition Factory', () => {
         const form: IFollowConditionForm = {
             type: ScriptConditions.FOLLOW,
             valid: true,
-            shift: 0,
+            shift: 1,
             parentScriptId: AnId,
             parentScriptExecutor: AnAddress,
         };
@@ -126,8 +112,7 @@ describe('Follow Condition Factory', () => {
             expect(condition.enabled).to.be.true;
             expect(condition.scriptId).to.be.equal(AnId);
             expect(condition.executor).to.be.equal(AnAddress);
-            expect(condition.shift).to.be.equal(0);
-            expect(condition.shift.toNumber()).to.be.equal(2);
+            expect(condition.shift.toNumber()).to.be.equal(1);
         });
 
         it('returns an empty form if the balance condition is missing from the bundle', async () => {

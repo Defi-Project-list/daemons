@@ -7,6 +7,7 @@ export enum ScriptConditions {
     PRICE = "PRICE",
     REPETITIONS = "REPETITIONS",
     FOLLOW = "FOLLOW",
+    HEALTH_FACTOR = "HEALTH_FACTOR",
 }
 
 export interface IScriptConditionForm {
@@ -49,8 +50,18 @@ export interface IFollowConditionForm extends IScriptConditionForm {
     parentScriptExecutor: string;
 }
 
+export interface IHealthFactorConditionForm extends IScriptConditionForm {
+    type: ScriptConditions.HEALTH_FACTOR;
+    contractAddress: string;
+    comparison: ComparisonType;
+    floatAmount: number;
+}
+
+
+
 export type ConditionForm = IFrequencyConditionForm
     | IBalanceConditionForm
     | IPriceConditionForm
     | IRepetitionsConditionForm
-    | IFollowConditionForm;
+    | IFollowConditionForm
+    | IHealthFactorConditionForm;

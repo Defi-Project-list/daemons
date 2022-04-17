@@ -1,6 +1,5 @@
-import { BigNumber, Contract } from "ethers";
+import { BigNumber } from "ethers";
 import { IFollowCondition } from "@daemons-fi/shared-definitions";
-import { getAbiFor } from "../../utils/get-abi";
 import { ZeroAddress, ZeroId } from "../../data/chain-info";
 import { ICurrentScript } from "../i-current-script";
 import { ConditionTitles } from "../../data/chains-data/interfaces";
@@ -27,7 +26,7 @@ export class FollowConditionFactory {
             : this.empty();
 
     /** A frequency condition built from user inputs */
-    public static fromForm = async (form: IFollowConditionForm): Promise<IFollowCondition> => {
+    public static fromForm = (form: IFollowConditionForm): IFollowCondition => {
         if (!form.parentScriptId || !form.parentScriptExecutor) {
             return this.empty();
         }
@@ -41,17 +40,8 @@ export class FollowConditionFactory {
         };
     };
 
-    private static async getExecutor(executorAddress: string): Promise<Contract> {
-        const ethers = require("ethers");
-        const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-        const signer = provider.getSigner();
-
-        const contractAbi = await getAbiFor("ConditionsChecker");
-        return new ethers.Contract(executorAddress, contractAbi, signer);
-    }
-
     /** A follow condition built from a bundle generated in the new-script-page */
-    public static fromBundle = async (bundle: ICurrentScript): Promise<IFollowCondition> => {
+    public static fromBundle = (bundle: ICurrentScript): IFollowCondition => {
         const condition = bundle.conditions[ConditionTitles.FOLLOW];
         if (!condition) return this.empty();
 

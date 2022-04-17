@@ -8,6 +8,7 @@ import { PriceConditionFactory } from '../../script-factories/conditions-factori
 import { RepetitionsConditionFactory } from '../../script-factories/conditions-factories/repetitions-condition-factory';
 import { BaseMoneyMarketActionType, IMMBaseAction } from '@daemons-fi/shared-definitions';
 import { Token } from '../chains-data/interfaces';
+import { HealthFactorConditionFactory } from "../../script-factories/conditions-factories/health-factor-condition-factory";
 
 export class MmBaseScript extends BaseScript {
     public constructor(private readonly message: IMMBaseAction, signature: string, private readonly description: string) {
@@ -68,6 +69,7 @@ export class MmBaseScript extends BaseScript {
         message.price = PriceConditionFactory.fromJson(message.price);
         message.repetitions = RepetitionsConditionFactory.fromJson(message.repetitions);
         message.follow = FollowConditionFactory.fromJson(object.follow);
+        message.healthFactor = HealthFactorConditionFactory.fromJson(object.healthFactor);
 
         return new MmBaseScript(message, object.signature, object.description);
     }

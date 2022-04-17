@@ -43,6 +43,9 @@ export const ActionBlock = ({ action, onUpdate, onRemove }: IActionBlockProps) =
                         update={onUpdate}
                     />
                 );
+
+            default:
+                throw new Error(`Unrecognized action ${actionForm.type}`);
         }
     };
 

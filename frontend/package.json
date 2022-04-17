@@ -37,7 +37,7 @@
     "webpack-dev-server": "^4.6.0"
   },
   "dependencies": {
-    "@daemons-fi/shared-definitions": "1.0.1",
+    "@daemons-fi/shared-definitions": "1.1.1",
     "@metamask/detect-provider": "^1.2.0",
     "@types/react": "^17.0.37",
     "@types/react-dom": "^17.0.11",

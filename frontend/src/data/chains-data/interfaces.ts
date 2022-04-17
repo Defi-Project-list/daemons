@@ -53,6 +53,7 @@ export enum ConditionTitles {
     PRICE = "Price",
     REPETITIONS = "Repetitions",
     FOLLOW = "Chain Scripts",
+    HEALTH_FACTOR = "Health Factor",
 }
 
 export interface IChainInfo {

@@ -12,6 +12,7 @@ import { PriceConditionFactory } from "../../conditions-factories/price-conditio
 import { RepetitionsConditionFactory } from "../../conditions-factories/repetitions-condition-factory";
 import { FollowConditionFactory } from "../../conditions-factories/follow-condition-factory";
 import { MmBaseMessageFactory } from "../mm-base-message-factory";
+import { HealthFactorConditionFactory } from "../../conditions-factories/health-factor-condition-factory";
 
 describe("MM Base Message Factory", () => {
     const FooToken: Token = {
@@ -130,6 +131,7 @@ describe("MM Base Message Factory", () => {
             price: PriceConditionFactory.empty(),
             repetitions: RepetitionsConditionFactory.empty(),
             follow: FollowConditionFactory.empty(),
+            healthFactor: HealthFactorConditionFactory.empty(),
             executor: "0x88884444",
             chainId: BigNumber.from(fakeChain.id)
         } as IMMBaseAction;

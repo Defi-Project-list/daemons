@@ -30,7 +30,7 @@ export class SwapMessageFactory {
         const balanceCondition = BalanceConditionFactory.fromBundle(bundle, tokens);
         const priceCondition = PriceConditionFactory.fromBundle(bundle, tokens);
         const maxRepetitions = RepetitionsConditionFactory.fromBundle(bundle);
-        const followCondition = await FollowConditionFactory.fromBundle(bundle);
+        const followCondition = FollowConditionFactory.fromBundle(bundle);
 
         const tokenFrom = tokens.filter(
             (token) => token.address === swapActionForm.tokenFromAddress

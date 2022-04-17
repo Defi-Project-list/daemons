@@ -9,6 +9,7 @@ import {
     IBalanceConditionForm,
     IFollowConditionForm,
     IFrequencyConditionForm,
+    IHealthFactorConditionForm,
     IPriceConditionForm,
     IRepetitionsConditionForm,
     ScriptConditions
@@ -30,7 +31,6 @@ export class ScriptDescriptionFactory {
             this.extractConditionDescription(condition)
         );
         const description = [actionDescription, ...conditionDescriptions].join("\n\n");
-        console.log(description);
         return description;
     }
 
@@ -79,6 +79,8 @@ export class ScriptDescriptionFactory {
                 return this.repetitionsCondition(condition.form as IRepetitionsConditionForm);
             case ScriptConditions.FOLLOW:
                 return this.followCondition(condition.form as IFollowConditionForm);
+            case ScriptConditions.HEALTH_FACTOR:
+                return this.healthFactorCondition(condition.form as IHealthFactorConditionForm);
             default:
                 console.error(`Unknown condition ${condition.form.type}.`);
                 return `#!@!# Unknown condition ${condition.form.type}. Please add to factory #!@!#`;
@@ -108,5 +110,10 @@ export class ScriptDescriptionFactory {
 
     private followCondition(form: IFollowConditionForm): string {
         return `Following ${form.parentScriptId}`;
+    }
+
+    private healthFactorCondition(form: IHealthFactorConditionForm): string {
+        const comparison = form.comparison === ComparisonType.GreaterThan ? ">" : "<";
+        return `When health factor is ${comparison} ${form.floatAmount}`;
     }
 }

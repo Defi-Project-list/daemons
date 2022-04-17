@@ -32,7 +32,7 @@ export class TransferMessageFactory {
         const balanceCondition = BalanceConditionFactory.fromBundle(bundle, tokens);
         const priceCondition = PriceConditionFactory.fromBundle(bundle, tokens);
         const maxRepetitions = RepetitionsConditionFactory.fromBundle(bundle);
-        const followCondition = await FollowConditionFactory.fromBundle(bundle);
+        const followCondition = FollowConditionFactory.fromBundle(bundle);
 
         const token = tokens.filter(
             (token) => token.address === transferActionForm.tokenAddress

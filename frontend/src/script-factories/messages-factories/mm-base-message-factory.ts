@@ -1,4 +1,4 @@
-import { BigNumber, ethers, utils } from "ethers";
+import { BigNumber, utils } from "ethers";
 import { AmountType, IMMBaseAction } from "@daemons-fi/shared-definitions";
 import { IChainInfo } from "../../data/chains-data/interfaces";
 import { ICurrentScript } from "../i-current-script";
@@ -8,6 +8,7 @@ import { BalanceConditionFactory } from "../conditions-factories/balance-conditi
 import { PriceConditionFactory } from "../conditions-factories/price-condition-factory";
 import { RepetitionsConditionFactory } from "../conditions-factories/repetitions-condition-factory";
 import { FollowConditionFactory } from "../conditions-factories/follow-condition-factory";
+import { HealthFactorConditionFactory } from "../conditions-factories/health-factor-condition-factory";
 
 export class MmBaseMessageFactory {
     public static async create(
@@ -30,7 +31,8 @@ export class MmBaseMessageFactory {
         const balanceCondition = BalanceConditionFactory.fromBundle(bundle, tokens);
         const priceCondition = PriceConditionFactory.fromBundle(bundle, tokens);
         const maxRepetitions = RepetitionsConditionFactory.fromBundle(bundle);
-        const followCondition = await FollowConditionFactory.fromBundle(bundle);
+        const followCondition = FollowConditionFactory.fromBundle(bundle);
+        const healthFactorCondition = HealthFactorConditionFactory.fromBundle(bundle);
 
         const moneyMarket = mmBaseActionForm.moneyMarket;
         const token = moneyMarket.supportedTokens.filter(
@@ -61,6 +63,7 @@ export class MmBaseMessageFactory {
             price: priceCondition,
             repetitions: maxRepetitions,
             follow: followCondition,
+            healthFactor: healthFactorCondition,
             executor: chain.contracts.MmBaseExecutor,
             chainId: BigNumber.from(chain.id)
         };
