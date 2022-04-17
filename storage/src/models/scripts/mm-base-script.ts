@@ -1,7 +1,7 @@
 import { utils } from 'ethers';
 import mongoose from 'mongoose';
 import { ISignedMMBaseAction } from '@daemons-fi/shared-definitions';
-import { balanceCondition, followCondition, frequencyCondition, priceCondition, repetitionsCondition } from './script-conditions';
+import { balanceCondition, followCondition, frequencyCondition, healthFactorCondition, priceCondition, repetitionsCondition } from './script-conditions';
 import { removeIfEmpty, stringifyBigNumber, truncateAndEscapeText } from '../utils';
 
 
@@ -26,6 +26,7 @@ const mmBaseScriptSchema = new mongoose.Schema({
     price: { type: priceCondition, set: removeIfEmpty },
     repetitions: { type: repetitionsCondition, set: removeIfEmpty },
     follow: { type: followCondition, set: removeIfEmpty },
+    healthFactor: { type: healthFactorCondition, set: removeIfEmpty },
 });
 
 interface IMmBaseScriptDocument extends ISignedMMBaseAction, mongoose.Document { }

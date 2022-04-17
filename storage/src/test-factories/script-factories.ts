@@ -1,15 +1,26 @@
-import { BigNumber, utils } from 'ethers';
-import { AmountType, ComparisonType, IBalanceCondition, IFollowCondition, IFrequencyCondition, IMaxRepetitionsCondition, IPriceCondition } from '@daemons-fi/shared-definitions';
-import { ISignedSwapAction } from '@daemons-fi/shared-definitions';
-import { ISignedTransferAction } from '@daemons-fi/shared-definitions';
-import { SwapScript } from '../models/scripts/swap-script';
-import { TransferScript } from '../models/scripts/transfer-script';
-import faker from '@faker-js/faker';
-import { BaseMoneyMarketActionType, ISignedMMBaseAction } from '@daemons-fi/shared-definitions';
-import { MmBaseScript } from '../models/scripts/mm-base-script';
+import { BigNumber, utils } from "ethers";
+import {
+    AmountType,
+    ComparisonType,
+    IBalanceCondition,
+    IFollowCondition,
+    IFrequencyCondition,
+    IHealthFactorCondition,
+    IMaxRepetitionsCondition,
+    IPriceCondition
+} from "@daemons-fi/shared-definitions";
+import { ISignedSwapAction } from "@daemons-fi/shared-definitions";
+import { ISignedTransferAction } from "@daemons-fi/shared-definitions";
+import { SwapScript } from "../models/scripts/swap-script";
+import { TransferScript } from "../models/scripts/transfer-script";
+import faker from "@faker-js/faker";
+import { BaseMoneyMarketActionType, ISignedMMBaseAction } from "@daemons-fi/shared-definitions";
+import { MmBaseScript } from "../models/scripts/mm-base-script";
 
-const randomEthAmount = () => utils.parseEther(faker.datatype.number({ min: 0.01, max: 10, precision: 0.01 }).toString());
-const randomBigNumber = () => BigNumber.from(faker.datatype.number({ min: 0, max: 10000 }).toString());
+const randomEthAmount = () =>
+    utils.parseEther(faker.datatype.number({ min: 0.01, max: 10, precision: 0.01 }).toString());
+const randomBigNumber = () =>
+    BigNumber.from(faker.datatype.number({ min: 0, max: 10000 }).toString());
 
 /** Returns a randomized balance condition */
 function balanceConditionFactory(args: any): IBalanceCondition {
@@ -17,7 +28,7 @@ function balanceConditionFactory(args: any): IBalanceCondition {
         enabled: args.enabled ?? false,
         comparison: args.comparison ?? ComparisonType.GreaterThan,
         amount: args.amount ?? randomEthAmount(),
-        token: args.token ?? '0x596e8221a30bfe6e7eff67fee664a01c73ba3c56',
+        token: args.token ?? "0x596e8221a30bfe6e7eff67fee664a01c73ba3c56"
     };
 }
 
@@ -27,7 +38,7 @@ function priceConditionFactory(args: any): IPriceCondition {
         enabled: args.enabled ?? false,
         comparison: args.comparison ?? ComparisonType.GreaterThan,
         value: args.value ?? randomEthAmount(),
-        token: args.token ?? faker.finance.ethereumAddress(),
+        token: args.token ?? faker.finance.ethereumAddress()
     };
 }
 
@@ -36,7 +47,7 @@ function frequencyConditionFactory(args: any): IFrequencyCondition {
     return {
         enabled: args.enabled ?? false,
         delay: args.blocks ?? randomBigNumber(),
-        start: args.startBlock ?? randomBigNumber(),
+        start: args.startBlock ?? randomBigNumber()
     };
 }
 
@@ -44,7 +55,7 @@ function frequencyConditionFactory(args: any): IFrequencyCondition {
 function repetitionsConditionFactory(args: any): IMaxRepetitionsCondition {
     return {
         enabled: args.enabled ?? false,
-        amount: args.amount ?? randomBigNumber(),
+        amount: args.amount ?? randomBigNumber()
     };
 }
 
@@ -54,7 +65,17 @@ function followConditionFactory(args: any): IFollowCondition {
         enabled: args.enabled ?? false,
         scriptId: args.scriptId ?? utils.hexlify(utils.randomBytes(32)),
         executor: args.executor ?? faker.finance.ethereumAddress(),
-        shift: args.amount ?? randomBigNumber(),
+        shift: args.amount ?? randomBigNumber()
+    };
+}
+
+/** Returns a randomized HealthFactor condition */
+function healthFactorConditionFactory(args: any): IHealthFactorCondition {
+    return {
+        enabled: args.enabled ?? false,
+        comparison: args.comparison ?? ComparisonType.GreaterThan,
+        amount: args.amount ?? randomEthAmount(),
+        kontract: args.kontract ?? "0x596e8221a30bfe6e7eff67fee664a01c73ba3c56"
     };
 }
 
@@ -75,7 +96,7 @@ export function signedSwapActionFactory(args: any): ISignedSwapAction {
         frequency: frequencyConditionFactory(args.frequency ?? {}),
         price: priceConditionFactory(args.price ?? {}),
         repetitions: repetitionsConditionFactory(args.repetitions ?? {}),
-        follow: followConditionFactory(args.follow ?? {}),
+        follow: followConditionFactory(args.follow ?? {})
     };
 }
 
@@ -89,7 +110,6 @@ export async function swapScriptDocumentFactory(args: any): Promise<ISignedSwapA
 
     return await SwapScript.build(jsonTransformedScript).save();
 }
-
 
 /** Returns a randomized signed transfer action */
 export function signedTransferActionFactory(args: any): ISignedTransferAction {
@@ -108,7 +128,7 @@ export function signedTransferActionFactory(args: any): ISignedTransferAction {
         frequency: frequencyConditionFactory(args.frequency ?? {}),
         price: priceConditionFactory(args.price ?? {}),
         repetitions: repetitionsConditionFactory(args.repetitions ?? {}),
-        follow: followConditionFactory(args.follow ?? {}),
+        follow: followConditionFactory(args.follow ?? {})
     };
 }
 
@@ -122,7 +142,6 @@ export async function transferScriptDocumentFactory(args: any): Promise<ISignedT
 
     return await TransferScript.build(jsonTransformedScript).save();
 }
-
 
 /** Returns a randomized signed mmBase action */
 export function signedMmBaseActionFactory(args: any): ISignedMMBaseAction {
@@ -144,6 +163,7 @@ export function signedMmBaseActionFactory(args: any): ISignedMMBaseAction {
         price: priceConditionFactory(args.price ?? {}),
         repetitions: repetitionsConditionFactory(args.repetitions ?? {}),
         follow: followConditionFactory(args.follow ?? {}),
+        healthFactor: healthFactorConditionFactory(args.healthFactor ?? {})
     };
 }
 

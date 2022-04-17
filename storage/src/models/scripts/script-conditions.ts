@@ -34,3 +34,10 @@ export const followCondition = new mongoose.Schema({
     executor: { type: String, required: true, set: utils.getAddress },
     shift: { type: String, required: true, set: stringifyBigNumber },
 });
+
+export const healthFactorCondition = new mongoose.Schema({
+    enabled: { type: Boolean, required: true },
+    kontract: { type: String, required: true },
+    comparison: { type: Number, required: true },
+    amount: { type: String, required: true, set: stringifyBigNumber },
+});
