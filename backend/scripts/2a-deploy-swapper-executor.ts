@@ -7,9 +7,9 @@ import { BigNumber } from 'ethers';
 import { ethers } from "hardhat";
 
 const testRouterAddress = '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506';
-const gasTankAddress = '0x9E3B12384b0394Eb4AdD62E0Fd417B4281C02116';
+const gasTankAddress = '0x29A74Bab786C01E3181191a77Dfd5A590f2a47e1';
 const priceRetrieverAddress = '0xf94EA781F213b1782f89a2F451D45BC6DD896bE7';
-const gasPriceFeedAddress = '0x51Facf7Ea87460824b9a706faBF62217aB329F38';
+const gasPriceFeedAddress = '0x69c05f9E5f370546c41CDa2bA2C7f439f2460a32';
 
 async function main() {
   const [owner] = await ethers.getSigners();

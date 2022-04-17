@@ -1,7 +1,7 @@
 import { AmountType, BaseMoneyMarketActionType } from '@daemons-fi/shared-definitions/build';
 import { IBaseMMActionForm, ISwapActionForm, ITransferActionForm, ScriptAction } from '../action-form-interfaces';
 import { IAction } from '../interfaces';
-import { BalanceCondition, FollowCondition, FrequencyCondition, PriceCondition, RepetitionsCondition } from './condition-forms';
+import { BalanceCondition, FrequencyCondition, PriceCondition, RepetitionsCondition } from './condition-forms';
 import { kovanAaveMM } from './tokens';
 
 export const TransferAction: IAction = {
@@ -22,7 +22,6 @@ export const TransferAction: IAction = {
         BalanceCondition,
         PriceCondition,
         RepetitionsCondition,
-        FollowCondition,
     ]
 };
 
@@ -44,7 +43,6 @@ export const SwapAction: IAction = {
         BalanceCondition,
         PriceCondition,
         RepetitionsCondition,
-        FollowCondition,
     ]
 };
 
@@ -67,6 +65,5 @@ export const AaveMMBaseAction: IAction = {
         BalanceCondition,
         PriceCondition,
         RepetitionsCondition,
-        FollowCondition,
     ]
 };

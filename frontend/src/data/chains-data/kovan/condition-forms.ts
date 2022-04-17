@@ -60,14 +60,3 @@ export const RepetitionsCondition: ICondition = {
         amount: 0
     } as IRepetitionsConditionForm
 };
-
-export const FollowCondition: ICondition = {
-    title: ConditionTitles.FOLLOW,
-    info: "Execute this script only after another one is executed",
-
-    form: {
-        type: ScriptConditions.FOLLOW,
-        valid: false,
-        enabled: false
-    } as IFollowConditionForm
-};

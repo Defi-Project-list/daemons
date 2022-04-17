@@ -1,6 +1,9 @@
 import { BigNumber } from 'ethers';
 import { ethers } from "hardhat";
 
+
+const testRouterAddress = '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506';
+
 const oneMonth = () => 60 * 60 * 24 * 30;
 const now = () => Math.floor(new Date().getTime() / 1000);
 
@@ -30,7 +33,7 @@ async function main() {
 
   // deploy Treasury contract
   const TreasuryContract = await ethers.getContractFactory("Treasury");
-  const treasury = await TreasuryContract.deploy(token.address, gasTank.address);
+  const treasury = await TreasuryContract.deploy(token.address, gasTank.address, testRouterAddress);
   await treasury.deployed();
   console.log(`Treasury deployed to: ${treasury.address}`);
 

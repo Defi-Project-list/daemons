@@ -1,8 +1,8 @@
 import { BigNumber } from 'ethers';
 import { ethers } from "hardhat";
 
-const tokenAddress = '0x568f91A0d586C03B59de93EC2964CBdE05b53FB4';
-const vestingAddress = '0x3Cf9B15059C9acaba5ffdcD687194F8fE4283A48';
+const tokenAddress = '0x19ff2C637621bEbe560f62b78cECc3C6970aC34b';
+const vestingAddress = '0x9b1A37768B442Ab14efb986655b1751FFdeC6Abd';
 
 interface IBeneficiary {
   address: string;

@@ -264,7 +264,7 @@ abstract contract ConditionsChecker is Ownable {
                 follow.scriptId
             );
         require(
-            parentCount > repetitionsCount[id] + follow.shift,
+            parentCount + follow.shift == repetitionsCount[id] + 1,
             "[Follow Condition] The parent script has not been (re)executed yet"
         );
     }
