@@ -63,8 +63,8 @@ export class ScriptDescriptionFactory {
     private mmBaseAction(form: IBaseMMActionForm): string {
         const token = this.tokensDict[form.tokenAddress];
         return form.actionType === BaseMoneyMarketActionType.Deposit
-            ? `Deposit ${form.floatAmount} ${token} into ${form.moneyMarket.name}`
-            : `Withdraw ${form.floatAmount} ${token} from ${form.moneyMarket.name}`;
+            ? `Deposit ${form.floatAmount} ${token.symbol} into ${form.moneyMarket.name}`
+            : `Withdraw ${form.floatAmount} ${token.symbol} from ${form.moneyMarket.name}`;
     }
 
     private extractConditionDescription(condition: ICondition): string {

@@ -33,15 +33,11 @@ export class FollowConditionFactory {
         }
         if (!form.valid) throw new Error("Cannot build Follow condition from invalid form");
 
-        // calculate shift (difference between the number of executions of the parent and the child)
-        const executorContract = await this.getExecutor(form.parentScriptExecutor);
-        const shift = await executorContract.getRepetitions(form.parentScriptId);
-
         return {
             enabled: true,
             scriptId: form.parentScriptId,
             executor: form.parentScriptExecutor,
-            shift: shift
+            shift: BigNumber.from(form.shift)
         };
     };
 

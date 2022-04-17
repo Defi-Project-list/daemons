@@ -44,8 +44,9 @@ export interface IRepetitionsConditionForm extends IScriptConditionForm {
 
 export interface IFollowConditionForm extends IScriptConditionForm {
     type: ScriptConditions.FOLLOW;
-    parentScriptId?: string;
-    parentScriptExecutor?: string;
+    shift: number;
+    parentScriptId: string;
+    parentScriptExecutor: string;
 }
 
 export type ConditionForm = IFrequencyConditionForm

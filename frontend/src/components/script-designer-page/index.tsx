@@ -48,8 +48,8 @@ export function ScriptDesignerPage(): JSX.Element {
             id: ethers.utils.hexlify(ethers.utils.randomBytes(32)),
             description: "",
             action: actionCopy,
-            conditions: {},
-        }
+            conditions: {}
+        };
 
         _setCurrentScript(newCurrentScript);
     };
@@ -99,15 +99,24 @@ export function ScriptDesignerPage(): JSX.Element {
     };
 
     const storeScriptAndGoToReview = () => {
+        storeScriptToWorkbench();
+        setRedirectToReview(true);
+    };
+
+    const storeScriptAndAddAnother = () => {
+        storeScriptToWorkbench();
+        cleanAction();
+    };
+
+    const storeScriptToWorkbench = () => {
         if (!isCurrentScriptValid()) throw new Error("Cannot store invalid script");
         const tokens = GetCurrentChain(chainId!).tokens;
         const scriptDescriptionFactory = new ScriptDescriptionFactory(tokens);
-        const script = JSON.parse(JSON.stringify(currentScript))
+        const script = JSON.parse(JSON.stringify(currentScript));
         script.description = scriptDescriptionFactory.extractDefaultDescription(script);
 
         dispatch(addScriptToWorkbench(script));
-        setRedirectToReview(true);
-    }
+    };
 
     if (!authenticated || !supportedChain) return <Navigate to="/my-page" />;
     if (redirectToReview) return <Navigate to="/review" />;
@@ -178,13 +187,23 @@ export function ScriptDesignerPage(): JSX.Element {
                             ))}
                         </div>
 
-                        <button
-                            className="workbench__deploy-button"
-                            disabled={!isCurrentScriptValid()}
-                            onClick={storeScriptAndGoToReview}
-                        >
-                            {"Review and Sign"}
-                        </button>
+                        <div className="workbench__buttons">
+                            <button
+                                className="workbench__deploy-button"
+                                disabled={!isCurrentScriptValid()}
+                                onClick={storeScriptAndAddAnother}
+                            >
+                                {"Chain another script"}
+                            </button>
+
+                            <button
+                                className="workbench__deploy-button"
+                                disabled={!isCurrentScriptValid()}
+                                onClick={storeScriptAndGoToReview}
+                            >
+                                {"Review and sign"}
+                            </button>
+                        </div>
                     </>
                 )}
             </div>

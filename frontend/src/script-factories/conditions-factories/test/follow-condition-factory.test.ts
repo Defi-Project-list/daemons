@@ -65,6 +65,7 @@ describe('Follow Condition Factory', () => {
         const form: IFollowConditionForm = {
             type: ScriptConditions.FOLLOW,
             valid: false,
+            shift: 0,
             parentScriptId: AnId,
             parentScriptExecutor: AnAddress,
         };
@@ -77,6 +78,7 @@ describe('Follow Condition Factory', () => {
         const form: IFollowConditionForm = {
             type: ScriptConditions.FOLLOW,
             valid: true,
+            shift: 0,
             parentScriptId: AnId,
             parentScriptExecutor: AnAddress,
         };
@@ -95,6 +97,7 @@ describe('Follow Condition Factory', () => {
         const form: IFollowConditionForm = {
             type: ScriptConditions.FOLLOW,
             valid: true,
+            shift: 0,
             parentScriptId: AnId,
             parentScriptExecutor: AnAddress,
         };
@@ -123,6 +126,7 @@ describe('Follow Condition Factory', () => {
             expect(condition.enabled).to.be.true;
             expect(condition.scriptId).to.be.equal(AnId);
             expect(condition.executor).to.be.equal(AnAddress);
+            expect(condition.shift).to.be.equal(0);
             expect(condition.shift.toNumber()).to.be.equal(2);
         });
 

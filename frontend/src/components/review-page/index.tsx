@@ -8,8 +8,14 @@ import { StorageProxy } from "../../data/storage-proxy";
 import { addNewScript } from "../../state/action-creators/script-action-creators";
 import { BaseScript } from "../../data/script/base-script";
 import { Navigate } from "react-router-dom";
-import { GetCurrentChain } from "../../data/chain-info";
 import { cleanWorkbench } from "../../state/action-creators/workbench-action-creators";
+import { ICurrentScript } from "../../script-factories/i-current-script";
+import {
+    IFollowConditionForm,
+    ScriptConditions
+} from "../../data/chains-data/condition-form-interfaces";
+import { getExecutorFromScriptAction } from "../../script-factories/messages-factories/executor-fetcher";
+import { ConditionTitles } from "../../data/chains-data/interfaces";
 
 export function ReviewPage(): JSX.Element {
     // redux
@@ -27,9 +33,14 @@ export function ReviewPage(): JSX.Element {
         if (!workbenchScripts.length)
             throw new Error("Cannot create the script! Current script is empty");
 
+        // copying scripts so to be free to modify them
+        const scripts: ICurrentScript[] = JSON.parse(JSON.stringify(workbenchScripts));
+        addFollowConditions(scripts);
+        console.log(scripts);
+
         const scriptFactory = new ScriptFactory(chainId);
         const signedScripts: BaseScript[] = [];
-        for (const script of workbenchScripts) {
+        for (const script of scripts) {
             const signedScript = await scriptFactory.SubmitScriptsForSignature(script);
             if (!(await signedScript.hasAllowance())) {
                 await signedScript.requestAllowance();
@@ -45,6 +56,45 @@ export function ReviewPage(): JSX.Element {
 
         dispatch(cleanWorkbench());
         setRedirect(true);
+    };
+
+    const addFollowConditions = (scripts: ICurrentScript[]) => {
+        // add follow conditions to chain scripts together
+        if (scripts.length >= 2) {
+            for (let i = 1; i < scripts.length; i++) {
+                scripts[i].conditions[ConditionTitles.FOLLOW] = {
+                    title: ConditionTitles.FOLLOW,
+                    info: "Automatically added follow-condition",
+                    form: {
+                        type: ScriptConditions.FOLLOW,
+                        valid: true,
+                        shift: 0,
+                        parentScriptId: scripts[i - 1].id,
+                        parentScriptExecutor: getExecutorFromScriptAction(
+                            scripts[i - 1].action.form.type,
+                            chainId!
+                        )
+                    } as IFollowConditionForm
+                };
+            }
+
+            // first script will only be re-executable only when the last one has been executed
+            // to do so we add a follow condition with shift 1.
+            scripts[0].conditions[ConditionTitles.FOLLOW] = {
+                title: ConditionTitles.FOLLOW,
+                info: "Automatically added follow-condition",
+                form: {
+                    type: ScriptConditions.FOLLOW,
+                    valid: true,
+                    shift: 1,
+                    parentScriptId: scripts[scripts.length - 1].id,
+                    parentScriptExecutor: getExecutorFromScriptAction(
+                        scripts[scripts.length - 1].action.form.type,
+                        chainId!
+                    )
+                } as IFollowConditionForm
+            };
+        }
     };
 
     const shouldRedirect = redirect || !authenticated || !supportedChain;
