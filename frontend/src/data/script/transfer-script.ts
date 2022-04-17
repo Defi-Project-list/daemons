@@ -7,7 +7,6 @@ import { FollowConditionFactory } from '../../script-factories/conditions-factor
 import { FrequencyConditionFactory } from '../../script-factories/conditions-factories/frequency-condition-factory';
 import { PriceConditionFactory } from '../../script-factories/conditions-factories/price-condition-factory';
 import { RepetitionsConditionFactory } from '../../script-factories/conditions-factories/repetitions-condition-factory';
-import { Token } from '../chains-data/interfaces';
 
 export class TransferScript extends BaseScript {
     public constructor(private readonly message: ITransferAction, signature: string, private readonly description: string) {
@@ -31,11 +30,6 @@ export class TransferScript extends BaseScript {
         const contractAddress = this.message.executor;
         const contractAbi = await getAbiFor('TransferScriptExecutor');
         return new ethers.Contract(contractAddress, contractAbi, signer);
-    }
-
-    public static getDefaultDescription(message: ITransferAction, tokens: Token[]): string {
-        const token = tokens.filter(t => t.address === message.token)[0]?.symbol ?? message.token;
-        return `Transfer ${token} to ${message.destination.substring(0, 8) + "..."}`;
     }
 
     public static async fromStorageJson(object: any) {

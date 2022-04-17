@@ -7,7 +7,6 @@ import { FrequencyConditionFactory } from '../../script-factories/conditions-fac
 import { PriceConditionFactory } from '../../script-factories/conditions-factories/price-condition-factory';
 import { RepetitionsConditionFactory } from '../../script-factories/conditions-factories/repetitions-condition-factory';
 import { BaseMoneyMarketActionType, IMMBaseAction } from '@daemons-fi/shared-definitions';
-import { Token } from '../chains-data/interfaces';
 import { HealthFactorConditionFactory } from "../../script-factories/conditions-factories/health-factor-condition-factory";
 
 export class MmBaseScript extends BaseScript {
@@ -41,20 +40,6 @@ export class MmBaseScript extends BaseScript {
         const contractAddress = this.message.executor;
         const contractAbi = await getAbiFor('MmBaseScriptExecutor');
         return new ethers.Contract(contractAddress, contractAbi, signer);
-    }
-
-    public static getDefaultDescription(message: IMMBaseAction, tokens: Token[]): string {
-        const token = tokens.filter(t => t.address === message.token)[0]?.symbol ?? message.token;
-        switch (message.action) {
-            case BaseMoneyMarketActionType.Deposit:
-                return `Deposit ${token} in AAVE`;
-
-            case BaseMoneyMarketActionType.Withdraw:
-                return `Withdraw ${token} from AAVE`;
-
-            default:
-                throw new Error(`Unsupported action ${message.action}`);
-        }
     }
 
     public static async fromStorageJson(object: any) {

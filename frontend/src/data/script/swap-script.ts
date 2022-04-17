@@ -34,12 +34,6 @@ export class SwapScript extends BaseScript {
         return new ethers.Contract(contractAddress, contractAbi, signer);
     }
 
-    public static getDefaultDescription(message: ISwapAction, tokens: Token[]): string {
-        const tokenFrom = tokens.filter(t => t.address === message.tokenFrom)[0]?.symbol ?? message.tokenFrom;
-        const tokenTo = tokens.filter(t => t.address === message.tokenTo)[0]?.symbol ?? message.tokenTo;
-        return `Swap ${tokenFrom} for ${tokenTo}`;
-    }
-
     public static async fromStorageJson(object: any) {
         const message: ISwapAction = object;
 

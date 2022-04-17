@@ -3,7 +3,6 @@ import { ITransferAction, transferDomain, transferTypes } from "@daemons-fi/shar
 import { IMMBaseAction, mmBaseDomain, mmBaseTypes } from "@daemons-fi/shared-definitions";
 import { TransferMessageFactory } from "./messages-factories/transfer-message-factory";
 import { GetCurrentChain, IsChainSupported } from "../data/chain-info";
-import { Token } from "../data/chains-data/interfaces";
 import { ICurrentScript } from "./i-current-script";
 import { BaseScript } from "../data/script/base-script";
 import { ScriptAction } from "../data/chains-data/action-form-interfaces";
@@ -29,14 +28,12 @@ export class ScriptFactory {
     private readonly ethers: any;
     private readonly provider: any;
     private readonly signer: any;
-    private readonly tokens: Token[];
     private readonly chainId: string;
 
     public constructor(chainId: string) {
         this.ethers = require("ethers");
         this.provider = new this.ethers.providers.Web3Provider((window as any).ethereum, "any");
         this.signer = this.provider.getSigner();
-        this.tokens = GetCurrentChain(chainId).tokens;
         this.chainId = chainId;
     }
 
@@ -59,14 +56,10 @@ export class ScriptFactory {
                     types: swapTypes
                 };
                 const swapScriptSignature = await getSignature(swapMessage);
-                const swapScriptDescription = SwapScript.getDefaultDescription(
-                    swapMessage.script,
-                    this.tokens
-                );
                 return new SwapScript(
                     swapMessage.script,
                     swapScriptSignature,
-                    swapScriptDescription
+                    bundle.description,
                 );
 
             case ScriptAction.TRANSFER:
@@ -76,14 +69,10 @@ export class ScriptFactory {
                     types: transferTypes
                 };
                 const transferScriptSignature = await getSignature(transferMessage);
-                const transferScriptDescription = TransferScript.getDefaultDescription(
-                    transferMessage.script,
-                    this.tokens
-                );
                 return new TransferScript(
                     transferMessage.script,
                     transferScriptSignature,
-                    transferScriptDescription
+                    bundle.description,
                 );
 
             case ScriptAction.MMBASE:
@@ -93,14 +82,10 @@ export class ScriptFactory {
                     types: mmBaseTypes
                 };
                 const mmBaseScriptSignature = await getSignature(mmBaseMessage);
-                const mmBaseScriptDescription = MmBaseScript.getDefaultDescription(
-                    mmBaseMessage.script,
-                    this.tokens
-                );
                 return new MmBaseScript(
                     mmBaseMessage.script,
                     mmBaseScriptSignature,
-                    mmBaseScriptDescription
+                    bundle.description,
                 );
 
             default:
