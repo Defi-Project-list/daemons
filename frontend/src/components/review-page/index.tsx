@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ScriptFactory } from "../../script-factories";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../state";
-import { TemporaryScript } from "./temporary-script";
+import { State, TemporaryScript } from "./temporary-script";
 import "./styles.css";
 import { StorageProxy } from "../../data/storage-proxy";
 import { addNewScript } from "../../state/action-creators/script-action-creators";
@@ -27,6 +27,26 @@ export function ReviewPage(): JSX.Element {
 
     // states
     const [redirect, setRedirect] = useState<boolean>(false);
+    const [signStatuses, setSignStatuses] = useState<{ [id: string]: State }>({});
+    const [allowStatuses, setAllowStatuses] = useState<{ [id: string]: State }>({});
+
+    const signScript = async (
+        script: ICurrentScript,
+        scriptFactory: ScriptFactory
+    ): Promise<BaseScript> => {
+        setSignStatuses(current => ({...current, [script.id]: State.loading}));
+        const signedScript = await scriptFactory.SubmitScriptsForSignature(script);
+        setSignStatuses(current => ({...current, [script.id]: State.done}));
+        return signedScript;
+    };
+
+    const requestAllowanceForScript = async (script: BaseScript): Promise<void> => {
+        if (!(await script.hasAllowance())) {
+            setAllowStatuses(current => ({...current, [script.getId()]: State.loading}));
+            await script.requestAllowance();
+        }
+        setAllowStatuses(current => ({...current, [script.getId()]: State.done}));
+    };
 
     const createAndSignScripts = async () => {
         if (!chainId) throw new Error("Cannot create the script! The chain is unknown");
@@ -36,24 +56,31 @@ export function ReviewPage(): JSX.Element {
         // copying scripts so to be free to modify them
         const scripts: ICurrentScript[] = JSON.parse(JSON.stringify(workbenchScripts));
         addFollowConditions(scripts);
-        console.log(scripts);
 
+        // sign and request allowances if necessary
         const scriptFactory = new ScriptFactory(chainId);
         const signedScripts: BaseScript[] = [];
         for (const script of scripts) {
-            const signedScript = await scriptFactory.SubmitScriptsForSignature(script);
-            if (!(await signedScript.hasAllowance())) {
-                await signedScript.requestAllowance();
+            try {
+                const signedScript = await signScript(script, scriptFactory);
+                await requestAllowanceForScript(signedScript);
+                signedScripts.push(signedScript);
+            } catch (err) {
+                // if something goes bad (the user cancels), we clean the states
+                // as the whole chain will need to be re-executed
+                setSignStatuses({});
+                setAllowStatuses({});
+                throw err;
             }
-
-            signedScripts.push(signedScript);
         }
 
+        // save in storage and add to Redux state
         for (const signedScript of signedScripts) {
             await StorageProxy.script.saveScript(signedScript);
             dispatch(addNewScript(signedScript));
         }
 
+        // clean and redirect to my-page
         dispatch(cleanWorkbench());
         setRedirect(true);
     };
@@ -78,7 +105,7 @@ export function ReviewPage(): JSX.Element {
                 };
             }
 
-            // first script will only be re-executable only when the last one has been executed
+            // first script will be re-executable only when the last one has been executed
             // to do so we add a follow condition with shift 1.
             scripts[0].conditions[ConditionTitles.FOLLOW] = {
                 title: ConditionTitles.FOLLOW,
@@ -98,18 +125,22 @@ export function ReviewPage(): JSX.Element {
     };
 
     const shouldRedirect = redirect || !authenticated || !supportedChain;
-    console.log("shouldRedirect", redirect);
     if (shouldRedirect) return <Navigate to="/my-page" />;
 
     return (
         <div className="review">
             <div className="review__scripts">
                 {workbenchScripts.map((script) => (
-                    <TemporaryScript key={script.id} script={script} />
+                    <TemporaryScript
+                        key={script.id}
+                        script={script}
+                        allowanceState={allowStatuses[script.id] ?? State.unknown}
+                        signatureState={signStatuses[script.id] ?? State.unknown}
+                    />
                 ))}
             </div>
 
-            <button className="review__deploy-button" onClick={createAndSignScripts}>
+            <button className="review__deploy-button" onClick={() => createAndSignScripts()}>
                 {workbenchScripts.length === 1
                     ? `Sign & deploy script`
                     : `Sign & Deploy ${workbenchScripts.length} scripts`}
