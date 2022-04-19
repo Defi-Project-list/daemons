@@ -31,7 +31,7 @@ export class AllowanceHelper {
         tokenAddress: string,
         executorAddress: string): Promise<TransactionResponse> {
         const tokenContract = await this.getTokenContract(tokenAddress);
-        const transaction: TransactionResponse = await tokenContract.approve(executorAddress, BigNumber.from('0xffffffffffffffffffffffffffffffff'));
+        const transaction: TransactionResponse = await tokenContract.approve(executorAddress, BigNumber.from('0xffffffffffffffffffffffff'));
         return transaction;
     }
 
