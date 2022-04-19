@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { RootState } from "../../state";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { IAction, ICondition, Token } from "../../data/chains-data/interfaces";
 import { GetCurrentChain } from "../../data/chain-info";
 import { ActionBlock } from "./blocks/actions/actions-block";
@@ -23,6 +23,7 @@ export function ScriptDesignerPage(): JSX.Element {
     const chainId: string | undefined = useSelector((state: RootState) => state.wallet.chainId);
     const authenticated: boolean = useSelector((state: RootState) => state.wallet.authenticated);
     const supportedChain: boolean = useSelector((state: RootState) => state.wallet.supportedChain);
+    const workbenchScripts = useSelector((state: RootState) => state.workbench.scripts);
 
     // states
     const [redirectToReview, setRedirectToReview] = useState<boolean>(false);
@@ -207,6 +208,17 @@ export function ScriptDesignerPage(): JSX.Element {
                     </>
                 )}
             </div>
+
+            {/* A link to the review page */}
+            <Link
+                className={`designer__review-link ${
+                    workbenchScripts.length === 0 ? "designer__review-link--disabled" : ""
+                }`}
+                to={workbenchScripts.length > 0 ? "/review" : "#"}
+            >
+                Review ({workbenchScripts.length})
+            </Link>
+
             {/* ENABLE WHEN DEBUGGING */}
             {/* <p> {JSON.stringify(currentScript, null, " ")}</p> */}
         </div>
