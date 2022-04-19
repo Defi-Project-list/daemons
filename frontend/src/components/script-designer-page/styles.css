@@ -104,6 +104,6 @@
 }
 
 .designer__review-link--disabled {
-    opacity: 00;
+    opacity: 0;
     cursor: not-allowed;
 }
