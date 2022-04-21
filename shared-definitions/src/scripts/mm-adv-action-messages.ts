@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers';
-import { IBalanceCondition, Balance } from './condition-messages';
+import { IBalanceCondition, Balance, AmountType } from './condition-messages';
 import { IPriceCondition, Price } from './condition-messages';
 import { IFrequencyCondition, Frequency } from './condition-messages';
 import { IMaxRepetitionsCondition, Repetitions } from './condition-messages';
@@ -17,7 +17,9 @@ export enum InterestRateMode { Fixed = 1, Variable = 2 };
 export interface IMMAdvancedAction {
     scriptId: string;
     token: string;
+    debtToken: string;
     action: AdvancedMoneyMarketActionType;
+    typeAmt: AmountType;
     rateMode: InterestRateMode;
     amount: BigNumber;
     user: string;
@@ -35,7 +37,9 @@ export interface IMMAdvancedAction {
 const MmAdvanced = [
     { name: "scriptId", type: "bytes32" },           // the script identifier
     { name: "token", type: "address" },              // the native token
+    { name: "debtToken", type: "address" },          // the debt token (variable or stable)
     { name: "action", type: "bytes1" },              // the action to perform [repay, borrow]
+    { name: "typeAmt", type: "bytes1" },             // the amount type [absolute, percentage]
     { name: "rateMode", type: "bytes1" },            // the interest rate mode [variable, fixed]
     { name: "amount", type: "uint256" },             // the amount to repay or borrow
     { name: "user", type: "address" },               // the user that is signing the transaction
