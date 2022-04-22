@@ -1,4 +1,4 @@
-import { AmountType } from '@daemons-fi/shared-definitions';
+import { AdvancedMoneyMarketActionType, AmountType, InterestRateMode } from '@daemons-fi/shared-definitions';
 import { BaseMoneyMarketActionType } from '@daemons-fi/shared-definitions';
 import { MoneyMarket } from './interfaces';
 
@@ -7,7 +7,8 @@ export enum ScriptAction {
     NONE = "NONE",
     SWAP = "SWAP",
     TRANSFER = "TRANSFER",
-    MMBASE = "MMBASE",
+    MM_BASE = "MM_BASE",
+    MM_ADV = "MM_ADV",
     // DAO = "DAO",
     // FARM = "FARM",
 }
@@ -34,9 +35,19 @@ export interface ITransferActionForm extends IScriptActionForm {
 }
 
 export interface IBaseMMActionForm extends IScriptActionForm {
-    type: ScriptAction.MMBASE;
+    type: ScriptAction.MM_BASE;
     tokenAddress: string;
     actionType: BaseMoneyMarketActionType;
+    amountType: AmountType;
+    floatAmount: number;
+    moneyMarket: MoneyMarket;
+}
+
+export interface IAdvancedMMActionForm extends IScriptActionForm {
+    type: ScriptAction.MM_ADV;
+    tokenAddress: string;
+    actionType: AdvancedMoneyMarketActionType;
+    interestType: InterestRateMode;
     amountType: AmountType;
     floatAmount: number;
     moneyMarket: MoneyMarket;

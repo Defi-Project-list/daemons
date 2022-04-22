@@ -1,5 +1,6 @@
 import React from "react";
 import {
+    IAdvancedMMActionForm,
     IBaseMMActionForm,
     IScriptActionForm,
     ISwapActionForm,
@@ -7,6 +8,7 @@ import {
     ScriptAction
 } from "../../../../data/chains-data/action-form-interfaces";
 import { IAction } from "../../../../data/chains-data/interfaces";
+import { MmAdvAction } from "./mm-adv-action";
 import { MmBaseAction } from "./mm-base-action";
 import { SwapAction } from "./swap-action";
 import { TransferAction } from "./transfer-action";
@@ -22,27 +24,17 @@ export const ActionBlock = ({ action, onUpdate, onRemove }: IActionBlockProps) =
         switch (actionForm.type) {
             case ScriptAction.TRANSFER:
                 return (
-                    <TransferAction
-                        form={actionForm as ITransferActionForm}
-                        update={onUpdate}
-                    />
+                    <TransferAction form={actionForm as ITransferActionForm} update={onUpdate} />
                 );
 
             case ScriptAction.SWAP:
-                return (
-                    <SwapAction
-                        form={actionForm as ISwapActionForm}
-                        update={onUpdate}
-                    />
-                );
+                return <SwapAction form={actionForm as ISwapActionForm} update={onUpdate} />;
 
-            case ScriptAction.MMBASE:
-                return (
-                    <MmBaseAction
-                        form={actionForm as IBaseMMActionForm}
-                        update={onUpdate}
-                    />
-                );
+            case ScriptAction.MM_BASE:
+                return <MmBaseAction form={actionForm as IBaseMMActionForm} update={onUpdate} />;
+
+            case ScriptAction.MM_ADV:
+                return <MmAdvAction form={actionForm as IAdvancedMMActionForm} update={onUpdate} />;
 
             default:
                 throw new Error(`Unrecognized action ${actionForm.type}`);

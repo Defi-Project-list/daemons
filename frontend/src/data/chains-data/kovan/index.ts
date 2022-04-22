@@ -1,6 +1,6 @@
 import { IChainInfo, IContractsList } from '../interfaces';
-import { AaveMMBaseAction, SwapAction, TransferAction } from './action-forms';
-import { kovanAaveMM, kovanTokens } from './tokens';
+import { AaveMMAdvancedAction, AaveMMBaseAction, SwapAction, TransferAction } from './action-forms';
+import { kovanTokens } from './tokens';
 
 const kovanContracts: IContractsList = {
     GasTank: '0x29A74Bab786C01E3181191a77Dfd5A590f2a47e1',
@@ -12,7 +12,7 @@ const kovanContracts: IContractsList = {
     SwapExecutor: '0x645e479C9F41Bb7Ac4Ee49852c8dDbc46fE3Ab20',
     TransferExecutor: '0x210d841EB9606B1fb27Bf676F0B6Ec4C5C7176E2',
     MmBaseExecutor: '0x1da737403e1e81BAf21dCC913B34250508Dc45e5',
-    MmAdvancedExecutor: '0x074cC149D5fdF427c65a1f3E83dde9815DCa3376',
+    MmAdvancedExecutor: '0x8fA55494914999d631940f367eedF535d33C4FD2',
 };
 
 export const kovanInfo: IChainInfo = {
@@ -28,5 +28,5 @@ export const kovanInfo: IChainInfo = {
     explorerTxUrl: 'https://kovan.etherscan.io/tx/',
     tokens: kovanTokens,
     contracts: kovanContracts,
-    actions: [TransferAction, SwapAction, AaveMMBaseAction]
+    actions: [TransferAction, SwapAction, AaveMMBaseAction, AaveMMAdvancedAction],
 };

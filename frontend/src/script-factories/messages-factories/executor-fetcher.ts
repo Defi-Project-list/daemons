@@ -10,7 +10,8 @@ export function getExecutorFromScriptAction(action: ScriptAction, chainId: strin
     switch (action) {
         case ScriptAction.SWAP: return contracts.SwapExecutor;
         case ScriptAction.TRANSFER: return contracts.TransferExecutor;
-        case ScriptAction.MMBASE: return contracts.MmBaseExecutor;
+        case ScriptAction.MM_BASE: return contracts.MmBaseExecutor;
+        case ScriptAction.MM_ADV: return contracts.MmAdvancedExecutor;
         default: throw new Error(`Cannot find executor address for action ${action}`);
     }
 }

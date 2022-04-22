@@ -1,6 +1,7 @@
 import { ISwapAction, swapDomain, swapTypes } from "@daemons-fi/shared-definitions";
 import { ITransferAction, transferDomain, transferTypes } from "@daemons-fi/shared-definitions";
 import { IMMBaseAction, mmBaseDomain, mmBaseTypes } from "@daemons-fi/shared-definitions";
+import { IMMAdvancedAction, mmAdvDomain, mmAdvTypes } from "@daemons-fi/shared-definitions";
 import { TransferMessageFactory } from "./messages-factories/transfer-message-factory";
 import { GetCurrentChain, IsChainSupported } from "../data/chain-info";
 import { ICurrentScript } from "./i-current-script";
@@ -11,8 +12,10 @@ import { TransferScript } from "../data/script/transfer-script";
 import { MmBaseScript } from "../data/script/mm-base-script";
 import { SwapMessageFactory } from "./messages-factories/swap-message-factory";
 import { MmBaseMessageFactory } from "./messages-factories/mm-base-message-factory";
+import { MmAdvMessageFactory } from "./messages-factories/mm-adv-message-factory";
+import { MmAdvancedScript } from "../data/script/mm-adv-script";
 
-type ScriptDefinition = ISwapAction | ITransferAction | IMMBaseAction;
+type ScriptDefinition = ISwapAction | ITransferAction | IMMBaseAction | IMMAdvancedAction;
 
 interface IMessage {
     script: ScriptDefinition;
@@ -75,7 +78,7 @@ export class ScriptFactory {
                     bundle.description,
                 );
 
-            case ScriptAction.MMBASE:
+            case ScriptAction.MM_BASE:
                 const mmBaseMessage = {
                     script: await MmBaseMessageFactory.create(bundle, chain, this.provider),
                     domain: mmBaseDomain,
@@ -85,6 +88,19 @@ export class ScriptFactory {
                 return new MmBaseScript(
                     mmBaseMessage.script,
                     mmBaseScriptSignature,
+                    bundle.description,
+                );
+
+            case ScriptAction.MM_ADV:
+                const mmAdvancedMessage = {
+                    script: await MmAdvMessageFactory.create(bundle, chain, this.provider),
+                    domain: mmAdvDomain,
+                    types: mmAdvTypes
+                };
+                const mmAdvancedScriptSignature = await getSignature(mmAdvancedMessage);
+                return new MmAdvancedScript(
+                    mmAdvancedMessage.script,
+                    mmAdvancedScriptSignature,
                     bundle.description,
                 );
 

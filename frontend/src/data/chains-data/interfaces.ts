@@ -1,6 +1,5 @@
-import { IScriptActionForm } from './action-form-interfaces';
-import { IScriptConditionForm } from './condition-form-interfaces';
-
+import { IScriptActionForm } from "./action-form-interfaces";
+import { IScriptConditionForm } from "./condition-form-interfaces";
 
 export interface IToken {
     name: string;
@@ -17,7 +16,9 @@ export type MoneyMarket = {
     name: string;
     poolAddress: string;
     supportedTokens: Token[];
-    aTokens: { [tokenAddress: string]: Token; };
+    mmTokens: {
+        [tokenAddress: string]: { aToken: string; varDebtToken: string; fixDebtToken: string };
+    };
 };
 
 export interface IContractsList {
@@ -53,7 +54,7 @@ export enum ConditionTitles {
     PRICE = "Price",
     REPETITIONS = "Repetitions",
     FOLLOW = "Chain Scripts",
-    HEALTH_FACTOR = "Health Factor",
+    HEALTH_FACTOR = "Health Factor"
 }
 
 export interface IChainInfo {

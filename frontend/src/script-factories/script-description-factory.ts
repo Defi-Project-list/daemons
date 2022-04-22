@@ -1,5 +1,12 @@
-import { BaseMoneyMarketActionType, ComparisonType } from "@daemons-fi/shared-definitions/build";
 import {
+    AdvancedMoneyMarketActionType,
+    AmountType,
+    BaseMoneyMarketActionType,
+    ComparisonType,
+    InterestRateMode
+} from "@daemons-fi/shared-definitions/build";
+import {
+    IAdvancedMMActionForm,
     IBaseMMActionForm,
     ISwapActionForm,
     ITransferActionForm,
@@ -40,8 +47,10 @@ export class ScriptDescriptionFactory {
                 return this.swapAction(action.form as ISwapActionForm);
             case ScriptAction.TRANSFER:
                 return this.transferAction(action.form as ITransferActionForm);
-            case ScriptAction.MMBASE:
+            case ScriptAction.MM_BASE:
                 return this.mmBaseAction(action.form as IBaseMMActionForm);
+            case ScriptAction.MM_ADV:
+                return this.mmAdvancedAction(action.form as IAdvancedMMActionForm);
             default:
                 console.error(`Unknown action ${action.form.type}.`);
                 return `#!@!# Unknown action ${action.form.type}. Please add to factory #!@!#`;
@@ -65,6 +74,38 @@ export class ScriptDescriptionFactory {
         return form.actionType === BaseMoneyMarketActionType.Deposit
             ? `Deposit ${form.floatAmount} ${token.symbol} into ${form.moneyMarket.name}`
             : `Withdraw ${form.floatAmount} ${token.symbol} from ${form.moneyMarket.name}`;
+    }
+
+    private mmAdvancedAction(form: IAdvancedMMActionForm): string {
+        const token = this.tokensDict[form.tokenAddress];
+        const interestType =
+            form.interestType === InterestRateMode.Fixed ? "Fixed interests" : "Variable interests";
+
+        switch (form.actionType) {
+            case AdvancedMoneyMarketActionType.Borrow:
+                if (form.amountType === AmountType.Absolute) {
+                    // Borrow 500 DAI from AAVE (Fixed interests)
+                    return `Borrow ${form.floatAmount} ${token.symbol} from ${form.moneyMarket.name} (${interestType})`;
+                }
+                // Borrow 75% of the total borrowable power, in DAI, from Aave (Fixed interests)
+                return `Borrow ${form.floatAmount / 100}% of the total borrowable power, in ${
+                    token.symbol
+                }, from ${form.moneyMarket.name} (${interestType})`;
+            case AdvancedMoneyMarketActionType.Repay:
+                if (form.amountType === AmountType.Absolute) {
+                    // Repay 500 DAI to AAVE (Fixed interests)
+                    return `Repay ${form.floatAmount} ${token.symbol} to ${form.moneyMarket.name} (${interestType})`;
+                }
+                // Repay 75% of the total DAI debt, on Aave (Fixed interests)
+                return `Repay ${form.floatAmount / 100}% of the total ${token.symbol} debt on ${
+                    form.moneyMarket.name
+                } (${interestType})`;
+            default:
+                return `Unsupported action ${form.actionType}`;
+        }
+
+        // ? `Deposit ${form.floatAmount} ${token.symbol} into ${form.moneyMarket.name}`
+        // : `Withdraw ${form.floatAmount} ${token.symbol} from ${form.moneyMarket.name}`;
     }
 
     private extractConditionDescription(condition: ICondition): string {

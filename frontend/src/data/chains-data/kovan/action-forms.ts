@@ -1,5 +1,5 @@
-import { AmountType, BaseMoneyMarketActionType } from '@daemons-fi/shared-definitions/build';
-import { IBaseMMActionForm, ISwapActionForm, ITransferActionForm, ScriptAction } from '../action-form-interfaces';
+import { AdvancedMoneyMarketActionType, AmountType, BaseMoneyMarketActionType, InterestRateMode } from '@daemons-fi/shared-definitions/build';
+import { IAdvancedMMActionForm, IBaseMMActionForm, ISwapActionForm, ITransferActionForm, ScriptAction } from '../action-form-interfaces';
 import { IAction } from '../interfaces';
 import { AaveHealthFactorCondition, BalanceCondition, FrequencyCondition, PriceCondition, RepetitionsCondition } from './condition-forms';
 import { kovanAaveMM } from './tokens';
@@ -47,11 +47,11 @@ export const SwapAction: IAction = {
 };
 
 export const AaveMMBaseAction: IAction = {
-    title: "AAVE Base",
+    title: "AAVE Deposit/Withdraw",
     info: "Deposit and withdraw tokens into Aave.",
 
     form: {
-        type: ScriptAction.MMBASE,
+        type: ScriptAction.MM_BASE,
         valid: false,
         tokenAddress: '',
         amountType: AmountType.Absolute,
@@ -59,6 +59,30 @@ export const AaveMMBaseAction: IAction = {
         actionType: BaseMoneyMarketActionType.Deposit,
         moneyMarket: kovanAaveMM,
     }as IBaseMMActionForm,
+
+    conditions: [
+        FrequencyCondition,
+        BalanceCondition,
+        PriceCondition,
+        RepetitionsCondition,
+        AaveHealthFactorCondition,
+    ]
+};
+
+export const AaveMMAdvancedAction: IAction = {
+    title: "AAVE Borrow/Repay",
+    info: "Borrow and repay from Aave.",
+
+    form: {
+        type: ScriptAction.MM_ADV,
+        valid: false,
+        tokenAddress: '',
+        interestType: InterestRateMode.Variable,
+        amountType: AmountType.Absolute,
+        floatAmount: 0,
+        actionType: AdvancedMoneyMarketActionType.Borrow,
+        moneyMarket: kovanAaveMM,
+    }as IAdvancedMMActionForm,
 
     conditions: [
         FrequencyCondition,
