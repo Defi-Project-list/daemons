@@ -7,7 +7,9 @@ import {
     IFrequencyCondition,
     IHealthFactorCondition,
     IMaxRepetitionsCondition,
-    IPriceCondition
+    InterestRateMode,
+    IPriceCondition,
+    ISignedMMAdvancedAction
 } from "@daemons-fi/shared-definitions";
 import { ISignedSwapAction } from "@daemons-fi/shared-definitions";
 import { ISignedTransferAction } from "@daemons-fi/shared-definitions";
@@ -16,6 +18,7 @@ import { TransferScript } from "../models/scripts/transfer-script";
 import faker from "@faker-js/faker";
 import { BaseMoneyMarketActionType, ISignedMMBaseAction } from "@daemons-fi/shared-definitions";
 import { MmBaseScript } from "../models/scripts/mm-base-script";
+import { MmAdvancedScript } from "../models/scripts/mm-adv-script";
 
 const randomEthAmount = () =>
     utils.parseEther(faker.datatype.number({ min: 0.01, max: 10, precision: 0.01 }).toString());
@@ -176,4 +179,40 @@ export async function mmBaseScriptDocumentFactory(args: any): Promise<ISignedMMB
     const jsonTransformedScript = JSON.parse(JSON.stringify(signedScript));
 
     return await MmBaseScript.build(jsonTransformedScript).save();
+}
+
+/** Returns a randomized signed mmAdvanced action */
+export function signedMmAdvancedActionFactory(args: any): ISignedMMAdvancedAction {
+    return {
+        signature: args.signature ?? utils.hexlify(utils.randomBytes(40)),
+        description: args.description ?? faker.random.words(4),
+        scriptId: args.scriptId ?? utils.hexlify(utils.randomBytes(32)),
+        token: args.token ?? faker.finance.ethereumAddress(),
+        debtToken: args.aToken ?? faker.finance.ethereumAddress(),
+        action: args.action ?? BaseMoneyMarketActionType.Deposit,
+        rateMode: args.rateMode ?? InterestRateMode.Variable,
+        typeAmt: args.typeAmt ?? AmountType.Absolute,
+        amount: args.amount ?? randomEthAmount(),
+        user: args.user ?? faker.finance.ethereumAddress(),
+        kontract: args.kontract ?? faker.finance.ethereumAddress(),
+        executor: args.executor ?? faker.finance.ethereumAddress(),
+        chainId: args.chainId ?? BigNumber.from("42"),
+        balance: balanceConditionFactory(args.balance ?? {}),
+        frequency: frequencyConditionFactory(args.frequency ?? {}),
+        price: priceConditionFactory(args.price ?? {}),
+        repetitions: repetitionsConditionFactory(args.repetitions ?? {}),
+        follow: followConditionFactory(args.follow ?? {}),
+        healthFactor: healthFactorConditionFactory(args.healthFactor ?? {})
+    };
+}
+
+/** Adds a MmAdvancedScript to mongo and returns it */
+export async function mmAdvancedScriptDocumentFactory(args: any): Promise<ISignedMMAdvancedAction> {
+    const signedScript = signedMmAdvancedActionFactory(args);
+
+    // this step simulates the transformation the object goes through when it is passed into
+    // the body of a POST (i.e. BigNumber fields are serialized and not deserialized to the original object)
+    const jsonTransformedScript = JSON.parse(JSON.stringify(signedScript));
+
+    return await MmAdvancedScript.build(jsonTransformedScript).save();
 }

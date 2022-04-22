@@ -9,7 +9,7 @@ import faker from "@faker-js/faker";
 import { truncateAndEscapeText } from "../../models/utils";
 import jwt from "jsonwebtoken";
 
-describe("POST api/scripts/swap", () => {
+describe("POST api/scripts/    [Swap]", () => {
     before(async () => await connectToTestDb());
     afterEach(async () => await clearTestDb());
     after(async () => await closeTestDb());

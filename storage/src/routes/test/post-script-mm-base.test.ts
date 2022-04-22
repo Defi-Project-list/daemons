@@ -9,7 +9,7 @@ import { truncateAndEscapeText } from "../../models/utils";
 import jwt from "jsonwebtoken";
 import { MmBaseScript } from "../../models/scripts/mm-base-script";
 
-describe("POST api/scripts/mm-base", () => {
+describe("POST api/scripts/    [MmBase]", () => {
     before(async () => await connectToTestDb());
     afterEach(async () => await clearTestDb());
     after(async () => await closeTestDb());

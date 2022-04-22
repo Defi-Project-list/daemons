@@ -5,12 +5,11 @@ import { TransferScript } from "../models/scripts/transfer-script";
 import { Script } from "../models/scripts/script";
 import { SwapScript } from "../models/scripts/swap-script";
 import { MmBaseScript } from "../models/scripts/mm-base-script";
-import {
-    ISignedMMBaseAction,
-    ISignedSwapAction,
-    ISignedTransferAction,
-    ITransferAction
-} from "@daemons-fi/shared-definitions";
+import { ISignedMMAdvancedAction } from "@daemons-fi/shared-definitions";
+import { ISignedMMBaseAction } from "@daemons-fi/shared-definitions";
+import { ISignedSwapAction } from "@daemons-fi/shared-definitions";
+import { ISignedTransferAction } from "@daemons-fi/shared-definitions";
+import { MmAdvancedScript } from "../models/scripts/mm-adv-script";
 
 export const scriptsRouter = express.Router();
 
@@ -56,6 +55,9 @@ async function buildScript(script: any, type: string): Promise<any> {
             break;
         case "MmBaseScript":
             await MmBaseScript.build(script as ISignedMMBaseAction).save();
+            break;
+        case "MmAdvancedScript":
+            await MmAdvancedScript.build(script as ISignedMMAdvancedAction).save();
             break;
         default:
             throw new Error(`Unsupported script type ${type}`);
