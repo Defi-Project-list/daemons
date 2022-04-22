@@ -105,9 +105,10 @@ describe("Mock Money Market Pool", function () {
       otherUser.address
     );
 
-    // 100000 tokens should have been taken from owner
+    // 90000 tokens should have been taken from owner
+    // as the debt is always 9/10th of the sent amount
     expect((await fooToken.balanceOf(owner.address)).toNumber()).to.be.equal(
-      50000
+      60000
     );
   });
 });

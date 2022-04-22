@@ -1,16 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+import "hardhat/console.sol";
 import "../interfaces/IMoneyMarket.sol";
 import "./MockToken.sol";
 
 contract MockMoneyMarketPool is IMoneyMarket {
     MockToken private token;
     MockToken private aToken;
+    MockToken private debtToken;
 
-    constructor(address _token, address _aToken) {
+    constructor(address _token, address _aToken, address _debtToken) {
         token = MockToken(_token);
         aToken = MockToken(_aToken);
+        debtToken = MockToken(_debtToken);
     }
 
     function deposit(
@@ -58,6 +61,9 @@ contract MockMoneyMarketPool is IMoneyMarket {
 
         // mint tokens into the **SENDER** address
         token.mint(msg.sender, amount);
+
+        // mint debt tokens into the **USER** address
+        debtToken.mint(onBehalfOf, amount);
     }
 
     function repay(
@@ -68,13 +74,21 @@ contract MockMoneyMarketPool is IMoneyMarket {
     ) external override returns (uint256) {
         require(asset == address(token), "Always specify token, not aToken");
 
+        // the amount paid is MIN(amount, debt)
+        uint256 debt = debtToken.balanceOf(onBehalfOf);
+        debt = debt < amount ? debt : amount;
+
         // get tokens from the executor
-        token.transferFrom(msg.sender, address(this), amount);
+        token.transferFrom(msg.sender, address(this), debt);
 
         // burn them, for simplicity
-        token.burn(amount);
+        token.burn(debt);
 
-        return 0;
+        // burn the debtTokens as well
+        debtToken.justBurn(onBehalfOf, debt);
+
+        // the final amount repaid is returned
+        return debt;
     }
 
     function getUserAccountData(address user)
@@ -90,6 +104,6 @@ contract MockMoneyMarketPool is IMoneyMarket {
             uint256 healthFactor
         )
     {
-        return (0, 0, 0, 0, 0, 2e18);
+        return (0, 0, 35e18, 0, 0, 2e18);
     }
 }

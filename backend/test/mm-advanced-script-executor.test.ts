@@ -2,7 +2,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { BigNumber, Contract } from "ethers";
 import { ethers } from "hardhat";
-import { ComparisonType } from "@daemons-fi/shared-definitions";
+import { AmountType, ComparisonType } from "@daemons-fi/shared-definitions";
 import {
   mmAdvDomain,
   IMMAdvancedAction,
@@ -20,6 +20,7 @@ describe("ScriptExecutor - Money Market Advanced", function () {
   let priceRetriever: Contract;
   let executor: Contract;
   let fooToken: Contract;
+  let fooDebtToken: Contract;
   let mockMoneyMarketPool: Contract;
 
   // signature components
@@ -31,7 +32,9 @@ describe("ScriptExecutor - Money Market Advanced", function () {
     scriptId:
       "0x7465737400000000000000000000000000000000000000000000000000000000",
     token: "",
+    debtToken: "",
     action: AdvancedMoneyMarketActionType.Repay,
+    typeAmt: AmountType.Absolute,
     rateMode: InterestRateMode.Variable,
     amount: ethers.utils.parseEther("100"),
     user: "",
@@ -93,6 +96,7 @@ describe("ScriptExecutor - Money Market Advanced", function () {
     const MockTokenContract = await ethers.getContractFactory("MockToken");
     fooToken = await MockTokenContract.deploy("Foo Token", "FOO");
     const fooAToken = await MockTokenContract.deploy("Foo A Token", "aFOO");
+    fooDebtToken = await MockTokenContract.deploy("Foo DebtToken", "dFOO");
 
     // Gas Price Feed contract
     const GasPriceFeedContract = await ethers.getContractFactory(
@@ -106,8 +110,14 @@ describe("ScriptExecutor - Money Market Advanced", function () {
     );
     mockMoneyMarketPool = await MockMoneyMarketPoolContract.deploy(
       fooToken.address,
-      fooAToken.address
+      fooAToken.address,
+      fooDebtToken.address,
     );
+
+    // Mock MoneyMarket Oracle contract
+    const fakePrice = ethers.utils.parseEther('0.01');
+    const MockOracleContract = await ethers.getContractFactory("MockPriceOracleGetter");
+    const mockOracle = await MockOracleContract.deploy(fakePrice);
 
     // Executor contract
     const MmScriptExecutorContract = await ethers.getContractFactory(
@@ -117,12 +127,14 @@ describe("ScriptExecutor - Money Market Advanced", function () {
     await executor.setGasTank(gasTank.address);
     await executor.setPriceRetriever(priceRetriever.address);
     await executor.setGasFeed(gasPriceFeed.address);
+    await executor.setAavePriceOracle(mockOracle.address);
 
     // Grant allowance
     await fooToken.approve(executor.address, ethers.utils.parseEther("500"));
 
-    // Generate balance
-    await fooToken.mint(owner.address, baseMessage.amount);
+    // Generate balance and pre-existing debt
+    await fooToken.mint(owner.address, ethers.utils.parseEther('100'));
+    await fooDebtToken.mint(owner.address, ethers.utils.parseEther('87'));
 
     // register executor in gas tank
     await gasTank.addExecutor(executor.address);
@@ -159,6 +171,7 @@ describe("ScriptExecutor - Money Market Advanced", function () {
     message.user = owner.address;
     message.executor = executor.address;
     message.token = fooToken.address;
+    message.debtToken = fooDebtToken.address;
     message.kontract = mockMoneyMarketPool.address;
     message.healthFactor.kontract = mockMoneyMarketPool.address;
     message.balance.token = fooToken.address;
@@ -207,26 +220,65 @@ describe("ScriptExecutor - Money Market Advanced", function () {
 
   it("repays the debt - ABS", async () => {
     let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
-    message.amount = ethers.utils.parseEther("95");
+    message.amount = ethers.utils.parseEther("100");
+    message.typeAmt = AmountType.Absolute;
     message.action = AdvancedMoneyMarketActionType.Repay;
     message = await initialize(message);
 
     await executor.execute(message, sigR, sigS, sigV);
 
+    // Debt is 87, so 13 FOO are given back to the user
     const tokenBalance = await fooToken.balanceOf(owner.address);
-    expect(tokenBalance).to.equal(ethers.utils.parseEther("5"));
+    expect(tokenBalance).to.equal(ethers.utils.parseEther("13"));
+  });
+
+  it("repays the debt - PRC", async () => {
+    let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
+    message.amount = BigNumber.from(7500); // 75%
+    message.typeAmt = AmountType.Percentage;
+    message.action = AdvancedMoneyMarketActionType.Repay;
+    message = await initialize(message);
+
+    await executor.execute(message, sigR, sigS, sigV);
+
+    // we're paying 75% of the 87ETH debt =>
+    // 65.25 paid, 34.75 remaining in wallet and debt of 21.75
+    const tokenBalance = await fooToken.balanceOf(owner.address);
+    expect(tokenBalance).to.equal(ethers.utils.parseEther("34.75"));
+
+    const debtBalance = await fooDebtToken.balanceOf(owner.address);
+    expect(debtBalance).to.equal(ethers.utils.parseEther("21.75"));
   });
 
   it("borrows some tokens - ABS", async () => {
     let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
-    message.amount = ethers.utils.parseEther("95");
+    message.amount = ethers.utils.parseEther("25");
     message.action = AdvancedMoneyMarketActionType.Borrow;
     message = await initialize(message);
 
     await executor.execute(message, sigR, sigS, sigV);
 
     const tokenBalance = await fooToken.balanceOf(owner.address);
-    expect(tokenBalance).to.equal(ethers.utils.parseEther("195")); // 100 was already there
+    expect(tokenBalance).to.equal(ethers.utils.parseEther("125")); // 100 was already there
+  });
+
+  it("borrows some tokens - PRC", async () => {
+    let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
+    message.amount = BigNumber.from("5000"); // Borrow 50% of borrowable
+    message.typeAmt = AmountType.Percentage;
+    message.action = AdvancedMoneyMarketActionType.Borrow;
+    message = await initialize(message);
+
+    await executor.execute(message, sigR, sigS, sigV);
+
+    // a debt of 1750 FOO is created and they are sent to the user
+    // as they already had a debt of 87 FOO, now it becomes 1837
+    const debtBalance = await fooDebtToken.balanceOf(owner.address);
+    expect(debtBalance).to.equal(ethers.utils.parseEther("1837"));
+
+    // now they own 1850 FOO (100 FOO were already in the wallet)
+    const tokenBalance = await fooToken.balanceOf(owner.address);
+    expect(tokenBalance).to.equal(ethers.utils.parseEther("1850")); // 100 was already there
   });
 
   it("execution triggers reward in gas tank", async () => {
@@ -249,27 +301,48 @@ describe("ScriptExecutor - Money Market Advanced", function () {
 
   it("repaying is cheap - ABS", async () => {
     // At the time this test was last checked, the gas spent to
-    // execute the script was 0.000292814002342512 ETH.
+    // execute the script was 0.000258426002067408 ETH.
 
     let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
+    message.amount = ethers.utils.parseEther("100");
+    message.typeAmt = AmountType.Absolute;
     message.action = AdvancedMoneyMarketActionType.Repay;
     message = await initialize(message);
-    await fooToken.mint(owner.address, ethers.utils.parseEther("200"));
 
     const initialBalance = await owner.getBalance();
     await executor.execute(message, sigR, sigS, sigV);
     const spentAmount = initialBalance.sub(await owner.getBalance());
 
     const threshold = ethers.utils.parseEther("0.0003");
-    console.log("Spent for repay:", spentAmount.toString());
+    console.log("Spent for repay ABS:", spentAmount.toString());
+    expect(spentAmount.lte(threshold)).to.equal(true);
+  });
+
+  it("repaying is cheap - PRC", async () => {
+    // At the time this test was last checked, the gas spent to
+    // execute the script was 0.000267068002136544 ETH.
+
+    let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
+    message.amount = BigNumber.from(7500); // 75%
+    message.typeAmt = AmountType.Percentage;
+    message.action = AdvancedMoneyMarketActionType.Repay;
+    message = await initialize(message);
+
+    const initialBalance = await owner.getBalance();
+    await executor.execute(message, sigR, sigS, sigV);
+    const spentAmount = initialBalance.sub(await owner.getBalance());
+
+    const threshold = ethers.utils.parseEther("0.0003");
+    console.log("Spent for repay PRC:", spentAmount.toString());
     expect(spentAmount.lte(threshold)).to.equal(true);
   });
 
   it("borrowing is cheap - ABS", async () => {
     // At the time this test was last checked, the gas spent to
-    // execute the script was 0.000202234001617872 ETH.
+    // execute the script was 0.000210066001680528 ETH.
 
     let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
+    message.amount = ethers.utils.parseEther("25");
     message.action = AdvancedMoneyMarketActionType.Borrow;
     message = await initialize(message);
 
@@ -278,7 +351,26 @@ describe("ScriptExecutor - Money Market Advanced", function () {
     const spentAmount = initialBalance.sub(await owner.getBalance());
 
     const threshold = ethers.utils.parseEther("0.0003");
-    console.log("Spent for withdraw:", spentAmount.toString());
+    console.log("Spent for borrow ABS:", spentAmount.toString());
+    expect(spentAmount.lte(threshold)).to.equal(true);
+  });
+
+  it("borrowing is cheap - PRC", async () => {
+    // At the time this test was last checked, the gas spent to
+    // execute the script was 0.000215473001723784 ETH.
+
+    let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
+    message.amount = BigNumber.from("5000"); // Borrow 50% of borrowable
+    message.typeAmt = AmountType.Percentage;
+    message.action = AdvancedMoneyMarketActionType.Borrow;
+    message = await initialize(message);
+
+    const initialBalance = await owner.getBalance();
+    await executor.execute(message, sigR, sigS, sigV);
+    const spentAmount = initialBalance.sub(await owner.getBalance());
+
+    const threshold = ethers.utils.parseEther("0.0003");
+    console.log("Spent for borrow PRC:", spentAmount.toString());
     expect(spentAmount.lte(threshold)).to.equal(true);
   });
 
@@ -301,13 +393,51 @@ describe("ScriptExecutor - Money Market Advanced", function () {
 
   /* ========== ACTION INTRINSIC CHECK ========== */
 
-  it("fails if the user doesn't have enough balance, even tho the balance condition was not set", async () => {
+  it("fails if the user doesn't have enough balance, even tho the balance condition was not set - ABS", async () => {
     let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
     message.amount = ethers.utils.parseEther("9999"); // setting an amount higher than the user's balance
     message = await initialize(message);
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "User doesn't have enough balance"
+      "Not enough balance to repay debt"
+    );
+  });
+
+  it("fails if the user doesn't have enough balance, even tho the balance condition was not set - PRC", async () => {
+    let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
+    message.amount = BigNumber.from("10000"); // wanna pay 100%
+    message.typeAmt = AmountType.Percentage;
+    message = await initialize(message);
+
+    // let's set a debt much higher than what the user owns
+    await fooDebtToken.mint(owner.address, ethers.utils.parseEther('9999'));
+
+    await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
+      "Not enough balance to repay debt"
+    );
+  });
+
+
+  it("fails if the user wants to borrow more than the borrowable amount - ABS", async () => {
+    let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
+    message.amount = ethers.utils.parseEther("50000");  // can borrow 3325, this is way too much and will fail
+    message.action = AdvancedMoneyMarketActionType.Borrow;
+    message = await initialize(message);
+
+    await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
+      "Amount higher than borrowable"
+    );
+  });
+
+  it("fails if the user wants to borrow more than the borrowable amount - PRC", async () => {
+    let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
+    message.amount = BigNumber.from("10000"); // wanna borrow 100% of borrowable
+    message.typeAmt = AmountType.Percentage;
+    message.action = AdvancedMoneyMarketActionType.Borrow;
+    message = await initialize(message);
+
+    await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
+      "Borrow percentage too high"
     );
   });
 

@@ -9,6 +9,7 @@ import { ethers } from "hardhat";
 const gasTankAddress = '0x29A74Bab786C01E3181191a77Dfd5A590f2a47e1';
 const priceRetrieverAddress = '0xf94EA781F213b1782f89a2F451D45BC6DD896bE7';
 const gasPriceFeedAddress = '0x69c05f9E5f370546c41CDa2bA2C7f439f2460a32';
+const aavePriceOracleAddress = '0xb8be51e6563bb312cbb2aa26e352516c25c26ac1';
 
 async function main() {
   const [owner] = await ethers.getSigners();
@@ -30,6 +31,7 @@ async function main() {
   // set give executor permissions to access the gas tank methods
   const gasTank = await ethers.getContractAt("GasTank", gasTankAddress);
   await gasTank.addExecutor(mmAdvancedScriptExecutor.address);
+  await mmAdvancedScriptExecutor.setAavePriceOracle(aavePriceOracleAddress);
 
   // final checks
   await mmAdvancedScriptExecutor.preliminaryCheck();

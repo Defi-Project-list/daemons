@@ -432,7 +432,7 @@ describe("Treasury", function () {
 
       // from previous test, we know that after 1 day the reward is
       // (almost) equal to 2777713477338878
-      chai.use(chaiAlmost(32150205761 * 2));
+      chai.use(chaiAlmost(32150205761 * 3));
       const earnedReward: BigNumber = await treasury.earned(user1.address);
       expect(
         earnedReward.sub("2777713477338878").abs().toNumber()
