@@ -2,25 +2,28 @@ import { utils } from 'ethers';
 import mongoose from 'mongoose';
 import { ISignedMMBaseAction } from '@daemons-fi/shared-definitions';
 import { balanceCondition, followCondition, frequencyCondition, healthFactorCondition, priceCondition, repetitionsCondition } from './script-conditions';
-import { removeIfEmpty, stringifyBigNumber, truncateAndEscapeText } from '../utils';
+import { removeIfEmpty, stringifyBigNumber } from '../utils';
+import { Script } from "./script";
 
 
 const mmBaseScriptSchema = new mongoose.Schema({
+    // fields handled by parent 'Script'
+    // scriptId
+    // user
+    // chainId
+    // description
+
     // extra fields
     signature: { type: String, required: true },
-    description: { type: String, required: true, maxlength: 150, set: truncateAndEscapeText },
 
     // message signed by the user
-    scriptId: { type: String, required: true, index: { unique: true } },
     token: { type: String, required: true, set: utils.getAddress },
     aToken: { type: String, required: true, set: utils.getAddress },
     action: { type: Number, required: true },
     typeAmt: { type: Number, required: true },
     amount: { type: String, required: true, set: stringifyBigNumber },
-    user: { type: String, required: true, index: true, set: utils.getAddress },
     kontract: { type: String, required: true, set: utils.getAddress },
     executor: { type: String, required: true, set: utils.getAddress },
-    chainId: { type: String, required: true, set: stringifyBigNumber },
     balance: { type: balanceCondition, set: removeIfEmpty },
     frequency: { type: frequencyCondition, set: removeIfEmpty },
     price: { type: priceCondition, set: removeIfEmpty },
@@ -36,4 +39,4 @@ interface IMmBaseScriptModelSchema extends mongoose.Model<IMmBaseScriptDocument>
 }
 
 mmBaseScriptSchema.statics.build = (signedScript: ISignedMMBaseAction) => new MmBaseScript(signedScript);
-export const MmBaseScript = mongoose.model<IMmBaseScriptDocument, IMmBaseScriptModelSchema>('MmBaseScript', mmBaseScriptSchema);
+export const MmBaseScript = Script.discriminator<IMmBaseScriptDocument, IMmBaseScriptModelSchema>('MmBaseScript', mmBaseScriptSchema);

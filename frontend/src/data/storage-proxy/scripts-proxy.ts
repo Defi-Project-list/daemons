@@ -73,7 +73,7 @@ export class ScriptProxy {
     }
 
     private static async parseScript(script: any): Promise<BaseScript> {
-        switch (script.type) {
+        switch (script.__type) {
             case 'SwapScript':
                 return await SwapScript.fromStorageJson(script);
             case 'TransferScript':

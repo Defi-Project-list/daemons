@@ -2,23 +2,27 @@ import mongoose from 'mongoose';
 import { ISignedTransferAction } from '@daemons-fi/shared-definitions';
 import { utils } from 'ethers';
 import { balanceCondition, followCondition, frequencyCondition, priceCondition, repetitionsCondition } from './script-conditions';
-import { removeIfEmpty, stringifyBigNumber, truncateAndEscapeText } from '../utils';
+import { removeIfEmpty, stringifyBigNumber } from '../utils';
+import { Script } from "./script";
 
 
 const transferScriptSchema = new mongoose.Schema({
+    // fields handled by parent 'Script'
+    // scriptId
+    // user
+    // chainId
+    // description
+
     // extra fields
     signature: { type: String, required: true },
-    description: { type: String, required: true, maxlength: 150, set: truncateAndEscapeText },
 
     // message signed by the user
-    scriptId: { type: String, required: true, unique: true, index: { unique: true } },
+    //scriptId: { type: String, required: true, unique:true, index: { unique: true } },
     token: { type: String, required: true },
     destination: { type: String, required: true },
     typeAmt: { type: Number, required: true },
     amount: { type: String, required: true, set: stringifyBigNumber },
-    user: { type: String, required: true, index: true, set: utils.getAddress },
     executor: { type: String, required: true, set: utils.getAddress },
-    chainId: { type: String, required: true, set: stringifyBigNumber },
     balance: { type: balanceCondition, set: removeIfEmpty },
     frequency: { type: frequencyCondition, set: removeIfEmpty },
     price: { type: priceCondition, set: removeIfEmpty },
@@ -33,4 +37,4 @@ interface ITransferScriptModelSchema extends mongoose.Model<any> {
 }
 
 transferScriptSchema.statics.build = (signedScript: ISignedTransferAction) => new TransferScript(signedScript);
-export const TransferScript = mongoose.model<ITransferScriptDocument, ITransferScriptModelSchema>('TransferScript', transferScriptSchema);
+export const TransferScript = Script.discriminator<ITransferScriptDocument, ITransferScriptModelSchema>('TransferScript', transferScriptSchema);

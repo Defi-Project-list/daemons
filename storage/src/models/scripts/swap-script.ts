@@ -2,23 +2,26 @@ import { utils } from 'ethers';
 import mongoose from 'mongoose';
 import { ISignedSwapAction } from '@daemons-fi/shared-definitions';
 import { balanceCondition, followCondition, frequencyCondition, priceCondition, repetitionsCondition } from './script-conditions';
-import { removeIfEmpty, stringifyBigNumber, truncateAndEscapeText } from '../utils';
+import { removeIfEmpty, stringifyBigNumber } from '../utils';
+import { Script } from "./script";
 
 
 const swapScriptSchema = new mongoose.Schema({
+    // fields handled by parent 'Script'
+    // scriptId
+    // user
+    // chainId
+    // description
+
     // extra fields
     signature: { type: String, required: true },
-    description: { type: String, required: true, maxlength: 150, set: truncateAndEscapeText },
 
     // message signed by the user
-    scriptId: { type: String, required: true, index: { unique: true } },
     tokenFrom: { type: String, required: true },
     tokenTo: { type: String, required: true },
     typeAmt: { type: Number, required: true },
     amount: { type: String, required: true, set: stringifyBigNumber },
-    user: { type: String, required: true, index: true, set: utils.getAddress },
     executor: { type: String, required: true, set: utils.getAddress },
-    chainId: { type: String, required: true, set: stringifyBigNumber },
     balance: { type: balanceCondition, set: removeIfEmpty },
     frequency: { type: frequencyCondition, set: removeIfEmpty },
     price: { type: priceCondition, set: removeIfEmpty },
@@ -33,4 +36,4 @@ interface ISwapScriptModelSchema extends mongoose.Model<ISwapScriptDocument> {
 }
 
 swapScriptSchema.statics.build = (signedScript: ISignedSwapAction) => new SwapScript(signedScript);
-export const SwapScript = mongoose.model<ISwapScriptDocument, ISwapScriptModelSchema>('SwapScript', swapScriptSchema);
+export const SwapScript = Script.discriminator<ISwapScriptDocument, ISwapScriptModelSchema>('SwapScript', swapScriptSchema);

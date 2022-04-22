@@ -16,7 +16,7 @@ describe('POST api/scripts/update-description', () => {
 
     it('successfully updates a script description if it exists', async () => {
         const script = await transferScriptDocumentFactory({ user: userAddress });
-        const payload = { scriptId: script.scriptId, scriptType: "TransferScript", description: "abra cadabra magicabula" };
+        const payload = { scriptId: script.scriptId, description: "abra cadabra magicabula" };
 
         await supertest(app)
             .post("/api/scripts/update-description")
@@ -29,7 +29,7 @@ describe('POST api/scripts/update-description', () => {
     });
 
     it('handles the request gracefully if the script does not exist', async () => {
-        const payload = { scriptId: "nonexistent", scriptType: "TransferScript", description: "abra cadabra magicabula" };
+        const payload = { scriptId: "nonexistent", description: "abra cadabra magicabula" };
 
         await supertest(app)
             .post("/api/scripts/update-description")
@@ -38,20 +38,9 @@ describe('POST api/scripts/update-description', () => {
             .expect(200);
     });
 
-    it('returns a 400 error if the script type is not supported', async () => {
-        const payload = { scriptId: "nonexistent", scriptType: "NonexistentScriptType", description: "abra cadabra magicabula" };
-
-        await supertest(app)
-            .post("/api/scripts/update-description")
-            .set('Cookie', `token=${jwToken}`)
-            .send(payload)
-            .expect(400)
-            .expect(res => expect(res.text).to.equal('Unsupported script type NonexistentScriptType'));
-    });
-
     it('returns a 401 error if an unauthenticated user tries to update a description', async () => {
         const script = await transferScriptDocumentFactory({ user: userAddress });
-        const payload = { scriptId: script.scriptId, scriptType: "TransferScript", description: "abra cadabra magicabula" };
+        const payload = { scriptId: script.scriptId, description: "abra cadabra magicabula" };
 
         await supertest(app)
             .post("/api/scripts/update-description")
@@ -66,7 +55,7 @@ describe('POST api/scripts/update-description', () => {
 
     it('only updates description of owned scripts', async () => {
         const script = await transferScriptDocumentFactory({}); // will belong to a random user
-        const payload = { scriptId: script.scriptId, scriptType: "TransferScript", description: "abra cadabra magicabula" };
+        const payload = { scriptId: script.scriptId, description: "abra cadabra magicabula" };
 
         await supertest(app)
             .post("/api/scripts/update-description")
