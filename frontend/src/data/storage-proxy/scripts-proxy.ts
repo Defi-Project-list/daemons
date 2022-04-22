@@ -1,34 +1,20 @@
-import { storageAddress } from '.';
-import { BaseScript } from '../script/base-script';
-import { MmBaseScript } from '../script/mm-base-script';
-import { SwapScript } from '../script/swap-script';
-import { TransferScript } from '../script/transfer-script';
+import { storageAddress } from ".";
+import { BaseScript } from "../script/base-script";
+import { MmBaseScript } from "../script/mm-base-script";
+import { SwapScript } from "../script/swap-script";
+import { TransferScript } from "../script/transfer-script";
 
 export class ScriptProxy {
-
     public static async saveScript(script: BaseScript): Promise<void> {
-        const url = `${storageAddress}/scripts/${this.getSaveEndpoint(script)}`;
+        const url = `${storageAddress}/scripts/`;
         const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: script.toJsonString(),
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ script: script.toJson(), type: script.ScriptType })
         };
 
         await fetch(url, requestOptions as any);
-    }
-
-    private static getSaveEndpoint(script: BaseScript): string {
-        switch (script.ScriptType) {
-            case 'SwapScript':
-                return 'swap';
-            case 'TransferScript':
-                return 'transfer';
-            case 'MmBaseScript':
-                return 'mm-base';
-            default:
-                throw new Error("Unsupported script type: " + script.ScriptType);
-        }
     }
 
     public static async fetchScripts(chainId?: string): Promise<BaseScript[]> {
@@ -39,7 +25,7 @@ export class ScriptProxy {
 
         console.log(`Fetching all scripts for chain ${chainId}`);
         const url = `${storageAddress}/scripts/${chainId}`;
-        const requestOptions = { method: 'GET', credentials: 'include' };
+        const requestOptions = { method: "GET", credentials: "include" };
         const response = await fetch(url, requestOptions as any);
         const json: any[] = await response.json();
         const scripts: BaseScript[] = [];
@@ -59,7 +45,7 @@ export class ScriptProxy {
         console.log(`Fetching user ${user} scripts for chain ${chainId}`);
         const url = `${storageAddress}/scripts/${chainId}/${user}`;
 
-        const requestOptions = { method: 'GET', credentials: 'include' };
+        const requestOptions = { method: "GET", credentials: "include" };
         const response = await fetch(url, requestOptions as any);
         if (response.status !== 200) return [];
 
@@ -74,38 +60,41 @@ export class ScriptProxy {
 
     private static async parseScript(script: any): Promise<BaseScript> {
         switch (script.__type) {
-            case 'SwapScript':
+            case "SwapScript":
                 return await SwapScript.fromStorageJson(script);
-            case 'TransferScript':
+            case "TransferScript":
                 return await TransferScript.fromStorageJson(script);
-            case 'MmBaseScript':
+            case "MmBaseScript":
                 return await MmBaseScript.fromStorageJson(script);
             default:
                 throw new Error("Unsupported script type: " + script.ScriptType);
         }
     }
 
-    public static async updateScriptDescription(scriptId: string, scriptType: string, description: string): Promise<void> {
+    public static async updateScriptDescription(
+        scriptId: string,
+        description: string
+    ): Promise<void> {
         console.log(`Updating description for script ${scriptId}`);
         const url = `${storageAddress}/scripts/update-description`;
         const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ scriptId, scriptType, description }),
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ scriptId, description })
         };
 
         await fetch(url, requestOptions as any);
     }
 
-    public static async revokeScript(scriptId: string, scriptType: string): Promise<void> {
+    public static async revokeScript(scriptId: string): Promise<void> {
         console.log(`Revoking script ${scriptId}`);
         const url = `${storageAddress}/scripts/revoke`;
         const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ scriptId, scriptType }),
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ scriptId })
         };
 
         await fetch(url, requestOptions as any);

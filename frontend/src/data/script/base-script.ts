@@ -70,7 +70,7 @@ export abstract class BaseScript {
             window.onbeforeunload = () => true;
             const tx = await executor.revoke(this.getId());
             await tx.wait();
-            await StorageProxy.script.revokeScript(this.getId(), this.ScriptType);
+            await StorageProxy.script.revokeScript(this.getId());
             // remove "are you sure you want to leave" message
             window.onbeforeunload = null;
         } catch (error: any) {
@@ -108,12 +108,12 @@ export abstract class BaseScript {
     protected abstract getAmount(): BigNumber;
     protected abstract getTokenForAllowance(): string;
 
-    public toJsonString(): string {
-        return JSON.stringify({
+    public toJson(): string {
+        return {
             signature: this.signature,
             description: this.getDescription(),
             ...this.getMessage(),
-        });
+        };
     }
 
     private parseVerificationStateFromErrorText(errorText: string): VerificationState {
