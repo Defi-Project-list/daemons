@@ -58,22 +58,34 @@ export class ScriptDescriptionFactory {
     }
 
     private swapAction(form: ISwapActionForm): string {
+        const amount =
+            form.amountType === AmountType.Absolute
+                ? form.floatAmount.toString()
+                : `${form.floatAmount / 100}% of the available`;
         const tokenFro = this.tokensDict[form.tokenFromAddress];
         const tokenTo = this.tokensDict[form.tokenToAddress];
-        return `Swap ${form.floatAmount} ${tokenFro.symbol} for ${tokenTo.symbol}`;
+        return `Swap ${amount} ${tokenFro.symbol} for ${tokenTo.symbol}`;
     }
 
     private transferAction(form: ITransferActionForm): string {
+        const amount =
+            form.amountType === AmountType.Absolute
+                ? form.floatAmount.toString()
+                : `${form.floatAmount / 100}% of the available`;
         const token = this.tokensDict[form.tokenAddress];
         const destination = form.destinationAddress.substring(0, 8) + "...";
-        return `Send ${form.floatAmount} ${token.symbol} to ${destination}`;
+        return `Send ${amount} ${token.symbol} to ${destination}`;
     }
 
     private mmBaseAction(form: IBaseMMActionForm): string {
+        const amount =
+            form.amountType === AmountType.Absolute
+                ? form.floatAmount.toString()
+                : `${form.floatAmount / 100}% of the available`;
         const token = this.tokensDict[form.tokenAddress];
         return form.actionType === BaseMoneyMarketActionType.Deposit
-            ? `Deposit ${form.floatAmount} ${token.symbol} into ${form.moneyMarket.name}`
-            : `Withdraw ${form.floatAmount} ${token.symbol} from ${form.moneyMarket.name}`;
+            ? `Deposit ${amount} ${token.symbol} into ${form.moneyMarket.name}`
+            : `Withdraw ${amount} ${token.symbol} from ${form.moneyMarket.name}`;
     }
 
     private mmAdvancedAction(form: IAdvancedMMActionForm): string {
