@@ -24,8 +24,8 @@ export function ToggleButtonField(props: IToggleButtonFieldProps): JSX.Element {
                     onClick={(e) => {
                         input.onChange(e);
                         const newValue = (currentIndex + 1) % choices.length;
-                        setCurrentIndex((currentIndex + 1) % choices.length);
-                        props.updateFunction(newValue);
+                        setCurrentIndex(newValue);
+                        props.updateFunction(Number(choices[newValue]));
                     }
                     }>
                     {props.valuesEnum[choices[currentIndex]]}

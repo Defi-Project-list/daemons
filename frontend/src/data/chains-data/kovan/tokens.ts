@@ -113,9 +113,19 @@ const LINK = {
 const aaveDAI = {
     name: "DAI Stablecoin",
     symbol: "AaveDAI",
-    address: "0x58Cd851c28dF05Edc7F018B533C0257DE57673f7",
+    address: "0xff795577d9ac8bd7d90ee22b6c1703490b6512fd",
     decimals: 18,
     logoURI: "https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png",
+    chainId: "42",
+    hasPriceFeed: false
+};
+
+const aaveBUSD = {
+    name: "BUSD Stablecoin",
+    symbol: "AaveBUSD",
+    address: "0x4c6e1efc12fdfd568186b7baec0a43fffb4bcccf",
+    decimals: 18,
+    logoURI: "https://tokens.1inch.io/0x4fabb145d64652a948d72533023f6e7a623c7c53.png",
     chainId: "42",
     hasPriceFeed: false
 };
@@ -138,20 +148,27 @@ export const kovanTokens: Token[] = [
 export const kovanAaveMM: MoneyMarket = {
     name: "AAVE",
     poolAddress: "0xE0fBa4Fc209b4948668006B2bE61711b7f465bAe",
-    supportedTokens: [aaveDAI, WETH],
+    supportedTokens: [aaveDAI, aaveBUSD, WETH],
     mmTokens: {
         // DAI
-        "0x58Cd851c28dF05Edc7F018B533C0257DE57673f7": {
-            aToken: "0xE101EcB2283Acf0C91e05A428DDD8833Ac66B572",
-            varDebtToken: "0xCe26cA5B57704147103649e8d2B41d66F6148737",
-            fixDebtToken: "0xB7A6a70DB9EA05E2a23283048CC467bCFD608899"
+        [aaveDAI.address]: {
+            aToken: "0xdcf0af9e59c002fa3aa091a46196b37530fd48a8",
+            varDebtToken: "0xeabbdbe7aad7d5a278da40967e62c8c8fe5faec8",
+            fixDebtToken: "0x3b91257fe5ca63b4114ac41a0d467d25e2f747f3"
+        },
+
+        // BUSD
+        [aaveBUSD.address]: {
+            aToken: "0xfe3e41db9071458e39104711ef1fa668bae44e85",
+            varDebtToken: "0xb85ecad7a9c9f09749cecf84122189a7908ec934",
+            fixDebtToken: "0x597c5d0390e7e995d36f2e49f9ed979697723be9"
         },
 
         // WETH
-        "0xd0a1e359811322d97991e03f863a0c30c2cf029c": {
+        [WETH.address]: {
             aToken: "0x87b1f4cf9bd63f7bbd3ee1ad04e8f52540349347",
-            varDebtToken: "0xE16D896C946060E342EFE319928dF87202609AB7",
-            fixDebtToken: "0xFB2E04F58ED47AD6E3C9F67A2C990563C8c65232"
-        }
+            varDebtToken: "0xdd13ce9de795e7facb6fec90e346c7f3abe342e2",
+            fixDebtToken: "0x0000000000000000000000000000000000000000"
+        },
     }
 };

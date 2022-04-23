@@ -80,7 +80,7 @@ export abstract class BaseScript {
 
     public async hasAllowance(): Promise<boolean> {
         const allowanceHelper = new AllowanceHelper();
-        return await allowanceHelper.checkForAllowance(
+        return await allowanceHelper.checkForERC20Allowance(
             this.getUser(),
             this.getTokenForAllowance(),
             this.getExecutorAddress(),
@@ -92,7 +92,7 @@ export abstract class BaseScript {
 
         // add "are you sure you want to leave" message
         window.onbeforeunload = () => true;
-        const tx = await allowanceHelper.requestAllowance(this.getTokenForAllowance(), this.getExecutorAddress());
+        const tx = await allowanceHelper.requestERC20Allowance(this.getTokenForAllowance(), this.getExecutorAddress());
         await tx.wait();
         // remove "are you sure you want to leave" message
         window.onbeforeunload = null;
