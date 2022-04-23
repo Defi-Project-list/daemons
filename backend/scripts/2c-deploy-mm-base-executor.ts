@@ -30,6 +30,7 @@ async function main() {
   // set give executor permissions to access the gas tank methods
   const gasTank = await ethers.getContractAt("GasTank", gasTankAddress);
   await gasTank.addExecutor(mmBaseScriptExecutor.address);
+  console.log(`Given access to GasTank`);
 
   // final checks
   await mmBaseScriptExecutor.preliminaryCheck();

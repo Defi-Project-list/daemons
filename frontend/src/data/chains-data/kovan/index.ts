@@ -12,7 +12,7 @@ const kovanContracts: IContractsList = {
     SwapExecutor: '0x645e479C9F41Bb7Ac4Ee49852c8dDbc46fE3Ab20',
     TransferExecutor: '0x210d841EB9606B1fb27Bf676F0B6Ec4C5C7176E2',
     MmBaseExecutor: '0x1da737403e1e81BAf21dCC913B34250508Dc45e5',
-    MmAdvancedExecutor: '0x8fA55494914999d631940f367eedF535d33C4FD2',
+    MmAdvancedExecutor: '0x725701F9F652Ba2E43A8531faf9166B5fF2973DC',
 };
 
 export const kovanInfo: IChainInfo = {

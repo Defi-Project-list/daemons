@@ -26,12 +26,13 @@ async function main() {
   await mmAdvancedScriptExecutor.setGasTank(gasTankAddress);
   await mmAdvancedScriptExecutor.setPriceRetriever(priceRetrieverAddress);
   await mmAdvancedScriptExecutor.setGasFeed(gasPriceFeedAddress);
+  await mmAdvancedScriptExecutor.setAavePriceOracle(aavePriceOracleAddress);
   console.log(`Secondary contracts have been set`);
 
   // set give executor permissions to access the gas tank methods
   const gasTank = await ethers.getContractAt("GasTank", gasTankAddress);
   await gasTank.addExecutor(mmAdvancedScriptExecutor.address);
-  await mmAdvancedScriptExecutor.setAavePriceOracle(aavePriceOracleAddress);
+  console.log(`Given access to GasTank`);
 
   // final checks
   await mmAdvancedScriptExecutor.preliminaryCheck();
