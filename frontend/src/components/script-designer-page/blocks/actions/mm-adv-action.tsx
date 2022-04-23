@@ -52,7 +52,14 @@ export const MmAdvAction = ({
                                 name="actionType"
                                 valuesEnum={AdvancedMoneyMarketActionType}
                                 updateFunction={(newValue) => {
-                                    update({ ...form, actionType: newValue });
+                                    update({
+                                        ...form,
+                                        actionType: newValue,
+                                        floatAmount:
+                                            form.amountType === AmountType.Percentage
+                                                ? 50 // reset percentage amount as the MAX changes between borrow and repay
+                                                : form.floatAmount
+                                    });
                                 }}
                                 initial={form.actionType}
                             />
@@ -106,7 +113,12 @@ export const MmAdvAction = ({
                                     {({ input, meta }) => (
                                         <input
                                             min="50"
-                                            max="10000"
+                                            max={
+                                                form.actionType ===
+                                                AdvancedMoneyMarketActionType.Repay
+                                                    ? "10000" // 100% max for repay
+                                                    : "9500" //  95% max for repay
+                                            }
                                             step="50"
                                             {...input}
                                             className={`${
