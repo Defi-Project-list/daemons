@@ -14,4 +14,13 @@ contract MockToken is ERC20, ERC20Burnable {
     function justBurn(address from, uint256 amount) public {
         _burn(from, amount);
     }
+
+    function borrowAllowance(address fromUser, address toUser)
+        external
+        view
+        returns (uint256)
+    {
+    // recycling allowance function so we can use MockToken as a CreditDelegationToken
+        return allowance(fromUser, toUser);
+    }
 }

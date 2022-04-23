@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 
 import "./interfaces/IAavePriceOracleGetter.sol";
+import "./interfaces/IAaveCreditDelegationToken.sol";
 import "./ConditionsChecker.sol";
 import "./ConditionsCheckerForMoneyMarket.sol";
 import "./Messages.sol";
@@ -91,15 +92,24 @@ contract MmAdvancedScriptExecutor is
         verifyFrequency(message.frequency, message.scriptId);
 
         if (message.action == 0x00) {
+            require(
+                ERC20(message.debtToken).balanceOf(message.user) > 0,
+                "No debt to repay"
+            );
             verifyAmountForRepay(message);
+            uint256 amount = message.typeAmt == 0
+                ? message.amount // absolute type: just return the given amount
+                : (ERC20(message.debtToken).balanceOf(message.user) *
+                    message.amount) / 10000; // percentage type: a % on that token debt
+            verifyAllowance(message.user, message.token, amount);
         } else {
             verifyAmountForBorrow(message);
+            verifyBorrowAllowance(message);
         }
 
         verifyBalance(message.balance, message.user);
         verifyPrice(message.price);
         verifyGasTank(message.user);
-        verifyAllowance(message.user, message.token, message.amount);
         verifyHealthFactor(message.healthFactor, message.user);
     }
 
@@ -132,6 +142,16 @@ contract MmAdvancedScriptExecutor is
         require(
             message.amount <= borrowableTokens,
             "Amount higher than borrowable"
+        );
+    }
+
+    function verifyBorrowAllowance(MmAdvanced calldata message) private view {
+        require(
+            ICreditDelegationToken(message.debtToken).borrowAllowance(
+                message.user,
+                address(this)
+            ) >= getBorrowAmount(message),
+            "[Allowance Condition] User did not give enough allowance to the script executor"
         );
     }
 
@@ -200,21 +220,7 @@ contract MmAdvancedScriptExecutor is
     }
 
     function borrow(MmAdvanced calldata message) private {
-        uint256 amount = message.amount;
-
-        if (message.typeAmt == 0x01) {
-            // if user wants to borrow a percentage of their borrowing
-            // power we need to calculate it
-
-            uint256 assetPriceInEth = priceOracle.getAssetPrice(message.token);
-            (, , uint256 borrowableEth, , , ) = IMoneyMarket(message.kontract)
-                .getUserAccountData(message.user);
-
-            amount =
-                (((borrowableEth * message.amount) / 10000) *
-                    (10**ERC20(message.token).decimals())) /
-                assetPriceInEth;
-        }
+        uint256 amount = getBorrowAmount(message);
 
         // step 1 call withdraw function
         // NOTE: amount is always absolute
@@ -228,5 +234,23 @@ contract MmAdvancedScriptExecutor is
 
         // step 2 send borrowed tokens to user
         IERC20(message.token).transfer(message.user, amount);
+    }
+
+    function getBorrowAmount(MmAdvanced calldata message)
+        private
+        view
+        returns (uint256)
+    {
+        if (message.typeAmt == 0) return message.amount;
+
+        // if user wants to borrow a percentage of their borrowing
+        // power we need to calculate it
+        uint256 assetPriceInEth = priceOracle.getAssetPrice(message.token);
+        (, , uint256 borrowableEth, , , ) = IMoneyMarket(message.kontract)
+            .getUserAccountData(message.user);
+
+        return
+            (((borrowableEth * message.amount) / 10000) *
+                (10**ERC20(message.token).decimals())) / assetPriceInEth;
     }
 }

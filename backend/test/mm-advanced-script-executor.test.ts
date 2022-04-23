@@ -131,6 +131,7 @@ describe("ScriptExecutor - Money Market Advanced", function () {
 
     // Grant allowance
     await fooToken.approve(executor.address, ethers.utils.parseEther("500"));
+    await fooDebtToken.approve(executor.address, ethers.utils.parseEther("5000"))
 
     // Generate balance and pre-existing debt
     await fooToken.mint(owner.address, ethers.utils.parseEther('100'));
@@ -392,6 +393,22 @@ describe("ScriptExecutor - Money Market Advanced", function () {
   });
 
   /* ========== ACTION INTRINSIC CHECK ========== */
+
+  it("fails if the user wants to repay but there is no debt", async () => {
+    let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
+    message.amount = BigNumber.from(10000); // 100%
+    message.typeAmt = AmountType.Percentage;
+    message.action = AdvancedMoneyMarketActionType.Repay;
+    message = await initialize(message);
+
+    // repaying 100% of the debt
+    await executor.execute(message, sigR, sigS, sigV);
+
+    // trying again will fail
+    await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
+      "No debt to repay"
+    );
+  });
 
   it("fails if the user doesn't have enough balance, even tho the balance condition was not set - ABS", async () => {
     let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
@@ -656,6 +673,19 @@ describe("ScriptExecutor - Money Market Advanced", function () {
 
     // revoke the allowance for the token to the executor contract
     await fooToken.approve(executor.address, ethers.utils.parseEther("0"));
+
+    await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
+      "[Allowance Condition] User did not give enough allowance to the script executor"
+    );
+  });
+
+  it("fails if the user did not grant enough allowance to the executor contract - BORROW", async () => {
+    let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
+    message.action = AdvancedMoneyMarketActionType.Borrow;
+    message = await initialize(message);
+
+    // revoke the allowance for the token to the executor contract
+    await fooDebtToken.approve(executor.address, ethers.utils.parseEther("0"));
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
       "[Allowance Condition] User did not give enough allowance to the script executor"
