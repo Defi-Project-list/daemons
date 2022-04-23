@@ -8,6 +8,7 @@ describe("Mock Money Market Pool", function () {
   let otherUser: SignerWithAddress;
   let fooToken: Contract;
   let aFooToken: Contract;
+  let debtFooToken: Contract;
   let mockMoneyMarketPool: Contract;
 
   this.beforeEach(async () => {
@@ -18,6 +19,7 @@ describe("Mock Money Market Pool", function () {
     const MockTokenContract = await ethers.getContractFactory("MockToken");
     fooToken = await MockTokenContract.deploy("Foo", "FOO");
     aFooToken = await MockTokenContract.deploy("aFoo", "aFOO");
+    debtFooToken = await MockTokenContract.deploy("debtFoo", "debtFOO");
 
     // instantiate Mock MMPool contract
     const MockMoneyMarketPoolContract = await ethers.getContractFactory(
@@ -25,7 +27,8 @@ describe("Mock Money Market Pool", function () {
     );
     mockMoneyMarketPool = await MockMoneyMarketPoolContract.deploy(
       fooToken.address,
-      aFooToken.address
+      aFooToken.address,
+      debtFooToken.address
     );
   });
 
@@ -93,6 +96,7 @@ describe("Mock Money Market Pool", function () {
 
   it("mocks repay function", async () => {
     await fooToken.mint(owner.address, 150000);
+    await debtFooToken.mint(otherUser.address, 90000);
     await fooToken.approve(
       mockMoneyMarketPool.address,
       ethers.utils.parseEther("500")
@@ -105,10 +109,11 @@ describe("Mock Money Market Pool", function () {
       otherUser.address
     );
 
-    // 90000 tokens should have been taken from owner
-    // as the debt is always 9/10th of the sent amount
-    expect((await fooToken.balanceOf(owner.address)).toNumber()).to.be.equal(
-      60000
-    );
+    // the user had a debt of 90000, so 6000 should be left
+    const fooBalance = await fooToken.balanceOf(owner.address);
+    expect(fooBalance.toNumber()).to.be.equal(60000);
+
+    const debt = await debtFooToken.balanceOf(otherUser.address);
+    expect(debt.toNumber()).to.be.equal(0);
   });
 });

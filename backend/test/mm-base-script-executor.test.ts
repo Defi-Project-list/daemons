@@ -94,6 +94,7 @@ describe("ScriptExecutor - Money Market Base", function () {
     const MockTokenContract = await ethers.getContractFactory("MockToken");
     fooToken = await MockTokenContract.deploy("Foo Token", "FOO");
     fooAToken = await MockTokenContract.deploy("Foo A Token", "aFOO");
+    const fooDebtToken = await MockTokenContract.deploy("Foo DebtToken", "dFOO");
 
     // Gas Price Feed contract
     const GasPriceFeedContract = await ethers.getContractFactory(
@@ -101,13 +102,15 @@ describe("ScriptExecutor - Money Market Base", function () {
     );
     const gasPriceFeed = await GasPriceFeedContract.deploy();
 
+
     // Mock Money Market Pool contract
     const MockMoneyMarketPoolContract = await ethers.getContractFactory(
       "MockMoneyMarketPool"
     );
     mockMoneyMarketPool = await MockMoneyMarketPoolContract.deploy(
       fooToken.address,
-      fooAToken.address
+      fooAToken.address,
+      fooDebtToken.address,
     );
 
     // Executor contract
