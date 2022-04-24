@@ -8,6 +8,7 @@ import {
     fetchStakingBalance,
     fetchStakingClaimable
 } from "../../state/action-creators/staking-action-creators";
+import { fetchDaemBalance } from "../../state/action-creators/wallet-action-creators";
 import { AllowanceHelper } from "../../utils/allowance-helper";
 import { getAbiFor } from "../../utils/get-abi";
 import "./staking.css";
@@ -18,6 +19,7 @@ export function Staking() {
     const claimable = useSelector((state: RootState) => state.staking.claimable);
     const walletAddress = useSelector((state: RootState) => state.wallet.address);
     const chainId = useSelector((state: RootState) => state.wallet.chainId);
+    const DAEMBalance = useSelector((state: RootState) => state.wallet.DAEMBalance);
     const [toggleDeposit, setToggleDeposit] = useState<boolean>(true);
     const [needsAllowance, setNeedsAllowance] = useState<boolean>(true);
     const contracts = GetCurrentChain(chainId!).contracts;
@@ -37,6 +39,7 @@ export function Staking() {
     useEffect(() => {
         dispatch(fetchStakingBalance(walletAddress, chainId));
         dispatch(fetchStakingClaimable(walletAddress, chainId));
+        dispatch(fetchDaemBalance(walletAddress, chainId));
         checkForAllowance();
     }, []);
 
@@ -52,11 +55,15 @@ export function Staking() {
 
         dispatch(fetchStakingBalance(walletAddress, chainId));
         dispatch(fetchStakingClaimable(walletAddress, chainId));
+        dispatch(fetchDaemBalance(walletAddress, chainId));
     };
 
     const requestAllowance = async () => {
         const allowanceHelper = new AllowanceHelper();
-        const tx = await allowanceHelper.requestERC20Allowance(contracts.DAEMToken, contracts.Treasury);
+        const tx = await allowanceHelper.requestERC20Allowance(
+            contracts.DAEMToken,
+            contracts.Treasury
+        );
         await tx.wait();
         await checkForAllowance();
     };
@@ -69,6 +76,7 @@ export function Staking() {
         await tx.wait();
 
         dispatch(fetchStakingBalance(walletAddress, chainId));
+        dispatch(fetchDaemBalance(walletAddress, chainId));
         (document.getElementById("id-amount") as HTMLInputElement).value = "";
     };
 
@@ -80,6 +88,7 @@ export function Staking() {
         await tx.wait();
 
         dispatch(fetchStakingBalance(walletAddress, chainId));
+        dispatch(fetchDaemBalance(walletAddress, chainId));
         (document.getElementById("id-amount") as HTMLInputElement).value = "";
     };
 
@@ -128,6 +137,15 @@ export function Staking() {
                             type="number"
                             placeholder="0.0"
                         />
+                        <div
+                            className="staking__max-balance-button"
+                            onClick={() =>
+                                ((document.getElementById("id-amount") as HTMLInputElement).value =
+                                    DAEMBalance.toString())
+                            }
+                        >
+                            Max: {DAEMBalance}
+                        </div>
                         <div className="staking__buttons-container">
                             {needsAllowance ? (
                                 <input
@@ -181,7 +199,7 @@ export function Staking() {
                                 className="staking__button"
                                 type="submit"
                                 onClick={exit}
-                                value="Unstake &amp; Claim"
+                                value="Unstake All &amp; Claim"
                             />
                         </div>
                     </form>

@@ -13,6 +13,7 @@ export enum ActionType {
     // wallet
     WALLET_UPDATE = "WALLET_UPDATE",
     AUTH_CHECK = "AUTH_CHECK",
+    FETCH_DAEM_BALANCE = "FETCH_DAEM_BALANCE",
 
     // gas tank
     GAS_TANK_BALANCE = "GAS_TANK_BALANCE",
@@ -21,9 +22,6 @@ export enum ActionType {
     // staking
     STAKING_BALANCE = "STAKING_BALANCE",
     STAKING_CLAIMABLE = "STAKING_CLAIMABLE",
-
-    // tokens
-    FETCH_TOKENS = "FETCH_TOKENS",
 
     // history
     FETCH_TRANSACTIONS = "FETCH_TRANSACTIONS",

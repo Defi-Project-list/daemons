@@ -23,6 +23,9 @@
     cursor: not-allowed;
 }
 
+.staking__forms-container {
+    position: relative;
+}
 
 .staking__input {
     height: 30px;
@@ -68,4 +71,15 @@
 .staking__button:disabled {
     cursor: not-allowed;
     opacity: 0.5;
+}
+
+.staking__max-balance-button {
+    position: absolute;
+    user-select: none;
+    top: 8px;
+    right: 10px;
+    font-size: 0.8rem;
+    color: #aaa;
+    cursor: pointer;
+    text-decoration: underline;
 }

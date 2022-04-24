@@ -1,3 +1,4 @@
+import { BigNumber } from "ethers";
 import { ActionType } from "../action-types/index";
 
 export interface IUpdateWalletAction {
@@ -13,4 +14,9 @@ export interface IAuthCheck {
     authenticated: boolean;
 }
 
-export type WalletAction = IUpdateWalletAction | IAuthCheck;
+export interface IFetchDaemBalance {
+    type: ActionType.FETCH_DAEM_BALANCE;
+    balance: number;
+}
+
+export type WalletAction = IUpdateWalletAction | IAuthCheck | IFetchDaemBalance;
