@@ -4,6 +4,7 @@ import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
 import { RootState } from '../../state';
 import { fetchGasTankClaimable } from '../../state/action-creators/gas-tank-action-creators';
 import { fetchStakingBalance, fetchStakingClaimable } from '../../state/action-creators/staking-action-creators';
+import { fetchDaemBalance } from "../../state/action-creators/wallet-action-creators";
 import { getAbiFor } from '../../utils/get-abi';
 import './claim-reward.css';
 
@@ -22,6 +23,7 @@ export function ClaimRewards() {
         await tx.wait();
 
         dispatch(fetchGasTankClaimable(walletAddress, chainId));
+        dispatch(fetchDaemBalance(walletAddress, chainId));
     };
 
     const claimAndStake = async () => {
@@ -33,6 +35,7 @@ export function ClaimRewards() {
         dispatch(fetchGasTankClaimable(walletAddress, chainId));
         dispatch(fetchStakingClaimable(walletAddress, chainId));
         dispatch(fetchStakingBalance(walletAddress, chainId));
+        dispatch(fetchDaemBalance(walletAddress, chainId));
     };
 
     const getGasTankContract = async () => {
