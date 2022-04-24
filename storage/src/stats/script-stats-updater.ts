@@ -1,9 +1,6 @@
-import { SwapScript } from "../models/scripts/swap-script";
 import { IScriptStats, ScriptStats } from "../models/stats/script-stats";
-import { TransferScript } from "../models/scripts/transfer-script";
-import { MmBaseScript } from "../models/scripts/mm-base-script";
 import { ChainInfo } from ".";
-
+import { Script } from "../models/scripts/script";
 
 export async function updateScriptStats(): Promise<void> {
     // delete all stats from today to prevent duplicates
@@ -21,28 +18,17 @@ async function updateScriptStatsForChain(chainId: string): Promise<void> {
     const today = new Date().toISOString().slice(0, 10);
     const chainName = ChainInfo()[chainId];
 
-    let todaysStatsForThisChain: IScriptStats[] = [
-        {
-            amount: await SwapScript.count({ chainId }),
-            chain: chainName,
-            date: today,
-            kind: "Swap"
-        },
-        {
-            amount: await TransferScript.count({ chainId }),
-            chain: chainName,
-            date: today,
-            kind: "Transfer"
-        },
-        {
-            amount: await MmBaseScript.count({ chainId }),
-            chain: chainName,
-            date: today,
-            kind: "MmBase"
-        }
-    ];
+    const scriptsCounts = await Script.aggregate([
+        { $match: { chainId: chainId } },
+        { $group: { _id: "$__type", count: { $sum: 1 } } }
+    ]);
 
-    // remove 0-amount entries and insert
-    todaysStatsForThisChain = todaysStatsForThisChain.filter(s => s.amount > 0);
+    let todaysStatsForThisChain: IScriptStats[] = scriptsCounts.map(c => ({
+        amount: c.count,
+        chain: chainName,
+        date: today,
+        kind: c._id.substring(c._id.length - 6, 0) // remove 'Script' from script type
+    }));
+
     await ScriptStats.insertMany(todaysStatsForThisChain);
 }
