@@ -11,10 +11,11 @@ const colors: { [k: string]: string } = {
     // alt4: "#99D98C",
     // alt5: "#B5E48C",
     // alt6: "#D9ED92",
-    Swap: "#1A759F",
-    Transfer: "#34A0A4",
+
+    Transfer: "#1A759F",
+    Swap: "#34A0A4",
     MmBase: "#76C893",
-    MmAdvanced: "#B5E48C",
+    MmAdvanced: "#B5E48C"
 };
 
 export const userStatsToLineChartData = (userStats: IUserStat[]): any => {
@@ -34,7 +35,12 @@ export const userStatsToLineChartData = (userStats: IUserStat[]): any => {
 
 export const scriptStatsToBarChartData = (scriptStats: IScriptStats[]): any => {
     const sortedDates = Array.from(new Set<string>(scriptStats.map((d) => d.date))).sort();
-    const allKinds = new Set<string>(scriptStats.map((d) => d.kind));
+    const allKinds = new Set<string>(
+        scriptStats
+            .map((d) => d.kind)
+            .sort()
+            .reverse()
+    );
     const grouped: { [date: string]: { [kind: string]: number } } = {};
 
     scriptStats.forEach((d) => {
