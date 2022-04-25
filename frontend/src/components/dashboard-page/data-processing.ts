@@ -1,9 +1,20 @@
 import { IScriptStats, IUserStat } from "../../data/storage-proxy/stats-proxy";
 
 const colors: { [k: string]: string } = {
-    Swap: "#90be6d",
-    Transfer: "#43aa8b",
-    MmBase: "#4d908e"
+    // Swap: "#184E77",
+    // Transfer: "#1E6091",
+    // MmBase: "#1A759F",
+    // MmAdvanced: "#168AAD",
+    // alt1: "#34A0A4",
+    // alt2: "#52B69A",
+    // alt3: "#76C893",
+    // alt4: "#99D98C",
+    // alt5: "#B5E48C",
+    // alt6: "#D9ED92",
+    Swap: "#1A759F",
+    Transfer: "#34A0A4",
+    MmBase: "#76C893",
+    MmAdvanced: "#B5E48C",
 };
 
 export const userStatsToLineChartData = (userStats: IUserStat[]): any => {
