@@ -172,7 +172,7 @@ describe("ScriptExecutor - Swapper", function () {
 
     await expect(
       executor.verify(tamperedMessage, sigR, sigS, sigV)
-    ).to.be.revertedWith("Signature does not match");
+    ).to.be.revertedWith("[SIGNATURE][FINAL]");
   });
 
   it("spots a valid message from another chain", async () => {
@@ -182,7 +182,7 @@ describe("ScriptExecutor - Swapper", function () {
 
     // as the contract is created on chain 42, it will refuse to execute this message
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "Wrong chain"
+      "[CHAIN][ERROR]"
     );
   });
 
@@ -283,7 +283,7 @@ describe("ScriptExecutor - Swapper", function () {
 
     // the second one fails as not enough blocks have passed
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Frequency Condition] Not enough time has passed since the last execution"
+      "[FREQUENCY_CONDITION][TMP]"
     );
   });
 
@@ -295,7 +295,7 @@ describe("ScriptExecutor - Swapper", function () {
     message = await initialize(message);
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "User doesn't have enough balance"
+      "[SCRIPT_BALANCE][TMP]"
     );
   });
 
@@ -308,7 +308,7 @@ describe("ScriptExecutor - Swapper", function () {
     await executor.revoke(message.scriptId);
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "Script has been revoked by the user"
+      "[REVOKED][FINAL]"
     );
   });
 
@@ -324,7 +324,7 @@ describe("ScriptExecutor - Swapper", function () {
     message = await initialize(message);
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Frequency Condition] Not enough time has passed since the start block"
+      "[FREQUENCY_CONDITION][TMP]"
     );
   });
 
@@ -338,7 +338,7 @@ describe("ScriptExecutor - Swapper", function () {
     message = await initialize(message);
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Frequency Condition] Not enough time has passed since the start block"
+      "[FREQUENCY_CONDITION][TMP]"
     );
   });
 
@@ -352,7 +352,7 @@ describe("ScriptExecutor - Swapper", function () {
     message = await initialize(message);
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Balance Condition] User does not own enough tokens"
+      "[BALANCE_CONDITION_LOW][TMP]"
     );
   });
 
@@ -368,7 +368,7 @@ describe("ScriptExecutor - Swapper", function () {
     await fooToken.mint(owner.address, ethers.utils.parseEther("200"));
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Balance Condition] User owns too many tokens"
+      "[BALANCE_CONDITION_HIGH][TMP]"
     );
   });
 
@@ -421,7 +421,7 @@ describe("ScriptExecutor - Swapper", function () {
 
     // verification should fail as the price lower than expected
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Price Condition] Token price is lower than expected value"
+      "[PRICE_CONDITION_LOW][TMP]"
     );
   });
 
@@ -456,7 +456,7 @@ describe("ScriptExecutor - Swapper", function () {
 
     // verification should fail as the price lower than expected
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Price Condition] Token price is higher than expected value"
+      "[PRICE_CONDITION_HIGH][TMP]"
     );
   });
 
@@ -501,7 +501,7 @@ describe("ScriptExecutor - Swapper", function () {
     // empty the gas tank and try to verify the message
     await gasTank.withdrawAll();
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Gas Condition] Not enough gas in the tank"
+      "[GAS][TMP]"
     );
   });
 
@@ -514,7 +514,7 @@ describe("ScriptExecutor - Swapper", function () {
     await fooToken.approve(executor.address, ethers.utils.parseEther("0"));
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Allowance Condition] User did not give enough allowance to the script executor"
+      "[ALLOWANCE][ACTION]"
     );
   });
 
@@ -535,7 +535,7 @@ describe("ScriptExecutor - Swapper", function () {
 
     // the third time won't as it'll hit the max-repetitions limit
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Repetitions Condition] The script has reached its maximum number of executions"
+      "[REPETITIONS_CONDITION][FINAL]"
     );
   });
 
@@ -549,7 +549,7 @@ describe("ScriptExecutor - Swapper", function () {
     message = await initialize(message);
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Follow Condition] The parent script has not been (re)executed yet"
+      "[FOLLOW_CONDITION][TMP]"
     );
   });
 
@@ -566,7 +566,7 @@ describe("ScriptExecutor - Swapper", function () {
     message = await initialize(message);
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Follow Condition] The parent script has not been (re)executed yet"
+      "[FOLLOW_CONDITION][TMP]"
     );
   });
 });

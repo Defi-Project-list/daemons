@@ -72,7 +72,7 @@ describe("ScriptExecutor - Money Market Base", function () {
       kontract: "",
       comparison: ComparisonType.GreaterThan,
       amount: ethers.utils.parseEther("0"),
-    }
+    },
   };
 
   this.beforeEach(async () => {
@@ -94,14 +94,16 @@ describe("ScriptExecutor - Money Market Base", function () {
     const MockTokenContract = await ethers.getContractFactory("MockToken");
     fooToken = await MockTokenContract.deploy("Foo Token", "FOO");
     fooAToken = await MockTokenContract.deploy("Foo A Token", "aFOO");
-    const fooDebtToken = await MockTokenContract.deploy("Foo DebtToken", "dFOO");
+    const fooDebtToken = await MockTokenContract.deploy(
+      "Foo DebtToken",
+      "dFOO"
+    );
 
     // Gas Price Feed contract
     const GasPriceFeedContract = await ethers.getContractFactory(
       "GasPriceFeed"
     );
     const gasPriceFeed = await GasPriceFeedContract.deploy();
-
 
     // Mock Money Market Pool contract
     const MockMoneyMarketPoolContract = await ethers.getContractFactory(
@@ -110,7 +112,7 @@ describe("ScriptExecutor - Money Market Base", function () {
     mockMoneyMarketPool = await MockMoneyMarketPoolContract.deploy(
       fooToken.address,
       fooAToken.address,
-      fooDebtToken.address,
+      fooDebtToken.address
     );
 
     // Executor contract
@@ -197,7 +199,7 @@ describe("ScriptExecutor - Money Market Base", function () {
 
     await expect(
       executor.verify(tamperedMessage, sigR, sigS, sigV)
-    ).to.be.revertedWith("Signature does not match");
+    ).to.be.revertedWith("[SIGNATURE][FINAL]");
   });
 
   it("spots a valid message from another chain", async () => {
@@ -207,7 +209,7 @@ describe("ScriptExecutor - Money Market Base", function () {
 
     // as the contract is created on chain 42, it will refuse to execute this message
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "Wrong chain"
+      "[CHAIN][ERROR]"
     );
   });
 
@@ -384,7 +386,7 @@ describe("ScriptExecutor - Money Market Base", function () {
 
     // the second one fails as not enough blocks have passed
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Frequency Condition] Not enough time has passed since the last execution"
+      "[FREQUENCY_CONDITION][TMP]"
     );
   });
 
@@ -396,7 +398,7 @@ describe("ScriptExecutor - Money Market Base", function () {
     message = await initialize(message);
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "User doesn't have enough balance"
+      "[SCRIPT_BALANCE][TMP]"
     );
   });
 
@@ -409,7 +411,7 @@ describe("ScriptExecutor - Money Market Base", function () {
     await executor.revoke(message.scriptId);
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "Script has been revoked by the user"
+      "[REVOKED][FINAL]"
     );
   });
 
@@ -425,7 +427,7 @@ describe("ScriptExecutor - Money Market Base", function () {
     message = await initialize(message);
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Frequency Condition] Not enough time has passed since the start block"
+      "[FREQUENCY_CONDITION][TMP]"
     );
   });
 
@@ -439,7 +441,7 @@ describe("ScriptExecutor - Money Market Base", function () {
     message = await initialize(message);
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Frequency Condition] Not enough time has passed since the start block"
+      "[FREQUENCY_CONDITION][TMP]"
     );
   });
 
@@ -453,7 +455,7 @@ describe("ScriptExecutor - Money Market Base", function () {
     message = await initialize(message);
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Balance Condition] User does not own enough tokens"
+      "[BALANCE_CONDITION_LOW][TMP]"
     );
   });
 
@@ -469,7 +471,7 @@ describe("ScriptExecutor - Money Market Base", function () {
     await fooToken.mint(owner.address, ethers.utils.parseEther("200"));
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Balance Condition] User owns too many tokens"
+      "[BALANCE_CONDITION_HIGH][TMP]"
     );
   });
 
@@ -522,7 +524,7 @@ describe("ScriptExecutor - Money Market Base", function () {
 
     // verification should fail as the price lower than expected
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Price Condition] Token price is lower than expected value"
+      "[PRICE_CONDITION_LOW][TMP]"
     );
   });
 
@@ -557,7 +559,7 @@ describe("ScriptExecutor - Money Market Base", function () {
 
     // verification should fail as the price lower than expected
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Price Condition] Token price is higher than expected value"
+      "[PRICE_CONDITION_HIGH][TMP]"
     );
   });
 
@@ -602,7 +604,7 @@ describe("ScriptExecutor - Money Market Base", function () {
     // empty the gas tank and try to verify the message
     await gasTank.withdrawAll();
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Gas Condition] Not enough gas in the tank"
+      "[GAS][TMP]"
     );
   });
 
@@ -617,7 +619,7 @@ describe("ScriptExecutor - Money Market Base", function () {
     await fooToken.approve(executor.address, ethers.utils.parseEther("0"));
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Allowance Condition] User did not give enough allowance to the script executor"
+      "[ALLOWANCE][ACTION]"
     );
   });
 
@@ -634,7 +636,7 @@ describe("ScriptExecutor - Money Market Base", function () {
     await fooAToken.approve(executor.address, ethers.utils.parseEther("0"));
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Allowance Condition] User did not give enough allowance to the script executor"
+      "[ALLOWANCE][ACTION]"
     );
   });
 
@@ -655,7 +657,7 @@ describe("ScriptExecutor - Money Market Base", function () {
 
     // the third time won't as it'll hit the max-repetitions limit
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Repetitions Condition] The script has reached its maximum number of executions"
+      "[REPETITIONS_CONDITION][FINAL]"
     );
   });
 
@@ -669,7 +671,7 @@ describe("ScriptExecutor - Money Market Base", function () {
     message = await initialize(message);
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Follow Condition] The parent script has not been (re)executed yet"
+      "[FOLLOW_CONDITION][TMP]"
     );
   });
 
@@ -686,7 +688,7 @@ describe("ScriptExecutor - Money Market Base", function () {
     message = await initialize(message);
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[Follow Condition] The parent script has not been (re)executed yet"
+      "[FOLLOW_CONDITION][TMP]"
     );
   });
 
@@ -697,12 +699,12 @@ describe("ScriptExecutor - Money Market Base", function () {
     // enabling the health factor condition
     // the mock MM pool always return current HF:2
     message.healthFactor.enabled = true;
-    message.healthFactor.amount = ethers.utils.parseEther('2.1');
+    message.healthFactor.amount = ethers.utils.parseEther("2.1");
     message.healthFactor.comparison = ComparisonType.GreaterThan;
     message = await initialize(message);
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[HealthFactor Condition] HF lower than threshold"
+      "[HEALTH_FACTOR_LOW][TMP]"
     );
   });
 
@@ -711,12 +713,12 @@ describe("ScriptExecutor - Money Market Base", function () {
     // enabling the health factor condition
     // the mock MM pool always return current HF:2
     message.healthFactor.enabled = true;
-    message.healthFactor.amount = ethers.utils.parseEther('1.9');
+    message.healthFactor.amount = ethers.utils.parseEther("1.9");
     message.healthFactor.comparison = ComparisonType.LessThan;
     message = await initialize(message);
 
     await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-      "[HealthFactor Condition] HF higher than threshold"
+      "[HEALTH_FACTOR_HIGH][TMP]"
     );
   });
 });

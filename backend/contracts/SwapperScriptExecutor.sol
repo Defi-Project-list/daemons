@@ -61,10 +61,10 @@ contract SwapperScriptExecutor is ConditionsChecker {
         bytes32 s,
         uint8 v
     ) private view {
-        require(message.chainId == chainId, "Wrong chain");
+        require(message.chainId == chainId, "[CHAIN][ERROR]");
         require(
             message.user == ecrecover(hash(message), v, r, s),
-            "Signature does not match"
+            "[SIGNATURE][FINAL]"
         );
     }
 
@@ -83,7 +83,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
         uint256 minAmount = message.typeAmt == 0 ? message.amount - 1 : 0;
         require(
             ERC20(message.tokenFrom).balanceOf(message.user) > minAmount,
-            "User doesn't have enough balance"
+            "[SCRIPT_BALANCE][TMP]"
         );
 
         verifyRepetitions(message.repetitions, message.scriptId);

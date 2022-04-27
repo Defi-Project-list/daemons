@@ -165,14 +165,14 @@ abstract contract ConditionsChecker is Ownable {
 
     /** Checks whether the user has revoked the script execution */
     function verifyRevocation(address user, bytes32 id) public view {
-        require(!revocations[user][id], "Script has been revoked by the user");
+        require(!revocations[user][id], "[REVOKED][FINAL]");
     }
 
     /** Checks whether the user has enough funds in the GasTank to cover a script execution */
     function verifyGasTank(address user) public view {
         require(
             gasTank.balanceOf(user) >= MINIMUM_GAS_FOR_SCRIPT_EXECUTION,
-            "[Gas Condition] Not enough gas in the tank"
+            "[GAS][TMP]"
         );
     }
 
@@ -190,13 +190,13 @@ abstract contract ConditionsChecker is Ownable {
             // greater than
             require(
                 userBalance > balance.amount,
-                "[Balance Condition] User does not own enough tokens"
+                "[BALANCE_CONDITION_LOW][TMP]"
             );
         else if (balance.comparison == 0x01)
             // less than
             require(
                 userBalance < balance.amount,
-                "[Balance Condition] User owns too many tokens"
+                "[BALANCE_CONDITION_HIGH][TMP]"
             );
     }
 
@@ -208,16 +208,10 @@ abstract contract ConditionsChecker is Ownable {
 
         if (price.comparison == 0x00)
             // greater than
-            require(
-                tokenPrice > price.value,
-                "[Price Condition] Token price is lower than expected value"
-            );
+            require(tokenPrice > price.value, "[PRICE_CONDITION_LOW][TMP]");
         else if (price.comparison == 0x01)
             // less than
-            require(
-                tokenPrice < price.value,
-                "[Price Condition] Token price is higher than expected value"
-            );
+            require(tokenPrice < price.value, "[PRICE_CONDITION_HIGH][TMP]");
     }
 
     /** If the frequency condition is enabled, it checks whether enough blocks have been minted since the last execution */
@@ -231,7 +225,7 @@ abstract contract ConditionsChecker is Ownable {
             // the message has already been executed at least once
             require(
                 block.timestamp > lastExecutions[id] + frequency.delay,
-                "[Frequency Condition] Not enough time has passed since the last execution"
+                "[FREQUENCY_CONDITION][TMP]"
             );
             return;
         }
@@ -239,7 +233,7 @@ abstract contract ConditionsChecker is Ownable {
         // the message has never been executed before
         require(
             block.timestamp > frequency.start + frequency.delay,
-            "[Frequency Condition] Not enough time has passed since the start block"
+            "[FREQUENCY_CONDITION][TMP]"
         );
     }
 
@@ -251,7 +245,7 @@ abstract contract ConditionsChecker is Ownable {
         if (!repetitions.enabled) return;
         require(
             repetitionsCount[id] < repetitions.amount,
-            "[Repetitions Condition] The script has reached its maximum number of executions"
+            "[REPETITIONS_CONDITION][FINAL]"
         );
     }
 
@@ -265,7 +259,7 @@ abstract contract ConditionsChecker is Ownable {
             );
         require(
             parentCount + follow.shift == repetitionsCount[id] + 1,
-            "[Follow Condition] The parent script has not been (re)executed yet"
+            "[FOLLOW_CONDITION][TMP]"
         );
     }
 
@@ -277,7 +271,7 @@ abstract contract ConditionsChecker is Ownable {
     ) internal view {
         require(
             IERC20(token).allowance(user, address(this)) >= amount,
-            "[Allowance Condition] User did not give enough allowance to the script executor"
+            "[ALLOWANCE][ACTION]"
         );
     }
 }

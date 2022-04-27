@@ -41,13 +41,13 @@ abstract contract ConditionsCheckerForMoneyMarket {
             // greater than
             require(
                 currentHF > healthFactor.amount,
-                "[HealthFactor Condition] HF lower than threshold"
+                "[HEALTH_FACTOR_LOW][TMP]"
             );
         else if (healthFactor.comparison == 0x01)
             // less than
             require(
                 currentHF < healthFactor.amount,
-                "[HealthFactor Condition] HF higher than threshold"
+                "[HEALTH_FACTOR_HIGH][TMP]"
             );
     }
 }

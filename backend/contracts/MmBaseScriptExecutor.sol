@@ -5,7 +5,10 @@ import "./ConditionsChecker.sol";
 import "./ConditionsCheckerForMoneyMarket.sol";
 import "./Messages.sol";
 
-contract MmBaseScriptExecutor is ConditionsChecker, ConditionsCheckerForMoneyMarket {
+contract MmBaseScriptExecutor is
+    ConditionsChecker,
+    ConditionsCheckerForMoneyMarket
+{
     uint256 public GAS_COST = 300000000000000; // 0.00030 ETH
     mapping(address => mapping(IERC20 => bool)) private allowances;
 
@@ -57,10 +60,10 @@ contract MmBaseScriptExecutor is ConditionsChecker, ConditionsCheckerForMoneyMar
         bytes32 s,
         uint8 v
     ) private view {
-        require(message.chainId == chainId, "Wrong chain");
+        require(message.chainId == chainId, "[CHAIN][ERROR]");
         require(
             message.user == ecrecover(hash(message), v, r, s),
-            "Signature does not match"
+            "[SIGNATURE][FINAL]"
         );
     }
 
@@ -82,7 +85,7 @@ contract MmBaseScriptExecutor is ConditionsChecker, ConditionsCheckerForMoneyMar
         uint256 minAmount = message.typeAmt == 0 ? message.amount - 1 : 0;
         require(
             ERC20(tokenAddr).balanceOf(message.user) > minAmount,
-            "User doesn't have enough balance"
+            "[SCRIPT_BALANCE][TMP]"
         );
 
         verifyRepetitions(message.repetitions, message.scriptId);

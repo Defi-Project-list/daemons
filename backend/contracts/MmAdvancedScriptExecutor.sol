@@ -71,10 +71,10 @@ contract MmAdvancedScriptExecutor is
         bytes32 s,
         uint8 v
     ) private view {
-        require(message.chainId == chainId, "Wrong chain");
+        require(message.chainId == chainId, "[CHAIN][ERROR]");
         require(
             message.user == ecrecover(hash(message), v, r, s),
-            "Signature does not match"
+            "[SIGNATURE][FINAL]"
         );
     }
 
@@ -94,7 +94,7 @@ contract MmAdvancedScriptExecutor is
         if (message.action == 0x00) {
             require(
                 ERC20(message.debtToken).balanceOf(message.user) > 0,
-                "No debt to repay"
+                "[NO_DEBT][TMP]"
             );
             verifyAmountForRepay(message);
             uint256 amount = message.typeAmt == 0
@@ -121,7 +121,7 @@ contract MmAdvancedScriptExecutor is
 
         require(
             ERC20(message.token).balanceOf(message.user) >= amount,
-            "Not enough balance to repay debt"
+            "[SCRIPT_BALANCE][TMP]"
         );
     }
 
@@ -129,7 +129,7 @@ contract MmAdvancedScriptExecutor is
         if (message.typeAmt == 0x01) {
             // if user wants to borrow a percentage of their borrowing
             // power we're ok with it as long as it is <= 95% of it.
-            require(message.amount <= 9500, "Borrow percentage too high");
+            require(message.amount <= 9500, "[BORROW_TOO_HIGH][FINAL]");
             return;
         }
 
@@ -139,10 +139,7 @@ contract MmAdvancedScriptExecutor is
         uint256 borrowableTokens = (((borrowableEth * 95) / 100) *
             (10**ERC20(message.token).decimals())) / assetPriceInEth;
 
-        require(
-            message.amount <= borrowableTokens,
-            "Amount higher than borrowable"
-        );
+        require(message.amount <= borrowableTokens, "[BORROW_TOO_HIGH][TMP]");
     }
 
     function verifyBorrowAllowance(MmAdvanced calldata message) private view {
@@ -151,7 +148,7 @@ contract MmAdvancedScriptExecutor is
                 message.user,
                 address(this)
             ) >= getBorrowAmount(message),
-            "[Allowance Condition] User did not give enough allowance to the script executor"
+            "[ALLOWANCE][ACTION]"
         );
     }
 
