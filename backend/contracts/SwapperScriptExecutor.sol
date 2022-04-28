@@ -7,14 +7,7 @@ import "./interfaces/UniswapV2.sol";
 
 contract SwapperScriptExecutor is ConditionsChecker {
     uint256 public GAS_COST = 300000000000000; // 0.00030 ETH
-    address private exchange;
     mapping(address => mapping(IERC20 => bool)) private allowances;
-
-    /* ========== RESTRICTED FUNCTIONS ========== */
-
-    function setExchange(address _exchange) external onlyOwner {
-        exchange = _exchange;
-    }
 
     /* ========== HASH FUNCTIONS ========== */
 
@@ -104,7 +97,6 @@ contract SwapperScriptExecutor is ConditionsChecker {
         uint8 v
     ) external {
         verify(message, r, s, v);
-        require(exchange != address(0), "Exchange address has not been set");
         lastExecutions[message.scriptId] = block.timestamp;
         repetitionsCount[message.scriptId] += 1;
 
@@ -121,11 +113,11 @@ contract SwapperScriptExecutor is ConditionsChecker {
         path[1] = message.tokenTo;
 
         // step 2: grant allowance to the router if it has not been given yet
-        if (!allowances[exchange][tokenFrom])
-            giveAllowance(tokenFrom, exchange);
+        if (!allowances[message.kontract][tokenFrom])
+            giveAllowance(tokenFrom, message.kontract);
 
         // step 3: swap
-        IUniswapV2Router01(exchange).swapExactTokensForTokens(
+        IUniswapV2Router01(message.kontract).swapExactTokensForTokens(
             amount,
             0,
             path,

@@ -34,6 +34,7 @@ describe("ScriptExecutor - Swapper", function () {
     typeAmt: AmountType.Absolute,
     amount: ethers.utils.parseEther("145"),
     user: "",
+    kontract: "",
     executor: "",
     chainId: BigNumber.from(42),
     balance: {
@@ -102,7 +103,6 @@ describe("ScriptExecutor - Swapper", function () {
     );
     executor = await SwapperScriptExecutorContract.deploy();
     await executor.setGasTank(gasTank.address);
-    await executor.setExchange(mockRouter.address);
     await executor.setPriceRetriever(priceRetriever.address);
     await executor.setGasFeed(gasPriceFeed.address);
 
@@ -139,6 +139,7 @@ describe("ScriptExecutor - Swapper", function () {
     // Create message and fill missing info
     const message = { ...baseMessage };
     message.user = owner.address;
+    message.kontract = mockRouter.address;
     message.executor = executor.address;
     message.tokenFrom = fooToken.address;
     message.tokenTo = barToken.address;
