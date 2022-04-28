@@ -9,10 +9,10 @@ const kovanContracts: IContractsList = {
     GasPriceFeed: '0x69c05f9E5f370546c41CDa2bA2C7f439f2460a32',
     PriceRetriever: '0x2FbBBd586eDC580F0dB8F9620db6E153b1aD1136',
 
-    SwapExecutor: '0xC162e8Be1C34EE034080FA51cD6cDc257b9C1b98',
-    TransferExecutor: '0xF1E06B9754668799F0393785F74D5876a394b169',
-    MmBaseExecutor: '0x4E89786ac785CA2D25C9178e2699E3CE56343d63',
-    MmAdvancedExecutor: '0xB3193b440931393062F385a9D88C9034B689199B',
+    SwapExecutor: '0x91Fe0e7547F7F02Ad119fea513064aE72c057d56',
+    TransferExecutor: '0xBD704A09D56D1cC078dfDa9994b34879eFFAD5Fd',
+    MmBaseExecutor: '0xDA0CBAbd4bAC7EF38492092dB31f6c89A7f8E88a',
+    MmAdvancedExecutor: '0x60465465F19053f94410c231E395149b08D3d363',
 };
 
 export const kovanInfo: IChainInfo = {
