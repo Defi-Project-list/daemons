@@ -1,6 +1,6 @@
 import { AdvancedMoneyMarketActionType, AmountType, InterestRateMode } from '@daemons-fi/shared-definitions';
 import { BaseMoneyMarketActionType } from '@daemons-fi/shared-definitions';
-import { MoneyMarket } from './interfaces';
+import { DEX, MoneyMarket } from './interfaces';
 
 
 export enum ScriptAction {
@@ -24,6 +24,7 @@ export interface ISwapActionForm extends IScriptActionForm {
     tokenToAddress: string;
     amountType: AmountType;
     floatAmount: number;
+    dex: DEX;
 }
 
 export interface ITransferActionForm extends IScriptActionForm {

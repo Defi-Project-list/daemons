@@ -1,7 +1,6 @@
 import { assert, expect } from "chai";
 import { AmountType, ISwapAction } from "@daemons-fi/shared-definitions";
-import { ZeroAddress } from "../../../data/chain-info";
-import { Token } from "../../../data/chains-data/interfaces";
+import { DEX, Token } from "../../../data/chains-data/interfaces";
 import { ICurrentScript } from "../../i-current-script";
 import { ISwapActionForm } from "../../../data/chains-data/action-form-interfaces";
 import { ScriptAction } from "../../../data/chains-data/action-form-interfaces";
@@ -31,13 +30,19 @@ describe("Swap Message Factory", () => {
         }
     ];
 
+    const fakeDEX: DEX = {
+        name: "Sushi",
+        poolAddress: "0xE0fBa4Fc209b4948668006B2bE61711b7f465bAe",
+    };
+
     const form: ISwapActionForm = {
         type: ScriptAction.SWAP,
         valid: true,
         amountType: AmountType.Absolute,
         floatAmount: 12.22,
         tokenFromAddress: tokens[0].address,
-        tokenToAddress: tokens[1].address
+        tokenToAddress: tokens[1].address,
+        dex: fakeDEX,
     };
 
     const bundle: ICurrentScript = {
@@ -117,6 +122,7 @@ describe("Swap Message Factory", () => {
             tokenFrom: "0x123",
             tokenTo: "0x987",
             user: "0x1234567890",
+            kontract: "0xE0fBa4Fc209b4948668006B2bE61711b7f465bAe",
             frequency: FrequencyConditionFactory.empty(),
             balance: BalanceConditionFactory.empty(),
             price: PriceConditionFactory.empty(),

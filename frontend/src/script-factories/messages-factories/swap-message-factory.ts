@@ -52,6 +52,7 @@ export class SwapMessageFactory {
             tokenFrom: tokenFrom.address,
             tokenTo: swapActionForm.tokenToAddress,
             user: await provider.getSigner().getAddress(),
+            kontract: swapActionForm.dex.poolAddress,
             frequency: frequencyCondition,
             balance: balanceCondition,
             price: priceCondition,

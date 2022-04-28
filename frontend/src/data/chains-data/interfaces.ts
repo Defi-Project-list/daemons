@@ -21,6 +21,11 @@ export type MoneyMarket = {
     };
 };
 
+export type DEX = {
+    name: string;
+    poolAddress: string;
+};
+
 export interface IContractsList {
     GasTank: string;
     DAEMToken: string;

@@ -1,4 +1,4 @@
-import { MoneyMarket, Token } from "../interfaces";
+import { DEX, MoneyMarket, Token } from "../interfaces";
 
 const WETH = {
     name: "Wrapped Ether",
@@ -144,6 +144,11 @@ export const kovanTokens: Token[] = [
     UNI,
     aaveDAI
 ];
+
+export const kovanSushiDEX: DEX = {
+    name: "Sushi",
+    poolAddress: "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",
+}
 
 export const kovanAaveMM: MoneyMarket = {
     name: "AAVE",

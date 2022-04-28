@@ -2,7 +2,7 @@ import { AdvancedMoneyMarketActionType, AmountType, BaseMoneyMarketActionType, I
 import { IAdvancedMMActionForm, IBaseMMActionForm, ISwapActionForm, ITransferActionForm, ScriptAction } from '../action-form-interfaces';
 import { IAction } from '../interfaces';
 import { AaveHealthFactorCondition, BalanceCondition, FrequencyCondition, PriceCondition, RepetitionsCondition } from './condition-forms';
-import { kovanAaveMM } from './tokens';
+import { kovanAaveMM, kovanSushiDEX } from './tokens';
 
 export const TransferAction: IAction = {
     title: "Transfer",
@@ -26,7 +26,7 @@ export const TransferAction: IAction = {
 };
 
 export const SwapAction: IAction = {
-    title: "Swap",
+    title: "Swap on Sushi",
     info: "Swap one token for another using the Sushi DEX.",
 
     form: {
@@ -36,6 +36,7 @@ export const SwapAction: IAction = {
         tokenToAddress: '',
         amountType: AmountType.Absolute,
         floatAmount: 0,
+        dex: kovanSushiDEX,
     } as ISwapActionForm,
 
     conditions: [
