@@ -93,6 +93,7 @@ export function signedSwapActionFactory(args: any): ISignedSwapAction {
         typeAmt: args.typeAmt ?? AmountType.Absolute,
         amount: args.amount ?? randomEthAmount(),
         user: args.user ?? faker.finance.ethereumAddress(),
+        kontract: args.kontract ?? faker.finance.ethereumAddress(),
         executor: args.executor ?? faker.finance.ethereumAddress(),
         chainId: args.chainId ?? BigNumber.from("42"),
         balance: balanceConditionFactory(args.balance ?? {}),
