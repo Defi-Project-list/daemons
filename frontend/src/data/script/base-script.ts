@@ -3,62 +3,53 @@ import { Contract } from 'ethers';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { AllowanceHelper } from '../../utils/allowance-helper';
 import { StorageProxy } from '../storage-proxy';
+import { ExecutingScript, LoadingVerificationScript, ScriptVerification, UnverifiedScript, ValidScript, VerificationFailedScript } from "./verification-result";
 
-export enum VerificationState {
-    unverified = 'unverified',             // the script verification state has not been checked yet
-    loading = 'loading',                   // script is currently  being verified
-    allowanceNeeded = 'allowanceNeeded',   // the user needs to grant allowance
-    maxReached = 'maxReached',             // the maximum number of executions has been reached
-    invalidSignature = 'invalidSignature', // the script signature cannot be verified by the contract
-    valid = 'valid',                       // the script can be executed
-    noBalance = 'noBalance',               // the user does not have enough tokens to execute the script
-    gasTankEmpty = 'gasTankEmpty',         // the user's gas tank is empty
-    cannotBeRunYet = 'cannotBeRunYet',     // the frequency condition is not satisfied
-    otherReason = 'otherReason',           // the script cannot be executed due to other reasons
-}
 
 export abstract class BaseScript {
 
     private readonly R: string;
     private readonly S: string;
     private readonly V: number;
-    private verificationState: VerificationState;
+    private verification: ScriptVerification;
 
     protected constructor(protected readonly signature: string) {
         const split = ethers.utils.splitSignature(signature);
         [this.R, this.S, this.V] = [split.r, split.s, split.v];
-        this.verificationState = VerificationState.unverified;
+        this.verification = new UnverifiedScript();
     }
 
-    public getVerificationState = (): VerificationState => this.verificationState;
+    public getVerification = (): ScriptVerification => this.verification;
 
-    public async verify(): Promise<VerificationState> {
+    public async verify(): Promise<ScriptVerification> {
         const executor = await this.getExecutor();
         const message = this.getMessage();
         try {
-            this.verificationState = VerificationState.loading;
+            this.verification = new LoadingVerificationScript();
             await executor.verify(message, this.R, this.S, this.V);
-            this.verificationState = VerificationState.valid;
+            this.verification = new ValidScript();
         } catch (error: any) {
             // something strange happened
             if (!error.data) throw error;
 
             // we can extract the verification failure reason
-            this.verificationState = this.parseVerificationStateFromErrorText(error.data);
+            this.verification = this.parseVerificationStateFromErrorText(error.data);
         }
-        return this.verificationState;
+        return this.verification;
     }
 
     public async execute(): Promise<TransactionResponse | undefined> {
         const executor = await this.getExecutor();
         const message = this.getMessage();
         try {
+            this.verification = new ExecutingScript();
             return await executor.execute(message, this.R, this.S, this.V);
         } catch (error: any) {
             if (!error.data) throw error;
 
             // we can extract the verification failure reason
-            alert(this.parseVerificationStateFromErrorText(error.data));
+            this.verification = this.parseVerificationStateFromErrorText(error.data);
+            alert((this.verification as VerificationFailedScript).getDescription());
         }
     }
 
@@ -116,17 +107,10 @@ export abstract class BaseScript {
         };
     }
 
-    private parseVerificationStateFromErrorText(errorText: string): VerificationState {
-        const parsedErrorText = this.parseFailedVerifyError(errorText).toLowerCase();
+    private parseVerificationStateFromErrorText(errorText: string): VerificationFailedScript {
+        const parsedErrorText = this.parseFailedVerifyError(errorText);
         console.log(parsedErrorText);
-        if (parsedErrorText.includes('signature')) return VerificationState.invalidSignature;
-        if (parsedErrorText.includes('allowance')) return VerificationState.allowanceNeeded;
-        if (parsedErrorText.includes('maximum number of executions')) return VerificationState.maxReached;
-        if (parsedErrorText.includes('not enough gas in the tank')) return VerificationState.gasTankEmpty;
-        if (parsedErrorText.includes('enough balance')) return VerificationState.noBalance;
-        if (parsedErrorText.includes('[frequency condition]')) return VerificationState.cannotBeRunYet;
-
-        return VerificationState.otherReason;
+        return new VerificationFailedScript(parsedErrorText);
     }
 
     private parseFailedVerifyError(errorText: string): string {
