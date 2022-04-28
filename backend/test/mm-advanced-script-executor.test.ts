@@ -132,10 +132,13 @@ describe("ScriptExecutor - Money Market Advanced", function () {
     await executor.setAavePriceOracle(mockOracle.address);
 
     // Grant allowance
-    await fooToken.approve(executor.address, ethers.utils.parseEther("500"));
+    await fooToken.approve(
+      executor.address,
+      ethers.utils.parseEther("1000000")
+    );
     await fooDebtToken.approve(
       executor.address,
-      ethers.utils.parseEther("5000")
+      ethers.utils.parseEther("1000000")
     );
 
     // Generate balance and pre-existing debt
@@ -385,6 +388,8 @@ describe("ScriptExecutor - Money Market Advanced", function () {
 
     // enable frequency condition so 2 consecutive executions should fail
     message.frequency.enabled = true;
+    message.typeAmt = AmountType.Percentage;
+    message.amount = BigNumber.from(2500); //25%
     message = await initialize(message);
     await fooToken.mint(owner.address, ethers.utils.parseEther("2000"));
 

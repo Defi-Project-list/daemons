@@ -87,29 +87,24 @@ contract MmAdvancedScriptExecutor is
         require(address(priceOracle) != address(0), "Price oracle not set");
         verifyRevocation(message.user, message.scriptId);
         verifySignature(message, r, s, v);
-        verifyFollow(message.follow, message.scriptId);
         verifyRepetitions(message.repetitions, message.scriptId);
-        verifyFrequency(message.frequency, message.scriptId);
 
+        verifyGasTank(message.user);
+        verifyFollow(message.follow, message.scriptId);
         if (message.action == 0x00) {
             require(
                 ERC20(message.debtToken).balanceOf(message.user) > 0,
                 "[NO_DEBT][TMP]"
             );
             verifyAmountForRepay(message);
-            uint256 amount = message.typeAmt == 0
-                ? message.amount // absolute type: just return the given amount
-                : (ERC20(message.debtToken).balanceOf(message.user) *
-                    message.amount) / 10000; // percentage type: a % on that token debt
-            verifyAllowance(message.user, message.token, amount);
         } else {
-            verifyAmountForBorrow(message);
             verifyBorrowAllowance(message);
+            verifyAmountForBorrow(message);
         }
 
+        verifyFrequency(message.frequency, message.scriptId);
         verifyBalance(message.balance, message.user);
         verifyPrice(message.price);
-        verifyGasTank(message.user);
         verifyHealthFactor(message.healthFactor, message.user);
     }
 
@@ -119,6 +114,7 @@ contract MmAdvancedScriptExecutor is
             : (ERC20(message.debtToken).balanceOf(message.user) *
                 message.amount) / 10000; // percentage type: a % on that token debt
 
+        verifyAllowance(message.user, message.token, amount);
         require(
             ERC20(message.token).balanceOf(message.user) >= amount,
             "[SCRIPT_BALANCE][TMP]"

@@ -75,7 +75,10 @@ contract MmBaseScriptExecutor is
     ) public view {
         verifyRevocation(message.user, message.scriptId);
         verifySignature(message, r, s, v);
+        verifyRepetitions(message.repetitions, message.scriptId);
 
+        verifyGasTank(message.user);
+        verifyFollow(message.follow, message.scriptId);
         // check if the action can be performed
         // if typeAmt==Absolute -> it's the amount in the message,
         // otherwise it's enough if the user has more than 0 in the wallet.
@@ -83,18 +86,15 @@ contract MmBaseScriptExecutor is
             ? message.token
             : message.aToken;
         uint256 minAmount = message.typeAmt == 0 ? message.amount - 1 : 0;
+        verifyAllowance(message.user, tokenAddr, minAmount);
         require(
             ERC20(tokenAddr).balanceOf(message.user) > minAmount,
             "[SCRIPT_BALANCE][TMP]"
         );
 
-        verifyRepetitions(message.repetitions, message.scriptId);
-        verifyFollow(message.follow, message.scriptId);
         verifyFrequency(message.frequency, message.scriptId);
         verifyBalance(message.balance, message.user);
         verifyPrice(message.price);
-        verifyGasTank(message.user);
-        verifyAllowance(message.user, tokenAddr, minAmount);
         verifyHealthFactor(message.healthFactor, message.user);
     }
 

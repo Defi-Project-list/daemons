@@ -17,7 +17,7 @@ abstract contract ConditionsChecker is Ownable {
     IGasTank internal gasTank;
     GasPriceFeed internal gasPriceFeed;
     IPriceRetriever private priceRetriever;
-    uint256 public MINIMUM_GAS_FOR_SCRIPT_EXECUTION = 0.5 ether;
+    uint256 public MINIMUM_GAS_FOR_SCRIPT_EXECUTION = 0.1 ether;
 
     // domain definition
     string private constant EIP712_DOMAIN = "EIP712Domain(string name)";

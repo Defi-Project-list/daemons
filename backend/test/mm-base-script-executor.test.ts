@@ -125,8 +125,8 @@ describe("ScriptExecutor - Money Market Base", function () {
     await executor.setGasFeed(gasPriceFeed.address);
 
     // Grant allowance
-    await fooToken.approve(executor.address, ethers.utils.parseEther("500"));
-    await fooAToken.approve(executor.address, ethers.utils.parseEther("500"));
+    await fooToken.approve(executor.address, ethers.utils.parseEther("1000000"));
+    await fooAToken.approve(executor.address, ethers.utils.parseEther("1000000"));
 
     // Generate balance
     await fooToken.mint(owner.address, baseMessage.amount);
