@@ -1,13 +1,19 @@
-import { BigNumber, ethers } from 'ethers';
-import { Contract } from 'ethers';
-import { TransactionResponse } from '@ethersproject/abstract-provider';
-import { AllowanceHelper } from '../../utils/allowance-helper';
-import { StorageProxy } from '../storage-proxy';
-import { ExecutingScript, LoadingVerificationScript, ScriptVerification, UnverifiedScript, ValidScript, VerificationFailedScript } from "./verification-result";
-
+import { BigNumber, ethers } from "ethers";
+import { Contract } from "ethers";
+import { TransactionResponse } from "@ethersproject/abstract-provider";
+import { AllowanceHelper } from "../../utils/allowance-helper";
+import { StorageProxy } from "../storage-proxy";
+import {
+    ExecutingScript,
+    LoadingVerificationScript,
+    ScriptVerification,
+    UnverifiedScript,
+    ValidScript,
+    VerificationFailedScript
+} from "./verification-result";
+import { errorToast, promiseToast } from "../../components/toaster";
 
 export abstract class BaseScript {
-
     private readonly R: string;
     private readonly S: string;
     private readonly V: number;
@@ -49,18 +55,24 @@ export abstract class BaseScript {
 
             // we can extract the verification failure reason
             this.verification = this.parseVerificationStateFromErrorText(error.data);
-            alert((this.verification as VerificationFailedScript).getDescription());
+            errorToast((this.verification as VerificationFailedScript).getDescription());
         }
     }
 
     public async revoke(): Promise<void> {
-        alert("Do not leave the site until tx is successful to be sure the script is removed");
         const executor = await this.getExecutor();
+
         try {
             // add "are you sure you want to leave" message
             window.onbeforeunload = () => true;
             const tx = await executor.revoke(this.getId());
-            await tx.wait();
+            const revokeTransaction = promiseToast(
+                tx.wait,
+                `Revoking script ${this.getShortId()}. Please do not leave Daemons`,
+                "Script successfully revoked 🎉",
+                "Something bad happened. Contact us if the error persists"
+            );
+            await revokeTransaction;
             await StorageProxy.script.revokeScript(this.getId());
             // remove "are you sure you want to leave" message
             window.onbeforeunload = null;
@@ -75,7 +87,8 @@ export abstract class BaseScript {
             this.getUser(),
             this.getTokenForAllowance(),
             this.getExecutorAddress(),
-            this.getAmount());
+            this.getAmount()
+        );
     }
 
     public async requestAllowance(): Promise<void> {
@@ -83,7 +96,19 @@ export abstract class BaseScript {
 
         // add "are you sure you want to leave" message
         window.onbeforeunload = () => true;
-        const tx = await allowanceHelper.requestERC20Allowance(this.getTokenForAllowance(), this.getExecutorAddress());
+        const tx = await allowanceHelper.requestERC20Allowance(
+            this.getTokenForAllowance(),
+            this.getExecutorAddress()
+        );
+
+        const allowanceTransaction = promiseToast(
+            tx.wait,
+            `Giving the necessary allowance to Daemons to execute this script`,
+            "Allowance successfully granted 🎉",
+            "Something bad happened. Contact us if the error persists"
+        );
+        await allowanceTransaction;
+
         await tx.wait();
         // remove "are you sure you want to leave" message
         window.onbeforeunload = null;
@@ -98,12 +123,13 @@ export abstract class BaseScript {
     public abstract getDescription(): string;
     protected abstract getAmount(): BigNumber;
     protected abstract getTokenForAllowance(): string;
+    public getShortId = (): string => this.getId().substring(0, 7) + "..";
 
     public toJson(): string {
         return {
             signature: this.signature,
             description: this.getDescription(),
-            ...this.getMessage(),
+            ...this.getMessage()
         };
     }
 
@@ -115,7 +141,7 @@ export abstract class BaseScript {
 
     private parseFailedVerifyError(errorText: string): string {
         const hex = "0x" + errorText.substring(147);
-        const withoutTrailing0s = hex.replace(/0*$/g, '');
+        const withoutTrailing0s = hex.replace(/0*$/g, "");
         return ethers.utils.toUtf8String(withoutTrailing0s);
     }
 }

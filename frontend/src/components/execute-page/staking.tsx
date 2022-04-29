@@ -11,6 +11,7 @@ import {
 import { fetchDaemBalance } from "../../state/action-creators/wallet-action-creators";
 import { AllowanceHelper } from "../../utils/allowance-helper";
 import { getAbiFor } from "../../utils/get-abi";
+import { errorToast, promiseToast } from "../toaster";
 import "./staking.css";
 
 export function Staking() {
@@ -45,13 +46,19 @@ export function Staking() {
 
     const exit = async () => {
         if (!claimable && !balance) {
-            alert("No balance, nor anything claimable");
+            errorToast("No balance, nor anything claimable");
             return;
         }
 
         const treasury = await getTreasuryContract();
         const tx = await treasury.exit();
-        await tx.wait();
+        const toastedTransaction = promiseToast(
+            tx.wait,
+            `Unstaking DAEM and claiming reward...`,
+            "Unstake and claim successful 🎉",
+            "Something bad happened. Contact us if the error persists"
+        );
+        await toastedTransaction;
 
         dispatch(fetchStakingBalance(walletAddress, chainId));
         dispatch(fetchStakingClaimable(walletAddress, chainId));
@@ -64,7 +71,13 @@ export function Staking() {
             contracts.DAEMToken,
             contracts.Treasury
         );
-        await tx.wait();
+        const toastedTransaction = promiseToast(
+            tx.wait,
+            `Granting the allowance to the treasury...`,
+            "Allowance successfully granted 🎉",
+            "Something bad happened. Contact us if the error persists"
+        );
+        await toastedTransaction;
         await checkForAllowance();
     };
 
@@ -73,7 +86,13 @@ export function Staking() {
 
         const treasury = await getTreasuryContract();
         const tx = await treasury.stake(ethers.utils.parseEther(amount.toString()));
-        await tx.wait();
+        const toastedTransaction = promiseToast(
+            tx.wait,
+            `Staking DAEM into treasury`,
+            "Staking successful 🎉",
+            "Something bad happened. Contact us if the error persists"
+        );
+        await toastedTransaction;
 
         dispatch(fetchStakingBalance(walletAddress, chainId));
         dispatch(fetchDaemBalance(walletAddress, chainId));
@@ -85,7 +104,13 @@ export function Staking() {
 
         const treasury = await getTreasuryContract();
         const tx = await treasury.withdraw(ethers.utils.parseEther(amount.toString()));
-        await tx.wait();
+        const toastedTransaction = promiseToast(
+            tx.wait,
+            `Unstaking DAEM from treasury`,
+            "Unstake successful 🎉",
+            "Something bad happened. Contact us if the error persists"
+        );
+        await toastedTransaction;
 
         dispatch(fetchStakingBalance(walletAddress, chainId));
         dispatch(fetchDaemBalance(walletAddress, chainId));
@@ -94,13 +119,19 @@ export function Staking() {
 
     const claim = async () => {
         if (!claimable) {
-            alert("Nothing to claim");
+            errorToast("Nothing to claim");
             return;
         }
 
         const treasury = await getTreasuryContract();
         const tx = await treasury.getReward();
-        await tx.wait();
+        const toastedTransaction = promiseToast(
+            tx.wait,
+            `Claiming reward`,
+            "Claim successful 🎉. Thanks for being a Daemons users! You make our day",
+            "Something bad happened. Contact us if the error persists"
+        );
+        await toastedTransaction;
 
         dispatch(fetchStakingClaimable(walletAddress, chainId));
     };
@@ -114,6 +145,16 @@ export function Staking() {
         const contractAbi = await getAbiFor("Treasury");
         const treasury = new ethers.Contract(contractAddress, contractAbi, signer);
         return treasury;
+    };
+
+    const buttonDisabled = () => {
+        const amountInput = document.getElementById("id-amount") as HTMLInputElement | undefined;
+        return (
+            !amountInput ||
+            !amountInput.value ||
+            isNaN(parseFloat(amountInput.value)) ||
+            parseFloat(amountInput.value) <= 0
+        );
     };
 
     const renderLoadingMessage: () => JSX.Element = () => {
@@ -156,6 +197,7 @@ export function Staking() {
                                 />
                             ) : (
                                 <input
+                                    disabled={buttonDisabled()}
                                     className="staking__button"
                                     type="submit"
                                     onClick={stake}
@@ -188,7 +230,7 @@ export function Staking() {
                         />
                         <div className="staking__buttons-container">
                             <input
-                                disabled={!balance}
+                                disabled={!balance || buttonDisabled()}
                                 className="staking__button"
                                 type="submit"
                                 onClick={withdraw}

@@ -16,6 +16,7 @@ import {
 } from "../../data/chains-data/condition-form-interfaces";
 import { getExecutorFromScriptAction } from "../../script-factories/messages-factories/executor-fetcher";
 import { ConditionTitles } from "../../data/chains-data/interfaces";
+import { errorToast, successToast } from "../toaster";
 
 export function ReviewPage(): JSX.Element {
     // redux
@@ -34,18 +35,18 @@ export function ReviewPage(): JSX.Element {
         script: ICurrentScript,
         scriptFactory: ScriptFactory
     ): Promise<BaseScript> => {
-        setSignStatuses(current => ({...current, [script.id]: State.loading}));
+        setSignStatuses((current) => ({ ...current, [script.id]: State.loading }));
         const signedScript = await scriptFactory.SubmitScriptsForSignature(script);
-        setSignStatuses(current => ({...current, [script.id]: State.done}));
+        setSignStatuses((current) => ({ ...current, [script.id]: State.done }));
         return signedScript;
     };
 
     const requestAllowanceForScript = async (script: BaseScript): Promise<void> => {
-        setAllowStatuses(current => ({...current, [script.getId()]: State.loading}));
+        setAllowStatuses((current) => ({ ...current, [script.getId()]: State.loading }));
         if (!(await script.hasAllowance())) {
             await script.requestAllowance();
         }
-        setAllowStatuses(current => ({...current, [script.getId()]: State.done}));
+        setAllowStatuses((current) => ({ ...current, [script.getId()]: State.done }));
     };
 
     const createAndSignScripts = async () => {
@@ -70,6 +71,7 @@ export function ReviewPage(): JSX.Element {
                 // as the whole chain will need to be re-executed
                 setSignStatuses({});
                 setAllowStatuses({});
+                errorToast("Something went wrong :(\nPlease let us know if the problem persists");
                 throw err;
             }
         }
@@ -83,6 +85,7 @@ export function ReviewPage(): JSX.Element {
         // clean and redirect to my-page
         dispatch(cleanWorkbench());
         setRedirect(true);
+        successToast(`Script${signedScripts.length > 1 ? "s" : ""} successfully created`);
     };
 
     const addFollowConditions = (scripts: ICurrentScript[]) => {
