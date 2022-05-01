@@ -7,6 +7,7 @@ import { fetchGasTankClaimable } from "../../state/action-creators/gas-tank-acti
 import { removeScript } from "../../state/action-creators/script-action-creators";
 import { ethers } from "ethers";
 import { promiseToast } from "../toaster";
+import { StorageProxy } from "../../data/storage-proxy";
 
 export const MyPageScript = ({ script }: { script: BaseScript }) => {
     const [verification, setVerification] = useState(script.getVerification());
@@ -27,18 +28,22 @@ export const MyPageScript = ({ script }: { script: BaseScript }) => {
             "Script successfully revoked 🎉",
             "Something bad happened. Contact us if the error persists"
         );
-        await revokeTransaction;
+        const receipt: ethers.providers.TransactionReceipt = (await revokeTransaction) as any;
+        if (receipt.status === 1) await StorageProxy.script.revokeScript(script.getId());
         dispatch(removeScript(script));
     };
+
     const verifyScript = async () => {
         setVerification(await script.verify(signer));
     };
+
     const executeScript = async () => {
         const tx = await script.execute(signer);
         setVerification(script.getVerification());
         dispatch(fetchGasTankClaimable(walletAddress, chainId));
         tx?.wait().then(() => verifyScript());
     };
+
     const requestAllowance = async () => {
         const tx = await script.requestAllowance(signer);
         const allowanceTransaction = promiseToast(
