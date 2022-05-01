@@ -8,7 +8,7 @@ import {
   ScriptVerification,
   UnverifiedScript,
   ValidScript,
-  VerificationFailedScript
+  VerificationFailedScript,
 } from "../verification-result";
 
 export abstract class BaseScript {
@@ -64,9 +64,7 @@ export abstract class BaseScript {
     const message = this.getMessage();
     try {
       this.verification = new ExecutingScript();
-      return await executor
-        .execute(message, this.R, this.S, this.V)
-        .then(() => (this.verification = new UnverifiedScript()));
+      return await executor.execute(message, this.R, this.S, this.V);
     } catch (error: any) {
       // something strange happened, let's print it
       if (!error.data) console.error(error);
