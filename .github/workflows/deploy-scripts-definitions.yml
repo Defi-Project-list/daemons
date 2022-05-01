@@ -20,7 +20,7 @@ jobs:
           node-version: 12
           registry-url: https://npm.pkg.github.com/
       - run: |
-          cd shared-definitions/
+          cd scripts-definitions/
           npm install
           npm run build
           npm publish
