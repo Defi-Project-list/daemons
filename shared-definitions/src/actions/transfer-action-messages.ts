@@ -1,9 +1,10 @@
 import { BigNumber } from 'ethers';
-import { IBalanceCondition, Balance, AmountType } from './condition-messages';
-import { IPriceCondition, Price } from './condition-messages';
-import { IFrequencyCondition, Frequency } from './condition-messages';
-import { IMaxRepetitionsCondition, Repetitions } from './condition-messages';
-import { IFollowCondition, Follow } from './condition-messages';
+import { IBalanceCondition, Balance } from "../conditions/balance";
+import { IFollowCondition, Follow } from "../conditions/follow";
+import { IFrequencyCondition, Frequency } from "../conditions/frequency";
+import { IMaxRepetitionsCondition, Repetitions } from "../conditions/max-repetitions";
+import { IPriceCondition, Price } from "../conditions/price";
+import { AmountType } from "../conditions/shared";
 
 export interface ISignedTransferAction extends ITransferAction {
     signature: string;

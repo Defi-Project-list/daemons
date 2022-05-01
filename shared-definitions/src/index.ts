@@ -1,9 +1,17 @@
-// scripts
-export * from './scripts/condition-messages';
-export * from './scripts/mm-adv-action-messages';
-export * from './scripts/mm-base-action-messages';
-export * from './scripts/swap-action-messages';
-export * from './scripts/transfer-action-messages';
+// actions
+export * from './actions/mm-adv-action-messages';
+export * from './actions/mm-base-action-messages';
+export * from './actions/swap-action-messages';
+export * from './actions/transfer-action-messages';
+
+// conditions
+export * from './conditions/balance';
+export * from './conditions/follow';
+export * from './conditions/frequency';
+export * from './conditions/health-factor';
+export * from './conditions/max-repetitions';
+export * from './conditions/price';
+export * from './conditions/shared';
 
 // transactions
 export * from './transactions/transaction';

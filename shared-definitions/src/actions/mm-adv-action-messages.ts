@@ -1,24 +1,27 @@
 import { BigNumber } from 'ethers';
-import { IBalanceCondition, Balance, AmountType } from './condition-messages';
-import { IPriceCondition, Price } from './condition-messages';
-import { IFrequencyCondition, Frequency } from './condition-messages';
-import { IMaxRepetitionsCondition, Repetitions } from './condition-messages';
-import { IFollowCondition, Follow } from './condition-messages';
-import { IHealthFactorCondition, HealthFactor } from './condition-messages';
+import { IBalanceCondition, Balance } from "../conditions/balance";
+import { IFollowCondition, Follow } from "../conditions/follow";
+import { IFrequencyCondition, Frequency } from "../conditions/frequency";
+import { IHealthFactorCondition, HealthFactor } from '../conditions/health-factor';
+import { IMaxRepetitionsCondition, Repetitions } from "../conditions/max-repetitions";
+import { IPriceCondition, Price } from "../conditions/price";
+import { AmountType } from "../conditions/shared";
 
-export interface ISignedMMBaseAction extends IMMBaseAction {
+export interface ISignedMMAdvancedAction extends IMMAdvancedAction {
     signature: string;
     description: string;
 }
 
-export enum BaseMoneyMarketActionType { Deposit = 0, Withdraw = 1 };
+export enum AdvancedMoneyMarketActionType { Repay = 0, Borrow = 1 };
+export enum InterestRateMode { Fixed = 1, Variable = 2 };
 
-export interface IMMBaseAction {
+export interface IMMAdvancedAction {
     scriptId: string;
     token: string;
-    aToken: string;
-    action: BaseMoneyMarketActionType;
+    debtToken: string;
+    action: AdvancedMoneyMarketActionType;
     typeAmt: AmountType;
+    rateMode: InterestRateMode;
     amount: BigNumber;
     user: string;
     kontract: string;
@@ -32,15 +35,16 @@ export interface IMMBaseAction {
     healthFactor: IHealthFactorCondition;
 }
 
-const MmBase = [
+const MmAdvanced = [
     { name: "scriptId", type: "bytes32" },           // the script identifier
     { name: "token", type: "address" },              // the native token
-    { name: "aToken", type: "address" },             // the aToken
-    { name: "action", type: "bytes1" },              // the action to perform [deposit, withdraw]
+    { name: "debtToken", type: "address" },          // the debt token (variable or stable)
+    { name: "action", type: "bytes1" },              // the action to perform [repay, borrow]
     { name: "typeAmt", type: "bytes1" },             // the amount type [absolute, percentage]
-    { name: "amount", type: "uint256" },             // the amount to supply/withdraw
+    { name: "rateMode", type: "bytes1" },            // the interest rate mode [variable, fixed]
+    { name: "amount", type: "uint256" },             // the amount to repay or borrow
     { name: "user", type: "address" },               // the user that is signing the transaction
-    { name: "kontract", type: "address" },           // the MM contract to interface with
+    { name: "kontract", type: "address" },           // the MM contract to interact with
     { name: "executor", type: "address" },           // the executor contract this message will be sent to
     { name: "chainId", type: "uint256" },            // the chain in which the message was signed
     { name: "balance", type: "Balance" },            // condition: balance
@@ -51,14 +55,14 @@ const MmBase = [
     { name: "healthFactor", type: "HealthFactor" },  // condition: MM health factor
 ];
 
-export const mmBaseDomain = {
-    name: "Daemons-MM-Base-v01"
+export const mmAdvDomain = {
+    name: "Daemons-MM-Advanced-v01"
 };
 
-export const mmBaseTypes = {
+export const mmAdvTypes = {
     Frequency,
     Balance,
-    MmBase,
+    MmAdvanced,
     Price,
     Repetitions,
     Follow,
