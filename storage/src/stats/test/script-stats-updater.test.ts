@@ -10,7 +10,10 @@ const statsUpdater = require("..");
 
 describe("Script Stats Updater", () => {
     before(async () => await connectToTestDb());
-    afterEach(async () => await clearTestDb());
+    afterEach(async () => {
+        await clearTestDb();
+        sinon.restore();
+    });
     after(async () => await closeTestDb());
 
     it("successfully saves the stats for a single chain", async () => {

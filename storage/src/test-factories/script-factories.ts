@@ -83,9 +83,9 @@ function healthFactorConditionFactory(args: any): IHealthFactorCondition {
 }
 
 /** Returns a randomized signed swap action */
-export function signedSwapActionFactory(args: any): ISignedSwapAction {
+export function signedSwapActionFactory(args: any): ISignedSwapAction & { __type: string } {
     return {
-        signature: args.signature ?? utils.hexlify(utils.randomBytes(40)),
+        signature: args.signature ?? utils.hexlify(utils.randomBytes(65)),
         description: args.description ?? faker.random.words(4),
         scriptId: args.scriptId ?? utils.hexlify(utils.randomBytes(32)),
         tokenFrom: args.tokenFrom ?? faker.finance.ethereumAddress(),
@@ -100,7 +100,8 @@ export function signedSwapActionFactory(args: any): ISignedSwapAction {
         frequency: frequencyConditionFactory(args.frequency ?? {}),
         price: priceConditionFactory(args.price ?? {}),
         repetitions: repetitionsConditionFactory(args.repetitions ?? {}),
-        follow: followConditionFactory(args.follow ?? {})
+        follow: followConditionFactory(args.follow ?? {}),
+        __type: "SwapScript"
     };
 }
 
@@ -116,9 +117,9 @@ export async function swapScriptDocumentFactory(args: any): Promise<ISignedSwapA
 }
 
 /** Returns a randomized signed transfer action */
-export function signedTransferActionFactory(args: any): ISignedTransferAction {
+export function signedTransferActionFactory(args: any): ISignedTransferAction & { __type: string } {
     return {
-        signature: args.signature ?? utils.hexlify(utils.randomBytes(40)),
+        signature: args.signature ?? utils.hexlify(utils.randomBytes(65)),
         description: args.description ?? faker.random.words(4),
         scriptId: args.scriptId ?? utils.hexlify(utils.randomBytes(32)),
         token: args.token ?? faker.finance.ethereumAddress(),
@@ -132,7 +133,8 @@ export function signedTransferActionFactory(args: any): ISignedTransferAction {
         frequency: frequencyConditionFactory(args.frequency ?? {}),
         price: priceConditionFactory(args.price ?? {}),
         repetitions: repetitionsConditionFactory(args.repetitions ?? {}),
-        follow: followConditionFactory(args.follow ?? {})
+        follow: followConditionFactory(args.follow ?? {}),
+        __type: "TransferScript"
     };
 }
 
@@ -148,9 +150,9 @@ export async function transferScriptDocumentFactory(args: any): Promise<ISignedT
 }
 
 /** Returns a randomized signed mmBase action */
-export function signedMmBaseActionFactory(args: any): ISignedMMBaseAction {
+export function signedMmBaseActionFactory(args: any): ISignedMMBaseAction & { __type: string } {
     return {
-        signature: args.signature ?? utils.hexlify(utils.randomBytes(40)),
+        signature: args.signature ?? utils.hexlify(utils.randomBytes(65)),
         description: args.description ?? faker.random.words(4),
         scriptId: args.scriptId ?? utils.hexlify(utils.randomBytes(32)),
         token: args.token ?? faker.finance.ethereumAddress(),
@@ -167,7 +169,8 @@ export function signedMmBaseActionFactory(args: any): ISignedMMBaseAction {
         price: priceConditionFactory(args.price ?? {}),
         repetitions: repetitionsConditionFactory(args.repetitions ?? {}),
         follow: followConditionFactory(args.follow ?? {}),
-        healthFactor: healthFactorConditionFactory(args.healthFactor ?? {})
+        healthFactor: healthFactorConditionFactory(args.healthFactor ?? {}),
+        __type: "MmBaseScript"
     };
 }
 
@@ -183,9 +186,9 @@ export async function mmBaseScriptDocumentFactory(args: any): Promise<ISignedMMB
 }
 
 /** Returns a randomized signed mmAdvanced action */
-export function signedMmAdvancedActionFactory(args: any): ISignedMMAdvancedAction {
+export function signedMmAdvancedActionFactory(args: any): ISignedMMAdvancedAction & { __type: string } {
     return {
-        signature: args.signature ?? utils.hexlify(utils.randomBytes(40)),
+        signature: args.signature ?? utils.hexlify(utils.randomBytes(65)),
         description: args.description ?? faker.random.words(4),
         scriptId: args.scriptId ?? utils.hexlify(utils.randomBytes(32)),
         token: args.token ?? faker.finance.ethereumAddress(),
@@ -203,7 +206,8 @@ export function signedMmAdvancedActionFactory(args: any): ISignedMMAdvancedActio
         price: priceConditionFactory(args.price ?? {}),
         repetitions: repetitionsConditionFactory(args.repetitions ?? {}),
         follow: followConditionFactory(args.follow ?? {}),
-        healthFactor: healthFactorConditionFactory(args.healthFactor ?? {})
+        healthFactor: healthFactorConditionFactory(args.healthFactor ?? {}),
+        __type: "MmAdvancedScript"
     };
 }
 

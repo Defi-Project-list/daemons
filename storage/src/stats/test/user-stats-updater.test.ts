@@ -11,7 +11,10 @@ const statsUpdater = require("..");
 
 describe("User Stats Updater", () => {
     before(async () => await connectToTestDb());
-    afterEach(async () => await clearTestDb());
+    afterEach(async () => {
+        await clearTestDb();
+        sinon.restore();
+    });
     after(async () => await closeTestDb());
 
     const userAddress1 = '0xb79f76ef2c5f0286176833e7b2eee103b1cc3244';
