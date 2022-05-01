@@ -20,5 +20,5 @@ export class PriceFactory {
           comparison: priceJson.comparison,
           token: priceJson.token,
         }
-      : this.empty();
+      : PriceFactory.empty();
 }

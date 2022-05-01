@@ -1,7 +1,8 @@
 import { assert, expect } from "chai";
 import { ethers } from "ethers";
-import { IHealthFactorCondition } from "@daemons-fi/shared-definitions";
+import { ComparisonType, IHealthFactorCondition } from "@daemons-fi/shared-definitions";
 import { HealthFactorFactory } from "../health-factor-factory";
+import { ZeroAddress } from "../shared";
 
 describe("HealthFactor Factory", () => {
   it("creates an empty condition", async () => {

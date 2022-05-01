@@ -17,5 +17,5 @@ export class FrequencyFactory {
           delay: BigNumber.from(frequencyJson.delay),
           start: BigNumber.from(frequencyJson.start),
         }
-      : this.empty();
+      : FrequencyFactory.empty();
 }

@@ -20,5 +20,5 @@ export class BalanceFactory {
           comparison: balanceJson.comparison,
           token: balanceJson.token,
         }
-      : this.empty();
+      : BalanceFactory.empty();
 }

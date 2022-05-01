@@ -1,4 +1,4 @@
-import { IMaxRepetitionsCondition } from "@daemons-fi/shared-definitions/build";
+import { IMaxRepetitionsCondition } from "@daemons-fi/shared-definitions";
 import { BigNumber } from "ethers";
 
 export class RepetitionsFactory {
@@ -15,5 +15,5 @@ export class RepetitionsFactory {
           enabled: repetitionsJson.enabled,
           amount: BigNumber.from(repetitionsJson.amount),
         }
-      : this.empty();
+      : RepetitionsFactory.empty();
 }

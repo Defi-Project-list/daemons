@@ -1,6 +1,6 @@
 import { BigNumber } from "ethers";
-import { IFollowCondition } from "../conditions/follow";
-import { ZeroAddress, ZeroId } from "../conditions/shared";
+import { IFollowCondition } from "@daemons-fi/shared-definitions";
+import { ZeroAddress, ZeroId } from "./shared";
 
 export class FollowFactory {
   /** A disabled frequency condition */
@@ -20,5 +20,5 @@ export class FollowFactory {
           executor: followJson.executor,
           shift: BigNumber.from(followJson.shift),
         }
-      : this.empty();
+      : FollowFactory.empty();
 }

@@ -20,5 +20,5 @@ export class HealthFactorFactory {
                   comparison: healthFactorJson.comparison,
                   amount: BigNumber.from(healthFactorJson.amount)
               }
-            : this.empty();
+            : HealthFactorFactory.empty();
 }
