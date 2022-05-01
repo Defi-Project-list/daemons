@@ -2,9 +2,9 @@ import { ContractInterface, ethers } from "ethers";
 import { Contract } from "ethers";
 
 export abstract class BaseScript {
-  private readonly R: string;
-  private readonly S: string;
-  private readonly V: number;
+  public readonly R: string;
+  public readonly S: string;
+  public readonly V: number;
 
   protected constructor(protected readonly signature: string) {
     const split = ethers.utils.splitSignature(signature);
