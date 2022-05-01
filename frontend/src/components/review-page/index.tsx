@@ -49,7 +49,8 @@ export function ReviewPage(): JSX.Element {
     const requestAllowanceForScript = async (script: BaseScript): Promise<void> => {
         setAllowStatuses((current) => ({ ...current, [script.getId()]: State.loading }));
         if (!(await script.hasAllowance(signer))) {
-            await script.requestAllowance(signer);
+            const tx = await script.requestAllowance(signer);
+            await tx.wait();
         }
         setAllowStatuses((current) => ({ ...current, [script.getId()]: State.done }));
     };
