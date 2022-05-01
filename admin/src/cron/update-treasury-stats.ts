@@ -1,5 +1,5 @@
 import fetch from "cross-fetch";
-import { getTreasuryStats } from "../chain-proxy/tresury-querier";
+import { getTreasuryStats } from "../chain-proxy/treasury-querier";
 
 export const updateTreasuryStats = async (): Promise<void> => {
     console.log("updateTreasuryStats - Starting");
