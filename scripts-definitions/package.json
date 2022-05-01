@@ -1,7 +1,7 @@
 {
   "name": "@daemons-fi/scripts-definitions",
   "version": "0.0.1",
-  "description": "Scripts definitions for Daemons dapp",
+  "description": "Verifiable scripts for Storage and Frontend",
   "main": "./build/index.js",
   "types": "./build/index.d.js",
   "files": [
@@ -21,7 +21,7 @@
   "author": "Daemons Finance",
   "license": "ISC",
   "dependencies": {
-    "@daemons-fi/shared-definitions": "1.2.0",
+    "@daemons-fi/shared-definitions": "2.0.0",
     "ethers": "^5.5.2"
   },
   "devDependencies": {
