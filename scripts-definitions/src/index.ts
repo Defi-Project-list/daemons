@@ -12,3 +12,9 @@ export * from './condition-base-factories/frequency-factory';
 export * from './condition-base-factories/health-factor-factory';
 export * from './condition-base-factories/price-factory';
 export * from './condition-base-factories/repetitions-factory';
+
+// allowance helper
+export * from './allowance-helper';
+
+// verification
+export * from './verification-result';
