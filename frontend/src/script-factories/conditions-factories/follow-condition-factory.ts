@@ -1,30 +1,11 @@
 import { BigNumber } from "ethers";
 import { IFollowCondition } from "@daemons-fi/shared-definitions";
-import { ZeroAddress, ZeroId } from "../../data/chain-info";
 import { ICurrentScript } from "../i-current-script";
 import { ConditionTitles } from "../../data/chains-data/interfaces";
 import { IFollowConditionForm } from "../../data/chains-data/condition-form-interfaces";
+import { FollowFactory } from "@daemons-fi/scripts-definitions/build";
 
-export class FollowConditionFactory {
-    /** A disabled frequency condition */
-    public static empty = (): IFollowCondition => ({
-        enabled: false,
-        scriptId: ZeroId,
-        executor: ZeroAddress,
-        shift: BigNumber.from(0)
-    });
-
-    /** A frequency condition built from json (rebuilding serialized objects) */
-    public static fromJson = (followJson?: any): IFollowCondition =>
-        followJson
-            ? {
-                  enabled: followJson.enabled,
-                  scriptId: followJson.scriptId,
-                  executor: followJson.executor,
-                  shift: BigNumber.from(followJson.shift)
-              }
-            : this.empty();
-
+export class FollowConditionFactory extends FollowFactory {
     /** A frequency condition built from user inputs */
     public static fromForm = (form: IFollowConditionForm): IFollowCondition => {
         if (!form.parentScriptId || !form.parentScriptExecutor) {

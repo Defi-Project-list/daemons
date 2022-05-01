@@ -1,30 +1,11 @@
-import { BigNumber, utils } from "ethers";
+import { utils } from "ethers";
 import { IPriceCondition } from "@daemons-fi/shared-definitions";
-import { ZeroAddress } from "../../data/chain-info";
 import { ConditionTitles, Token } from "../../data/chains-data/interfaces";
 import { ICurrentScript } from "../i-current-script";
 import { IPriceConditionForm } from "../../data/chains-data/condition-form-interfaces";
+import { PriceFactory } from "@daemons-fi/scripts-definitions/build";
 
-export class PriceConditionFactory {
-    /** A disabled price condition */
-    public static empty = (): IPriceCondition => ({
-        enabled: false,
-        value: BigNumber.from(0),
-        comparison: 0,
-        token: ZeroAddress
-    });
-
-    /** A price condition built from json (rebuilding serialized objects) */
-    public static fromJson = (priceJson?: any): IPriceCondition =>
-        priceJson
-            ? {
-                  enabled: priceJson.enabled,
-                  value: BigNumber.from(priceJson.value),
-                  comparison: priceJson.comparison,
-                  token: priceJson.token
-              }
-            : this.empty();
-
+export class PriceConditionFactory extends PriceFactory {
     /** A price condition built from user inputs */
     public static fromForm = (form: IPriceConditionForm, tokens: Token[]): IPriceCondition => {
         if (!form.valid) throw new Error("Cannot build Price condition from invalid form");

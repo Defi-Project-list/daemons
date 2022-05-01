@@ -6,7 +6,7 @@ import { State, TemporaryScript } from "./temporary-script";
 import "./styles.css";
 import { StorageProxy } from "../../data/storage-proxy";
 import { addNewScript } from "../../state/action-creators/script-action-creators";
-import { BaseScript } from "../../data/script/base-script";
+import { BaseScript } from "@daemons-fi/scripts-definitions";
 import { Navigate } from "react-router-dom";
 import { cleanWorkbench } from "../../state/action-creators/workbench-action-creators";
 import { ICurrentScript } from "../../script-factories/i-current-script";
@@ -17,6 +17,7 @@ import {
 import { getExecutorFromScriptAction } from "../../script-factories/messages-factories/executor-fetcher";
 import { ConditionTitles } from "../../data/chains-data/interfaces";
 import { errorToast, successToast } from "../toaster";
+import { ethers } from "ethers";
 
 export function ReviewPage(): JSX.Element {
     // redux
@@ -31,6 +32,10 @@ export function ReviewPage(): JSX.Element {
     const [signStatuses, setSignStatuses] = useState<{ [id: string]: State }>({});
     const [allowStatuses, setAllowStatuses] = useState<{ [id: string]: State }>({});
 
+    // wallet signer and provider
+    const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+    const signer = provider.getSigner();
+
     const signScript = async (
         script: ICurrentScript,
         scriptFactory: ScriptFactory
@@ -43,8 +48,8 @@ export function ReviewPage(): JSX.Element {
 
     const requestAllowanceForScript = async (script: BaseScript): Promise<void> => {
         setAllowStatuses((current) => ({ ...current, [script.getId()]: State.loading }));
-        if (!(await script.hasAllowance())) {
-            await script.requestAllowance();
+        if (!(await script.hasAllowance(signer))) {
+            await script.requestAllowance(signer);
         }
         setAllowStatuses((current) => ({ ...current, [script.getId()]: State.done }));
     };

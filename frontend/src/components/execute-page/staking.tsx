@@ -9,7 +9,7 @@ import {
     fetchStakingClaimable
 } from "../../state/action-creators/staking-action-creators";
 import { fetchDaemBalance } from "../../state/action-creators/wallet-action-creators";
-import { AllowanceHelper } from "../../utils/allowance-helper";
+import { AllowanceHelper } from "@daemons-fi/scripts-definitions";
 import { getAbiFor } from "../../utils/get-abi";
 import { errorToast, promiseToast } from "../toaster";
 import "./staking.css";
@@ -25,13 +25,18 @@ export function Staking() {
     const [needsAllowance, setNeedsAllowance] = useState<boolean>(true);
     const contracts = GetCurrentChain(chainId!).contracts;
 
+    // wallet signer and provider
+    const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+    const signer = provider.getSigner();
+
+
     const checkForAllowance = async () => {
-        const allowanceHelper = new AllowanceHelper();
-        const hasAllowance = await allowanceHelper.checkForERC20Allowance(
+        const hasAllowance = await AllowanceHelper.checkForERC20Allowance(
             walletAddress!,
             contracts.DAEMToken,
             contracts.Treasury,
-            ethers.utils.parseEther("100000")
+            ethers.utils.parseEther("100000"),
+            signer
         );
         console.log("hasAllowance", hasAllowance);
         setNeedsAllowance(!hasAllowance);
@@ -66,10 +71,10 @@ export function Staking() {
     };
 
     const requestAllowance = async () => {
-        const allowanceHelper = new AllowanceHelper();
-        const tx = await allowanceHelper.requestERC20Allowance(
+        const tx = await AllowanceHelper.requestERC20Allowance(
             contracts.DAEMToken,
-            contracts.Treasury
+            contracts.Treasury,
+            signer
         );
         const toastedTransaction = promiseToast(
             tx.wait,

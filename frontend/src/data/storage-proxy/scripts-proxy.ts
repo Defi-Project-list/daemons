@@ -1,9 +1,7 @@
+import { BaseScript, SwapScript, TransferScript } from "@daemons-fi/scripts-definitions";
+import { MmBaseScript, MmAdvancedScript } from "@daemons-fi/scripts-definitions";
 import { storageAddress } from ".";
-import { BaseScript } from "../script/base-script";
-import { MmAdvancedScript } from "../script/mm-adv-script";
-import { MmBaseScript } from "../script/mm-base-script";
-import { SwapScript } from "../script/swap-script";
-import { TransferScript } from "../script/transfer-script";
+
 
 export class ScriptProxy {
     public static async saveScript(script: BaseScript): Promise<void> {

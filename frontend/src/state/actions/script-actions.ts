@@ -1,4 +1,4 @@
-import { BaseScript } from '../../data/script/base-script';
+import { BaseScript } from '@daemons-fi/scripts-definitions';
 import { ActionType } from "../action-types/index";
 
 export interface IFetchScriptsAction {

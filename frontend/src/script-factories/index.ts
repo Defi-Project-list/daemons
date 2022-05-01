@@ -5,15 +5,15 @@ import { IMMAdvancedAction, mmAdvDomain, mmAdvTypes } from "@daemons-fi/shared-d
 import { TransferMessageFactory } from "./messages-factories/transfer-message-factory";
 import { GetCurrentChain, IsChainSupported } from "../data/chain-info";
 import { ICurrentScript } from "./i-current-script";
-import { BaseScript } from "../data/script/base-script";
+import { BaseScript } from "@daemons-fi/scripts-definitions";
 import { ScriptAction } from "../data/chains-data/action-form-interfaces";
-import { SwapScript } from "../data/script/swap-script";
-import { TransferScript } from "../data/script/transfer-script";
-import { MmBaseScript } from "../data/script/mm-base-script";
+import { SwapScript } from "@daemons-fi/scripts-definitions";
+import { TransferScript } from "@daemons-fi/scripts-definitions";
+import { MmBaseScript } from "@daemons-fi/scripts-definitions";
 import { SwapMessageFactory } from "./messages-factories/swap-message-factory";
 import { MmBaseMessageFactory } from "./messages-factories/mm-base-message-factory";
 import { MmAdvMessageFactory } from "./messages-factories/mm-adv-message-factory";
-import { MmAdvancedScript } from "../data/script/mm-adv-script";
+import { MmAdvancedScript } from "@daemons-fi/scripts-definitions";
 
 type ScriptDefinition = ISwapAction | ITransferAction | IMMBaseAction | IMMAdvancedAction;
 

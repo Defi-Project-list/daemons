@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { BaseScript } from '../../data/script/base-script';
+import { BaseScript } from '@daemons-fi/scripts-definitions';
 import { RootState } from '../../state';
 import { fetchAllScripts, toggleScriptsLoading } from '../../state/action-creators/script-action-creators';
 import { QueueScriptComponent } from './executable-script';

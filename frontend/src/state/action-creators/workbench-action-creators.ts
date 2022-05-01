@@ -1,9 +1,6 @@
 import { Dispatch } from 'redux';
-import { BaseScript } from '../../data/script/base-script';
-import { StorageProxy } from '../../data/storage-proxy';
 import { ICurrentScript } from "../../script-factories/i-current-script";
 import { ActionType } from '../action-types';
-import { ScriptAction } from '../actions/script-actions';
 import { WorkbenchAction } from "../actions/workbench-actions";
 
 

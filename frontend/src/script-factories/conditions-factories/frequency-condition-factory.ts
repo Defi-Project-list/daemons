@@ -1,28 +1,11 @@
 import { BigNumber } from "ethers";
 import { IFrequencyCondition } from "@daemons-fi/shared-definitions";
 import { ICurrentScript } from "../i-current-script";
-import { FrequencyCondition } from "../../data/chains-data/kovan/condition-forms";
 import { ConditionTitles } from "../../data/chains-data/interfaces";
 import { IFrequencyConditionForm } from "../../data/chains-data/condition-form-interfaces";
+import { FrequencyFactory } from "@daemons-fi/scripts-definitions/build";
 
-export class FrequencyConditionFactory {
-    /** A disabled frequency condition */
-    public static empty = (): IFrequencyCondition => ({
-        enabled: false,
-        delay: BigNumber.from(0),
-        start: BigNumber.from(0)
-    });
-
-    /** A frequency condition built from json (rebuilding serialized objects) */
-    public static fromJson = (frequencyJson?: any): IFrequencyCondition =>
-        frequencyJson
-            ? {
-                  enabled: frequencyJson.enabled,
-                  delay: BigNumber.from(frequencyJson.delay),
-                  start: BigNumber.from(frequencyJson.start)
-              }
-            : this.empty();
-
+export class FrequencyConditionFactory extends FrequencyFactory {
     /** A frequency condition built from user inputs */
     public static fromForm = async (
         form: IFrequencyConditionForm,

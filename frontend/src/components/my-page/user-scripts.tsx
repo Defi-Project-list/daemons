@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { BaseScript } from "../../data/script/base-script";
+import { BaseScript } from "@daemons-fi/scripts-definitions";
 import { RootState } from "../../state";
 import { MyPageScript } from "./user-script";
 import "./styles.css";

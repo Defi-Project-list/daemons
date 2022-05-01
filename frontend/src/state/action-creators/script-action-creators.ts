@@ -1,5 +1,5 @@
 import { Dispatch } from 'redux';
-import { BaseScript } from '../../data/script/base-script';
+import { BaseScript } from '@daemons-fi/scripts-definitions';
 import { StorageProxy } from '../../data/storage-proxy';
 import { ActionType } from '../action-types';
 import { ScriptAction } from '../actions/script-actions';

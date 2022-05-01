@@ -1,30 +1,14 @@
-import { BigNumber } from 'ethers';
-import { IMaxRepetitionsCondition } from '@daemons-fi/shared-definitions';
+import { BigNumber } from "ethers";
+import { IMaxRepetitionsCondition } from "@daemons-fi/shared-definitions";
 import { ICurrentScript } from "../i-current-script";
 import { ConditionTitles } from "../../data/chains-data/interfaces";
 import { IRepetitionsConditionForm } from "../../data/chains-data/condition-form-interfaces";
+import { RepetitionsFactory } from "@daemons-fi/scripts-definitions/build";
 
-
-export class RepetitionsConditionFactory {
-
-    /** A disabled repetitions condition */
-    public static empty = (): IMaxRepetitionsCondition => ({
-        enabled: false,
-        amount: BigNumber.from(0),
-    });
-
-    /** A repetitions condition built from json (rebuilding serialized objects) */
-    public static fromJson = (repetitionsJson?: any): IMaxRepetitionsCondition => (
-        repetitionsJson
-            ? {
-                enabled: repetitionsJson.enabled,
-                amount: BigNumber.from(repetitionsJson.amount),
-            }
-            : this.empty());
-
+export class RepetitionsConditionFactory extends RepetitionsFactory {
     /** A repetitions condition built from user inputs */
     public static fromForm = (form: IRepetitionsConditionForm): IMaxRepetitionsCondition => {
-        if (!form.valid) throw new Error('Cannot build Repetitions condition from invalid form');
+        if (!form.valid) throw new Error("Cannot build Repetitions condition from invalid form");
 
         return {
             enabled: true,

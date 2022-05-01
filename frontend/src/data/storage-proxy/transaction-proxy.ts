@@ -1,4 +1,4 @@
-import { BaseScript } from '../script/base-script';
+import { BaseScript } from '@daemons-fi/scripts-definitions';
 import { ITransaction, TransactionOutcome } from '@daemons-fi/shared-definitions';
 import { TransactionResponse, TransactionReceipt } from '@ethersproject/abstract-provider';
 import { utils } from 'ethers';

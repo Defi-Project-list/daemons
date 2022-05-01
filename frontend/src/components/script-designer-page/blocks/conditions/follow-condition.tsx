@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Field } from 'react-final-form';
-import { BaseScript } from '../../../../data/script/base-script';
+import { BaseScript } from '@daemons-fi/scripts-definitions';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../state';
 import { IFollowConditionForm } from "../../../../data/chains-data/condition-form-interfaces";

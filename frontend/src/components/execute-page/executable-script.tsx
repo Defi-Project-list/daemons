@@ -1,7 +1,7 @@
+import { VerificationState, BaseScript } from "@daemons-fi/scripts-definitions";
+import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { BaseScript } from "../../data/script/base-script";
-import { VerificationState } from "../../data/script/verification-result";
 import { StorageProxy } from "../../data/storage-proxy";
 import { RootState } from "../../state";
 import { fetchGasTankClaimable } from "../../state/action-creators/gas-tank-action-creators";
@@ -12,11 +12,15 @@ export const QueueScriptComponent = ({ script }: { script: BaseScript }) => {
     const walletAddress = useSelector((state: RootState) => state.wallet.address);
     const chainId = useSelector((state: RootState) => state.wallet.chainId);
 
+    // wallet signer and provider
+    const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+    const signer = provider.getSigner();
+
     const verifyScript = async () => {
-        setVerification(await script.verify());
+        setVerification(await script.verify(signer));
     };
     const executeScript = async () => {
-        const transactionResponse = await script.execute();
+        const transactionResponse = await script.execute(signer);
         if (!transactionResponse) return;
 
         await StorageProxy.txs.addTransaction(transactionResponse, script, walletAddress!);

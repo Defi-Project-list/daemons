@@ -1,29 +1,11 @@
-import { BigNumber, utils } from "ethers";
+import { utils } from "ethers";
 import { IBalanceCondition } from "@daemons-fi/shared-definitions";
-import { ZeroAddress } from "../../data/chain-info";
 import { ConditionTitles, Token } from "../../data/chains-data/interfaces";
 import { ICurrentScript } from "../i-current-script";
 import { IBalanceConditionForm } from "../../data/chains-data/condition-form-interfaces";
+import { BalanceFactory } from "@daemons-fi/scripts-definitions/build";
 
-export class BalanceConditionFactory {
-    /** A disabled balance condition */
-    public static empty = (): IBalanceCondition => ({
-        enabled: false,
-        amount: BigNumber.from(0),
-        comparison: 0,
-        token: ZeroAddress
-    });
-
-    /** A balance condition built from json (rebuilding serialized objects) */
-    public static fromJson = (balanceJson?: any): IBalanceCondition =>
-        balanceJson
-            ? {
-                  enabled: balanceJson.enabled,
-                  amount: BigNumber.from(balanceJson.amount),
-                  comparison: balanceJson.comparison,
-                  token: balanceJson.token
-              }
-            : this.empty();
+export class BalanceConditionFactory extends BalanceFactory {
 
     /** A balance condition built from user inputs */
     public static fromForm = (form: IBalanceConditionForm, tokens: Token[]): IBalanceCondition => {
