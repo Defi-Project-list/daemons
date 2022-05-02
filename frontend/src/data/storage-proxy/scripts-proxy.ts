@@ -100,4 +100,17 @@ export class ScriptProxy {
 
         await fetch(url, requestOptions as any);
     }
+
+    public static async markAsBroken(scriptId: string): Promise<void> {
+        console.log(`Marking script ${scriptId} as broken`);
+        const url = `${storageAddress}/scripts/mark-as-broken`;
+        const requestOptions = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ scriptId })
+        };
+
+        await fetch(url, requestOptions as any);
+    }
 }

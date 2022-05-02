@@ -4,10 +4,11 @@ import { BaseScript } from "@daemons-fi/scripts-definitions";
 import { VerificationFailedScript, VerificationState } from "@daemons-fi/scripts-definitions";
 import { RootState } from "../../state";
 import { fetchGasTankClaimable } from "../../state/action-creators/gas-tank-action-creators";
-import { removeScript } from "../../state/action-creators/script-action-creators";
+import { removeUserScript } from "../../state/action-creators/script-action-creators";
 import { ethers } from "ethers";
 import { promiseToast } from "../toaster";
 import { StorageProxy } from "../../data/storage-proxy";
+import { ScriptProxy } from "../../data/storage-proxy/scripts-proxy";
 
 export const MyPageScript = ({ script }: { script: BaseScript }) => {
     const [verification, setVerification] = useState(script.getVerification());
@@ -30,11 +31,17 @@ export const MyPageScript = ({ script }: { script: BaseScript }) => {
         );
         const receipt: ethers.providers.TransactionReceipt = (await revokeTransaction) as any;
         if (receipt.status === 1) await StorageProxy.script.revokeScript(script.getId());
-        dispatch(removeScript(script));
+        dispatch(removeUserScript(script));
     };
 
     const verifyScript = async () => {
-        setVerification(await script.verify(signer));
+        const verification = await script.verify(signer);
+        setVerification(verification);
+
+        const isBroken =
+            verification.state === VerificationState.errorCode &&
+            (verification as VerificationFailedScript).code.includes("[FINAL]");
+        if (isBroken) await ScriptProxy.markAsBroken(script.getId());
     };
 
     const executeScript = async () => {

@@ -1,4 +1,4 @@
-import { BaseScript } from '@daemons-fi/scripts-definitions';
+import { BaseScript } from "@daemons-fi/scripts-definitions";
 import { ActionType } from "../action-types/index";
 import { ScriptAction } from "../actions/script-actions";
 
@@ -11,37 +11,50 @@ export type ScriptState = {
 const initialState: ScriptState = {
     userScripts: [],
     allScripts: [],
-    loading: false,
+    loading: false
 };
 
-export const scriptReducer = (state: ScriptState = initialState, action: ScriptAction): ScriptState => {
+export const scriptReducer = (
+    state: ScriptState = initialState,
+    action: ScriptAction
+): ScriptState => {
     switch (action.type) {
         case ActionType.FETCH_USER_SCRIPTS:
             return {
                 ...state,
-                userScripts: action.payload,
+                userScripts: action.payload
             };
-        case ActionType.FETCH_ALL_SCRIPTS:
+        case ActionType.FETCH_EXECUTABLE_SCRIPTS:
             return {
                 ...state,
                 allScripts: action.payload,
-                loading: false,
+                loading: false
             };
-        case ActionType.NEW_SCRIPT:
+        case ActionType.NEW_USER_SCRIPT:
             return {
                 ...state,
-                userScripts: state.userScripts.concat(action.payload),
+                userScripts: state.userScripts.concat(action.payload)
             };
-        case ActionType.REMOVE_SCRIPT:
-            const scriptToRemove = action.payload.getId();
+        case ActionType.REMOVE_USER_SCRIPT:
+            const userScriptToRemove = action.payload.getId();
             return {
                 ...state,
-                userScripts: state.userScripts.filter(script => script.getId() !== scriptToRemove),
+                userScripts: state.userScripts.filter(
+                    (script) => script.getId() !== userScriptToRemove
+                )
+            };
+        case ActionType.REMOVE_EXECUTABLE_SCRIPT:
+            const executableScriptToRemove = action.payload.getId();
+            return {
+                ...state,
+                allScripts: state.allScripts.filter(
+                    (script) => script.getId() !== executableScriptToRemove
+                )
             };
         case ActionType.SET_SCRIPTS_LOADING:
             return {
                 ...state,
-                loading: true,
+                loading: true
             };
         default:
             return state;

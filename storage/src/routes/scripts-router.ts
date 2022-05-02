@@ -10,6 +10,7 @@ import { ISignedMMBaseAction } from "@daemons-fi/shared-definitions";
 import { ISignedSwapAction } from "@daemons-fi/shared-definitions";
 import { ISignedTransferAction } from "@daemons-fi/shared-definitions";
 import { MmAdvancedScript } from "../models/scripts/mm-adv-script";
+import { BrokenScript } from "../models/queues/broken-scripts";
 
 export const scriptsRouter = express.Router();
 
@@ -83,6 +84,20 @@ scriptsRouter.post("/revoke", authenticate, async (req: Request, res: Response) 
 
     try {
         await Script.deleteOne({ user: req.userAddress, scriptId: scriptId });
+        return res.send();
+    } catch (error) {
+        return res.status(400).send(error);
+    }
+});
+
+scriptsRouter.post("/mark-as-broken", authenticate, async (req: Request, res: Response) => {
+    const { scriptId } = req.body;
+
+    try {
+        await BrokenScript.build({
+            reporter: req.userAddress!,
+            scriptId: scriptId,
+        }).save();
         return res.send();
     } catch (error) {
         return res.status(400).send(error);

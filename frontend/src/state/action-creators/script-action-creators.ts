@@ -15,31 +15,42 @@ export const fetchUserScripts = (chainId?: string, address?: string) => {
     };
 };
 
-export const fetchAllScripts = (chainId?: string) => {
+export const fetchExecutableScripts = (chainId?: string) => {
 
     return async (dispatch: Dispatch<ScriptAction>) => {
         dispatch({
-            type: ActionType.FETCH_ALL_SCRIPTS,
+            type: ActionType.FETCH_EXECUTABLE_SCRIPTS,
             payload: await StorageProxy.script.fetchScripts(chainId),
         });
     };
 };
 
-export const addNewScript = (script: BaseScript) => {
+export const addNewUSerScript = (script: BaseScript) => {
 
     return async (dispatch: Dispatch<ScriptAction>) => {
         dispatch({
-            type: ActionType.NEW_SCRIPT,
+            type: ActionType.NEW_USER_SCRIPT,
             payload: script,
         });
     };
 };
 
-export const removeScript = (script: BaseScript) => {
+export const removeUserScript = (script: BaseScript) => {
 
     return async (dispatch: Dispatch<ScriptAction>) => {
         dispatch({
-            type: ActionType.REMOVE_SCRIPT,
+            type: ActionType.REMOVE_USER_SCRIPT,
+            payload: script,
+        });
+    };
+};
+
+
+export const removeExecutableScript = (script: BaseScript) => {
+
+    return async (dispatch: Dispatch<ScriptAction>) => {
+        dispatch({
+            type: ActionType.REMOVE_EXECUTABLE_SCRIPT,
             payload: script,
         });
     };

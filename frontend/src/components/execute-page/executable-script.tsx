@@ -1,10 +1,16 @@
-import { VerificationState, BaseScript } from "@daemons-fi/scripts-definitions";
+import {
+    VerificationState,
+    BaseScript,
+    VerificationFailedScript
+} from "@daemons-fi/scripts-definitions";
 import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { StorageProxy } from "../../data/storage-proxy";
+import { ScriptProxy } from "../../data/storage-proxy/scripts-proxy";
 import { RootState } from "../../state";
 import { fetchGasTankClaimable } from "../../state/action-creators/gas-tank-action-creators";
+import { removeExecutableScript } from "../../state/action-creators/script-action-creators";
 
 export const QueueScriptComponent = ({ script }: { script: BaseScript }) => {
     const dispatch = useDispatch();
@@ -17,8 +23,18 @@ export const QueueScriptComponent = ({ script }: { script: BaseScript }) => {
     const signer = provider.getSigner();
 
     const verifyScript = async () => {
-        setVerification(await script.verify(signer));
+        const verification = await script.verify(signer);
+        setVerification(verification);
+
+        const isBroken =
+            verification.state === VerificationState.errorCode &&
+            (verification as VerificationFailedScript).code.includes("[FINAL]");
+        if (isBroken) {
+            await ScriptProxy.markAsBroken(script.getId());
+            dispatch(removeExecutableScript(script));
+        }
     };
+
     const executeScript = async () => {
         const transactionResponse = await script.execute(signer);
         if (!transactionResponse) return;

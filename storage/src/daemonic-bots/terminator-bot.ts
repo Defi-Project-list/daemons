@@ -3,7 +3,7 @@ import {
     ScriptVerification,
     VerificationFailedScript,
     VerificationState
-} from "@daemons-fi/scripts-definitions/build";
+} from "@daemons-fi/scripts-definitions";
 import { BrokenScript } from "../models/queues/broken-scripts";
 import { Script } from "../models/scripts/script";
 import { getProvider } from "./providers-builder";
@@ -23,21 +23,28 @@ export class TerminatorBot {
 
         const falsePositive: string[] = [];
         const toBeRemoved: string[] = [];
+        const processed: string[] = [];
 
         for (const script of scripts) {
-            const parsedScript: BaseScript = await parseScript(script);
-            const provider = getProvider(parsedScript.getMessage().chainId);
-            const verification = await parsedScript.verify(provider);
+            try {
+                const parsedScript: BaseScript = await parseScript(script);
+                const provider = getProvider(parsedScript.getMessage().chainId);
+                const verification = await parsedScript.verify(provider);
 
-            const queue = TerminatorBot.flagForRemoval(verification) ? toBeRemoved : falsePositive;
-            queue.push(script.scriptId);
+                const queue = TerminatorBot.flagForRemoval(verification) ? toBeRemoved : falsePositive;
+                queue.push(script.scriptId);
+                processed.push(script.scriptId);
+            } catch (error) {
+                console.error(`An error occurred with the script ${script.scriptId}: ${error}`);
+            }
         }
 
         console.log(`[🤖🪓 Terminator Bot] Checks completed`);
-        console.log(`[🤖🪓 Terminator Bot] True positive: ${toBeRemoved}`);
-        console.log(`[🤖🪓 Terminator Bot] False positive: ${falsePositive}`);
+        console.log(`[🤖🪓 Terminator Bot] Processed: ${processed.length}/${ids.length}`);
+        console.log(`[🤖🪓 Terminator Bot] True positive: ${toBeRemoved.length}`);
+        console.log(`[🤖🪓 Terminator Bot] False positive: ${falsePositive.length}`);
 
-        await BrokenScript.deleteMany({ scriptId: { $in: ids } });
+        await BrokenScript.deleteMany({ scriptId: { $in: processed } });
         await Script.deleteMany({ scriptId: { $in: toBeRemoved } });
         console.log(`[🤖🪓 Terminator Bot] Deletion completed`);
 

@@ -2,7 +2,7 @@ import { BaseScript } from '@daemons-fi/scripts-definitions';
 import { ActionType } from "../action-types/index";
 
 export interface IFetchScriptsAction {
-    type: ActionType.FETCH_USER_SCRIPTS | ActionType.FETCH_ALL_SCRIPTS;
+    type: ActionType.FETCH_USER_SCRIPTS | ActionType.FETCH_EXECUTABLE_SCRIPTS;
     payload: BaseScript[];
 }
 
@@ -11,12 +11,12 @@ export interface IToggleScriptsLoading {
 }
 
 export interface INewScriptsAction {
-    type: ActionType.NEW_SCRIPT;
+    type: ActionType.NEW_USER_SCRIPT;
     payload: BaseScript;
 }
 
 export interface IRemoveScriptsAction {
-    type: ActionType.REMOVE_SCRIPT;
+    type: ActionType.REMOVE_USER_SCRIPT | ActionType.REMOVE_EXECUTABLE_SCRIPT;
     payload: BaseScript;
 }
 

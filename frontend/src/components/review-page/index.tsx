@@ -5,7 +5,7 @@ import { RootState } from "../../state";
 import { State, TemporaryScript } from "./temporary-script";
 import "./styles.css";
 import { StorageProxy } from "../../data/storage-proxy";
-import { addNewScript } from "../../state/action-creators/script-action-creators";
+import { addNewUSerScript } from "../../state/action-creators/script-action-creators";
 import { BaseScript } from "@daemons-fi/scripts-definitions";
 import { Navigate } from "react-router-dom";
 import { cleanWorkbench } from "../../state/action-creators/workbench-action-creators";
@@ -85,7 +85,7 @@ export function ReviewPage(): JSX.Element {
         // save in storage and add to Redux state
         for (const signedScript of signedScripts) {
             await StorageProxy.script.saveScript(signedScript);
-            dispatch(addNewScript(signedScript));
+            dispatch(addNewUSerScript(signedScript));
         }
 
         // clean and redirect to my-page

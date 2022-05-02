@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BaseScript } from '@daemons-fi/scripts-definitions';
 import { RootState } from '../../state';
-import { fetchAllScripts, toggleScriptsLoading } from '../../state/action-creators/script-action-creators';
+import { fetchExecutableScripts, toggleScriptsLoading } from '../../state/action-creators/script-action-creators';
 import { QueueScriptComponent } from './executable-script';
 import './styles.css';
 
@@ -15,7 +15,7 @@ export function ExecutableScriptsContainer() {
 
     const reloadScripts = async () => {
         dispatch(toggleScriptsLoading());
-        dispatch(fetchAllScripts(walletChainId));
+        dispatch(fetchExecutableScripts(walletChainId));
     };
 
     useEffect(() => {
