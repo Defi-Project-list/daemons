@@ -7,7 +7,7 @@
     "test": "mocha ./**/*test.ts",
     "start": "node dist/index.js",
     "heroku-postbuild": "tsc",
-    "dev": "ts-node-dev ."
+    "dev": "ts-node-dev --respawn --transpile-only --exit-child --watch src src/index.ts"
   },
   "author": "Daemons Finance",
   "license": "ISC",
