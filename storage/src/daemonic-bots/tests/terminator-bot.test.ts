@@ -25,7 +25,6 @@ describe("Terminator Bot", () => {
         // add a script on the broken scripts queue
         const script = await transferScriptDocumentFactory({});
         await BrokenScript.build({
-            chainId: script.chainId.toString(),
             reporter: script.user,
             scriptId: script.scriptId
         }).save();
@@ -49,7 +48,6 @@ describe("Terminator Bot", () => {
         // add a script on the broken scripts queue
         const script = await transferScriptDocumentFactory({});
         await BrokenScript.build({
-            chainId: script.chainId.toString(),
             reporter: script.user,
             scriptId: script.scriptId
         }).save();
@@ -74,7 +72,6 @@ describe("Terminator Bot", () => {
         // add a script on the broken scripts queue
         const script = await transferScriptDocumentFactory({});
         await BrokenScript.build({
-            chainId: script.chainId.toString(),
             reporter: script.user,
             scriptId: script.scriptId
         }).save();
