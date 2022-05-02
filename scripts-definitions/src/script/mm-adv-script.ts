@@ -37,7 +37,7 @@ export class MmAdvancedScript extends BaseScript {
       : this.message.debtToken;
 
   public static async fromStorageJson(object: any) {
-    const message: IMMAdvancedAction = object;
+    const message: IMMAdvancedAction = JSON.parse(JSON.stringify(object));
 
     // complex objects are broken down and need to be recreated. Sigh.
     message.chainId = BigNumber.from(object.chainId);

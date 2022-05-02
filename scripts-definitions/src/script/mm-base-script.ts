@@ -41,7 +41,7 @@ export class MmBaseScript extends BaseScript {
   };
 
   public static async fromStorageJson(object: any) {
-    const message: IMMBaseAction = object;
+    const message: IMMBaseAction = JSON.parse(JSON.stringify(object));
 
     // complex objects are broken down and need to be recreated. Sigh.
     message.chainId = BigNumber.from(object.chainId);

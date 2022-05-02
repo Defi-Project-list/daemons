@@ -28,7 +28,7 @@ export class TransferScript extends BaseScript {
   public getTokenForAllowance = () => this.message.token;
 
   public static async fromStorageJson(object: any) {
-    const message: ITransferAction = object;
+    const message: ITransferAction = JSON.parse(JSON.stringify(object));
 
     // complex objects are broken down and need to be recreated. Sigh.
     message.chainId = BigNumber.from(object.chainId);

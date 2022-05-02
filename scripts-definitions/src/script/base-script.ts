@@ -2,6 +2,7 @@ import { TransactionResponse } from "@ethersproject/abstract-provider";
 import { BigNumber, ContractInterface, ethers } from "ethers";
 import { Contract } from "ethers";
 import { AllowanceHelper } from "../allowance-helper";
+import { parseValidationError } from "../validation-error-parser";
 import {
   ExecutingScript,
   LoadingVerificationScript,
@@ -46,11 +47,7 @@ export abstract class BaseScript {
       await executor.verify(message, this.R, this.S, this.V);
       this.verification = new ValidScript();
     } catch (error: any) {
-      // something strange happened, let's print it
-      if (!error.data) console.error(error);
-
-      // we can extract the verification failure reason
-      const parsedErrorMessage = this.parseFailedVerifyError(error.data);
+      const parsedErrorMessage = parseValidationError(error);
       this.verification = new VerificationFailedScript(parsedErrorMessage);
     }
 
@@ -66,11 +63,7 @@ export abstract class BaseScript {
       this.verification = new ExecutingScript();
       return await executor.execute(message, this.R, this.S, this.V);
     } catch (error: any) {
-      // something strange happened, let's print it
-      if (!error.data) console.error(error);
-
-      // we can extract the verification failure reason
-      const parsedErrorMessage = this.parseFailedVerifyError(error.data);
+      const parsedErrorMessage = parseValidationError(error);
       this.verification = new VerificationFailedScript(parsedErrorMessage);
     }
   }
@@ -116,11 +109,5 @@ export abstract class BaseScript {
     const contractAddress = this.getExecutorAddress();
     const contractAbi = this.getExecutorAbi();
     return new ethers.Contract(contractAddress, contractAbi, signerOrProvider);
-  }
-
-  private parseFailedVerifyError(errorText: string): string {
-    const hex = "0x" + errorText.substring(147);
-    const withoutTrailing0s = hex.replace(/0*$/g, "");
-    return ethers.utils.toUtf8String(withoutTrailing0s);
   }
 }

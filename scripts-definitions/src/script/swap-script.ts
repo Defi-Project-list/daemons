@@ -28,7 +28,7 @@ export class SwapScript extends BaseScript {
   public getTokenForAllowance = () => this.message.tokenFrom;
 
   public static async fromStorageJson(object: any) {
-    const message: ISwapAction = object;
+    const message: ISwapAction = JSON.parse(JSON.stringify(object));
 
     // complex objects are broken down and need to be recreated. Sigh.
     message.chainId = BigNumber.from(object.chainId);
