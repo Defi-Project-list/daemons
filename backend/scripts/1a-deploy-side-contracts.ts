@@ -1,8 +1,12 @@
 import { BigNumber } from 'ethers';
 import { ethers } from "hardhat";
 
+// KOVAN
+// const testRouterAddress = '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506';
 
-const testRouterAddress = '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506';
+// FTM TESTNET
+const testRouterAddress = '0xa6AD18C2aC47803E193F75c3677b14BF19B94883';
+
 
 const oneMonth = () => 60 * 60 * 24 * 30;
 const now = () => Math.floor(new Date().getTime() / 1000);

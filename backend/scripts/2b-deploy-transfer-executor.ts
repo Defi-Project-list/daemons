@@ -6,9 +6,15 @@
 import { BigNumber } from 'ethers';
 import { ethers } from "hardhat";
 
-const gasTankAddress = '0x29A74Bab786C01E3181191a77Dfd5A590f2a47e1';
-const priceRetrieverAddress = '0xf94EA781F213b1782f89a2F451D45BC6DD896bE7';
-const gasPriceFeedAddress = '0x69c05f9E5f370546c41CDa2bA2C7f439f2460a32';
+// KOVAN
+// const gasTankAddress = '0x29A74Bab786C01E3181191a77Dfd5A590f2a47e1';
+// const priceRetrieverAddress = '0xf94EA781F213b1782f89a2F451D45BC6DD896bE7';
+// const gasPriceFeedAddress = '0x69c05f9E5f370546c41CDa2bA2C7f439f2460a32';
+
+// FTM TESTNET
+const gasTankAddress = '0x7aa32870031c7F908618C31844220e28437398A0';
+const priceRetrieverAddress = '0x46F388505b6ba78C5732346653F96a206A738d2B';
+const gasPriceFeedAddress = '0x7C5559A8e28dea123795e61FCc3cFbE0B1E9AfaF';
 
 async function main() {
   const [owner] = await ethers.getSigners();

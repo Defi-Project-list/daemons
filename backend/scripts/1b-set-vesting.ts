@@ -1,8 +1,13 @@
 import { BigNumber } from 'ethers';
 import { ethers } from "hardhat";
 
-const tokenAddress = '0x19ff2C637621bEbe560f62b78cECc3C6970aC34b';
-const vestingAddress = '0x9b1A37768B442Ab14efb986655b1751FFdeC6Abd';
+// KOVAN
+// const tokenAddress = '0x19ff2C637621bEbe560f62b78cECc3C6970aC34b';
+// const vestingAddress = '0x9b1A37768B442Ab14efb986655b1751FFdeC6Abd';
+
+// FTM TESTNET
+const tokenAddress = '0xbe6216682D743e414b119Af0AFBA91687685F099';
+const vestingAddress = '0x9d9c77B481003Edf8Db7AE82403d51cF113fe253';
 
 interface IBeneficiary {
   address: string;

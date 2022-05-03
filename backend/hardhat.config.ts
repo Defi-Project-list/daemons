@@ -25,6 +25,11 @@ const config: HardhatUserConfig = {
       chainId: 42,
       accounts: [PRIVATE_KEY]
     },
+    ftm_testnet: {
+      url: "https://rpc.testnet.fantom.network/",
+      chainId: 4002,
+      accounts: [PRIVATE_KEY]
+    },
   },
   solidity: {
     version: "0.8.4",
