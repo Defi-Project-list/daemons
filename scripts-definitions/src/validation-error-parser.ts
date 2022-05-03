@@ -17,6 +17,12 @@ export function parseValidationError(error: any): string {
   } catch (error) {}
 
   try {
+    // this will likely work on Fantom testnet with the default Metamask Provider
+    if (error.data.data) return parseErrorDataText("Reversed " + error.data.data);
+  } catch (error) {}
+
+
+  try {
     // this should work with Infura
     if (error.response)
       if (

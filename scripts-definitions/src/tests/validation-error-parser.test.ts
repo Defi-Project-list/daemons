@@ -8,7 +8,6 @@ interface IValidationError {
   expected: string;
 }
 
-
 const metamaskDefaultKovanProvider: IValidationError = {
   name: "Metamask Default Kovan Provider",
   json: {
@@ -29,10 +28,26 @@ const infuraErrorInStorageKovan: IValidationError = {
   expected: "[REPETITIONS_CONDITION][FINAL]",
 };
 
+const metamaskDefaultFtmTestnetProvider: IValidationError = {
+  name: "Metamask Default Fantom Testnet Provider",
+  json: {
+    code: -32603,
+    message: "Internal JSON-RPC error.",
+    data: {
+      code: 3,
+      message: "execution reverted: [GAS][TMP]",
+      data: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000a5b4741535d5b544d505d00000000000000000000000000000000000000000000",
+    },
+    stack:
+      '{\n  "code": -32603,\n  "message": "Internal JSON-RPC error.",\n  "data": {\n    "code": 3,\n    "message": "execution reverted: [GAS][TMP]",\n    "data": "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000a5b4741535d5b544d505d00000000000000000000000000000000000000000000"\n  },\n  "stack": "Error: Internal JSON-RPC error.\\n    at new i (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-0.js:1:182708)\\n    at s (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-0.js:1:180251)\\n    at Object.internal (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-0.js:1:180861)\\n    at u (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/background-1.js:1:100455)\\n    at chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/background-1.js:1:101487\\n    at async chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-0.js:18:152160"\n}\n  at new i (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-0.js:1:182708)\n  at s (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-0.js:1:180251)\n  at Object.internal (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-0.js:1:180861)\n  at u (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/background-1.js:1:100455)\n  at chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/background-1.js:1:101487\n  at async chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-0.js:18:152160',
+  },
+  expected: "[GAS][TMP]",
+};
+
 describe("Validation Error Parser", () => {
   itParam(
     "parses all known errors: '${value.name}'",
-    [metamaskDefaultKovanProvider, infuraErrorInStorageKovan],
+    [metamaskDefaultKovanProvider, infuraErrorInStorageKovan, metamaskDefaultFtmTestnetProvider],
     async (error: IValidationError) => {
       const result = parseValidationError(error.json);
       expect(result).to.be.equal(error.expected);
@@ -40,8 +55,7 @@ describe("Validation Error Parser", () => {
   );
 
   it("Returns 'unknown' for anything that cannot be parsed", async () => {
-      const result = parseValidationError({something: 'else'});
-      expect(result).to.be.equal('Unknown');
-    }
-  );
+    const result = parseValidationError({ something: "else" });
+    expect(result).to.be.equal("Unknown");
+  });
 });
