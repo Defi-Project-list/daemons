@@ -54,6 +54,19 @@
 .script__button {
     width: 66px;
     height: 30px;
+
+    line-height: 15px;
+    border-radius: 5px;
+    color: white;
+    border: none;
+    background-color: var(--primary-colour);
+    cursor: pointer;
+    margin-left: auto;
+    text-decoration: none;
+}
+
+.script__button:hover {
+    opacity: 0.8;
 }
 
 .script__info-button {

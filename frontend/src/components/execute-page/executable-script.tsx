@@ -54,7 +54,7 @@ export const QueueScriptComponent = ({ script }: { script: BaseScript }) => {
     }, []);
 
     return (
-        <div className="queue-script">
+        <div className={`queue-script ${verification.state === VerificationState.valid ? '' : 'queue-script--disabled'}`}>
             <div className="queue-script__id">{script.getId().substring(0, 5)}...</div>
             <div className="queue-script__type">{script.ScriptType}</div>
             <div className="queue-script__actions">
