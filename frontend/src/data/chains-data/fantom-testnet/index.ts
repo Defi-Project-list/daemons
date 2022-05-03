@@ -1,5 +1,5 @@
 import { IChainInfo, IContractsList } from '../interfaces';
-import { TransferAction } from './action-forms';
+import { AaveMMAdvancedAction, AaveMMBaseAction, SwapAction, TransferAction } from './action-forms';
 import { fantomTestnetTokens } from './tokens';
 
 const contracts: IContractsList = {
@@ -28,5 +28,5 @@ export const fantomTestnetInfo: IChainInfo = {
     explorerTxUrl: 'https://testnet.ftmscan.com/tx/',
     tokens: fantomTestnetTokens,
     contracts: contracts,
-    actions: [TransferAction],
+    actions: [TransferAction, SwapAction, AaveMMBaseAction, AaveMMAdvancedAction],
 };

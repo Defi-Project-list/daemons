@@ -15,6 +15,7 @@ export function GasTank(): JSX.Element {
     const walletAddress = useSelector((state: RootState) => state.wallet.address);
     const chainId = useSelector((state: RootState) => state.wallet.chainId);
     const [toggleDeposit, setToggleDeposit] = useState<boolean>(true);
+    const currencySymbol = GetCurrentChain(chainId!).coinSymbol;
 
     const getGasTankContract = async () => {
         const ethers = require("ethers");
@@ -186,7 +187,7 @@ export function GasTank(): JSX.Element {
 
             <div>
                 <div className="gas-tank__balance">
-                    {balance !== undefined ? balance : "??"} ETH
+                    {balance !== undefined ? balance : "??"} {currencySymbol}
                 </div>
                 <div className="gas-tank__forms-container">
                     {balance === undefined || walletAddress === undefined ? (

@@ -24,6 +24,7 @@ export function Staking() {
     const [toggleDeposit, setToggleDeposit] = useState<boolean>(true);
     const [needsAllowance, setNeedsAllowance] = useState<boolean>(true);
     const contracts = GetCurrentChain(chainId!).contracts;
+    const currencySymbol = GetCurrentChain(chainId!).coinSymbol;
 
     // wallet signer and provider
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);
@@ -289,7 +290,7 @@ export function Staking() {
             </div>
             <div className="staking__reward-info">
                 <div className="staking__claimable">
-                    {claimable !== undefined ? `Claimable: ${claimable} ETH` : "??"}
+                    {claimable !== undefined ? `Claimable: ${claimable} ${currencySymbol}` : "??"}
                 </div>
                 <input
                     disabled={!claimable}
