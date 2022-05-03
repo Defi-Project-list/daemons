@@ -20,10 +20,12 @@ export class TerminatorBot {
         console.log(`[🤖🪓 Terminator Bot] ${ids.length} scripts to be processed`);
 
         const scripts: any[] = await Script.find({ scriptId: { $in: ids } });
+        const scriptIds = new Set(scripts.map(s => s.scriptId));
 
         const falsePositive: string[] = [];
         const toBeRemoved: string[] = [];
         const processed: string[] = [];
+        const notFound: string[] = ids.filter(id => !scriptIds.has(id));
 
         for (const script of scripts) {
             try {
@@ -43,8 +45,10 @@ export class TerminatorBot {
         console.log(`[🤖🪓 Terminator Bot] Processed: ${processed.length}/${ids.length}`);
         console.log(`[🤖🪓 Terminator Bot] True positive: ${toBeRemoved.length}`);
         console.log(`[🤖🪓 Terminator Bot] False positive: ${falsePositive.length}`);
+        console.log(`[🤖🪓 Terminator Bot] Not found: ${notFound.length}`);
 
         await BrokenScript.deleteMany({ scriptId: { $in: processed } });
+        await BrokenScript.deleteMany({ scriptId: { $in: notFound } });
         await Script.deleteMany({ scriptId: { $in: toBeRemoved } });
         console.log(`[🤖🪓 Terminator Bot] Deletion completed`);
 
