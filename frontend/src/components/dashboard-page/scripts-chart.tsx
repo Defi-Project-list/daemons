@@ -35,7 +35,7 @@ export function ScriptsChart(): JSX.Element {
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [chainId]);
 
     return (
         <div className="dashboard-chart">

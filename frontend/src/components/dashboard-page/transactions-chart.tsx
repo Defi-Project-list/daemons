@@ -35,7 +35,7 @@ export function TransactionsChart(): JSX.Element {
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [chainId]);
 
     return (
         <div className="dashboard-chart">
