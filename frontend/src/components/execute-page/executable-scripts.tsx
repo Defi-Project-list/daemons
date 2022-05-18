@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BaseScript } from '@daemons-fi/scripts-definitions';
 import { RootState } from '../../state';
@@ -9,20 +9,22 @@ import './styles.css';
 
 export function ExecutableScriptsContainer() {
     const dispatch = useDispatch();
-    const walletChainId = useSelector((state: RootState) => state.wallet.chainId);
+    const chainId = useSelector((state: RootState) => state.wallet.chainId);
     const fetchedScripts = useSelector((state: RootState) => state.script.allScripts);
     const loading = useSelector((state: RootState) => state.script.loading);
+    const [scriptsChain, setScriptsChain] = useState<string>('');
 
     const reloadScripts = async () => {
         dispatch(toggleScriptsLoading());
-        dispatch(fetchExecutableScripts(walletChainId));
+        dispatch(fetchExecutableScripts(chainId));
     };
 
     useEffect(() => {
-        if (fetchedScripts.length === 0) {
+        if (fetchedScripts.length === 0 || scriptsChain !== chainId) {
             reloadScripts();
+            setScriptsChain(chainId!);
         }
-    }, [walletChainId]);
+    }, [chainId]);
 
 
     const scripts = fetchedScripts.map((script: BaseScript) => (
