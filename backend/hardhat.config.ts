@@ -20,10 +20,16 @@ const config: HardhatUserConfig = {
       chainId: 137,
       accounts: [PRIVATE_KEY]
     },
-    testnet: {
+    kovan_testnet: {
       url: "https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
       chainId: 42,
       accounts: [PRIVATE_KEY]
+    },
+    rinkeby_testnet: {
+      url: "https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+      chainId: 4,
+      accounts: [PRIVATE_KEY],
+      gas: 2100000,
     },
     ftm_testnet: {
       url: "https://rpc.testnet.fantom.network/",

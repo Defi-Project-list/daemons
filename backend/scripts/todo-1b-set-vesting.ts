@@ -6,8 +6,12 @@ import { ethers } from "hardhat";
 // const vestingAddress = '0x9b1A37768B442Ab14efb986655b1751FFdeC6Abd';
 
 // FTM TESTNET
-const tokenAddress = '0xbe6216682D743e414b119Af0AFBA91687685F099';
-const vestingAddress = '0x9d9c77B481003Edf8Db7AE82403d51cF113fe253';
+// const tokenAddress = '0xbe6216682D743e414b119Af0AFBA91687685F099';
+// const vestingAddress = '0x9d9c77B481003Edf8Db7AE82403d51cF113fe253';
+
+// RINKEBY
+const tokenAddress = '0x4c1Ca0AaD17eaF83e6e5D474F827eCA16dab1D10';
+const vestingAddress = '0xc64CfA137BA4eA946F16E0d299036D1E1B052F64';
 
 interface IBeneficiary {
   address: string;
