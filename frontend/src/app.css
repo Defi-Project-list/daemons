@@ -68,6 +68,7 @@ input[type=range] {
 }
 
 .menu__entry {
+    color: inherit;
     margin: 10px;
     text-decoration: none;
 }
