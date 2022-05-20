@@ -18,8 +18,9 @@ export function parseValidationError(error: any): string {
 
   try {
     // this will likely work on kovan with the default Metamask Provider
-    if (error.error.data.originalError.message) {
-      const split = (error.error.data.originalError.message as string).split(" ");
+    const rinkebyError: string = error.error.data.originalError.message;
+    if (rinkebyError) {
+      const split = rinkebyError.split(" ");
       return split[split.length - 1];
     }
   } catch (error) {}
@@ -31,15 +32,29 @@ export function parseValidationError(error: any): string {
   } catch (error) {}
 
   try {
-    // this should work with Infura
-    if (error.response)
-      if (
-        typeof error.response === "string" ||
-        error.response instanceof String
-      ) {
-        const parsedResponse = JSON.parse(error.response);
-        return parseErrorDataText(parsedResponse.error.data);
+    // this should work with Infura Kovan
+    if (
+      error.response &&
+      (typeof error.response === "string" || error.response instanceof String)
+    ) {
+      const parsedResponse = JSON.parse(error.response);
+      return parseErrorDataText(parsedResponse.error.data);
+    }
+  } catch (error) {}
+
+  try {
+    // this should work with Infura Rinkeby
+    if (
+      error.error.response &&
+      (typeof error.error.response === "string" ||
+        error.error.response instanceof String)
+    ) {
+      const parsedResponse = JSON.parse(error.error.response);
+      if (parsedResponse.error.message) {
+        const split = (parsedResponse.error.message as string).split(" ");
+        return split[split.length - 1];
       }
+    }
   } catch (error) {}
 
   // we can extract the verification failure reason
