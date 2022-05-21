@@ -30,7 +30,6 @@ export function Staking() {
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);
     const signer = provider.getSigner();
 
-
     const checkForAllowance = async () => {
         const hasAllowance = await AllowanceHelper.checkForERC20Allowance(
             walletAddress!,
@@ -174,7 +173,12 @@ export function Staking() {
                 onSubmit={() => {
                     /* Handled in the buttons */
                 }}
-                render={({ handleSubmit }) => (
+                mutators={{
+                    setMaxDaemAmount: (args, state, utils) => {
+                        utils.changeValue(state, "amount", () => DAEMBalance.toString());
+                    }
+                }}
+                render={({ form, handleSubmit }) => (
                     <form onSubmit={handleSubmit}>
                         <Field
                             className="staking__input"
@@ -186,10 +190,7 @@ export function Staking() {
                         />
                         <div
                             className="staking__max-balance-button"
-                            onClick={() =>
-                                ((document.getElementById("id-amount") as HTMLInputElement).value =
-                                    DAEMBalance.toString())
-                            }
+                            onClick={form.mutators.setMaxDaemAmount}
                         >
                             Max: {DAEMBalance}
                         </div>
