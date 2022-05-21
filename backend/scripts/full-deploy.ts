@@ -23,7 +23,7 @@ import { registerMmAdvancedExecutor } from "./single-deployments/e3-register-mma
 import { initializeMmAdvancedExecutor } from "./single-deployments/e2-initialize-mmadvanced-executor";
 import { deployMmAdvancedExecutor } from "./single-deployments/e1-mmadvanced-executor";
 
-async function main() {
+async function deployDaemons() {
     // display deployer address and its balance
     const [owner] = await ethers.getSigners();
     const initialBalance = await owner.getBalance();
@@ -71,9 +71,8 @@ async function main() {
     await registerMmAdvancedExecutor(currentContracts);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
+
+deployDaemons().catch((error) => {
     console.error(error);
     process.exitCode = 1;
 });
