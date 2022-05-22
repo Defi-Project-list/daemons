@@ -1,4 +1,4 @@
-import { BigNumber, ContractInterface } from "ethers";
+import { BigNumber } from "ethers";
 import { BaseScript } from "./base-script";
 import { BalanceFactory } from "../condition-base-factories/balance-factory";
 import { FrequencyFactory } from "../condition-base-factories/frequency-factory";
@@ -6,7 +6,7 @@ import { PriceFactory } from "../condition-base-factories/price-factory";
 import { RepetitionsFactory } from "../condition-base-factories/repetitions-factory";
 import { FollowFactory } from "../condition-base-factories/follow-factory";
 import { ITransferAction } from "@daemons-fi/shared-definitions/build";
-import { transferScriptAbi } from "../ABIs/transfer-script-abi";
+import { transferScriptAbi } from "@daemons-fi/abis";
 
 export class TransferScript extends BaseScript {
   public constructor(

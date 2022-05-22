@@ -11,8 +11,8 @@ import {
   AdvancedMoneyMarketActionType,
   IMMAdvancedAction,
 } from "@daemons-fi/shared-definitions/build";
-import { mmAdvancedScriptAbi } from "../ABIs/mm-advanced-script-abi";
 import { AllowanceHelper } from "../allowance-helper";
+import { mmAdvancedScriptAbi } from "@daemons-fi/abis";
 
 export class MmAdvancedScript extends BaseScript {
   public constructor(

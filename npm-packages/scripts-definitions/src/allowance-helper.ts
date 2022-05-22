@@ -1,7 +1,6 @@
 import { BigNumber, ethers } from "ethers";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
-import { ERC20Abi } from "./ABIs/erc20";
-import { CreditDelegationTokenAbi } from "./ABIs/erc20 copy";
+import { CreditDelegationTokenAbi, ERC20Abi } from "@daemons-fi/abis";
 
 export class AllowanceHelper {
   // ERC-20

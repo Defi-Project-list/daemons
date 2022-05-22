@@ -10,7 +10,7 @@ import {
   BaseMoneyMarketActionType,
   IMMBaseAction,
 } from "@daemons-fi/shared-definitions/build";
-import { mmBaseScriptAbi } from "../ABIs/mm-base-script-abi";
+import { mmBaseScriptAbi } from "@daemons-fi/abis";
 
 export class MmBaseScript extends BaseScript {
   public constructor(

@@ -6,7 +6,7 @@ import { RepetitionsFactory } from "../condition-base-factories/repetitions-fact
 import { FollowFactory } from "../condition-base-factories/follow-factory";
 import { BaseScript } from "./base-script";
 import { ISwapAction } from "@daemons-fi/shared-definitions/build";
-import { swapScriptAbi } from "../ABIs/swap-script-abi";
+import { swapScriptAbi } from "@daemons-fi/abis";
 
 export class SwapScript extends BaseScript {
   public constructor(
