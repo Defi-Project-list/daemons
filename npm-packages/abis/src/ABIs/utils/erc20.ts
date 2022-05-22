@@ -1,4 +1,6 @@
-export const ERC20Abi = [
+import { ContractInterface } from "ethers";
+
+export const ERC20Abi: ContractInterface = [
   {
     constant: true,
     inputs: [],

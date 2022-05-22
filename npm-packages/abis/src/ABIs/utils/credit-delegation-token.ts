@@ -1,4 +1,6 @@
-export const CreditDelegationTokenAbi = [
+import { ContractInterface } from "ethers";
+
+export const CreditDelegationTokenAbi: ContractInterface = [
   {
     anonymous: false,
     inputs: [
