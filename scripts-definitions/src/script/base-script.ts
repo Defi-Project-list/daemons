@@ -49,6 +49,7 @@ export abstract class BaseScript {
     } catch (error: any) {
       const parsedErrorMessage = parseValidationError(error);
       this.verification = new VerificationFailedScript(parsedErrorMessage);
+      return this.verification; // exit immediately if we see a problem
     }
 
     try {
@@ -57,7 +58,6 @@ export abstract class BaseScript {
     } catch (error) {
       this.verification = new VerificationFailedScript("[UNKNOWN][TMP]");
     }
-
     return this.verification;
   }
 
