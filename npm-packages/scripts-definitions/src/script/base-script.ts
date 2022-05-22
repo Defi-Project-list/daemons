@@ -56,7 +56,7 @@ export abstract class BaseScript {
       // dry-run the script to see if it would throw unexpected errors while being run
       await executor.estimateGas.execute(message, this.R, this.S, this.V);
     } catch (error) {
-      this.verification = new VerificationFailedScript("[UNKNOWN][TMP]");
+      this.verification = new VerificationFailedScript("[DRY_RUN_FAILED][TMP]");
     }
     return this.verification;
   }
