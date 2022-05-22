@@ -1,11 +1,11 @@
-name: Deploy Scripts Definitions Package
+name: Deploy Addresses Package
 
 on:
   push:
     branches:
       - master
     paths:
-      - "npm-packages/scripts-definitions/**"
+      - "npm-packages/addresses/**"
 
 jobs:
   publish:
@@ -20,7 +20,7 @@ jobs:
           node-version: 12
           registry-url: https://npm.pkg.github.com/
       - run: |
-          cd npm-packages/scripts-definitions/
+          cd npm-packages/addresses/
           npm install
           npm run build
           npm publish

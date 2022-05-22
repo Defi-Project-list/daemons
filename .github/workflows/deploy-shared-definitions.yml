@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths:
-      - "shared-definitions/**"
+      - "npm-packages/shared-definitions/**"
 
 jobs:
   publish:
@@ -20,7 +20,7 @@ jobs:
           node-version: 12
           registry-url: https://npm.pkg.github.com/
       - run: |
-          cd shared-definitions/
+          cd npm-packages/shared-definitions/
           npm install
           npm run build
           npm publish
