@@ -153,7 +153,7 @@ export const rinkebySushiDEX: DEX = {
 
 export const rinkebyAaveMM: MoneyMarket = {
     name: "AAVE",
-    poolAddress: "0xE0fBa4Fc209b4948668006B2bE61711b7f465bAe",
+    poolAddress: "0xe039bdf1d874d27338e09b55cb09879dedca52d8",
     supportedTokens: [aaveDAI, aaveUSDT],
     mmTokens: {
         // DAI
