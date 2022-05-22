@@ -93,6 +93,24 @@ const infuraRinkeby: IValidationError = {
   expected: "[REPETITIONS_CONDITION][FINAL]",
 };
 
+const otherDefaultRinkeby: IValidationError = {
+  name: "Yet another Rinkeby Provider",
+  json: {
+    reason: "[NO_DEBT][TMP]",
+    code: "CALL_EXCEPTION",
+    method:
+      "verify((bytes32,address,address,bytes1,bytes1,bytes1,uint256,address,address,address,uint256,(bool,address,bytes1,uint256),(bool,uint256,uint256),(bool,address,bytes1,uint256),(bool,uint32),(bool,uint256,bytes32,address),(bool,address,bytes1,uint256)),bytes32,bytes32,uint8)",
+    data: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000e5b4e4f5f444542545d5b544d505d000000000000000000000000000000000000",
+    errorArgs: ["[NO_DEBT][TMP]"],
+    errorName: "Error",
+    errorSignature: "Error(string)",
+    address: "0xAB3B0A5631E10786a19F950FD73af7b6724111AA",
+    args: [/* ... */],
+    transaction: { /* ... */ },
+  },
+  expected: "[NO_DEBT][TMP]",
+};
+
 describe("Validation Error Parser", () => {
   itParam(
     "parses all known errors: '${value.name}'",
@@ -102,6 +120,7 @@ describe("Validation Error Parser", () => {
       metamaskDefaultFtmTestnetProvider,
       metamaskDefaultRinkeby,
       infuraRinkeby,
+      otherDefaultRinkeby,
     ],
     async (error: IValidationError) => {
       const result = parseValidationError(error.json);

@@ -12,6 +12,17 @@ import { ethers } from "ethers";
  */
 export function parseValidationError(error: any): string {
   try {
+    // sometimes the reason is just in clear, we can exploit that
+    if (
+      error.reason &&
+      (error.reason as string).startsWith("[") &&
+      (error.reason as string).endsWith("]")
+    ) {
+      return error.reason;
+    }
+  } catch (error) {}
+
+  try {
     // this will likely work on kovan with the default Metamask Provider
     if (error.data) return parseErrorDataText(error.data);
   } catch (error) {}
