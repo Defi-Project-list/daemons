@@ -91,4 +91,9 @@ export const possibleVerificationErrors: { [code: string]: IVerificationResultDe
     description:
       "The script is to repay a debt that does not exist (yet/anymore)",
   },
+  "[UNKNOWN][TMP]": {
+    name: "Unknown error",
+    description:
+      "The script passes all checks, but it fails during the dry run. It could be due to an error in the smart contract",
+  },
 };
