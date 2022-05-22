@@ -10,7 +10,7 @@ import {
 } from "../../state/action-creators/staking-action-creators";
 import { fetchDaemBalance } from "../../state/action-creators/wallet-action-creators";
 import { AllowanceHelper } from "@daemons-fi/scripts-definitions";
-import { getAbiFor } from "../../utils/get-abi";
+import { treasuryABI } from "@daemons-fi/abis";
 import { errorToast, promiseToast } from "../toaster";
 import "./staking.css";
 
@@ -147,8 +147,7 @@ export function Staking() {
         const signer = provider.getSigner();
 
         const contractAddress = contracts.Treasury;
-        const contractAbi = await getAbiFor("Treasury");
-        const treasury = new ethers.Contract(contractAddress, contractAbi, signer);
+        const treasury = new ethers.Contract(contractAddress, treasuryABI, signer);
         return treasury;
     };
 

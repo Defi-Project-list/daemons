@@ -1,8 +1,7 @@
 import { BigNumber, Contract } from "ethers";
 import { Dispatch } from 'redux';import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
  import { StorageProxy } from '../../data/storage-proxy';
-import { getAbiFor } from "../../utils/get-abi";
-;
+ import { ERC20Abi } from "@daemons-fi/abis";
 import { ActionType } from '../action-types';
 import { WalletAction } from '../actions/wallet-actions';
 
@@ -13,8 +12,7 @@ const getDAEMContract = async (chainId: string): Promise<Contract> => {
     if (!IsChainSupported(chainId)) throw new Error(`Chain ${chainId} is not supported!`);
     const DAEMAddress = GetCurrentChain(chainId).contracts.DAEMToken;
 
-    const contractAbi = await getAbiFor('ERC20');
-    return new ethers.Contract(DAEMAddress, contractAbi, provider);
+    return new ethers.Contract(DAEMAddress, ERC20Abi, provider);
 };
 
 export const updateWalletAddress = (

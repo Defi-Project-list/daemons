@@ -8,9 +8,10 @@ import {
     fetchStakingClaimable
 } from "../../state/action-creators/staking-action-creators";
 import { fetchDaemBalance } from "../../state/action-creators/wallet-action-creators";
-import { getAbiFor } from "../../utils/get-abi";
 import Confetti from "react-dom-confetti";
 import "./claim-reward.css";
+import { promiseToast } from "../toaster";
+import { gasTankABI } from "@daemons-fi/abis";
 
 const confettiConfig: any = {
     angle: "127",
@@ -39,7 +40,13 @@ export function ClaimRewards() {
         if (nothingToClaim) return;
         const gasTank = await getGasTankContract();
         const tx = await gasTank.claimReward();
-        await tx.wait();
+        const toastedTransaction = promiseToast(
+            tx.wait,
+            `Claiming DAEM tokens`,
+            "Claim successful 💸.",
+            "Something bad happened. Contact us if the error persists"
+        );
+        await toastedTransaction;
 
         dispatch(fetchGasTankClaimable(walletAddress, chainId));
         dispatch(fetchDaemBalance(walletAddress, chainId));
@@ -58,7 +65,13 @@ export function ClaimRewards() {
         if (nothingToClaim) return;
         const gasTank = await getGasTankContract();
         const tx = await gasTank.claimAndStakeReward();
-        await tx.wait();
+        const toastedTransaction = promiseToast(
+            tx.wait,
+            `Claiming and staking DAEM tokens`,
+            "Operation successful 🏦.",
+            "Something bad happened. Contact us if the error persists"
+        );
+        await toastedTransaction;
 
         dispatch(fetchGasTankClaimable(walletAddress, chainId));
         dispatch(fetchStakingClaimable(walletAddress, chainId));
@@ -74,8 +87,7 @@ export function ClaimRewards() {
         if (!IsChainSupported(chainId!)) throw new Error(`Chain ${chainId} is not supported!`);
         const contractAddress = GetCurrentChain(chainId!).contracts.GasTank;
 
-        const contractAbi = await getAbiFor("GasTank");
-        const gasTank = new ethers.Contract(contractAddress, contractAbi, signer);
+        const gasTank = new ethers.Contract(contractAddress, gasTankABI, signer);
         return gasTank;
     };
 

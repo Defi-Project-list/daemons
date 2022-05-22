@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux';
 import { ActionType } from '../action-types';
-import { getAbiFor } from '../../utils/get-abi';
+import { treasuryABI } from "@daemons-fi/abis";
 import { BigNumber, Contract } from 'ethers';
 import { StakingAction } from '../actions/staking-actions';
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
@@ -12,8 +12,7 @@ const getTreasuryContract = async (chainId: string): Promise<Contract> => {
     if (!IsChainSupported(chainId)) throw new Error(`Chain ${chainId} is not supported!`);
     const contractAddress = GetCurrentChain(chainId).contracts.Treasury;
 
-    const contractAbi = await getAbiFor('Treasury');
-    return new ethers.Contract(contractAddress, contractAbi, provider);
+    return new ethers.Contract(contractAddress, treasuryABI, provider);
 };
 
 export const fetchStakingBalance = (address?: string, chainId?: string) => {

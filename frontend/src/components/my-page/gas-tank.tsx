@@ -1,6 +1,6 @@
 import React, { ReactNode, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAbiFor } from "../../utils/get-abi";
+import { gasTankABI } from "@daemons-fi/abis";
 import { RootState } from "../../state";
 import { fetchGasTankBalance } from "../../state/action-creators/gas-tank-action-creators";
 import { Field, Form } from "react-final-form";
@@ -25,8 +25,7 @@ export function GasTank(): JSX.Element {
         if (!IsChainSupported(chainId!)) throw new Error(`Chain ${chainId} is not supported!`);
         const contractAddress = GetCurrentChain(chainId!).contracts.GasTank;
 
-        const contractAbi = await getAbiFor("GasTank");
-        const gasTank = new ethers.Contract(contractAddress, contractAbi, signer);
+        const gasTank = new ethers.Contract(contractAddress, gasTankABI, signer);
         return gasTank;
     };
 

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
 import { RootState } from "../../state";
-import { getAbiFor } from "../../utils/get-abi";
+import { treasuryABI } from "@daemons-fi/abis";
 
 interface ITreasuryStat {
     apr: number;
@@ -35,9 +35,7 @@ export function TreasuryData(): JSX.Element {
 
         if (!IsChainSupported(chainId)) throw new Error(`Chain ${chainId} is not supported!`);
         const contractAddress = GetCurrentChain(chainId).contracts.Treasury;
-
-        const contractAbi = (await getAbiFor("Treasury")) as ContractInterface;
-        const treasuryContract = new ethers.Contract(contractAddress, contractAbi, provider);
+        const treasuryContract = new ethers.Contract(contractAddress, treasuryABI, provider);
 
         const convertToDecimal = (bn: BigNumber) =>
             bn.div(BigNumber.from(10).pow(13)).toNumber() / 100000;

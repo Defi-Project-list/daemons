@@ -1,3 +1,4 @@
+import { IContractsList } from "@daemons-fi/addresses/build";
 import { IScriptActionForm } from "./action-form-interfaces";
 import { IScriptConditionForm } from "./condition-form-interfaces";
 
@@ -25,20 +26,6 @@ export type DEX = {
     name: string;
     poolAddress: string;
 };
-
-export interface IContractsList {
-    GasTank: string;
-    DAEMToken: string;
-    Treasury: string;
-    GasPriceFeed: string;
-    PriceRetriever: string;
-
-    // executors
-    SwapExecutor: string;
-    TransferExecutor: string;
-    MmBaseExecutor: string;
-    MmAdvancedExecutor: string;
-}
 
 export interface IAction {
     title: string;

@@ -1,4 +1,5 @@
-import { IChainInfo, IContractsList } from '../interfaces';
+import { IContractsList } from "@daemons-fi/addresses/build";
+import { IChainInfo } from '../interfaces';
 
 
 const unsupportedContracts: IContractsList = {
