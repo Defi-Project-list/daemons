@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@daemons-fi/shared-definitions": "2.0.0",
-    "@daemons-fi/scripts-definitions": "0.1.7",
+    "@daemons-fi/scripts-definitions": "0.1.9",
     "@metamask/detect-provider": "^1.2.0",
     "@types/react": "^17.0.37",
     "@types/react-dom": "^17.0.11",
