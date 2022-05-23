@@ -1,5 +1,7 @@
+import { IContractsList } from "@daemons-fi/addresses/build";
 import { BigNumber, ethers } from "ethers";
-import { treasuryABI } from "./treasury";
+import { treasuryABI } from "@daemons-fi/abis";
+import { getProvider, supportedChains } from "./providers-builder";
 
 interface ITreasuryStat {
     apr: number;
@@ -10,51 +12,26 @@ interface ITreasuryStat {
     chain: string;
 }
 
-interface IChain {
-    treasuryAddress: string;
-    wsProvider: string;
-}
-
-const supportedChains: { [chain: string]: IChain } = {
-    kovan: {
-        treasuryAddress: "0x9624Ed062eA9C416F196324872b1cD7fF3c149B8",
-        wsProvider: "wss://kovan.infura.io/ws/v3/7e8620d1891c4cd38bdc567d79e22cf8"
-    }
-};
-
-const secondsInOneYear = 31104000;
-const calculateAPY = (
-    toBeDistributed: number,
-    staked: number,
-    ethWorthOfDaem: number,
-    redistributionInterval: number
-): number =>
-    (((secondsInOneYear / redistributionInterval) * toBeDistributed) / staked) *
-    ethWorthOfDaem *
-    100;
-
 export const getTreasuryStats = async (): Promise<ITreasuryStat[]> => {
     const stats: ITreasuryStat[] = [];
-    for(const chainName of Object.keys(supportedChains)){
-        const chainStat = await getTreasuryStatsForChain(chainName, supportedChains[chainName]);
+    for (const chainId of Object.keys(supportedChains)) {
+        const chainStat = await getTreasuryStatsForChain(
+            chainId,
+            supportedChains[chainId].chainName,
+            supportedChains[chainId].contracts
+        );
         stats.push(chainStat);
     }
-
     return stats;
-}
-
-
+};
 
 async function getTreasuryStatsForChain(
+    chainId: string,
     chainName: string,
-    chainDetails: IChain
+    chainContracts: IContractsList
 ): Promise<ITreasuryStat> {
-    const provider = new ethers.providers.WebSocketProvider(chainDetails.wsProvider, chainName);
-    const treasuryContract = new ethers.Contract(
-        chainDetails.treasuryAddress,
-        treasuryABI,
-        provider
-    );
+    const provider = getProvider(chainId);
+    const treasuryContract = new ethers.Contract(chainContracts.Treasury, treasuryABI, provider);
 
     const convertToDecimal = (bn: BigNumber) =>
         bn.div(BigNumber.from(10).pow(13)).toNumber() / 100000;
@@ -73,3 +50,14 @@ async function getTreasuryStatsForChain(
         chain: chainName
     };
 }
+
+const secondsInOneYear = 31104000;
+const calculateAPY = (
+    toBeDistributed: number,
+    staked: number,
+    ethWorthOfDaem: number,
+    redistributionInterval: number
+): number =>
+    (((secondsInOneYear / redistributionInterval) * toBeDistributed) / staked) *
+    ethWorthOfDaem *
+    100;
