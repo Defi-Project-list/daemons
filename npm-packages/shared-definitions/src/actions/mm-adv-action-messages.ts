@@ -27,6 +27,7 @@ export interface IMMAdvancedAction {
     kontract: string;
     executor: string;
     chainId: BigNumber;
+    tip: BigNumber;
     balance: IBalanceCondition;
     frequency: IFrequencyCondition;
     price: IPriceCondition;
@@ -47,6 +48,7 @@ const MmAdvanced = [
     { name: "kontract", type: "address" },           // the MM contract to interact with
     { name: "executor", type: "address" },           // the executor contract this message will be sent to
     { name: "chainId", type: "uint256" },            // the chain in which the message was signed
+    { name: "tip", type: "uint256" },                // the tip in DAEM for the executor
     { name: "balance", type: "Balance" },            // condition: balance
     { name: "frequency", type: "Frequency" },        // condition: frequency
     { name: "price", type: "Price" },                // condition: balance
