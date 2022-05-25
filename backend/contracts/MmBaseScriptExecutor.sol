@@ -35,7 +35,8 @@ contract MmBaseScriptExecutor is
                     mm.user,
                     mm.kontract,
                     mm.executor,
-                    mm.chainId
+                    mm.chainId,
+                    mm.tip
                 ),
                 abi.encodePacked(
                     hashBalance(mm.balance),

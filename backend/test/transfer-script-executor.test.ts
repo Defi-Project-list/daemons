@@ -34,6 +34,7 @@ describe("ScriptExecutor - Transfer", function () {
     user: "",
     executor: "",
     chainId: BigNumber.from(42),
+    tip: BigNumber.from(0),
     balance: {
       enabled: false,
       amount: ethers.utils.parseEther("150"),

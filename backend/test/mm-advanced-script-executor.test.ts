@@ -41,6 +41,7 @@ describe("ScriptExecutor - Money Market Advanced", function () {
     kontract: "",
     executor: "",
     chainId: BigNumber.from(42),
+    tip: BigNumber.from(0),
     balance: {
       enabled: false,
       amount: ethers.utils.parseEther("150"),

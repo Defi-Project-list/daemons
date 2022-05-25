@@ -29,7 +29,8 @@ contract TransferScriptExecutor is ConditionsChecker {
                     transfer.amount,
                     transfer.user,
                     transfer.executor,
-                    transfer.chainId
+                    transfer.chainId,
+                    transfer.tip
                 ),
                 abi.encodePacked(
                     hashBalance(transfer.balance),

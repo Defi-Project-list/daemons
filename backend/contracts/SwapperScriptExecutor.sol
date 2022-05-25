@@ -31,7 +31,8 @@ contract SwapperScriptExecutor is ConditionsChecker {
                     swap.user,
                     swap.kontract,
                     swap.executor,
-                    swap.chainId
+                    swap.chainId,
+                    swap.tip
                 ),
                 abi.encodePacked(
                     hashBalance(swap.balance),
