@@ -14,6 +14,7 @@ abstract contract ConditionsChecker is Ownable {
     mapping(address => mapping(bytes32 => bool)) private revocations;
 
     uint256 internal chainId;
+    IERC20 internal DAEMToken;
     IGasTank internal gasTank;
     GasPriceFeed internal gasPriceFeed;
     IPriceRetriever private priceRetriever;
@@ -21,8 +22,7 @@ abstract contract ConditionsChecker is Ownable {
 
     // domain definition
     string private constant EIP712_DOMAIN = "EIP712Domain(string name)";
-    bytes32 internal constant EIP712_DOMAIN_TYPEHASH =
-        keccak256(abi.encodePacked(EIP712_DOMAIN));
+    bytes32 internal constant EIP712_DOMAIN_TYPEHASH = keccak256(abi.encodePacked(EIP712_DOMAIN));
 
     // events
     event Executed(bytes32 id, uint256 cost);
@@ -38,6 +38,11 @@ abstract contract ConditionsChecker is Ownable {
     }
 
     /* ========== RESTRICTED FUNCTIONS ========== */
+
+    function setDAEMToken(address _token) external onlyOwner {
+        require(_token != address(0));
+        DAEMToken = IERC20(_token);
+    }
 
     function setGasTank(address _gasTank) external onlyOwner {
         require(_gasTank != address(0));
@@ -61,6 +66,7 @@ abstract contract ConditionsChecker is Ownable {
 
     /** Checks whether the contract is ready to operate */
     function preliminaryCheck() external view {
+        require(address(DAEMToken) != address(0), "DAEMToken");
         require(address(gasTank) != address(0), "GasTank");
         require(address(priceRetriever) != address(0), "PricesRetriever");
         require(address(gasPriceFeed) != address(0), "GasPriceFeed");
@@ -79,11 +85,7 @@ abstract contract ConditionsChecker is Ownable {
     /* ========== HASH FUNCTIONS ========== */
 
     /** Returns the hashed version of the balance */
-    function hashBalance(Balance calldata balance)
-        internal
-        pure
-        returns (bytes32)
-    {
+    function hashBalance(Balance calldata balance) internal pure returns (bytes32) {
         return
             keccak256(
                 abi.encode(
@@ -111,44 +113,20 @@ abstract contract ConditionsChecker is Ownable {
     }
 
     /** Returns the hashed version of the frequency */
-    function hashFrequency(Frequency calldata frequency)
-        internal
-        pure
-        returns (bytes32)
-    {
+    function hashFrequency(Frequency calldata frequency) internal pure returns (bytes32) {
         return
             keccak256(
-                abi.encode(
-                    FREQUENCY_TYPEHASH,
-                    frequency.enabled,
-                    frequency.delay,
-                    frequency.start
-                )
+                abi.encode(FREQUENCY_TYPEHASH, frequency.enabled, frequency.delay, frequency.start)
             );
     }
 
     /** Returns the hashed version of the repetitions */
-    function hashRepetitions(Repetitions calldata repetitions)
-        internal
-        pure
-        returns (bytes32)
-    {
-        return
-            keccak256(
-                abi.encode(
-                    REPETITIONS_TYPEHASH,
-                    repetitions.enabled,
-                    repetitions.amount
-                )
-            );
+    function hashRepetitions(Repetitions calldata repetitions) internal pure returns (bytes32) {
+        return keccak256(abi.encode(REPETITIONS_TYPEHASH, repetitions.enabled, repetitions.amount));
     }
 
     /** Returns the hashed version of the follow condition */
-    function hashFollow(Follow calldata follow)
-        internal
-        pure
-        returns (bytes32)
-    {
+    function hashFollow(Follow calldata follow) internal pure returns (bytes32) {
         return
             keccak256(
                 abi.encode(
@@ -170,17 +148,18 @@ abstract contract ConditionsChecker is Ownable {
 
     /** Checks whether the user has enough funds in the GasTank to cover a script execution */
     function verifyGasTank(address user) public view {
-        require(
-            gasTank.balanceOf(user) >= MINIMUM_GAS_FOR_SCRIPT_EXECUTION,
-            "[GAS][TMP]"
-        );
+        require(gasTank.balanceOf(user) >= MINIMUM_GAS_FOR_SCRIPT_EXECUTION, "[GAS][TMP]");
+    }
+
+    /** Checks whether the user has enough funds to pay the tip to the executor */
+    function verifyTip(uint256 tip, address user) public view {
+        if (tip == 0) return;
+        require(DAEMToken.balanceOf(user) >= tip, "[TIP][TMP]");
+        require(DAEMToken.allowance(user, address(this)) >= tip, "[TIP_ALLOWANCE][ACTION]");
     }
 
     /** If the balance condition is enabled, it checks the user balance for it */
-    function verifyBalance(Balance calldata balance, address user)
-        internal
-        view
-    {
+    function verifyBalance(Balance calldata balance, address user) internal view {
         if (!balance.enabled) return;
 
         ERC20 token = ERC20(balance.token);
@@ -188,16 +167,10 @@ abstract contract ConditionsChecker is Ownable {
 
         if (balance.comparison == 0x00)
             // greater than
-            require(
-                userBalance > balance.amount,
-                "[BALANCE_CONDITION_LOW][TMP]"
-            );
+            require(userBalance > balance.amount, "[BALANCE_CONDITION_LOW][TMP]");
         else if (balance.comparison == 0x01)
             // less than
-            require(
-                userBalance < balance.amount,
-                "[BALANCE_CONDITION_HIGH][TMP]"
-            );
+            require(userBalance < balance.amount, "[BALANCE_CONDITION_HIGH][TMP]");
     }
 
     /** If the price condition is enabled, it checks the token price for it */
@@ -215,10 +188,7 @@ abstract contract ConditionsChecker is Ownable {
     }
 
     /** If the frequency condition is enabled, it checks whether enough blocks have been minted since the last execution */
-    function verifyFrequency(Frequency calldata frequency, bytes32 id)
-        internal
-        view
-    {
+    function verifyFrequency(Frequency calldata frequency, bytes32 id) internal view {
         if (!frequency.enabled) return;
 
         if (lastExecutions[id] > 0) {
@@ -231,22 +201,13 @@ abstract contract ConditionsChecker is Ownable {
         }
 
         // the message has never been executed before
-        require(
-            block.timestamp > frequency.start + frequency.delay,
-            "[FREQUENCY_CONDITION][TMP]"
-        );
+        require(block.timestamp > frequency.start + frequency.delay, "[FREQUENCY_CONDITION][TMP]");
     }
 
     /** If the repetitions condition is enabled, it checks whether the script has reached its maximum number of executions */
-    function verifyRepetitions(Repetitions calldata repetitions, bytes32 id)
-        internal
-        view
-    {
+    function verifyRepetitions(Repetitions calldata repetitions, bytes32 id) internal view {
         if (!repetitions.enabled) return;
-        require(
-            repetitionsCount[id] < repetitions.amount,
-            "[REPETITIONS_CONDITION][FINAL]"
-        );
+        require(repetitionsCount[id] < repetitions.amount, "[REPETITIONS_CONDITION][FINAL]");
     }
 
     /** If the follow condition is enabled, it checks whether the script it's supposed to follow has been executed */
@@ -254,13 +215,8 @@ abstract contract ConditionsChecker is Ownable {
         if (!follow.enabled) return;
         uint32 parentCount = follow.executor == address(this)
             ? repetitionsCount[follow.scriptId]
-            : ConditionsChecker(follow.executor).getRepetitions(
-                follow.scriptId
-            );
-        require(
-            parentCount + follow.shift == repetitionsCount[id] + 1,
-            "[FOLLOW_CONDITION][TMP]"
-        );
+            : ConditionsChecker(follow.executor).getRepetitions(follow.scriptId);
+        require(parentCount + follow.shift == repetitionsCount[id] + 1, "[FOLLOW_CONDITION][TMP]");
     }
 
     /** Verifies that the user gave the allowance to the contract to move their tokens */
@@ -269,9 +225,6 @@ abstract contract ConditionsChecker is Ownable {
         address token,
         uint256 amount
     ) internal view {
-        require(
-            IERC20(token).allowance(user, address(this)) >= amount,
-            "[ALLOWANCE][ACTION]"
-        );
+        require(IERC20(token).allowance(user, address(this)) >= amount, "[ALLOWANCE][ACTION]");
     }
 }

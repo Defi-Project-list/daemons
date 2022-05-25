@@ -5,10 +5,7 @@ import "./ConditionsChecker.sol";
 import "./ConditionsCheckerForMoneyMarket.sol";
 import "./Messages.sol";
 
-contract MmBaseScriptExecutor is
-    ConditionsChecker,
-    ConditionsCheckerForMoneyMarket
-{
+contract MmBaseScriptExecutor is ConditionsChecker, ConditionsCheckerForMoneyMarket {
     uint256 public GAS_LIMIT = 300000; // 0.00030 GWEI
     mapping(address => mapping(IERC20 => bool)) private allowances;
 
@@ -16,10 +13,7 @@ contract MmBaseScriptExecutor is
 
     function hash(MmBase calldata mm) private pure returns (bytes32) {
         bytes32 eip712DomainHash = keccak256(
-            abi.encode(
-                EIP712_DOMAIN_TYPEHASH,
-                keccak256(bytes("Daemons-MM-Base-v01"))
-            )
+            abi.encode(EIP712_DOMAIN_TYPEHASH, keccak256(bytes("Daemons-MM-Base-v01")))
         );
 
         bytes32 mmHash = keccak256(
@@ -49,8 +43,7 @@ contract MmBaseScriptExecutor is
             )
         );
 
-        return
-            keccak256(abi.encodePacked("\x19\x01", eip712DomainHash, mmHash));
+        return keccak256(abi.encodePacked("\x19\x01", eip712DomainHash, mmHash));
     }
 
     /* ========== VERIFICATION FUNCTIONS ========== */
@@ -62,10 +55,7 @@ contract MmBaseScriptExecutor is
         uint8 v
     ) private view {
         require(message.chainId == chainId, "[CHAIN][ERROR]");
-        require(
-            message.user == ecrecover(hash(message), v, r, s),
-            "[SIGNATURE][FINAL]"
-        );
+        require(message.user == ecrecover(hash(message), v, r, s), "[SIGNATURE][FINAL]");
     }
 
     function verify(
@@ -78,20 +68,16 @@ contract MmBaseScriptExecutor is
         verifySignature(message, r, s, v);
         verifyRepetitions(message.repetitions, message.scriptId);
 
-        verifyGasTank(message.user);
         verifyFollow(message.follow, message.scriptId);
+        verifyGasTank(message.user);
+        verifyTip(message.tip, message.user);
         // check if the action can be performed
         // if typeAmt==Absolute -> it's the amount in the message,
         // otherwise it's enough if the user has more than 0 in the wallet.
-        address tokenAddr = message.action == 0x00
-            ? message.token
-            : message.aToken;
+        address tokenAddr = message.action == 0x00 ? message.token : message.aToken;
         uint256 minAmount = message.typeAmt == 0 ? message.amount - 1 : 0;
         verifyAllowance(message.user, tokenAddr, minAmount);
-        require(
-            ERC20(tokenAddr).balanceOf(message.user) > minAmount,
-            "[SCRIPT_BALANCE][TMP]"
-        );
+        require(ERC20(tokenAddr).balanceOf(message.user) > minAmount, "[SCRIPT_BALANCE][TMP]");
 
         verifyFrequency(message.frequency, message.scriptId);
         verifyBalance(message.balance, message.user);
@@ -118,12 +104,8 @@ contract MmBaseScriptExecutor is
         }
 
         // Reward executor
-        gasTank.addReward(
-            GAS_LIMIT * gasPriceFeed.lastGasPrice(),
-            message.user,
-            _msgSender()
-        );
-        emit Executed(message.scriptId, GAS_LIMIT * gasPriceFeed.lastGasPrice());
+        gasTank.addReward(GAS_LIMIT * gasPriceFeed.lastGasPrice(), message.user, _msgSender());
+        if (message.tip > 0) DAEMToken.transferFrom(message.user, _msgSender(), message.tip);
     }
 
     function giveAllowance(IERC20 _token, address _exchange) private {
@@ -143,11 +125,7 @@ contract MmBaseScriptExecutor is
         aToken.transferFrom(message.user, address(this), amount);
 
         // step 1 call withdraw function
-        IMoneyMarket(message.kontract).withdraw(
-            message.token,
-            amount,
-            message.user
-        );
+        IMoneyMarket(message.kontract).withdraw(message.token, amount, message.user);
     }
 
     function supply(MmBase calldata message) private {
@@ -159,15 +137,9 @@ contract MmBaseScriptExecutor is
         tokenFrom.transferFrom(message.user, address(this), amount);
 
         // step 1 grant allowance to the router if it has not been given yet
-        if (!allowances[message.kontract][tokenFrom])
-            giveAllowance(tokenFrom, message.kontract);
+        if (!allowances[message.kontract][tokenFrom]) giveAllowance(tokenFrom, message.kontract);
 
         // step 2 call supply function
-        IMoneyMarket(message.kontract).deposit(
-            message.token,
-            amount,
-            message.user,
-            0
-        );
+        IMoneyMarket(message.kontract).deposit(message.token, amount, message.user, 0);
     }
 }

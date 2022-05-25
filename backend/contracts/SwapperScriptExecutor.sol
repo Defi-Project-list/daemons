@@ -13,10 +13,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
 
     function hash(Swap calldata swap) private pure returns (bytes32) {
         bytes32 eip712DomainHash = keccak256(
-            abi.encode(
-                EIP712_DOMAIN_TYPEHASH,
-                keccak256(bytes("Daemons-Swap-v01"))
-            )
+            abi.encode(EIP712_DOMAIN_TYPEHASH, keccak256(bytes("Daemons-Swap-v01")))
         );
 
         bytes32 swapHash = keccak256(
@@ -44,8 +41,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
             )
         );
 
-        return
-            keccak256(abi.encodePacked("\x19\x01", eip712DomainHash, swapHash));
+        return keccak256(abi.encodePacked("\x19\x01", eip712DomainHash, swapHash));
     }
 
     /* ========== VERIFICATION FUNCTIONS ========== */
@@ -57,10 +53,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
         uint8 v
     ) private view {
         require(message.chainId == chainId, "[CHAIN][ERROR]");
-        require(
-            message.user == ecrecover(hash(message), v, r, s),
-            "[SIGNATURE][FINAL]"
-        );
+        require(message.user == ecrecover(hash(message), v, r, s), "[SIGNATURE][FINAL]");
     }
 
     function verify(
@@ -73,8 +66,9 @@ contract SwapperScriptExecutor is ConditionsChecker {
         verifySignature(message, r, s, v);
         verifyRepetitions(message.repetitions, message.scriptId);
 
-        verifyGasTank(message.user);
         verifyFollow(message.follow, message.scriptId);
+        verifyGasTank(message.user);
+        verifyTip(message.tip, message.user);
         // the minimum amount in order to have the transfer going through.
         // if typeAmt==Absolute -> it's the amount in the message,
         // otherwise it's enough if the user has more than 0 in the wallet.
@@ -115,8 +109,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
         path[1] = message.tokenTo;
 
         // step 2: grant allowance to the router if it has not been given yet
-        if (!allowances[message.kontract][tokenFrom])
-            giveAllowance(tokenFrom, message.kontract);
+        if (!allowances[message.kontract][tokenFrom]) giveAllowance(tokenFrom, message.kontract);
 
         // step 3: swap
         IUniswapV2Router01(message.kontract).swapExactTokensForTokens(
@@ -128,12 +121,8 @@ contract SwapperScriptExecutor is ConditionsChecker {
         );
 
         // step 4: reward executor
-        gasTank.addReward(
-            GAS_LIMIT * gasPriceFeed.lastGasPrice(),
-            message.user,
-            _msgSender()
-        );
-        emit Executed(message.scriptId, GAS_LIMIT * gasPriceFeed.lastGasPrice());
+        gasTank.addReward(GAS_LIMIT * gasPriceFeed.lastGasPrice(), message.user, _msgSender());
+        if (message.tip > 0) DAEMToken.transferFrom(message.user, _msgSender(), message.tip);
     }
 
     function giveAllowance(IERC20 _token, address _exchange) private {

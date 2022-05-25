@@ -7,10 +7,7 @@ import "./ConditionsChecker.sol";
 import "./ConditionsCheckerForMoneyMarket.sol";
 import "./Messages.sol";
 
-contract MmAdvancedScriptExecutor is
-    ConditionsChecker,
-    ConditionsCheckerForMoneyMarket
-{
+contract MmAdvancedScriptExecutor is ConditionsChecker, ConditionsCheckerForMoneyMarket {
     uint256 public GAS_LIMIT = 325000; // 0.000325 GWEI
     mapping(address => mapping(IERC20 => bool)) private allowances;
     IPriceOracleGetter public priceOracle;
@@ -26,10 +23,7 @@ contract MmAdvancedScriptExecutor is
 
     function hash(MmAdvanced calldata mm) private pure returns (bytes32) {
         bytes32 eip712DomainHash = keccak256(
-            abi.encode(
-                EIP712_DOMAIN_TYPEHASH,
-                keccak256(bytes("Daemons-MM-Advanced-v01"))
-            )
+            abi.encode(EIP712_DOMAIN_TYPEHASH, keccak256(bytes("Daemons-MM-Advanced-v01")))
         );
 
         bytes32 mmHash = keccak256(
@@ -60,8 +54,7 @@ contract MmAdvancedScriptExecutor is
             )
         );
 
-        return
-            keccak256(abi.encodePacked("\x19\x01", eip712DomainHash, mmHash));
+        return keccak256(abi.encodePacked("\x19\x01", eip712DomainHash, mmHash));
     }
 
     /* ========== VERIFICATION FUNCTIONS ========== */
@@ -73,10 +66,7 @@ contract MmAdvancedScriptExecutor is
         uint8 v
     ) private view {
         require(message.chainId == chainId, "[CHAIN][ERROR]");
-        require(
-            message.user == ecrecover(hash(message), v, r, s),
-            "[SIGNATURE][FINAL]"
-        );
+        require(message.user == ecrecover(hash(message), v, r, s), "[SIGNATURE][FINAL]");
     }
 
     function verify(
@@ -90,13 +80,11 @@ contract MmAdvancedScriptExecutor is
         verifySignature(message, r, s, v);
         verifyRepetitions(message.repetitions, message.scriptId);
 
-        verifyGasTank(message.user);
         verifyFollow(message.follow, message.scriptId);
+        verifyGasTank(message.user);
+        verifyTip(message.tip, message.user);
         if (message.action == 0x00) {
-            require(
-                ERC20(message.debtToken).balanceOf(message.user) > 0,
-                "[NO_DEBT][TMP]"
-            );
+            require(ERC20(message.debtToken).balanceOf(message.user) > 0, "[NO_DEBT][TMP]");
             verifyAmountForRepay(message);
         } else {
             verifyBorrowAllowance(message);
@@ -112,14 +100,10 @@ contract MmAdvancedScriptExecutor is
     function verifyAmountForRepay(MmAdvanced calldata message) private view {
         uint256 amount = message.typeAmt == 0
             ? message.amount // absolute type: just return the given amount
-            : (ERC20(message.debtToken).balanceOf(message.user) *
-                message.amount) / 10000; // percentage type: a % on that token debt
+            : (ERC20(message.debtToken).balanceOf(message.user) * message.amount) / 10000; // percentage type: a % on that token debt
 
         verifyAllowance(message.user, message.token, amount);
-        require(
-            ERC20(message.token).balanceOf(message.user) >= amount,
-            "[SCRIPT_BALANCE][TMP]"
-        );
+        require(ERC20(message.token).balanceOf(message.user) >= amount, "[SCRIPT_BALANCE][TMP]");
     }
 
     function verifyAmountForBorrow(MmAdvanced calldata message) private view {
@@ -131,8 +115,9 @@ contract MmAdvancedScriptExecutor is
         }
 
         uint256 assetPriceInEth = priceOracle.getAssetPrice(message.token);
-        (, , uint256 borrowableEth, , , ) = IMoneyMarket(message.kontract)
-            .getUserAccountData(message.user);
+        (, , uint256 borrowableEth, , , ) = IMoneyMarket(message.kontract).getUserAccountData(
+            message.user
+        );
         uint256 borrowableTokens = (((borrowableEth * 95) / 100) *
             (10**ERC20(message.token).decimals())) / assetPriceInEth;
 
@@ -168,12 +153,8 @@ contract MmAdvancedScriptExecutor is
         }
 
         // Reward executor
-        gasTank.addReward(
-            GAS_LIMIT * gasPriceFeed.lastGasPrice(),
-            message.user,
-            _msgSender()
-        );
-        emit Executed(message.scriptId, GAS_LIMIT * gasPriceFeed.lastGasPrice());
+        gasTank.addReward(GAS_LIMIT * gasPriceFeed.lastGasPrice(), message.user, _msgSender());
+        if (message.tip > 0) DAEMToken.transferFrom(message.user, _msgSender(), message.tip);
     }
 
     function giveAllowance(IERC20 _token, address _exchange) private {
@@ -187,16 +168,14 @@ contract MmAdvancedScriptExecutor is
     function repay(MmAdvanced calldata message) private {
         uint256 amount = message.typeAmt == 0
             ? message.amount // absolute type: just return the given amount
-            : (ERC20(message.debtToken).balanceOf(message.user) *
-                message.amount) / 10000; // percentage type: a % on that token debt
+            : (ERC20(message.debtToken).balanceOf(message.user) * message.amount) / 10000; // percentage type: a % on that token debt
 
         // step 0 get the Tokens from the user
         IERC20 tokenFrom = IERC20(message.token);
         tokenFrom.transferFrom(message.user, address(this), amount);
 
         // step 1 grant allowance to the router if it has not been given yet
-        if (!allowances[message.kontract][tokenFrom])
-            giveAllowance(tokenFrom, message.kontract);
+        if (!allowances[message.kontract][tokenFrom]) giveAllowance(tokenFrom, message.kontract);
 
         // step 2 call repay function
         uint256 amountRepaid = IMoneyMarket(message.kontract).repay(
@@ -230,21 +209,18 @@ contract MmAdvancedScriptExecutor is
         IERC20(message.token).transfer(message.user, amount);
     }
 
-    function getBorrowAmount(MmAdvanced calldata message)
-        private
-        view
-        returns (uint256)
-    {
+    function getBorrowAmount(MmAdvanced calldata message) private view returns (uint256) {
         if (message.typeAmt == 0) return message.amount;
 
         // if user wants to borrow a percentage of their borrowing
         // power we need to calculate it
         uint256 assetPriceInEth = priceOracle.getAssetPrice(message.token);
-        (, , uint256 borrowableEth, , , ) = IMoneyMarket(message.kontract)
-            .getUserAccountData(message.user);
+        (, , uint256 borrowableEth, , , ) = IMoneyMarket(message.kontract).getUserAccountData(
+            message.user
+        );
 
         return
-            (((borrowableEth * message.amount) / 10000) *
-                (10**ERC20(message.token).decimals())) / assetPriceInEth;
+            (((borrowableEth * message.amount) / 10000) * (10**ERC20(message.token).decimals())) /
+            assetPriceInEth;
     }
 }

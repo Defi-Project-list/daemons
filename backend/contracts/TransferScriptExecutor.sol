@@ -12,10 +12,7 @@ contract TransferScriptExecutor is ConditionsChecker {
 
     function hash(Transfer calldata transfer) private pure returns (bytes32) {
         bytes32 eip712DomainHash = keccak256(
-            abi.encode(
-                EIP712_DOMAIN_TYPEHASH,
-                keccak256(bytes("Daemons-Transfer-v01"))
-            )
+            abi.encode(EIP712_DOMAIN_TYPEHASH, keccak256(bytes("Daemons-Transfer-v01")))
         );
 
         bytes32 transferHash = keccak256(
@@ -42,10 +39,7 @@ contract TransferScriptExecutor is ConditionsChecker {
             )
         );
 
-        return
-            keccak256(
-                abi.encodePacked("\x19\x01", eip712DomainHash, transferHash)
-            );
+        return keccak256(abi.encodePacked("\x19\x01", eip712DomainHash, transferHash));
     }
 
     /* ========== VERIFICATION FUNCTIONS ========== */
@@ -57,10 +51,7 @@ contract TransferScriptExecutor is ConditionsChecker {
         uint8 v
     ) private view {
         require(message.chainId == chainId, "[CHAIN][ERROR]");
-        require(
-            message.user == ecrecover(hash(message), v, r, s),
-            "[SIGNATURE][FINAL]"
-        );
+        require(message.user == ecrecover(hash(message), v, r, s), "[SIGNATURE][FINAL]");
     }
 
     function verify(
@@ -73,17 +64,15 @@ contract TransferScriptExecutor is ConditionsChecker {
         verifySignature(message, r, s, v);
         verifyRepetitions(message.repetitions, message.scriptId);
 
-        verifyGasTank(message.user);
         verifyFollow(message.follow, message.scriptId);
+        verifyGasTank(message.user);
+        verifyTip(message.tip, message.user);
         // the minimum amount in order to have the transfer going through.
         // if typeAmt==Absolute -> it's the amount in the message,
         // otherwise it's enough if the user has more than 0 in the wallet.
         uint256 minAmount = message.typeAmt == 0 ? message.amount - 1 : 0;
         verifyAllowance(message.user, message.token, minAmount);
-        require(
-            ERC20(message.token).balanceOf(message.user) > minAmount,
-            "[SCRIPT_BALANCE][TMP]"
-        );
+        require(ERC20(message.token).balanceOf(message.user) > minAmount, "[SCRIPT_BALANCE][TMP]");
 
         verifyFrequency(message.frequency, message.scriptId);
         verifyBalance(message.balance, message.user);
@@ -112,11 +101,7 @@ contract TransferScriptExecutor is ConditionsChecker {
         tokenFrom.transferFrom(message.user, message.destination, amount);
 
         // reward executor
-        gasTank.addReward(
-            GAS_LIMIT * gasPriceFeed.lastGasPrice(),
-            message.user,
-            _msgSender()
-        );
-        emit Executed(message.scriptId, GAS_LIMIT * gasPriceFeed.lastGasPrice());
+        gasTank.addReward(GAS_LIMIT * gasPriceFeed.lastGasPrice(), message.user, _msgSender());
+        if (message.tip > 0) DAEMToken.transferFrom(message.user, _msgSender(), message.tip);
     }
 }
