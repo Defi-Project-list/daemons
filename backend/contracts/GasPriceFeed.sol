@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract GasPriceFeed is Ownable {
-    uint256 public lastGasPrice = 1;
+    uint256 public lastGasPrice = 1000000000;
 
     /** Sets the latest gas price.
      * This value will be used as reference to pay out the executors rewards.

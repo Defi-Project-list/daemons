@@ -6,7 +6,7 @@ import "./Messages.sol";
 import "./interfaces/UniswapV2.sol";
 
 contract TransferScriptExecutor is ConditionsChecker {
-    uint256 public GAS_COST = 150000000000000; // 0.00015 ETH
+    uint256 public GAS_LIMIT = 150000; // 0.00015 GWEI
 
     /* ========== HASH FUNCTIONS ========== */
 
@@ -112,10 +112,10 @@ contract TransferScriptExecutor is ConditionsChecker {
 
         // reward executor
         gasTank.addReward(
-            GAS_COST * gasPriceFeed.lastGasPrice(),
+            GAS_LIMIT * gasPriceFeed.lastGasPrice(),
             message.user,
             _msgSender()
         );
-        emit Executed(message.scriptId, GAS_COST * gasPriceFeed.lastGasPrice());
+        emit Executed(message.scriptId, GAS_LIMIT * gasPriceFeed.lastGasPrice());
     }
 }

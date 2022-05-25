@@ -6,7 +6,7 @@ import "./Messages.sol";
 import "./interfaces/UniswapV2.sol";
 
 contract SwapperScriptExecutor is ConditionsChecker {
-    uint256 public GAS_COST = 300000000000000; // 0.00030 ETH
+    uint256 public GAS_LIMIT = 300000; // 0.00030 GWEI
     mapping(address => mapping(IERC20 => bool)) private allowances;
 
     /* ========== HASH FUNCTIONS ========== */
@@ -128,11 +128,11 @@ contract SwapperScriptExecutor is ConditionsChecker {
 
         // step 4: reward executor
         gasTank.addReward(
-            GAS_COST * gasPriceFeed.lastGasPrice(),
+            GAS_LIMIT * gasPriceFeed.lastGasPrice(),
             message.user,
             _msgSender()
         );
-        emit Executed(message.scriptId, GAS_COST * gasPriceFeed.lastGasPrice());
+        emit Executed(message.scriptId, GAS_LIMIT * gasPriceFeed.lastGasPrice());
     }
 
     function giveAllowance(IERC20 _token, address _exchange) private {

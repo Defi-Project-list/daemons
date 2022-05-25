@@ -11,7 +11,7 @@ contract MmAdvancedScriptExecutor is
     ConditionsChecker,
     ConditionsCheckerForMoneyMarket
 {
-    uint256 public GAS_COST = 325000000000000; // 0.000325 ETH
+    uint256 public GAS_LIMIT = 325000; // 0.000325 GWEI
     mapping(address => mapping(IERC20 => bool)) private allowances;
     IPriceOracleGetter public priceOracle;
 
@@ -168,11 +168,11 @@ contract MmAdvancedScriptExecutor is
 
         // Reward executor
         gasTank.addReward(
-            GAS_COST * gasPriceFeed.lastGasPrice(),
+            GAS_LIMIT * gasPriceFeed.lastGasPrice(),
             message.user,
             _msgSender()
         );
-        emit Executed(message.scriptId, GAS_COST * gasPriceFeed.lastGasPrice());
+        emit Executed(message.scriptId, GAS_LIMIT * gasPriceFeed.lastGasPrice());
     }
 
     function giveAllowance(IERC20 _token, address _exchange) private {
