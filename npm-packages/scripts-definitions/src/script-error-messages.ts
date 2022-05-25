@@ -59,6 +59,11 @@ export const possibleVerificationErrors: { [code: string]: IVerificationResultDe
     description:
       "The user doesn't have enough gas in the gas tank to execute the scripts.",
   },
+  "[TIP][TMP]": {
+    name: "Cannot pay tip",
+    description:
+      "The user set a tip, but doesn't have enough funds to pay for it.",
+  },
   "[HEALTH_FACTOR_LOW][TMP]": {
     name: "Health factor low",
     description: "Health Factor lower than threshold",
@@ -71,6 +76,11 @@ export const possibleVerificationErrors: { [code: string]: IVerificationResultDe
     name: "Missing allowance",
     description:
       "The user needs to give allowance to the executor contract to move some tokens",
+  },
+  "[TIP_ALLOWANCE][ACTION]": {
+    name: "Missing tip allowance",
+    description:
+      "The user needs to give allowance to the executor contract to move their DAEM for the tips",
   },
   "[CHAIN][ERROR]": {
     name: "Wrong chain",
