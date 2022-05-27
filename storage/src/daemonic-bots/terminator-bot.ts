@@ -4,6 +4,7 @@ import {
     VerificationFailedScript,
     VerificationState
 } from "@daemons-fi/scripts-definitions";
+import { INotification, Notification } from "../models/notification";
 import { BrokenScript } from "../models/queues/broken-scripts";
 import { Script } from "../models/scripts/script";
 import { getProvider } from "./providers-builder";
@@ -20,12 +21,13 @@ export class TerminatorBot {
         console.log(`[🤖🪓 Terminator Bot] ${ids.length} scripts to be processed`);
 
         const scripts: any[] = await Script.find({ scriptId: { $in: ids } });
-        const scriptIds = new Set(scripts.map(s => s.scriptId));
+        const scriptIds = new Set(scripts.map((s) => s.scriptId));
 
         const falsePositive: string[] = [];
         const toBeRemoved: string[] = [];
         const processed: string[] = [];
-        const notFound: string[] = ids.filter(id => !scriptIds.has(id));
+        const notFound: string[] = ids.filter((id) => !scriptIds.has(id));
+        const notifications: INotification[] = [];
 
         for (const script of scripts) {
             try {
@@ -33,9 +35,20 @@ export class TerminatorBot {
                 const provider = getProvider(parsedScript.getMessage().chainId);
                 const verification = await parsedScript.verify(provider);
 
-                const queue = TerminatorBot.flagForRemoval(verification) ? toBeRemoved : falsePositive;
+                const isToBeRemoved = TerminatorBot.flagForRemoval(verification);
+
+                const queue = isToBeRemoved ? toBeRemoved : falsePositive;
                 queue.push(script.scriptId);
                 processed.push(script.scriptId);
+
+                if (isToBeRemoved) {
+                    notifications.push({
+                        title: "Inexecutable script has been removed",
+                        description: `The following script has been automatically removed as it was no longer executable: '${script.description}'`,
+                        chainId: script.chainId,
+                        user: script.user
+                    });
+                }
             } catch (error) {
                 console.error(`An error occurred with the script ${script.scriptId}: ${error}`);
             }
@@ -50,6 +63,7 @@ export class TerminatorBot {
         await BrokenScript.deleteMany({ scriptId: { $in: processed } });
         await BrokenScript.deleteMany({ scriptId: { $in: notFound } });
         await Script.deleteMany({ scriptId: { $in: toBeRemoved } });
+        await Notification.insertMany(notifications);
         console.log(`[🤖🪓 Terminator Bot] Deletion completed`);
 
         return toBeRemoved.length;
