@@ -14,7 +14,6 @@ export const initializeMmAdvancedExecutor = async (contracts: DaemonsContracts):
     await executor.setPriceRetriever(priceRetrieverAddress);
     await executor.setGasFeed(gasPriceFeedAddress);
     await executor.setAavePriceOracle(aavePriceOracleAddress);
-    await executor.setDAEMToken(tokenAddress);
 
     // final checks
     await executor.preliminaryCheck();

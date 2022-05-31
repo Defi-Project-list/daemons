@@ -5,7 +5,9 @@ export const finalizeGasTank = async (contracts: DaemonsContracts): Promise<void
 
     const gasTank = await getContract(contracts, "GasTank");
     const treasuryAddress = getContractAddress(contracts, "Treasury");
+    const tokenAddress = getContractAddress(contracts, "DaemonsToken");
     await gasTank.setTreasury(treasuryAddress);
+    await gasTank.setDAEMToken(tokenAddress);
 
     await gasTank.preliminaryCheck();
 

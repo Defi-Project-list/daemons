@@ -12,7 +12,6 @@ export const initializeMmBaseExecutor = async (contracts: DaemonsContracts): Pro
     await executor.setGasTank(gasTankAddress);
     await executor.setPriceRetriever(priceRetrieverAddress);
     await executor.setGasFeed(gasPriceFeedAddress);
-    await executor.setDAEMToken(tokenAddress);
 
     // final checks
     await executor.preliminaryCheck();
