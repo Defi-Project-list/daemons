@@ -167,9 +167,6 @@ contract Treasury is ITreasury, Ownable {
     function createLP() external onlyOwner {
         require(!polIsInitialized, "PoL already initialized");
 
-        // set allowance
-        token.approve(lpRouter, 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff);
-
         // during initialization, we send all the ETH in the treasury to the LP
         // and an equal amount of DAEM to have a 1:1 ratio
         addLiquidity(address(this).balance, address(this).balance);
@@ -225,6 +222,9 @@ contract Treasury is ITreasury, Ownable {
     }
 
     function addLiquidity(uint256 amountETH, uint256 amountDAEM) private {
+        if (token.allowance(address(this), lpRouter) < 0xffffffffffffffffffff)
+            token.approve(lpRouter, 0xffffffffffffffffffffffffffffff);
+
         IUniswapV2Router01(lpRouter).addLiquidityETH{value: amountETH}(
             address(token),
             amountDAEM,

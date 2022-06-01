@@ -51,7 +51,7 @@ contract MockRouter is IUniswapV2Router01 {
             uint256 liquidity
         )
     {
-        return (0, 0, 0);
+        MockToken(token).transferFrom(msg.sender, address(this), amountToken);
     }
 
     function removeLiquidity(
