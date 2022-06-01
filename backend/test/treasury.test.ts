@@ -46,9 +46,6 @@ describe("Treasury", function () {
 
         // add some tokens to treasury
         fooToken.mint(treasury.address, ethers.utils.parseEther("100"));
-
-        // check that everything has been set correctly
-        await treasury.preliminaryCheck();
     });
 
     this.afterEach(async () => {

@@ -45,6 +45,11 @@ describe("GasTank", function () {
         fooToken.mint(owner.address, ethers.utils.parseEther("100"));
         fooToken.mint(user1.address, ethers.utils.parseEther("100"));
 
+        // create token LP
+        const ethAmount = ethers.utils.parseEther("5");
+        await owner.sendTransaction({ to: treasury.address, value: ethAmount })
+        await treasury.createLP();
+
         // have the users give the allowance to the gasTank
         fooToken.connect(owner).approve(gasTank.address, ethers.utils.parseEther("500"));
         fooToken.connect(user1).approve(gasTank.address, ethers.utils.parseEther("500"));
