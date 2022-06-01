@@ -7,7 +7,6 @@ export const initializeMmAdvancedExecutor = async (contracts: DaemonsContracts):
     const priceRetrieverAddress = getContractAddress(contracts, "PriceRetriever");
     const gasPriceFeedAddress = getContractAddress(contracts, "GasPriceFeed");
     const aavePriceOracleAddress = getContractAddress(contracts, "AavePriceOracle");
-    const tokenAddress = getContractAddress(contracts, "DaemonsToken");
 
     const executor = await getContract(contracts, "MmAdvancedScriptExecutor");
     await executor.setGasTank(gasTankAddress);

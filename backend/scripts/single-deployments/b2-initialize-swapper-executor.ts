@@ -6,7 +6,6 @@ export const initializeSwapperExecutor = async (contracts: DaemonsContracts): Pr
     const gasTankAddress = getContractAddress(contracts, "GasTank");
     const priceRetrieverAddress = getContractAddress(contracts, "PriceRetriever");
     const gasPriceFeedAddress = getContractAddress(contracts, "GasPriceFeed");
-    const tokenAddress = getContractAddress(contracts, "DaemonsToken");
 
     const executor = await getContract(contracts, "SwapperScriptExecutor");
     await executor.setGasTank(gasTankAddress);
