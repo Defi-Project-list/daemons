@@ -14,6 +14,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./constants.css";
 import "./app.css";
+import { fetchTipJarBalance } from "./state/action-creators/tip-jar-action-creators";
 
 export const App = ({ children }: { children: any }) => {
     // redux
@@ -41,6 +42,7 @@ export const App = ({ children }: { children: any }) => {
             dispatch(fetchUserScripts(chainId, walletAddress));
             dispatch(fetchGasTankBalance(walletAddress, chainId));
             dispatch(fetchGasTankClaimable(walletAddress, chainId));
+            dispatch(fetchTipJarBalance(walletAddress, chainId));
             dispatch(fetchUserHistory(chainId, walletAddress));
         }
     }, [chainId, walletAddress, authenticated]);
