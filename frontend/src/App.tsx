@@ -15,6 +15,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./constants.css";
 import "./app.css";
 import { fetchTipJarBalance } from "./state/action-creators/tip-jar-action-creators";
+import { TipIndicator } from "./components/tip-indicator";
 
 export const App = ({ children }: { children: any }) => {
     // redux
@@ -66,6 +67,9 @@ export const App = ({ children }: { children: any }) => {
                     </div>
                 )}
 
+                <div className="menu__entry menu__entry--tip">
+                    <TipIndicator />
+                </div>
                 <div className="menu__entry menu__entry--gas">
                     <GasIndicator />
                 </div>
