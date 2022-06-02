@@ -30,7 +30,7 @@ export const fetchGasTankBalance = (address?: string, chainId?: string) => {
         console.log('Checking balance in gas tank for', address);
 
         const gasTank = await getGasTankContract(chainId);
-        const rawBalance: BigNumber = await gasTank.balanceOf(address);
+        const rawBalance: BigNumber = await gasTank.gasBalanceOf(address);
         const balance = rawBalance.div(BigNumber.from(10).pow(14)).toNumber() / 10000; // let's keep 4 digits precision
 
         dispatch({

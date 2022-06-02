@@ -35,7 +35,7 @@ export function GasTank(): JSX.Element {
         const ethers = require("ethers");
         const gasTank = await getGasTankContract();
 
-        const tx = await gasTank.deposit({ value: ethers.utils.parseEther(amount.toString()) });
+        const tx = await gasTank.depositGas({ value: ethers.utils.parseEther(amount.toString()) });
 
         const toastedTransaction = promiseToast(
             tx.wait,
@@ -54,7 +54,7 @@ export function GasTank(): JSX.Element {
         const ethers = require("ethers");
         const gasTank = await getGasTankContract();
 
-        const tx = await gasTank.withdraw(ethers.utils.parseEther(amount.toString()));
+        const tx = await gasTank.withdrawGas(ethers.utils.parseEther(amount.toString()));
 
         const toastedTransaction = promiseToast(
             tx.wait,
@@ -70,7 +70,7 @@ export function GasTank(): JSX.Element {
     const withdrawAll = async () => {
         const gasTank = await getGasTankContract();
 
-        const tx = await gasTank.withdrawAll();
+        const tx = await gasTank.withdrawAllGas();
 
         const toastedTransaction = promiseToast(
             tx.wait,
