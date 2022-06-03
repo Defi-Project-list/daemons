@@ -1,4 +1,5 @@
 import { combineReducers } from "redux";
+import { gasPriceFeedReducer } from "./gas-price-feed-reducer";
 import { gasTankReducer } from './gas-tank-reducer';
 import { historyReducer } from './history-reducer';
 import { scriptReducer } from './script-reducer';
@@ -12,6 +13,7 @@ const reducers = combineReducers({
     script: scriptReducer,
     wallet: walletReducer,
     gasTank: gasTankReducer,
+    gasPriceFeed: gasPriceFeedReducer,
     tipJar: tipJarReducer,
     staking: stakingReducer,
     history: historyReducer,

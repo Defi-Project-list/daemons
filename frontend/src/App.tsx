@@ -16,6 +16,7 @@ import "./constants.css";
 import "./app.css";
 import { fetchTipJarBalance } from "./state/action-creators/tip-jar-action-creators";
 import { TipIndicator } from "./components/tip-indicator";
+import { fetchLatestGasPrice } from "./state/action-creators/gas-price-feed-action-creators";
 
 export const App = ({ children }: { children: any }) => {
     // redux
@@ -45,6 +46,7 @@ export const App = ({ children }: { children: any }) => {
             dispatch(fetchGasTankClaimable(walletAddress, chainId));
             dispatch(fetchTipJarBalance(walletAddress, chainId));
             dispatch(fetchUserHistory(chainId, walletAddress));
+            dispatch(fetchLatestGasPrice(chainId));
         }
     }, [chainId, walletAddress, authenticated]);
 
