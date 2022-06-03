@@ -139,7 +139,7 @@ describe("ScriptExecutor - Money Market Advanced", function () {
         await gasTank.setDAEMToken(DAEMToken.address);
 
         // Mock router contract
-        const MockRouterContract = await ethers.getContractFactory("MockRouter");
+        const MockRouterContract = await ethers.getContractFactory("MockUniswapV2Router");
         const mockRouter = await MockRouterContract.deploy();
 
         // Treasury contract

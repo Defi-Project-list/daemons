@@ -83,7 +83,7 @@ describe("ScriptExecutor - Swapper", function () {
         barToken = await MockTokenContract.deploy("Bar Token", "BAR");
 
         // Mock router contract
-        const MockRouterContract = await ethers.getContractFactory("MockRouter");
+        const MockRouterContract = await ethers.getContractFactory("MockUniswapV2Router");
         mockRouter = await MockRouterContract.deploy();
 
         // Gas Price Feed contract

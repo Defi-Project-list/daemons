@@ -1,17 +1,10 @@
-// SPDX-License-Identifier: MIT
+//SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.4;
 
-import "../interfaces/UniswapV2.sol";
-import "./MockToken.sol";
+interface IUniswapV2Router01 {
+    function factory() external view returns (address);
 
-contract MockRouter is IUniswapV2Router01 {
-    function factory() external pure override returns (address) {
-        return address(0);
-    }
-
-    function WETH() external pure override returns (address) {
-        return address(0);
-    }
+    function WETH() external pure returns (address);
 
     function addLiquidity(
         address tokenA,
@@ -24,15 +17,11 @@ contract MockRouter is IUniswapV2Router01 {
         uint256 deadline
     )
         external
-        override
         returns (
             uint256 amountA,
             uint256 amountB,
             uint256 liquidity
-        )
-    {
-        return (0, 0, 0);
-    }
+        );
 
     function addLiquidityETH(
         address token,
@@ -44,15 +33,11 @@ contract MockRouter is IUniswapV2Router01 {
     )
         external
         payable
-        override
         returns (
             uint256 amountToken,
             uint256 amountETH,
             uint256 liquidity
-        )
-    {
-        MockToken(token).transferFrom(msg.sender, address(this), amountToken);
-    }
+        );
 
     function removeLiquidity(
         address tokenA,
@@ -62,9 +47,7 @@ contract MockRouter is IUniswapV2Router01 {
         uint256 amountBMin,
         address to,
         uint256 deadline
-    ) external override returns (uint256 amountA, uint256 amountB) {
-        return (0, 0);
-    }
+    ) external returns (uint256 amountA, uint256 amountB);
 
     function removeLiquidityETH(
         address token,
@@ -73,9 +56,7 @@ contract MockRouter is IUniswapV2Router01 {
         uint256 amountETHMin,
         address to,
         uint256 deadline
-    ) external override returns (uint256 amountToken, uint256 amountETH) {
-        return (0, 0);
-    }
+    ) external returns (uint256 amountToken, uint256 amountETH);
 
     function removeLiquidityWithPermit(
         address tokenA,
@@ -89,9 +70,7 @@ contract MockRouter is IUniswapV2Router01 {
         uint8 v,
         bytes32 r,
         bytes32 s
-    ) external override returns (uint256 amountA, uint256 amountB) {
-        return (0, 0);
-    }
+    ) external returns (uint256 amountA, uint256 amountB);
 
     function removeLiquidityETHWithPermit(
         address token,
@@ -104,9 +83,7 @@ contract MockRouter is IUniswapV2Router01 {
         uint8 v,
         bytes32 r,
         bytes32 s
-    ) external override returns (uint256 amountToken, uint256 amountETH) {
-        return (0, 0);
-    }
+    ) external returns (uint256 amountToken, uint256 amountETH);
 
     function swapExactTokensForTokens(
         uint256 amountIn,
@@ -114,14 +91,7 @@ contract MockRouter is IUniswapV2Router01 {
         address[] calldata path,
         address to,
         uint256 deadline
-    ) external override returns (uint256[] memory amounts) {
-        // this mock contract will just mint tokens into the 'to' address
-        // but will not touch the other tokens as they are in the executor.
-
-        MockToken tokenTo = MockToken(path[1]);
-        tokenTo.mint(to, amountIn);
-        return new uint256[](2);
-    }
+    ) external returns (uint256[] memory amounts);
 
     function swapTokensForExactTokens(
         uint256 amountOut,
@@ -129,18 +99,14 @@ contract MockRouter is IUniswapV2Router01 {
         address[] calldata path,
         address to,
         uint256 deadline
-    ) external override returns (uint256[] memory amounts) {
-        return new uint256[](2);
-    }
+    ) external returns (uint256[] memory amounts);
 
     function swapExactETHForTokens(
         uint256 amountOutMin,
         address[] calldata path,
         address to,
         uint256 deadline
-    ) external payable override returns (uint256[] memory amounts) {
-        return new uint256[](2);
-    }
+    ) external payable returns (uint256[] memory amounts);
 
     function swapTokensForExactETH(
         uint256 amountOut,
@@ -148,9 +114,7 @@ contract MockRouter is IUniswapV2Router01 {
         address[] calldata path,
         address to,
         uint256 deadline
-    ) external override returns (uint256[] memory amounts) {
-        return new uint256[](2);
-    }
+    ) external returns (uint256[] memory amounts);
 
     function swapExactTokensForETH(
         uint256 amountIn,
@@ -158,61 +122,87 @@ contract MockRouter is IUniswapV2Router01 {
         address[] calldata path,
         address to,
         uint256 deadline
-    ) external override returns (uint256[] memory amounts) {
-        return new uint256[](2);
-    }
+    ) external returns (uint256[] memory amounts);
 
     function swapETHForExactTokens(
         uint256 amountOut,
         address[] calldata path,
         address to,
         uint256 deadline
-    ) external payable override returns (uint256[] memory amounts) {
-        return new uint256[](2);
-    }
+    ) external payable returns (uint256[] memory amounts);
 
     function quote(
         uint256 amountA,
         uint256 reserveA,
         uint256 reserveB
-    ) external pure override returns (uint256 amountB) {
-        return 0;
-    }
+    ) external pure returns (uint256 amountB);
 
     function getAmountOut(
         uint256 amountIn,
         uint256 reserveIn,
         uint256 reserveOut
-    ) external pure override returns (uint256 amountOut) {
-        return 0;
-    }
+    ) external pure returns (uint256 amountOut);
 
     function getAmountIn(
         uint256 amountOut,
         uint256 reserveIn,
         uint256 reserveOut
-    ) external pure override returns (uint256 amountIn) {
-        return 0;
-    }
+    ) external pure returns (uint256 amountIn);
 
     function getAmountsOut(uint256 amountIn, address[] calldata path)
         external
         view
-        override
-        returns (uint256[] memory amounts)
-    {
-        uint256[] memory result = new uint256[](2);
-        result[0] = amountIn;
-        result[1] = amountIn;
-        return result;
-    }
+        returns (uint256[] memory amounts);
 
     function getAmountsIn(uint256 amountOut, address[] calldata path)
         external
         view
-        override
-        returns (uint256[] memory amounts)
-    {
-        return new uint256[](2);
-    }
+        returns (uint256[] memory amounts);
+}
+
+interface IUniswapV2Router02 is IUniswapV2Router01 {
+    function removeLiquidityETHSupportingFeeOnTransferTokens(
+        address token,
+        uint256 liquidity,
+        uint256 amountTokenMin,
+        uint256 amountETHMin,
+        address to,
+        uint256 deadline
+    ) external returns (uint256 amountETH);
+
+    function removeLiquidityETHWithPermitSupportingFeeOnTransferTokens(
+        address token,
+        uint256 liquidity,
+        uint256 amountTokenMin,
+        uint256 amountETHMin,
+        address to,
+        uint256 deadline,
+        bool approveMax,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external returns (uint256 amountETH);
+
+    function swapExactTokensForTokensSupportingFeeOnTransferTokens(
+        uint256 amountIn,
+        uint256 amountOutMin,
+        address[] calldata path,
+        address to,
+        uint256 deadline
+    ) external;
+
+    function swapExactETHForTokensSupportingFeeOnTransferTokens(
+        uint256 amountOutMin,
+        address[] calldata path,
+        address to,
+        uint256 deadline
+    ) external payable;
+
+    function swapExactTokensForETHSupportingFeeOnTransferTokens(
+        uint256 amountIn,
+        uint256 amountOutMin,
+        address[] calldata path,
+        address to,
+        uint256 deadline
+    ) external;
 }

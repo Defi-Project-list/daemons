@@ -33,7 +33,7 @@ describe("Treasury", function () {
         fooToken = await FooTokenContract.deploy("Foo Token", "FOO");
 
         // Mock router contract
-        const MockRouterContract = await ethers.getContractFactory("MockRouter");
+        const MockRouterContract = await ethers.getContractFactory("MockUniswapV2Router");
         const mockRouter = await MockRouterContract.deploy();
 
         // Treasury contract
