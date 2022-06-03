@@ -4,6 +4,7 @@ import { Dispatch } from 'redux';import { GetCurrentChain, IsChainSupported } fr
  import { ERC20Abi } from "@daemons-fi/abis";
 import { ActionType } from '../action-types';
 import { WalletAction } from '../actions/wallet-actions';
+import { bigNumberToFloat } from "../../utils/big-number-to-float";
 
 const getDAEMContract = async (chainId: string): Promise<Contract> => {
     const ethers = require('ethers');
@@ -59,7 +60,7 @@ export const fetchDaemBalance = (address?: string, chainId?: string) => {
 
         const DAEM = await getDAEMContract(chainId);
         const rawBalance: BigNumber = await DAEM.balanceOf(address);
-        const balance = Math.floor(rawBalance.div(BigNumber.from(10).pow(14)).toNumber()) / 10000; // let's keep 4 digits precision
+        const balance = bigNumberToFloat(rawBalance);
 
         dispatch({
             type: ActionType.FETCH_DAEM_BALANCE,

@@ -37,8 +37,8 @@
     "webpack-dev-server": "^4.6.0"
   },
   "dependencies": {
-    "@daemons-fi/abis": "0.0.2",
-    "@daemons-fi/addresses": "0.0.3",
+    "@daemons-fi/abis": "0.0.3",
+    "@daemons-fi/addresses": "0.0.4",
     "@daemons-fi/shared-definitions": "2.1.0",
     "@daemons-fi/scripts-definitions": "0.1.15",
     "@metamask/detect-provider": "^1.2.0",

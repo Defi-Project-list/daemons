@@ -10,6 +10,9 @@ export enum ActionType {
     // chain gas price
     FETCH_LATEST_GAS_PRICE = "FETCH_LATEST_GAS_PRICE",
 
+    // prices
+    FETCH_DAEM_ETH_PRICE = "FETCH_DAEM_ETH_PRICE",
+
     // scripts creation queue
     CLEAN_WORKBENCH = "CLEAN_WORKBENCH",
     ADD_TO_WORKBENCH = "ADD_TO_WORKBENCH",

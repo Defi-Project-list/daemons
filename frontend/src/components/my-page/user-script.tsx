@@ -11,8 +11,8 @@ import { StorageProxy } from "../../data/storage-proxy";
 import { ScriptProxy } from "../../data/storage-proxy/scripts-proxy";
 import { getGasLimitForScript } from "../../data/script-gas-limits";
 import { GetCurrentChain } from "../../data/chain-info";
+import { bigNumberToFloat } from "../../utils/big-number-to-float";
 
-const parseBigNumber = (bn: BigNumber) => bn.div(BigNumber.from(10).pow(13)).toNumber() / 100000; // let's keep 5 digits precision
 
 export const MyPageScript = ({ script }: { script: BaseScript }) => {
     const [verification, setVerification] = useState(script.getVerification());
@@ -27,8 +27,8 @@ export const MyPageScript = ({ script }: { script: BaseScript }) => {
     const signer = provider.getSigner();
 
     // script execution costs
-    const ethCost = parseBigNumber(getGasLimitForScript(script.ScriptType).mul(currentGasPrice));
-    const daemCost = parseBigNumber(script.getMessage().tip as BigNumber);
+    const ethCost = bigNumberToFloat(getGasLimitForScript(script.ScriptType).mul(currentGasPrice), 5);
+    const daemCost = bigNumberToFloat(script.getMessage().tip as BigNumber);
 
     const revokeScript = async () => {
         const tx = await script.revoke(signer);

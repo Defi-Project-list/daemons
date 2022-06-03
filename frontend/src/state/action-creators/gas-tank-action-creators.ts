@@ -4,6 +4,7 @@ import { gasTankABI } from "@daemons-fi/abis";
 import { GasTankAction } from '../actions/gas-tank-actions';
 import { BigNumber, Contract } from 'ethers';
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
+import { bigNumberToFloat } from "../../utils/big-number-to-float";
 
 const getGasTankContract = async (chainId: string): Promise<Contract> => {
     const ethers = require('ethers');
@@ -31,7 +32,7 @@ export const fetchGasTankBalance = (address?: string, chainId?: string) => {
 
         const gasTank = await getGasTankContract(chainId);
         const rawBalance: BigNumber = await gasTank.gasBalanceOf(address);
-        const balance = rawBalance.div(BigNumber.from(10).pow(14)).toNumber() / 10000; // let's keep 4 digits precision
+        const balance = bigNumberToFloat(rawBalance);
 
         dispatch({
             type: ActionType.GAS_TANK_BALANCE,
@@ -56,7 +57,7 @@ export const fetchGasTankClaimable = (address?: string, chainId?: string) => {
 
         const gasTank = await getGasTankContract(chainId);
         const rawBalance: BigNumber = await gasTank.claimable(address);
-        const balance = rawBalance.div(BigNumber.from(10).pow(14)).toNumber() / 10000; // let's keep 4 digits precision
+        const balance = bigNumberToFloat(rawBalance);
 
         dispatch({
             type: ActionType.GAS_TANK_CLAIMABLE,
