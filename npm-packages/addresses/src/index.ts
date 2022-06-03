@@ -1,4 +1,8 @@
 export interface IContractsList {
+    // external
+    DEXRouter: string,
+
+    // infrastructure
     GasTank: string;
     DAEMToken: string;
     Treasury: string;
@@ -13,6 +17,8 @@ export interface IContractsList {
 }
 
 export const kovanContracts: IContractsList = {
+    DEXRouter: "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",
+
     PriceRetriever: "0x5348715150E8a11Da072f8065CEF24ca5f97d4f5",
     DAEMToken: "0xD6b7248D6e2971064250F920E4C476Fb6b1fE4B4",
     GasTank: "0x6A6D4991Bf6a9cA780a5d3D8A47ACda94caF71B7",
@@ -26,6 +32,8 @@ export const kovanContracts: IContractsList = {
 };
 
 export const fantomTestnetContracts: IContractsList = {
+    DEXRouter: "0xa6AD18C2aC47803E193F75c3677b14BF19B94883",
+
     PriceRetriever: "0x460ecd537e357890D3F888e92c5d5bF1452684bd",
     DAEMToken: "0x05Af9c3a34c9453e997ad73aBD6A65afCc75411B",
     GasTank: "0xE3A2D9ddE8Be45809abC20529109CBed11e93003",
