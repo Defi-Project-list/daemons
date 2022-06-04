@@ -16,7 +16,7 @@ import "./staking.css";
 
 export function Staking() {
     const dispatch = useDispatch();
-    const balance = useSelector((state: RootState) => state.staking.balance);
+    const stakingBalance = useSelector((state: RootState) => state.staking.balance);
     const claimable = useSelector((state: RootState) => state.staking.claimable);
     const walletAddress = useSelector((state: RootState) => state.wallet.address);
     const chainId = useSelector((state: RootState) => state.wallet.chainId);
@@ -50,7 +50,7 @@ export function Staking() {
     }, []);
 
     const exit = async () => {
-        if (!claimable && !balance) {
+        if (!claimable && !stakingBalance) {
             errorToast("No balance, nor anything claimable");
             return;
         }
@@ -173,25 +173,20 @@ export function Staking() {
     const renderDepositForm: () => JSX.Element = () => {
         return (
             <Form
-                className="staking__form"
                 onSubmit={() => {
                     /* Handled in the buttons */
                 }}
                 mutators={{
                     setMaxDaemAmount: (args, state, utils) => {
                         utils.changeValue(state, "amount", () => DAEMBalance.toString());
-                        if (Number(DAEMBalance.toString()) > 0) {
-                            // manually enable submit button
-                            (
-                                document.getElementById(
-                                    "id-staking-submit-button"
-                                ) as HTMLInputElement
-                            ).disabled = false;
-                        }
+                        // manually enable submit button
+                        (
+                            document.getElementById("id-staking-submit-button") as HTMLInputElement
+                        ).disabled = DAEMBalance === 0;
                     }
                 }}
                 render={({ form, handleSubmit }) => (
-                    <form onSubmit={handleSubmit}>
+                    <form className="staking__form" onSubmit={handleSubmit}>
                         <Field
                             className="staking__input"
                             id="id-staking-amount"
@@ -235,12 +230,21 @@ export function Staking() {
     const renderWithdrawForm: () => JSX.Element = () => {
         return (
             <Form
-                className="staking__form"
                 onSubmit={() => {
                     /* Handled in the buttons */
                 }}
-                render={({ handleSubmit }) => (
-                    <form onSubmit={handleSubmit}>
+                mutators={{
+                    setMaxDaemAmount: (args, state, utils) => {
+                        if (stakingBalance === undefined) return;
+                        utils.changeValue(state, "amount", () => stakingBalance.toString());
+                        // manually enable submit button
+                        (
+                            document.getElementById("id-staking-submit-button") as HTMLInputElement
+                        ).disabled = stakingBalance === 0;
+                    }
+                }}
+                render={({ form, handleSubmit }) => (
+                    <form className="staking__form" onSubmit={handleSubmit}>
                         <Field
                             className="staking__input"
                             id="id-staking-amount"
@@ -250,18 +254,24 @@ export function Staking() {
                             type="number"
                             placeholder="0.0"
                         />
+                        <div
+                            className="staking__max-balance-button"
+                            onClick={form.mutators.setMaxDaemAmount}
+                        >
+                            Max: {stakingBalance}
+                        </div>
                         <div className="staking__buttons-container">
                             <input
-                                disabled={!balance || buttonDisabled()}
+                                disabled={!stakingBalance || buttonDisabled()}
                                 className="staking__button"
+                                id="id-staking-submit-button"
                                 type="submit"
                                 onClick={withdraw}
                                 value="Unstake"
                             />
                             <input
-                                disabled={!balance}
+                                disabled={!stakingBalance}
                                 className="staking__button"
-                                id="id-staking-submit-button"
                                 type="submit"
                                 onClick={exit}
                                 value="Unstake All &amp; Claim"
@@ -295,10 +305,10 @@ export function Staking() {
 
             <div>
                 <div className="staking__balance">
-                    {balance !== undefined ? balance : "??"} DAEM
+                    {stakingBalance !== undefined ? stakingBalance : "??"} DAEM
                 </div>
                 <div className="staking__forms-container">
-                    {balance === undefined || walletAddress === undefined ? (
+                    {stakingBalance === undefined || walletAddress === undefined ? (
                         renderLoadingMessage()
                     ) : (
                         <div>{toggleDeposit ? renderDepositForm() : renderWithdrawForm()}</div>

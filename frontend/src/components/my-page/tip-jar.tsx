@@ -14,7 +14,7 @@ import { ethers } from "ethers";
 
 export function TipJar(): JSX.Element {
     const dispatch = useDispatch();
-    const balance = useSelector((state: RootState) => state.tipJar.balance);
+    const tipJarBalance = useSelector((state: RootState) => state.tipJar.balance);
     const walletAddress = useSelector((state: RootState) => state.wallet.address);
     const DAEMBalance = useSelector((state: RootState) => state.wallet.DAEMBalance);
     const chainId = useSelector((state: RootState) => state.wallet.chainId);
@@ -74,7 +74,6 @@ export function TipJar(): JSX.Element {
         const ethers = require("ethers");
         const gasTank = await getGasTankContract();
 
-        console.log("HEER");
         const parsedAmount = ethers.utils.parseEther(amount.toString());
         const tx = await gasTank.depositTip(parsedAmount);
 
@@ -153,14 +152,10 @@ export function TipJar(): JSX.Element {
                 mutators={{
                     setMaxDaemAmount: (args, state, utils) => {
                         utils.changeValue(state, "amount", () => DAEMBalance.toString());
-                        if (Number(DAEMBalance.toString()) > 0) {
-                            // manually enable submit button
-                            (
-                                document.getElementById(
-                                    "id-tip-jar-submit-button"
-                                ) as HTMLInputElement
-                            ).disabled = false;
-                        }
+                        // manually enable submit button
+                        (
+                            document.getElementById("id-tip-jar-submit-button") as HTMLInputElement
+                        ).disabled = DAEMBalance === 0;
                     }
                 }}
                 render={({ form, handleSubmit }) => (
@@ -207,12 +202,19 @@ export function TipJar(): JSX.Element {
     const renderWithdrawForm: () => ReactNode = () => {
         return (
             <Form
-                className="tip-jar__form"
-                onSubmit={() => {
-                    /* Handled in the buttons */
+                onSubmit={() => {}}
+                mutators={{
+                    setMaxDaemAmount: (args, state, utils) => {
+                        if (tipJarBalance === undefined) return;
+                        utils.changeValue(state, "amount", () => tipJarBalance.toString());
+                        // manually enable submit button
+                        (
+                            document.getElementById("id-tip-jar-submit-button") as HTMLInputElement
+                        ).disabled = tipJarBalance === 0;
+                    }
                 }}
-                render={({ handleSubmit }) => (
-                    <form onSubmit={handleSubmit}>
+                render={({ form, handleSubmit }) => (
+                    <form className="tip-jar__form" onSubmit={handleSubmit}>
                         <Field
                             className="tip-jar__input"
                             id="id-tip-jar-amount"
@@ -222,9 +224,16 @@ export function TipJar(): JSX.Element {
                             type="number"
                             placeholder="0.0"
                         />
+                        <div
+                            className="tip-jar__max-balance-button"
+                            onClick={form.mutators.setMaxDaemAmount}
+                        >
+                            Max: {tipJarBalance}
+                        </div>
                         <div className="tip-jar__buttons-container">
                             <input
                                 className="tip-jar__button"
+                                id="id-tip-jar-submit-button"
                                 type="submit"
                                 disabled={buttonDisabled()}
                                 onClick={withdraw}
@@ -265,10 +274,10 @@ export function TipJar(): JSX.Element {
 
             <div>
                 <div className="tip-jar__balance">
-                    {balance !== undefined ? balance : "??"} DAEM
+                    {tipJarBalance !== undefined ? tipJarBalance : "??"} DAEM
                 </div>
                 <div className="tip-jar__forms-container">
-                    {balance === undefined || walletAddress === undefined ? (
+                    {tipJarBalance === undefined || walletAddress === undefined ? (
                         renderLoadingMessage()
                     ) : (
                         <div>{toggleDeposit ? renderDepositForm() : renderWithdrawForm()}</div>
