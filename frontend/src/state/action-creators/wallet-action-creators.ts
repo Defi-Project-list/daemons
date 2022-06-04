@@ -1,4 +1,4 @@
-import { BigNumber, Contract } from "ethers";
+import { BigNumber, Contract, ethers } from "ethers";
 import { Dispatch } from 'redux';import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
  import { StorageProxy } from '../../data/storage-proxy';
  import { ERC20Abi } from "@daemons-fi/abis";
@@ -7,7 +7,6 @@ import { WalletAction } from '../actions/wallet-actions';
 import { bigNumberToFloat } from "../../utils/big-number-to-float";
 
 const getDAEMContract = async (chainId: string): Promise<Contract> => {
-    const ethers = require('ethers');
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);
 
     if (!IsChainSupported(chainId)) throw new Error(`Chain ${chainId} is not supported!`);
@@ -64,6 +63,31 @@ export const fetchDaemBalance = (address?: string, chainId?: string) => {
 
         dispatch({
             type: ActionType.FETCH_DAEM_BALANCE,
+            balance,
+        });
+    };
+}
+
+export const fetchEthBalance = (address?: string, chainId?: string) => {
+
+    return async (dispatch: Dispatch<WalletAction>) => {
+        if (!address || !chainId) {
+            console.log('Address or ChainId missing, ETH balance check aborted');
+            dispatch({
+                type: ActionType.FETCH_ETH_BALANCE,
+                balance: 0,
+            });
+            return;
+        }
+
+        console.log('Checking ETH balance for', address);
+
+        const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+        const rawBalance: BigNumber = await provider.getBalance(address);
+        const balance = bigNumberToFloat(rawBalance, 6);
+
+        dispatch({
+            type: ActionType.FETCH_ETH_BALANCE,
             balance,
         });
     };

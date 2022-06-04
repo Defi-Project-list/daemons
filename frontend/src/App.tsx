@@ -18,6 +18,7 @@ import { fetchTipJarBalance } from "./state/action-creators/tip-jar-action-creat
 import { TipIndicator } from "./components/tip-indicator";
 import { fetchLatestGasPrice } from "./state/action-creators/gas-price-feed-action-creators";
 import { fetchDAEMPriceInEth } from "./state/action-creators/prices-action-creators";
+import { fetchDaemBalance, fetchEthBalance } from "./state/action-creators/wallet-action-creators";
 
 export const App = ({ children }: { children: any }) => {
     // redux
@@ -49,6 +50,8 @@ export const App = ({ children }: { children: any }) => {
             dispatch(fetchUserHistory(chainId, walletAddress));
             dispatch(fetchLatestGasPrice(chainId));
             dispatch(fetchDAEMPriceInEth(chainId));
+            dispatch(fetchDaemBalance(walletAddress, chainId));
+            dispatch(fetchEthBalance(walletAddress, chainId));
         }
     }, [chainId, walletAddress, authenticated]);
 
