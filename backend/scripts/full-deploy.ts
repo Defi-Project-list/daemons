@@ -24,6 +24,9 @@ import { initializeMmAdvancedExecutor } from "./single-deployments/e2-initialize
 import { deployMmAdvancedExecutor } from "./single-deployments/e1-mmadvanced-executor";
 import { vestTokens } from "./single-deployments/a9-vesting";
 import { createLP } from "./single-deployments/a8-create-LP";
+import { deployZapOutExecutor } from "./single-deployments/g1-zapout-executor";
+import { initializeZapOutExecutor } from "./single-deployments/g2-initialize-zapout-executor";
+import { registerZapOutExecutor } from "./single-deployments/g3-register-zapout-in-gas-tank";
 
 async function deployDaemons() {
     // display deployer address and its balance
@@ -75,6 +78,11 @@ async function deployDaemons() {
     currentContracts = await deployMmAdvancedExecutor(currentContracts);
     await initializeMmAdvancedExecutor(currentContracts);
     await registerMmAdvancedExecutor(currentContracts);
+
+    // deploy ZapOut executor
+    currentContracts = await deployZapOutExecutor(currentContracts);
+    await initializeZapOutExecutor(currentContracts);
+    await registerZapOutExecutor(currentContracts);
 }
 
 deployDaemons().catch((error) => {
