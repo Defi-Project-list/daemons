@@ -140,12 +140,12 @@ describe("ScriptExecutor - Money Market Base", function () {
         );
 
         // add some tokens to treasury
-        DAEMToken.mint(treasury.address, ethers.utils.parseEther("100"));
+        DAEMToken.mint(treasury.address, ethers.utils.parseEther("110"));
 
         // create token LP
         const ethAmount = ethers.utils.parseEther("5");
-        await owner.sendTransaction({ to: treasury.address, value: ethAmount })
-        await treasury.createLP();
+        const daemAmount = ethers.utils.parseEther("10");
+        await treasury.createLP(daemAmount, {value: ethAmount});
 
         // set treasury address in gas tank
         await gasTank.setTreasury(treasury.address);
