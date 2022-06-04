@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { gasTankABI } from "@daemons-fi/abis";
 import { RootState } from "../../state";
@@ -8,6 +8,9 @@ import { promiseToast } from "../toaster";
 import "./tip-jar.css";
 import "../switch.css";
 import { fetchTipJarBalance } from "../../state/action-creators/tip-jar-action-creators";
+import { fetchDaemBalance } from "../../state/action-creators/wallet-action-creators";
+import { AllowanceHelper } from "@daemons-fi/scripts-definitions/build";
+import { ethers } from "ethers";
 
 export function TipJar(): JSX.Element {
     const dispatch = useDispatch();
@@ -15,27 +18,65 @@ export function TipJar(): JSX.Element {
     const walletAddress = useSelector((state: RootState) => state.wallet.address);
     const DAEMBalance = useSelector((state: RootState) => state.wallet.DAEMBalance);
     const chainId = useSelector((state: RootState) => state.wallet.chainId);
+    const contracts = GetCurrentChain(chainId!).contracts;
     const [toggleDeposit, setToggleDeposit] = useState<boolean>(true);
+    const [needsAllowance, setNeedsAllowance] = useState<boolean>(true);
+
+    // wallet signer and provider
+    const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+    const signer = provider.getSigner();
+
+    const checkForAllowance = async () => {
+        const hasAllowance = await AllowanceHelper.checkForERC20Allowance(
+            walletAddress!,
+            contracts.DAEMToken,
+            contracts.GasTank,
+            ethers.utils.parseEther("10000000000"),
+            signer
+        );
+        console.log("hasAllowance", hasAllowance);
+        setNeedsAllowance(!hasAllowance);
+    };
+
+    const requestAllowance = async () => {
+        const tx = await AllowanceHelper.requestERC20Allowance(
+            contracts.DAEMToken,
+            contracts.GasTank,
+            signer
+        );
+        const toastedTransaction = promiseToast(
+            tx.wait,
+            `Granting the allowance to the gas tank (this is a one-time action)...`,
+            "Allowance successfully granted 🎉",
+            "Something bad happened. Contact us if the error persists"
+        );
+        await toastedTransaction;
+        await checkForAllowance();
+    };
+
+    useEffect(() => {
+        checkForAllowance();
+    }, []);
 
     const getGasTankContract = async () => {
-        const ethers = require("ethers");
-        const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-        const signer = provider.getSigner();
-
         if (!IsChainSupported(chainId!)) throw new Error(`Chain ${chainId} is not supported!`);
-        const contractAddress = GetCurrentChain(chainId!).contracts.GasTank;
+        const contractAddress = contracts.GasTank;
 
         const gasTank = new ethers.Contract(contractAddress, gasTankABI, signer);
         return gasTank;
     };
 
     const deposit = async () => {
-        const amount = parseFloat((document.getElementById("id-amount") as HTMLInputElement).value);
+        const amount = parseFloat(
+            (document.getElementById("id-tip-jar-amount") as HTMLInputElement).value
+        );
 
         const ethers = require("ethers");
         const gasTank = await getGasTankContract();
 
-        const tx = await gasTank.depositTip({ value: ethers.utils.parseEther(amount.toString()) });
+        console.log("HEER");
+        const parsedAmount = ethers.utils.parseEther(amount.toString());
+        const tx = await gasTank.depositTip(parsedAmount);
 
         const toastedTransaction = promiseToast(
             tx.wait,
@@ -45,16 +86,20 @@ export function TipJar(): JSX.Element {
         );
         await toastedTransaction;
 
+        dispatch(fetchDaemBalance(walletAddress, chainId));
         dispatch(fetchTipJarBalance(walletAddress, chainId));
     };
 
     const withdraw = async () => {
-        const amount = parseFloat((document.getElementById("id-amount") as HTMLInputElement).value);
+        const amount = parseFloat(
+            (document.getElementById("id-tip-jar-amount") as HTMLInputElement).value
+        );
 
         const ethers = require("ethers");
         const gasTank = await getGasTankContract();
 
-        const tx = await gasTank.withdrawTip(ethers.utils.parseEther(amount.toString()));
+        const parsedAmount = ethers.utils.parseEther(amount.toString());
+        const tx = await gasTank.withdrawTip(parsedAmount);
 
         const toastedTransaction = promiseToast(
             tx.wait,
@@ -64,6 +109,7 @@ export function TipJar(): JSX.Element {
         );
         await toastedTransaction;
 
+        dispatch(fetchDaemBalance(walletAddress, chainId));
         dispatch(fetchTipJarBalance(walletAddress, chainId));
     };
 
@@ -80,11 +126,14 @@ export function TipJar(): JSX.Element {
         );
         await toastedTransaction;
 
+        dispatch(fetchDaemBalance(walletAddress, chainId));
         dispatch(fetchTipJarBalance(walletAddress, chainId));
     };
 
     const buttonDisabled = () => {
-        const amountInput = document.getElementById("id-amount") as HTMLInputElement | undefined;
+        const amountInput = document.getElementById("id-tip-jar-amount") as
+            | HTMLInputElement
+            | undefined;
         return (
             !amountInput ||
             !amountInput.value ||
@@ -104,14 +153,23 @@ export function TipJar(): JSX.Element {
                 mutators={{
                     setMaxDaemAmount: (args, state, utils) => {
                         utils.changeValue(state, "amount", () => DAEMBalance.toString());
+                        if (Number(DAEMBalance.toString()) > 0) {
+                            // manually enable submit button
+                            (
+                                document.getElementById(
+                                    "id-tip-jar-submit-button"
+                                ) as HTMLInputElement
+                            ).disabled = false;
+                        }
                     }
                 }}
                 render={({ form, handleSubmit }) => (
                     <form className="tip-jar__form" onSubmit={handleSubmit}>
                         <Field
                             className="tip-jar__input"
-                            id="id-amount"
+                            id="id-tip-jar-amount"
                             name="amount"
+                            autoComplete="off"
                             component="input"
                             type="number"
                             placeholder="0.0"
@@ -123,12 +181,22 @@ export function TipJar(): JSX.Element {
                             Max: {DAEMBalance}
                         </div>
                         <div className="tip-jar__buttons-container">
-                            <input
-                                disabled={buttonDisabled()}
-                                className="tip-jar__button"
-                                type="submit"
-                                value="Deposit"
-                            />
+                            {needsAllowance ? (
+                                <input
+                                    className="staking__button"
+                                    type="submit"
+                                    onClick={requestAllowance}
+                                    value="Request Allowance"
+                                />
+                            ) : (
+                                <input
+                                    disabled={buttonDisabled()}
+                                    id="id-tip-jar-submit-button"
+                                    className="tip-jar__button"
+                                    type="submit"
+                                    value="Deposit"
+                                />
+                            )}
                         </div>
                     </form>
                 )}
@@ -147,8 +215,9 @@ export function TipJar(): JSX.Element {
                     <form onSubmit={handleSubmit}>
                         <Field
                             className="tip-jar__input"
-                            id="id-amount"
+                            id="id-tip-jar-amount"
                             name="amount"
+                            autoComplete="off"
                             component="input"
                             type="number"
                             placeholder="0.0"

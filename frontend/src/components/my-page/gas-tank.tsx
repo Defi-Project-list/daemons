@@ -30,7 +30,7 @@ export function GasTank(): JSX.Element {
     };
 
     const deposit = async () => {
-        const amount = parseFloat((document.getElementById("id-amount") as HTMLInputElement).value);
+        const amount = parseFloat((document.getElementById("id-gas-tank-amount") as HTMLInputElement).value);
 
         const ethers = require("ethers");
         const gasTank = await getGasTankContract();
@@ -49,7 +49,7 @@ export function GasTank(): JSX.Element {
     };
 
     const withdraw = async () => {
-        const amount = parseFloat((document.getElementById("id-amount") as HTMLInputElement).value);
+        const amount = parseFloat((document.getElementById("id-gas-tank-amount") as HTMLInputElement).value);
 
         const ethers = require("ethers");
         const gasTank = await getGasTankContract();
@@ -84,7 +84,7 @@ export function GasTank(): JSX.Element {
     };
 
     const buttonDisabled = () => {
-        const amountInput = document.getElementById("id-amount") as HTMLInputElement | undefined;
+        const amountInput = document.getElementById("id-gas-tank-amount") as HTMLInputElement | undefined;
         return (
             !amountInput ||
             !amountInput.value ||
@@ -106,8 +106,9 @@ export function GasTank(): JSX.Element {
                     <form onSubmit={handleSubmit}>
                         <Field
                             className="gas-tank__input"
-                            id="id-amount"
+                            id="id-gas-tank-amount"
                             name="amount"
+                            autoComplete="off"
                             component="input"
                             type="number"
                             placeholder="0.0"
@@ -137,8 +138,9 @@ export function GasTank(): JSX.Element {
                     <form onSubmit={handleSubmit}>
                         <Field
                             className="gas-tank__input"
-                            id="id-amount"
+                            id="id-gas-tank-amount"
                             name="amount"
+                            autoComplete="off"
                             component="input"
                             type="number"
                             placeholder="0.0"

@@ -78,7 +78,7 @@ export function Staking() {
         );
         const toastedTransaction = promiseToast(
             tx.wait,
-            `Granting the allowance to the treasury...`,
+            `Granting the allowance to the treasury (this is a one-time action)...`,
             "Allowance successfully granted 🎉",
             "Something bad happened. Contact us if the error persists"
         );
@@ -87,7 +87,9 @@ export function Staking() {
     };
 
     const stake = async () => {
-        const amount = parseFloat((document.getElementById("id-amount") as HTMLInputElement).value);
+        const amount = parseFloat(
+            (document.getElementById("id-staking-amount") as HTMLInputElement).value
+        );
 
         const treasury = await getTreasuryContract();
         const tx = await treasury.stake(ethers.utils.parseEther(amount.toString()));
@@ -101,11 +103,12 @@ export function Staking() {
 
         dispatch(fetchStakingBalance(walletAddress, chainId));
         dispatch(fetchDaemBalance(walletAddress, chainId));
-        (document.getElementById("id-amount") as HTMLInputElement).value = "";
     };
 
     const withdraw = async () => {
-        const amount = parseFloat((document.getElementById("id-amount") as HTMLInputElement).value);
+        const amount = parseFloat(
+            (document.getElementById("id-staking-amount") as HTMLInputElement).value
+        );
 
         const treasury = await getTreasuryContract();
         const tx = await treasury.withdraw(ethers.utils.parseEther(amount.toString()));
@@ -119,7 +122,7 @@ export function Staking() {
 
         dispatch(fetchStakingBalance(walletAddress, chainId));
         dispatch(fetchDaemBalance(walletAddress, chainId));
-        (document.getElementById("id-amount") as HTMLInputElement).value = "";
+        (document.getElementById("id-staking-amount") as HTMLInputElement).value = "";
     };
 
     const claim = async () => {
@@ -152,7 +155,9 @@ export function Staking() {
     };
 
     const buttonDisabled = () => {
-        const amountInput = document.getElementById("id-amount") as HTMLInputElement | undefined;
+        const amountInput = document.getElementById("id-staking-amount") as
+            | HTMLInputElement
+            | undefined;
         return (
             !amountInput ||
             !amountInput.value ||
@@ -175,14 +180,23 @@ export function Staking() {
                 mutators={{
                     setMaxDaemAmount: (args, state, utils) => {
                         utils.changeValue(state, "amount", () => DAEMBalance.toString());
+                        if (Number(DAEMBalance.toString()) > 0) {
+                            // manually enable submit button
+                            (
+                                document.getElementById(
+                                    "id-staking-submit-button"
+                                ) as HTMLInputElement
+                            ).disabled = false;
+                        }
                     }
                 }}
                 render={({ form, handleSubmit }) => (
                     <form onSubmit={handleSubmit}>
                         <Field
                             className="staking__input"
-                            id="id-amount"
+                            id="id-staking-amount"
                             name="amount"
+                            autoComplete="off"
                             component="input"
                             type="number"
                             placeholder="0.0"
@@ -205,6 +219,7 @@ export function Staking() {
                                 <input
                                     disabled={buttonDisabled()}
                                     className="staking__button"
+                                    id="id-staking-submit-button"
                                     type="submit"
                                     onClick={stake}
                                     value="Stake"
@@ -228,8 +243,9 @@ export function Staking() {
                     <form onSubmit={handleSubmit}>
                         <Field
                             className="staking__input"
-                            id="id-amount"
+                            id="id-staking-amount"
                             name="amount"
+                            autoComplete="off"
                             component="input"
                             type="number"
                             placeholder="0.0"
@@ -245,6 +261,7 @@ export function Staking() {
                             <input
                                 disabled={!balance}
                                 className="staking__button"
+                                id="id-staking-submit-button"
                                 type="submit"
                                 onClick={exit}
                                 value="Unstake All &amp; Claim"
