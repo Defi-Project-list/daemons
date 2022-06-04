@@ -38,10 +38,17 @@ contract MockUniswapV2Router is IUniswapV2Router01 {
             uint256 liquidity
         )
     {
+        // get LP address
         require(factoryAddress != address(0), "Factory has not been set");
         address lpToken = IUniswapV2Factory(factoryAddress).getPair(tokenA, tokenB);
+
+        // get tokens from user and burn them
         MockToken(tokenA).transferFrom(msg.sender, address(this), amountADesired);
         MockToken(tokenB).transferFrom(msg.sender, address(this), amountBDesired);
+        MockToken(tokenA).justBurn(address(this), amountADesired);
+        MockToken(tokenB).justBurn(address(this), amountBDesired);
+
+        // mint LP in user's wallet
         MockToken(lpToken).mint(to, amountADesired + amountBDesired);
         return (amountADesired, amountBDesired, amountADesired + amountBDesired);
     }
@@ -75,8 +82,18 @@ contract MockUniswapV2Router is IUniswapV2Router01 {
         address to,
         uint256 deadline
     ) external override returns (uint256 amountA, uint256 amountB) {
-        require(1 == 2, "'removeLiquidity' has not been implemented");
-        return (0, 0);
+        // get LP address
+        require(factoryAddress != address(0), "Factory has not been set");
+        address lpToken = IUniswapV2Factory(factoryAddress).getPair(tokenA, tokenB);
+
+        // get LP from user and burn it
+        MockToken(lpToken).transferFrom(msg.sender, address(this), liquidity);
+        MockToken(lpToken).justBurn(address(this), liquidity);
+
+        // mint tokens to user's wallet
+        MockToken(tokenA).mint(to, liquidity / 2);
+        MockToken(tokenB).mint(to, liquidity / 2);
+        return (liquidity / 2, liquidity / 2);
     }
 
     function removeLiquidityETH(

@@ -123,6 +123,52 @@ describe("Mock Uniswap Router", function () {
         });
     });
 
+    describe("removeLiquidity", function () {
+        it("gets LP token from callee", async () => {
+            // add LP to owner's wallet
+            await fooBarLP.mint(owner.address, 300000);
+            expect(await fooBarLP.balanceOf(owner.address)).to.equal(300000);
+
+            // remove liquidity
+            await mockRouter.removeLiquidity(
+                fooToken.address,
+                barToken.address,
+                300000,
+                0,
+                0,
+                owner.address,
+                0
+            );
+
+            // verify tokens have been taken from owner
+            expect(await fooBarLP.balanceOf(owner.address)).to.equal(0);
+        });
+        it('"to" address receives the tokens composing the LP', async () => {
+            // add LP to owner's wallet
+            await fooBarLP.mint(owner.address, 300000);
+            expect(await fooBarLP.balanceOf(owner.address)).to.equal(300000);
+
+            // check that user does NOT have any token yet
+            expect(await fooToken.balanceOf(owner.address)).to.equal(0);
+            expect(await barToken.balanceOf(owner.address)).to.equal(0);
+
+            // remove liquidity
+            await mockRouter.removeLiquidity(
+                fooToken.address,
+                barToken.address,
+                300000,
+                0,
+                0,
+                owner.address,
+                0
+            );
+
+            // verify owner received the LP
+            expect(await fooToken.balanceOf(owner.address)).to.equal(150000);
+            expect(await barToken.balanceOf(owner.address)).to.equal(150000);
+        });
+    });
+
     describe("addLiquidityETH", function () {
         it("gets tokens from callee", async () => {
             // add tokens to owner's wallet
