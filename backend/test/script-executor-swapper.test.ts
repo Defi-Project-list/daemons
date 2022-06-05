@@ -2,12 +2,12 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { BigNumber, Contract } from "ethers";
 import { ethers } from "hardhat";
-import { AmountType, ComparisonType, ZapOutputChoice } from "@daemons-fi/shared-definitions";
-import { zapOutDomain, IZapOutAction, zapOutTypes } from "@daemons-fi/shared-definitions";
+import { AmountType, ComparisonType } from "@daemons-fi/shared-definitions";
+import { swapDomain, ISwapAction, swapTypes } from "@daemons-fi/shared-definitions";
 
-describe("ScriptExecutor - ZapOut", function () {
+describe("ScriptExecutor - Swapper", function () {
     let owner: SignerWithAddress;
-    let otherWallet: SignerWithAddress;
+    let user1: SignerWithAddress;
 
     // contracts
     let gasTank: Contract;
@@ -16,7 +16,6 @@ describe("ScriptExecutor - ZapOut", function () {
     let DAEMToken: Contract;
     let fooToken: Contract;
     let barToken: Contract;
-    let fooBarLP: Contract;
     let mockRouter: Contract;
 
     // signature components
@@ -24,13 +23,12 @@ describe("ScriptExecutor - ZapOut", function () {
     let sigS: string;
     let sigV: number;
 
-    let baseMessage: IZapOutAction = {
+    let baseMessage: ISwapAction = {
         scriptId: "0x7465737400000000000000000000000000000000000000000000000000000000",
-        tokenA: "",
-        tokenB: "",
-        amount: ethers.utils.parseEther("145"),
+        tokenFrom: "",
+        tokenTo: "",
         typeAmt: AmountType.Absolute,
-        outputChoice: ZapOutputChoice.bothTokens,
+        amount: ethers.utils.parseEther("145"),
         user: "",
         kontract: "",
         executor: "",
@@ -67,7 +65,7 @@ describe("ScriptExecutor - ZapOut", function () {
 
     this.beforeEach(async () => {
         // get main wallet
-        [owner, otherWallet] = await ethers.getSigners();
+        [owner, user1] = await ethers.getSigners();
 
         // GasTank contract
         const GasTankContract = await ethers.getContractFactory("GasTank");
@@ -80,45 +78,38 @@ describe("ScriptExecutor - ZapOut", function () {
 
         // Mock token contracts
         const MockTokenContract = await ethers.getContractFactory("MockToken");
-        DAEMToken = await MockTokenContract.deploy("DAEM Token", "DAEM");
+        DAEMToken = await MockTokenContract.deploy("Foo Token", "FOO");
         fooToken = await MockTokenContract.deploy("Foo Token", "FOO");
         barToken = await MockTokenContract.deploy("Bar Token", "BAR");
-        fooBarLP = await MockTokenContract.deploy("FOO-BAR-LP", "FOO-BAR-LP");
+
+        // Mock router contract
+        const MockRouterContract = await ethers.getContractFactory("MockUniswapV2Router");
+        mockRouter = await MockRouterContract.deploy();
 
         // Gas Price Feed contract
         const GasPriceFeedContract = await ethers.getContractFactory("GasPriceFeed");
         const gasPriceFeed = await GasPriceFeedContract.deploy();
 
         // Executor contract
-        const ZapOutScriptExecutorContract = await ethers.getContractFactory(
-            "ZapOutScriptExecutor"
+        const SwapperScriptExecutorContract = await ethers.getContractFactory(
+            "SwapperScriptExecutor"
         );
-        executor = await ZapOutScriptExecutorContract.deploy();
+        executor = await SwapperScriptExecutorContract.deploy();
         await executor.setGasTank(gasTank.address);
         await executor.setPriceRetriever(priceRetriever.address);
         await executor.setGasFeed(gasPriceFeed.address);
 
         // Grant allowance
-        await fooBarLP.approve(executor.address, ethers.utils.parseEther("1000000"));
+        await fooToken.approve(executor.address, ethers.utils.parseEther("1000000"));
         await DAEMToken.approve(executor.address, ethers.utils.parseEther("1000000"));
 
         // Generate balance
-        await fooBarLP.mint(owner.address, baseMessage.amount);
+        await fooToken.mint(owner.address, baseMessage.amount);
         await DAEMToken.mint(owner.address, ethers.utils.parseEther("250"));
 
         // register executor in gas tank
         await gasTank.addExecutor(executor.address);
         await gasTank.setDAEMToken(DAEMToken.address);
-
-        // Mock Uniswap router contract
-        const MockRouterContract = await ethers.getContractFactory("MockUniswapV2Router");
-        mockRouter = await MockRouterContract.deploy();
-
-        // Mock Uniswap factory contract
-        const MockFactoryContract = await ethers.getContractFactory("MockUniswapV2Factory");
-        const mockFactory = await MockFactoryContract.deploy();
-        await mockRouter.setFactory(mockFactory.address);
-        await mockFactory.setFakePair(fooToken.address, barToken.address, fooBarLP.address);
 
         // Treasury contract
         const TreasuryContract = await ethers.getContractFactory("Treasury");
@@ -134,7 +125,7 @@ describe("ScriptExecutor - ZapOut", function () {
         // create token LP
         const ethAmount = ethers.utils.parseEther("5");
         const daemAmount = ethers.utils.parseEther("10");
-        await treasury.createLP(daemAmount, { value: ethAmount });
+        await treasury.createLP(daemAmount, {value: ethAmount});
 
         // set treasury address in gas tank
         await gasTank.setTreasury(treasury.address);
@@ -145,20 +136,20 @@ describe("ScriptExecutor - ZapOut", function () {
         await treasury.preliminaryCheck();
     });
 
-    async function initialize(baseMessage: IZapOutAction): Promise<IZapOutAction> {
+    async function initialize(baseMessage: ISwapAction): Promise<ISwapAction> {
         // Create message and fill missing info
         const message = { ...baseMessage };
         message.user = owner.address;
-        message.executor = executor.address;
-        message.tokenA = fooToken.address;
-        message.tokenB = barToken.address;
         message.kontract = mockRouter.address;
+        message.executor = executor.address;
+        message.tokenFrom = fooToken.address;
+        message.tokenTo = barToken.address;
         message.balance.token = fooToken.address;
         message.price.token = fooToken.address;
         message.follow.executor = executor.address; // following itself, it'll never be executed when condition is enabled
 
         // Sign message
-        const signature = await owner._signTypedData(zapOutDomain, zapOutTypes, message);
+        const signature = await owner._signTypedData(swapDomain, swapTypes, message);
         const split = ethers.utils.splitSignature(signature);
         [sigR, sigS, sigV] = [split.r, split.s, split.v];
 
@@ -183,7 +174,7 @@ describe("ScriptExecutor - ZapOut", function () {
     });
 
     it("spots a valid message from another chain", async () => {
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.chainId = BigNumber.from("1"); // message created for the Ethereum chain
         message = await initialize(message);
 
@@ -193,188 +184,89 @@ describe("ScriptExecutor - ZapOut", function () {
         );
     });
 
-    it("zaps the LP - ABS", async () => {
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+    it("swaps the tokens - ABS", async () => {
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message = await initialize(message);
-
-        // add a bit more LP, to have some leftovers
-        await fooBarLP.mint(owner.address, ethers.utils.parseEther("15"));
-        expect(await fooBarLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("160"));
+        await fooToken.mint(owner.address, ethers.utils.parseEther("55"));
 
         await executor.execute(message, sigR, sigS, sigV);
 
-        // the LP should be gone (only leftovers) and tokens should have been added
-        expect(await fooBarLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("15"));
-        expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("72.5"));
-        expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("72.5"));
-    });
-
-    it("zaps the LP - ABS + single token A", async () => {
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
-        message.outputChoice = ZapOutputChoice.tokenA;
-        message = await initialize(message);
-
-        // add a bit more LP, to have some leftovers
-        await fooBarLP.mint(owner.address, ethers.utils.parseEther("15"));
-        expect(await fooBarLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("160"));
-
-        await executor.execute(message, sigR, sigS, sigV);
-
-        // the LP should be gone (only leftovers) and tokens should have been added
-        expect(await fooBarLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("15"));
-        expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("145"));
-        expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("0"));
-    });
-
-    it("zaps the LP - ABS + single token B", async () => {
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
-        message.outputChoice = ZapOutputChoice.tokenB;
-        message = await initialize(message);
-
-        // add a bit more LP, to have some leftovers
-        await fooBarLP.mint(owner.address, ethers.utils.parseEther("15"));
-        expect(await fooBarLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("160"));
-
-        await executor.execute(message, sigR, sigS, sigV);
-
-        // the LP should be gone (only leftovers) and tokens should have been added
-        expect(await fooBarLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("15"));
-        expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("0"));
+        // check final amounts. Note that 145 were generated during initialization
+        expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("55"));
         expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("145"));
     });
 
-    it("zaps the LP - PRC", async () => {
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+    it("swaps the tokens - PRC", async () => {
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.typeAmt = AmountType.Percentage;
         message.amount = BigNumber.from(5000); // 50%
         message = await initialize(message);
+        await fooToken.mint(owner.address, ethers.utils.parseEther("55"));
 
         await executor.execute(message, sigR, sigS, sigV);
 
-        // 50% of the LP should be gone and tokens should have been added
-        expect(await fooBarLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("72.5"));
-        expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("36.25"));
-        expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("36.25"));
+        // check final amounts. Note that 145 were generated during initialization
+        expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("100"));
+        expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("100"));
     });
 
-    it("zaps the LP - PRC + single token A", async () => {
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
-        message.typeAmt = AmountType.Percentage;
-        message.amount = BigNumber.from(5000); // 50%
-        message.outputChoice = ZapOutputChoice.tokenA;
-        message = await initialize(message);
-
-        await executor.execute(message, sigR, sigS, sigV);
-
-        // 50% of the LP should be gone and tokens should have been added
-        expect(await fooBarLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("72.5"));
-        expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("72.5"));
-        expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("0"));
-    });
-
-    it("zaps the LP - PRC + single token B", async () => {
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
-        message.typeAmt = AmountType.Percentage;
-        message.amount = BigNumber.from(5000); // 50%
-        message.outputChoice = ZapOutputChoice.tokenB;
-        message = await initialize(message);
-
-        await executor.execute(message, sigR, sigS, sigV);
-
-        // 50% of the LP should be gone and tokens should have been added
-        expect(await fooBarLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("72.5"));
-        expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("0"));
-        expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("72.5"));
-    });
-
-    it("zapping triggers reward in gas tank", async () => {
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+    it("swapping triggers reward in gas tank", async () => {
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message = await initialize(message);
         await fooToken.mint(owner.address, ethers.utils.parseEther("55"));
 
         // gasTank should NOT have a claimable amount now for user1
-        expect((await gasTank.claimable(otherWallet.address)).toNumber()).to.equal(0);
+        expect((await gasTank.claimable(user1.address)).toNumber()).to.equal(0);
 
-        await executor.connect(otherWallet).execute(message, sigR, sigS, sigV);
+        await executor.connect(user1).execute(message, sigR, sigS, sigV);
 
         // gasTank should have a claimable amount now for user1
-        expect((await gasTank.claimable(otherWallet.address)).toNumber()).to.not.equal(0);
+        expect((await gasTank.claimable(user1.address)).toNumber()).to.not.equal(0);
     });
 
-    it("zapping is cheap - ABS", async () => {
+    it("swapping is cheap - ABS", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000283106002264848 ETH.
+        // execute the script was 0.000308514002468112 ETH.
+        // NOTE: the swap contract is mocked, so this measures all the rest.
+
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
+        message.typeAmt = AmountType.Percentage;
+        message.amount = BigNumber.from(5000); // 50%
+        message = await initialize(message);
+        await fooToken.mint(owner.address, ethers.utils.parseEther("200"));
+
+        const initialBalance = await owner.getBalance();
+        await executor.execute(message, sigR, sigS, sigV);
+        const spentAmount = initialBalance.sub(await owner.getBalance());
+
+        const threshold = ethers.utils.parseEther("0.00031");
+        console.log("Spent for swapping:", spentAmount.toString());
+        expect(spentAmount.lte(threshold)).to.equal(true);
+    });
+
+    it("swapping is cheap - PRC", async () => {
+        // At the time this test was last checked, the gas spent to
+        // execute the script was 0.000307186002457488 ETH.
+        // NOTE: the swap contract is mocked, so this measures all the rest.
+
         const message = await initialize(baseMessage);
+        await fooToken.mint(owner.address, ethers.utils.parseEther("200"));
 
         const initialBalance = await owner.getBalance();
         await executor.execute(message, sigR, sigS, sigV);
         const spentAmount = initialBalance.sub(await owner.getBalance());
 
-        const threshold = ethers.utils.parseEther("0.00035");
-        console.log("Spent for transfer:", spentAmount.toString());
+        const threshold = ethers.utils.parseEther("0.00031");
+        console.log("Spent for swapping:", spentAmount.toString());
         expect(spentAmount.lte(threshold)).to.equal(true);
     });
-
-    it("zapping is cheap - ABS + single token", async () => {
-        // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000365723002925784 ETH.
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
-        message.outputChoice = ZapOutputChoice.tokenB;
-        message = await initialize(message);
-
-        const initialBalance = await owner.getBalance();
-        await executor.execute(message, sigR, sigS, sigV);
-        const spentAmount = initialBalance.sub(await owner.getBalance());
-
-        const threshold = ethers.utils.parseEther("0.00040");
-        console.log("Spent for transfer:", spentAmount.toString());
-        expect(spentAmount.lte(threshold)).to.equal(true);
-    });
-
-    it("zapping is cheap - PRC", async () => {
-        // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000328240002625920 ETH.
-
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
-        message.typeAmt = AmountType.Percentage;
-        message.amount = BigNumber.from(5000);
-        message = await initialize(message);
-
-        const initialBalance = await owner.getBalance();
-        await executor.execute(message, sigR, sigS, sigV);
-        const spentAmount = initialBalance.sub(await owner.getBalance());
-
-        const threshold = ethers.utils.parseEther("0.00035");
-        console.log("Spent for transfer:", spentAmount.toString());
-        expect(spentAmount.lte(threshold)).to.equal(true);
-    });
-
-    it("zapping is cheap - PRC + single token", async () => {
-        // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000388154516075390 ETH.
-
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
-        message.typeAmt = AmountType.Percentage;
-        message.amount = BigNumber.from(5000);
-        message.outputChoice = ZapOutputChoice.tokenA;
-        message = await initialize(message);
-
-        const initialBalance = await owner.getBalance();
-        await executor.execute(message, sigR, sigS, sigV);
-        const spentAmount = initialBalance.sub(await owner.getBalance());
-
-        const threshold = ethers.utils.parseEther("0.0004");
-        console.log("Spent for transfer:", spentAmount.toString());
-        expect(spentAmount.lte(threshold)).to.equal(true);
-    });
-
     it("sets the lastExecution value during execution", async () => {
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
 
         // enable frequency condition so 2 consecutive executions should fail
         message.frequency.enabled = true;
         message = await initialize(message);
-        await fooBarLP.mint(owner.address, ethers.utils.parseEther("2000"));
+        await fooToken.mint(owner.address, ethers.utils.parseEther("2000"));
 
         // the first one goes through
         await executor.execute(message, sigR, sigS, sigV);
@@ -388,7 +280,7 @@ describe("ScriptExecutor - ZapOut", function () {
     /* ========== ACTION INTRINSIC CHECK ========== */
 
     it("fails if the user doesn't have enough balance, even tho the balance condition was not set", async () => {
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.amount = ethers.utils.parseEther("9999"); // setting an amount higher than the user's balance
         message = await initialize(message);
 
@@ -415,7 +307,7 @@ describe("ScriptExecutor - ZapOut", function () {
     it("fails the verification if frequency is enabled and the start block has not been reached", async () => {
         const timestampNow = Math.floor(Date.now() / 1000);
         // update frequency in message and submit for signature
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.frequency.enabled = true;
         message.frequency.delay = BigNumber.from(0);
         message.frequency.start = BigNumber.from(timestampNow + 5000);
@@ -429,7 +321,7 @@ describe("ScriptExecutor - ZapOut", function () {
     it("fails the verification if frequency is enabled and not enough blocks passed since start block", async () => {
         const timestampNow = Math.floor(Date.now() / 1000);
         // update frequency in message and submit for signature
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.frequency.enabled = true;
         message.frequency.delay = BigNumber.from(timestampNow + 5000);
         message.frequency.start = BigNumber.from(0);
@@ -445,7 +337,7 @@ describe("ScriptExecutor - ZapOut", function () {
     it("fails the verification if balance is enabled and the user does not own enough tokens", async () => {
         // update balance in message and submit for signature
         // enabling it will be enough as the condition is "FOO_TOKEN>150"
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.balance.enabled = true;
         message = await initialize(message);
 
@@ -457,7 +349,7 @@ describe("ScriptExecutor - ZapOut", function () {
     it("fails the verification if balance is enabled and the user owns too many tokens", async () => {
         // update frequency in message and submit for signature
         // we'll change the comparison so it will become "FOO_TOKEN<150"
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.balance.enabled = true;
         message.balance.comparison = ComparisonType.LessThan;
         message = await initialize(message);
@@ -475,7 +367,7 @@ describe("ScriptExecutor - ZapOut", function () {
     it("fails the verification if price is enabled, but token is not supported", async () => {
         // update price in message and submit for signature.
         // Condition: FOO > 150
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.price.enabled = true;
         message.price.token = fooToken.address;
         message.price.comparison = ComparisonType.GreaterThan;
@@ -491,7 +383,7 @@ describe("ScriptExecutor - ZapOut", function () {
     it("fails the verification if price is enabled with GREATER_THAN condition and tokenPrice < value", async () => {
         // update price in message and submit for signature.
         // Condition: FOO > 150
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.price.enabled = true;
         message.price.token = fooToken.address;
         message.price.comparison = ComparisonType.GreaterThan;
@@ -524,7 +416,7 @@ describe("ScriptExecutor - ZapOut", function () {
     it("fails the verification if price is enabled with LESS_THAN condition and tokenPrice > value", async () => {
         // update price in message and submit for signature.
         // Condition: FOO < 150
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.price.enabled = true;
         message.price.token = fooToken.address;
         message.price.comparison = ComparisonType.LessThan;
@@ -557,7 +449,7 @@ describe("ScriptExecutor - ZapOut", function () {
     it("passes the price verification if conditions are met", async () => {
         // update price in message and submit for signature.
         // Condition: FOO < 150
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.price.enabled = true;
         message.price.token = fooToken.address;
         message.price.comparison = ComparisonType.GreaterThan;
@@ -598,7 +490,7 @@ describe("ScriptExecutor - ZapOut", function () {
     /* ========== TIP CONDITION CHECK ========== */
 
     it("fails if the user sets a tip but doesn't have enough funds to pay for it", async () => {
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.tip = ethers.utils.parseEther("15000");
         message = await initialize(message);
 
@@ -607,10 +499,9 @@ describe("ScriptExecutor - ZapOut", function () {
     });
 
     it("Pays the tip to the executor", async () => {
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.tip = ethers.utils.parseEther("5");
         message = await initialize(message);
-        await fooToken.mint(owner.address, ethers.utils.parseEther("55"));
 
         // deposit DAEM in the Tip Jar
         await DAEMToken.approve(gasTank.address, ethers.utils.parseEther("10000"));
@@ -618,7 +509,7 @@ describe("ScriptExecutor - ZapOut", function () {
         let tipBalance = await gasTank.tipBalanceOf(owner.address);
         expect(tipBalance).to.be.equal(ethers.utils.parseEther("10"));
 
-        await executor.connect(otherWallet).execute(message, sigR, sigS, sigV);
+        await executor.connect(user1).execute(message, sigR, sigS, sigV);
 
         // tokens have been removed from the user's tip jar
         tipBalance = await gasTank.tipBalanceOf(owner.address);
@@ -631,7 +522,7 @@ describe("ScriptExecutor - ZapOut", function () {
         const message = await initialize(baseMessage);
 
         // revoke the allowance for the token to the executor contract
-        await fooBarLP.approve(executor.address, ethers.utils.parseEther("0"));
+        await fooToken.approve(executor.address, ethers.utils.parseEther("0"));
 
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
             "[ALLOWANCE][ACTION]"
@@ -641,13 +532,13 @@ describe("ScriptExecutor - ZapOut", function () {
     /* ========== REPETITIONS CONDITION CHECK ========== */
 
     it("fails if the script has been executed more than the allowed repetitions", async () => {
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message.repetitions.enabled = true;
         message.repetitions.amount = BigNumber.from(2);
         message = await initialize(message);
 
         // let's get rich. wink.
-        await fooBarLP.mint(owner.address, ethers.utils.parseEther("20000000"));
+        await fooToken.mint(owner.address, ethers.utils.parseEther("20000000"));
 
         // first two times it goes through
         await executor.execute(message, sigR, sigS, sigV);
@@ -662,7 +553,7 @@ describe("ScriptExecutor - ZapOut", function () {
     /* ========== FOLLOW CONDITION CHECK ========== */
 
     it("fails if the script should follow a script that has not run yet", async () => {
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         // enabling the follow condition. It now points to a script that never executed (as it does not exist),
         // so it should always fail.
         message.follow.enabled = true;
@@ -679,7 +570,7 @@ describe("ScriptExecutor - ZapOut", function () {
         );
         const otherExecutor = await SwapperScriptExecutorContract.deploy();
 
-        let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+        let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         // setting the follow condition to use another executor, so to test the external calls.
         message.follow.enabled = true;
         message.follow.executor = otherExecutor.address;
