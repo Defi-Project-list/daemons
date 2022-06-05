@@ -18,3 +18,4 @@ export * from "./ABIs/script-executors/zap-out-script";
 export * from "./ABIs/utils/erc20";
 export * from "./ABIs/utils/credit-delegation-token";
 export * from "./ABIs/utils/uniswap-V2-router";
+export * from "./ABIs/utils/uniswap-V2-factory";
