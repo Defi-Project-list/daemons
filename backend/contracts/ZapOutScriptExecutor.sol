@@ -163,9 +163,10 @@ contract ZapOutScriptExecutor is ConditionsChecker {
         uint256 amount = IERC20(tokenFrom).balanceOf(address(this));
         approveTokenIfNeeded(tokenFrom, kontract, amount);
 
+        uint256 quote = IUniswapV2Router01(kontract).getAmountsOut(amount, path)[1];
         IUniswapV2Router01(kontract).swapExactTokensForTokens(
             amount,
-            0,
+            quote * 99 / 100,
             path,
             user,
             block.timestamp + 600000 // 10 minutes
