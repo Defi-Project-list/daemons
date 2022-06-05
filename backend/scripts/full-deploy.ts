@@ -27,6 +27,9 @@ import { createLP } from "./single-deployments/a8-create-LP";
 import { deployZapOutExecutor } from "./single-deployments/g1-zapout-executor";
 import { initializeZapOutExecutor } from "./single-deployments/g2-initialize-zapout-executor";
 import { registerZapOutExecutor } from "./single-deployments/g3-register-zapout-in-gas-tank";
+import { registerZapInExecutor } from "./single-deployments/f3-register-zapin-in-gas-tank";
+import { initializeZapInExecutor } from "./single-deployments/f2-initialize-zapin-executor";
+import { deployZapInExecutor } from "./single-deployments/f1-zapin-executor";
 
 async function deployDaemons() {
     // display deployer address and its balance
@@ -78,6 +81,11 @@ async function deployDaemons() {
     currentContracts = await deployMmAdvancedExecutor(currentContracts);
     await initializeMmAdvancedExecutor(currentContracts);
     await registerMmAdvancedExecutor(currentContracts);
+
+    // deploy ZapIn executor
+    currentContracts = await deployZapInExecutor(currentContracts);
+    await initializeZapInExecutor(currentContracts);
+    await registerZapInExecutor(currentContracts);
 
     // deploy ZapOut executor
     currentContracts = await deployZapOutExecutor(currentContracts);
