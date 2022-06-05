@@ -1,6 +1,6 @@
 export interface IContractsList {
     // external
-    DEXRouter: string,
+    DEXRouter: string;
 
     // infrastructure
     GasTank: string;
@@ -14,6 +14,8 @@ export interface IContractsList {
     TransferExecutor: string;
     MmBaseExecutor: string;
     MmAdvancedExecutor: string;
+    ZapInExecutor: string;
+    ZapOutExecutor: string;
 }
 
 export const kovanContracts: IContractsList = {
@@ -28,7 +30,9 @@ export const kovanContracts: IContractsList = {
     SwapExecutor: "0x84e396e9E60A68e90F6D57CC38CB7A56019Ca2e8",
     TransferExecutor: "0xEcA0c2CFF4D7a85974Da1f288A6cef588498D41A",
     MmBaseExecutor: "0x6E8a070c7F8598d155EE3a5da13E5B3CeFd9aE15",
-    MmAdvancedExecutor: "0x2fa5FB3e37C2802ef67823e38C09b1Dfe83A2d68"
+    MmAdvancedExecutor: "0x2fa5FB3e37C2802ef67823e38C09b1Dfe83A2d68",
+    ZapInExecutor: "0xF767b1A5623F001aBe843b0B958d1a4e62100C6D",
+    ZapOutExecutor: "0x422C9642a1f47C016f1E0153dBE83e6B9498EF16"
 };
 
 export const fantomTestnetContracts: IContractsList = {
@@ -43,5 +47,7 @@ export const fantomTestnetContracts: IContractsList = {
     SwapExecutor: "0x0A24c2e6B7939e6C46844609Db88E512CB6a4122",
     TransferExecutor: "0xfD55cbA6E67D374fd1939159153bc1B50e18CCE5",
     MmBaseExecutor: "0xF4210c6bff554B8Ca9eF2c5cbFe33B0d3dfA9Fe7",
-    MmAdvancedExecutor: "0x63486B2296Afb4a9C588B10aA7B210d97aD4F024"
+    MmAdvancedExecutor: "0x63486B2296Afb4a9C588B10aA7B210d97aD4F024",
+    ZapInExecutor: "0xa94413716dCec6A7343E495d963e1bdc7c52945f",
+    ZapOutExecutor: "0x9f82626CaD80b6C87ee681c21F1E46AFD5cE2222"
 };

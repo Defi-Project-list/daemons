@@ -11,6 +11,8 @@ export * from "./ABIs/script-executors/mm-base-script";
 export * from "./ABIs/script-executors/mm-advanced-script";
 export * from "./ABIs/script-executors/swap-script";
 export * from "./ABIs/script-executors/transfer-script";
+export * from "./ABIs/script-executors/zap-in-script";
+export * from "./ABIs/script-executors/zap-out-script";
 
 // utils
 export * from "./ABIs/utils/erc20";
