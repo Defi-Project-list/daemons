@@ -6,38 +6,34 @@ import { FrequencyFactory } from "../condition-base-factories/frequency-factory"
 import { PriceFactory } from "../condition-base-factories/price-factory";
 import { RepetitionsFactory } from "../condition-base-factories/repetitions-factory";
 import { FollowFactory } from "../condition-base-factories/follow-factory";
-import { HealthFactorFactory } from "../condition-base-factories/health-factor-factory";
-import {
-    AdvancedMoneyMarketActionType,
-    IMMAdvancedAction
-} from "@daemons-fi/shared-definitions/build";
+import { IZapOutAction } from "@daemons-fi/shared-definitions/build";
+import { UniswapV2FactoryABI, UniswapV2RouterABI, zapOutScriptAbi } from "@daemons-fi/abis";
 import { AllowanceHelper } from "../allowance-helper";
-import { mmAdvancedScriptAbi } from "@daemons-fi/abis";
 
-export class MmAdvancedScript extends BaseScript {
+export class ZapOutScript extends BaseScript {
     public constructor(
-        private readonly message: IMMAdvancedAction,
+        private readonly message: IZapOutAction,
         signature: string,
         private readonly description: string
     ) {
         super(signature);
     }
 
-    public readonly ScriptType = "MmAdvancedScript";
+    private cachedLPAddress: string | undefined;
+    public readonly ScriptType = "ZapOutScript";
     public getExecutorAddress = () => this.message.executor;
-    public getExecutorAbi = () => mmAdvancedScriptAbi;
+    public getExecutorAbi = () => zapOutScriptAbi;
     public getMessage = () => this.message;
     public getId = () => this.message.scriptId;
     public getUser = () => this.message.user;
     public getDescription = () => this.description;
     protected getAmount = () => this.message.amount;
-    protected getTokenForAllowance = () =>
-        this.message.action === AdvancedMoneyMarketActionType.Repay
-            ? this.message.token
-            : this.message.debtToken;
+    protected getTokenForAllowance = () => {
+        throw new Error("This method should not be used");
+    };
 
     public static async fromStorageJson(object: any) {
-        const message: IMMAdvancedAction = JSON.parse(JSON.stringify(object));
+        const message: IZapOutAction = JSON.parse(JSON.stringify(object));
 
         // complex objects are broken down and need to be recreated. Sigh.
         message.chainId = BigNumber.from(object.chainId);
@@ -49,40 +45,58 @@ export class MmAdvancedScript extends BaseScript {
         message.price = PriceFactory.fromJson(message.price);
         message.repetitions = RepetitionsFactory.fromJson(message.repetitions);
         message.follow = FollowFactory.fromJson(object.follow);
-        message.healthFactor = HealthFactorFactory.fromJson(object.healthFactor);
 
-        return new MmAdvancedScript(message, object.signature, object.description);
+        return new ZapOutScript(message, object.signature, object.description);
     }
 
-    // Override parent hasAllowance, ONLY for borrow,
-    // as we need to use a different contract.
+    // Override parent hasAllowance, as we need the LP rather than the token.
     public async hasAllowance(
         signerOrProvider: ethers.providers.Provider | ethers.Signer
     ): Promise<boolean> {
-        if (this.message.action === AdvancedMoneyMarketActionType.Repay) {
-            return super.hasAllowance(signerOrProvider);
-        }
-
-        return await AllowanceHelper.checkForAAVEDebtTokenAllowance(
+        const lpAddress = await this.getLPAddress(signerOrProvider);
+        return await AllowanceHelper.checkForERC20Allowance(
             this.getUser(),
-            this.getTokenForAllowance(),
+            lpAddress,
             this.getExecutorAddress(),
             this.getAmount(),
             signerOrProvider
         );
     }
 
-    // Override parent requestAllowance, ONLY for borrow,
-    // as we need to use a different contract.
+    // Override parent hasAllowance, as we need the LP rather than the token.
     public async requestAllowance(signer: ethers.Signer): Promise<TransactionResponse> {
-        if (this.message.action === AdvancedMoneyMarketActionType.Repay) {
-            return super.requestAllowance(signer);
-        }
-
+        const lpAddress = await this.getLPAddress(signer);
         return await AllowanceHelper.requestAAVEDebtTokenAllowance(
-            this.getTokenForAllowance(),
+            lpAddress,
             this.getExecutorAddress(),
             signer
         );
     }
+
+    private async getLPAddress(
+      signerOrProvider: ethers.providers.Provider | ethers.Signer
+  ): Promise<string> {
+      if (this.cachedLPAddress) return this.cachedLPAddress;
+
+      // get UniswapV2 Router
+      const uniswapRouterAddress = this.message.kontract;
+      const uniswapV2Router = new ethers.Contract(
+          uniswapRouterAddress,
+          UniswapV2RouterABI,
+          signerOrProvider
+      );
+      // get UniswapV2 Factory
+      const uniswapFactoryAddress = await uniswapV2Router.factory();
+      const uniswapV2Factory = new ethers.Contract(
+          uniswapFactoryAddress,
+          UniswapV2FactoryABI,
+          signerOrProvider
+      );
+
+      this.cachedLPAddress = await uniswapV2Factory.getPair(
+          this.message.tokenA,
+          this.message.tokenB
+      );
+      return this.cachedLPAddress!;
+  }
 }
