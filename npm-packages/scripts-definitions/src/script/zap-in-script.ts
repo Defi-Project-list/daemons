@@ -97,14 +97,14 @@ export class ZapInScript extends BaseScript {
             this.message.amountB
         );
 
-        const txA = allowanceTokenA
+        const txA = !allowanceTokenA
             ? await AllowanceHelper.requestERC20Allowance(
                   this.message.tokenA,
                   this.getExecutorAddress(),
                   signer
               )
             : undefined;
-        const txB = allowanceTokenB
+        const txB = !allowanceTokenB
             ? await AllowanceHelper.requestERC20Allowance(
                   this.message.tokenB,
                   this.getExecutorAddress(),
