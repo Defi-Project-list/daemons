@@ -33,5 +33,12 @@ describe("Mock Uniswap Factory", function () {
 
             expect(pairAddress).to.equal(fooBarLP.address);
         });
+
+        it("gets the fake pair even when token order is inverted", async () => {
+            const pairAddress_foobar = await mockFactory.getPair(fooToken.address, barToken.address);
+            const pairAddress_barfoo = await mockFactory.getPair(barToken.address, fooToken.address);
+
+            expect(pairAddress_foobar).to.equal(pairAddress_barfoo);
+        });
     });
 });

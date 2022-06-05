@@ -14,6 +14,7 @@ contract MockUniswapV2Factory is IUniswapV2Factory {
         address pair
     ) external {
         pairs[tokenA][tokenB] = pair;
+        pairs[tokenB][tokenA] = pair;
     }
 
     function feeTo() external pure override returns (address) {
@@ -32,7 +33,11 @@ contract MockUniswapV2Factory is IUniswapV2Factory {
     }
 
     function getPair(address tokenA, address tokenB) external view override returns (address pair) {
-        return pairs[tokenA][tokenB];
+        address lpAddress = pairs[tokenA][tokenB];
+        if (lpAddress == address(0)) {
+            console.log("The LP was not found, but we'll let the executor deal with it.");
+        }
+        return lpAddress;
     }
 
     function allPairs(uint256) external pure override returns (address pair) {

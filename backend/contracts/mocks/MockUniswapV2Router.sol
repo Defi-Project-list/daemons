@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+import "hardhat/console.sol";
 import "../interfaces/IUniswapV2Router.sol";
 import "../interfaces/IUniswapV2Factory.sol";
 import "./MockToken.sol";
@@ -148,6 +149,10 @@ contract MockUniswapV2Router is IUniswapV2Router01 {
         address to,
         uint256 deadline
     ) external override returns (uint256[] memory amounts) {
+        console.log("swapExactTokensForTokens");
+        console.log("swapping", path[0], "to", path[1]);
+        console.log("amount", amountIn, ", minimum accepted", amountOutMin);
+
         // Get tokens
         MockToken tokenFrom = MockToken(path[0]);
         tokenFrom.transferFrom(msg.sender, address(this), amountIn);
