@@ -59,7 +59,7 @@ async function deployDaemons() {
     await initializeToken(currentContracts);
     const amountETH = ethers.utils.parseEther("1");
     const amountDAEM = ethers.utils.parseEther("1500");
-    await createLP(currentContracts, amountETH, amountDAEM);
+    currentContracts = await createLP(currentContracts, amountETH, amountDAEM);
     await vestTokens(currentContracts, owner);
 
     // deploy swapper executor

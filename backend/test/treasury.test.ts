@@ -540,7 +540,7 @@ describe("Treasury", function () {
             );
         });
 
-        it("LP funding uses all the ETH in the polPool + a proportional amount of DAEM", async () => {
+        it("LP funding uses all the ETH in the polPool", async () => {
             const ETHAmount = utils.parseEther("1.0");
             const DAEMAmount = utils.parseEther("1500");
 

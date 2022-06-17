@@ -184,8 +184,20 @@ contract MockUniswapV2Router is IUniswapV2Router01 {
         address to,
         uint256 deadline
     ) external payable override returns (uint256[] memory amounts) {
-        require(1 == 2, "'swapExactETHForTokens' has not been implemented");
-        return new uint256[](2);
+        require(amountOutMin > 0, "amountOutMin should be > 0 to avoid frontrunning");
+        console.log("swapExactETHForTokens");
+        console.log("swapping", path[0], "to", path[1]);
+        console.log("value", msg.value, ", minimum accepted", amountOutMin);
+
+        // Mint tokens into the 'to' address
+        MockToken tokenTo = MockToken(path[1]);
+        tokenTo.mint(to, amountOutMin);
+
+        uint256[] memory result = new uint256[](2);
+        result[0] = msg.value;
+        result[1] = amountOutMin;
+
+        return result;
     }
 
     function swapTokensForExactETH(

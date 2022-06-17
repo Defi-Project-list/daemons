@@ -28,6 +28,7 @@ contract Treasury is ITreasury, Ownable {
     uint256 public commissionsPool;
     uint256 public polPool;
     bool private polIsInitialized;
+    address[] private ethToDAEMPath;
 
     // staking vars
     uint256 public redistributionInterval = 180 days;
@@ -50,6 +51,9 @@ contract Treasury is ITreasury, Ownable {
         token = IERC20(_token);
         gasTank = _gasTank;
         lpRouter = _lpRouter;
+        ethToDAEMPath = new address[](2);
+        ethToDAEMPath[0] = IUniswapV2Router01(lpRouter).WETH();
+        ethToDAEMPath[1] = address(token);
     }
 
     /* ========== VIEWS STAKING ========== */
@@ -88,11 +92,7 @@ contract Treasury is ITreasury, Ownable {
 
     /** Given an amount of Ethereum, calculates how many DAEM it corresponds to */
     function ethToDAEM(uint256 ethAmount) public view override returns (uint256) {
-        address[] memory path = new address[](2);
-        path[0] = IUniswapV2Router01(lpRouter).WETH();
-        path[1] = address(token);
-
-        return IUniswapV2Router01(lpRouter).getAmountsOut(ethAmount, path)[1];
+        return IUniswapV2Router01(lpRouter).getAmountsOut(ethAmount, ethToDAEMPath)[1];
     }
 
     /* ========== MUTATIVE FUNCTIONS ========== */
@@ -175,10 +175,17 @@ contract Treasury is ITreasury, Ownable {
     /** Adds funds to the Protocol-owned-Liquidity LP */
     function fundLP() external onlyOwner {
         require(polIsInitialized, "PoL not initialized yet");
+        // First we buy back some DAEM at market price using half of the polPool
+        IUniswapV2Router01(lpRouter).swapExactETHForTokens{value: polPool / 2}(
+            (ethToDAEM(polPool / 2) * 99) / 100, // 1% slippage
+            ethToDAEMPath,
+            address(this),
+            block.timestamp
+        );
+
         // we send all the polPool ETH to the LP.
         // The amount of DAEM will be automatically decided by the LP to keep the ratio.
-
-        addLiquidity(polPool, token.balanceOf(address(this)));
+        addLiquidity(polPool / 2, token.balanceOf(address(this)));
         polPool = 0;
     }
 
