@@ -192,3 +192,23 @@ struct ZapOut {
 }
 string constant ZAP_OUT_TYPE = "ZapOut(bytes32 scriptId,address tokenA,address tokenB,uint256 amount,bytes1 typeAmt,uint8 outputChoice,address user,address kontract,address executor,uint256 chainId,uint256 tip,Balance balance,Frequency frequency,Price price,Repetitions repetitions,Follow follow)Balance(bool enabled,address token,bytes1 comparison,uint256 amount)Follow(bool enabled,uint256 shift,bytes32 scriptId,address executor)Frequency(bool enabled,uint256 delay,uint256 start)Price(bool enabled,address token,bytes1 comparison,uint256 value)Repetitions(bool enabled,uint32 amount)";
 bytes32 constant ZAP_OUT_TYPEHASH = keccak256(abi.encodePacked(ZAP_OUT_TYPE));
+
+struct Beefy {
+    bytes32 scriptId;
+    address lpAddress;
+    address mooAddress;
+    bytes1 action;
+    bytes1 typeAmt;
+    uint256 amount;
+    address user;
+    address executor;
+    uint256 chainId;
+    uint256 tip;
+    Balance balance;
+    Frequency frequency;
+    Price price;
+    Repetitions repetitions;
+    Follow follow;
+}
+string constant BEEFY_TYPE = "Beefy(bytes32 scriptId,address lpAddress,address mooAddress,bytes1 action,bytes1 typeAmt,uint256 amount,address user,address executor,uint256 chainId,uint256 tip,Balance balance,Frequency frequency,Price price,Repetitions repetitions,Follow follow)Balance(bool enabled,address token,bytes1 comparison,uint256 amount)Follow(bool enabled,uint256 shift,bytes32 scriptId,address executor)Frequency(bool enabled,uint256 delay,uint256 start)Price(bool enabled,address token,bytes1 comparison,uint256 value)Repetitions(bool enabled,uint32 amount)";
+bytes32 constant BEEFY_TYPEHASH = keccak256(abi.encodePacked(BEEFY_TYPE));
