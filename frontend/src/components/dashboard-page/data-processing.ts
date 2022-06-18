@@ -12,10 +12,13 @@ const colors: { [k: string]: string } = {
     // alt5: "#B5E48C",
     // alt6: "#D9ED92",
 
+    Beefy: "#76C893",
+    MmAdvanced: "#52B69A",
+    MmBase: "#34A0A4",
+    Swap: "#168AAD",
     Transfer: "#1A759F",
-    Swap: "#34A0A4",
-    MmBase: "#76C893",
-    MmAdvanced: "#B5E48C"
+    ZapIn: "#1E6091",
+    ZapOut: "#184E77",
 };
 
 export const userStatsToLineChartData = (userStats: IUserStat[]): any => {
