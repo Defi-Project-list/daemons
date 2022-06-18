@@ -62,7 +62,14 @@ describe("ScriptExecutor - Transfer", function () {
         }
     };
 
+    let snapshotId: string;
     this.beforeEach(async () => {
+        await hre.network.provider.send("evm_revert", [snapshotId]);
+        // [...] A snapshot can only be used once. After a successful evm_revert, the same snapshot id cannot be used again.
+        snapshotId = await hre.network.provider.send("evm_snapshot", []);
+    });
+
+    this.beforeAll(async () => {
         // get main wallet
         [owner, otherWallet] = await ethers.getSigners();
 
@@ -132,6 +139,9 @@ describe("ScriptExecutor - Transfer", function () {
         await executor.preliminaryCheck();
         await gasTank.preliminaryCheck();
         await treasury.preliminaryCheck();
+
+        // get a snapshot of the current state so to speed up tests
+        snapshotId = await hre.network.provider.send("evm_snapshot", []);
     });
 
     async function initialize(baseMessage: ITransferAction): Promise<ITransferAction> {
