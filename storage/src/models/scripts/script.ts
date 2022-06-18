@@ -9,7 +9,7 @@ import { stringifyBigNumber, truncateAndEscapeText } from "../utils";
  */
 const scriptSchema = new mongoose.Schema({
     scriptId: { type: String, required: true, unique:true, index: { unique: true } },
-    chainId: { type: String, required: true, set: stringifyBigNumber },
+    chainId: { type: String, required: true, index: true, set: stringifyBigNumber },
     user: { type: String, required: true, index: true, set: utils.getAddress },
     description: { type: String, required: true, maxlength: 150, set: truncateAndEscapeText },
 }, {
