@@ -23,7 +23,7 @@ export function MyPage(): JSX.Element {
 
     return (
         <div className='my-page'>
-            <div className='title'>My Page</div>
+            <div className='page-title'>My Page</div>
 
             <div className='my-page__layout'>
                 <div className='my-page__left-panel'>

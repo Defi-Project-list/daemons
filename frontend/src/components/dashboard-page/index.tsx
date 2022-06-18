@@ -21,7 +21,7 @@ export function DashboardPage() {
 
     return (
         <div className="dashboard-page">
-            <div className="title">Dashboard</div>
+            <div className="page-title">Dashboard</div>
 
             <div className="dashboard-page__layout">
                 <div className="card">
