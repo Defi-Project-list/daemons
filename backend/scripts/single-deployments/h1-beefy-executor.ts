@@ -1,15 +1,15 @@
 import { ethers } from "hardhat";
 import { DaemonsContracts, updateContracts } from "../daemons-contracts";
 
-export const deployZapOutExecutor = async (
+export const deployBeefyExecutor = async (
     contracts: DaemonsContracts
 ): Promise<DaemonsContracts> => {
-    console.log("Deploying ZapOut Executor");
+    console.log("Deploying Beefy Executor");
 
-    const executorContract = await ethers.getContractFactory("ZapOutScriptExecutor");
+    const executorContract = await ethers.getContractFactory("BeefyScriptExecutor");
     const executor = await executorContract.deploy();
     await executor.deployed();
 
-    console.log(`ZapOut Executor deployed`);
-    return updateContracts(contracts, "ZapOutScriptExecutor", executor.address);
+    console.log(`Beefy Executor deployed`);
+    return updateContracts(contracts, "BeefyScriptExecutor", executor.address);
 };

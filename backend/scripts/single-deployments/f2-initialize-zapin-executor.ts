@@ -4,12 +4,10 @@ export const initializeZapInExecutor = async (contracts: DaemonsContracts): Prom
     console.log("Updating ZapIn Executor");
 
     const gasTankAddress = getContractAddress(contracts, "GasTank");
-    const priceRetrieverAddress = getContractAddress(contracts, "PriceRetriever");
     const gasPriceFeedAddress = getContractAddress(contracts, "GasPriceFeed");
 
     const executor = await getContract(contracts, "ZapInScriptExecutor");
     await executor.setGasTank(gasTankAddress);
-    await executor.setPriceRetriever(priceRetrieverAddress);
     await executor.setGasFeed(gasPriceFeedAddress);
 
     // final checks

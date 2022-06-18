@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+import "hardhat/console.sol";
 import "./Messages.sol";
 import "./interfaces/IGasTank.sol";
-import "./interfaces/IPriceRetriever.sol";
 import "./GasPriceFeed.sol";
+import "./interfaces/IUniswapV2Router.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -16,7 +17,6 @@ abstract contract ConditionsChecker is Ownable {
     uint256 internal chainId;
     IGasTank internal gasTank;
     GasPriceFeed internal gasPriceFeed;
-    IPriceRetriever private priceRetriever;
     uint256 public MINIMUM_GAS_FOR_SCRIPT_EXECUTION = 0.1 ether;
 
     // domain definition
@@ -43,11 +43,6 @@ abstract contract ConditionsChecker is Ownable {
         gasTank = IGasTank(_gasTank);
     }
 
-    function setPriceRetriever(address _priceRetriever) external onlyOwner {
-        require(_priceRetriever != address(0));
-        priceRetriever = IPriceRetriever(_priceRetriever);
-    }
-
     function setGasFeed(address _gasPriceFeed) external onlyOwner {
         require(_gasPriceFeed != address(0));
         gasPriceFeed = GasPriceFeed(_gasPriceFeed);
@@ -61,7 +56,6 @@ abstract contract ConditionsChecker is Ownable {
     /** Checks whether the contract is ready to operate */
     function preliminaryCheck() external view {
         require(address(gasTank) != address(0), "GasTank");
-        require(address(priceRetriever) != address(0), "PricesRetriever");
         require(address(gasPriceFeed) != address(0), "GasPriceFeed");
     }
 
@@ -98,9 +92,11 @@ abstract contract ConditionsChecker is Ownable {
                 abi.encode(
                     PRICE_TYPEHASH,
                     price.enabled,
-                    price.token,
+                    price.tokenA,
+                    price.tokenB,
                     price.comparison,
-                    price.value
+                    price.value,
+                    price.router
                 )
             );
     }
@@ -168,7 +164,12 @@ abstract contract ConditionsChecker is Ownable {
     function verifyPrice(Price calldata price) internal view {
         if (!price.enabled) return;
 
-        uint256 tokenPrice = priceRetriever.priceOf(price.token);
+        address[] memory path = new address[](2);
+        path[0] = price.tokenA;
+        path[1] = price.tokenB;
+        uint256 one = 10**ERC20(price.tokenA).decimals();
+        uint256 tokenPrice = IUniswapV2Router01(price.router).getAmountsOut(one, path)[1];
+        console.log("tokenPrice", tokenPrice);
 
         if (price.comparison == 0x00)
             // greater than

@@ -13,10 +13,10 @@ describe("ScriptExecutor - Transfer", function () {
 
     // contracts
     let gasTank: Contract;
-    let priceRetriever: Contract;
     let executor: Contract;
     let DAEMToken: Contract;
     let fooToken: Contract;
+    let mockRouter: Contract;
 
     // signature components
     let sigR: string;
@@ -46,9 +46,11 @@ describe("ScriptExecutor - Transfer", function () {
         },
         price: {
             enabled: false,
-            token: "",
+            tokenA: "",
+            tokenB: "",
             comparison: ComparisonType.GreaterThan,
-            value: ethers.utils.parseEther("150")
+            value: ethers.utils.parseEther("150"),
+            router: "",
         },
         repetitions: {
             enabled: false,
@@ -78,10 +80,6 @@ describe("ScriptExecutor - Transfer", function () {
         gasTank = await GasTankContract.deploy();
         await gasTank.depositGas({ value: ethers.utils.parseEther("2.0") });
 
-        // Price retriever contract
-        const PriceRetrieverContract = await ethers.getContractFactory("PriceRetriever");
-        priceRetriever = await PriceRetrieverContract.deploy();
-
         // Mock token contracts
         const MockTokenContract = await ethers.getContractFactory("MockToken");
         DAEMToken = await MockTokenContract.deploy("DAEM Token", "DAEM");
@@ -97,7 +95,6 @@ describe("ScriptExecutor - Transfer", function () {
         );
         executor = await TransferScriptExecutorContract.deploy();
         await executor.setGasTank(gasTank.address);
-        await executor.setPriceRetriever(priceRetriever.address);
         await executor.setGasFeed(gasPriceFeed.address);
 
         // Grant allowance
@@ -114,7 +111,7 @@ describe("ScriptExecutor - Transfer", function () {
 
         // Mock router contract
         const MockRouterContract = await ethers.getContractFactory("MockUniswapV2Router");
-        const mockRouter = await MockRouterContract.deploy();
+        mockRouter = await MockRouterContract.deploy();
 
         // Treasury contract
         const TreasuryContract = await ethers.getContractFactory("Treasury");
@@ -152,7 +149,9 @@ describe("ScriptExecutor - Transfer", function () {
         message.token = fooToken.address;
         message.destination = otherWallet.address;
         message.balance.token = fooToken.address;
-        message.price.token = fooToken.address;
+        message.price.tokenA = fooToken.address;
+        message.price.tokenB = DAEMToken.address;
+        message.price.router = mockRouter.address;
         message.follow.executor = executor.address; // following itself, it'll never be executed when condition is enabled
 
         // Sign message
@@ -251,7 +250,7 @@ describe("ScriptExecutor - Transfer", function () {
         await executor.execute(message, sigR, sigS, sigV);
         const spentAmount = initialBalance.sub(await owner.getBalance());
 
-        const threshold = ethers.utils.parseEther("0.0002");
+        const threshold = ethers.utils.parseEther("0.00021");
         console.log("Spent for transfer:", spentAmount.toString());
         expect(spentAmount.lte(threshold)).to.equal(true);
     });
@@ -267,7 +266,7 @@ describe("ScriptExecutor - Transfer", function () {
         await executor.execute(message, sigR, sigS, sigV);
         const spentAmount = initialBalance.sub(await owner.getBalance());
 
-        const threshold = ethers.utils.parseEther("0.0002");
+        const threshold = ethers.utils.parseEther("0.00021");
         console.log("Spent for transfer:", spentAmount.toString());
         expect(spentAmount.lte(threshold)).to.equal(true);
     });
@@ -376,48 +375,14 @@ describe("ScriptExecutor - Transfer", function () {
 
     /* ========== PRICE CONDITION CHECK ========== */
 
-    it("fails the verification if price is enabled, but token is not supported", async () => {
-        // update price in message and submit for signature.
-        // Condition: FOO > 150
-        let message: ITransferAction = JSON.parse(JSON.stringify(baseMessage));
-        message.price.enabled = true;
-        message.price.token = fooToken.address;
-        message.price.comparison = ComparisonType.GreaterThan;
-        message.price.value = ethers.utils.parseEther("150");
-        message = await initialize(message);
-
-        // executor has no price feed for the token, so it should fail
-        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-            "[PriceRetriever] Unsupported token"
-        );
-    });
-
     it("fails the verification if price is enabled with GREATER_THAN condition and tokenPrice < value", async () => {
         // update price in message and submit for signature.
-        // Condition: FOO > 150
+        // Condition: FOO > 1.01
         let message: ITransferAction = JSON.parse(JSON.stringify(baseMessage));
         message.price.enabled = true;
-        message.price.token = fooToken.address;
         message.price.comparison = ComparisonType.GreaterThan;
-        message.price.value = ethers.utils.parseEther("150");
+        message.price.value = ethers.utils.parseEther("1.01");
         message = await initialize(message);
-
-        // define FOO token price and feed decimals
-        const fooDecimals = 18;
-        const feedDecimals = 8;
-        const fooPrice = BigNumber.from("149").mul(
-            BigNumber.from(10).pow(BigNumber.from(feedDecimals))
-        ); // 149 * 10**8
-
-        // add feed for FOO token
-        const mockFooPriceFeed = await ethers.getContractFactory("MockChainlinkAggregator");
-        const fooPriceFeed = await mockFooPriceFeed.deploy(fooPrice);
-        await priceRetriever.addPriceFeed(
-            fooToken.address,
-            fooPriceFeed.address,
-            fooDecimals,
-            feedDecimals
-        );
 
         // verification should fail as the price lower than expected
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
@@ -427,30 +392,12 @@ describe("ScriptExecutor - Transfer", function () {
 
     it("fails the verification if price is enabled with LESS_THAN condition and tokenPrice > value", async () => {
         // update price in message and submit for signature.
-        // Condition: FOO < 150
+        // Condition: FOO < 0.99
         let message: ITransferAction = JSON.parse(JSON.stringify(baseMessage));
         message.price.enabled = true;
-        message.price.token = fooToken.address;
         message.price.comparison = ComparisonType.LessThan;
-        message.price.value = ethers.utils.parseEther("150");
+        message.price.value = ethers.utils.parseEther("0.99");
         message = await initialize(message);
-
-        // define FOO token price and feed decimals
-        const fooDecimals = 18;
-        const feedDecimals = 8;
-        const fooPrice = BigNumber.from("151").mul(
-            BigNumber.from(10).pow(BigNumber.from(feedDecimals))
-        ); // 151 * 10**8
-
-        // add feed for FOO token
-        const mockFooPriceFeed = await ethers.getContractFactory("MockChainlinkAggregator");
-        const fooPriceFeed = await mockFooPriceFeed.deploy(fooPrice);
-        await priceRetriever.addPriceFeed(
-            fooToken.address,
-            fooPriceFeed.address,
-            fooDecimals,
-            feedDecimals
-        );
 
         // verification should fail as the price lower than expected
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
@@ -460,30 +407,12 @@ describe("ScriptExecutor - Transfer", function () {
 
     it("passes the price verification if conditions are met", async () => {
         // update price in message and submit for signature.
-        // Condition: FOO < 150
+        // Condition: FOO > 0.99
         let message: ITransferAction = JSON.parse(JSON.stringify(baseMessage));
         message.price.enabled = true;
-        message.price.token = fooToken.address;
         message.price.comparison = ComparisonType.GreaterThan;
-        message.price.value = ethers.utils.parseEther("150");
+        message.price.value = ethers.utils.parseEther("0.99");
         message = await initialize(message);
-
-        // define FOO token price and feed decimals
-        const fooDecimals = 18;
-        const feedDecimals = 8;
-        const fooPrice = BigNumber.from("151").mul(
-            BigNumber.from(10).pow(BigNumber.from(feedDecimals))
-        ); // 149 * 10**8
-
-        // add feed for FOO token
-        const mockFooPriceFeed = await ethers.getContractFactory("MockChainlinkAggregator");
-        const fooPriceFeed = await mockFooPriceFeed.deploy(fooPrice);
-        await priceRetriever.addPriceFeed(
-            fooToken.address,
-            fooPriceFeed.address,
-            fooDecimals,
-            feedDecimals
-        );
 
         // verification should go through and raise no errors!
         await executor.verify(message, sigR, sigS, sigV);

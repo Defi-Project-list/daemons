@@ -17,9 +17,10 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
 
     // contracts
     let gasTank: Contract;
-    let priceRetriever: Contract;
     let executor: Contract;
     let DAEMToken: Contract;
+    let wETH: Contract;
+    let wBTC: Contract;
     let lpToken: Contract;
     let mooToken: Contract;
     let uniswapRouter: Contract;
@@ -53,9 +54,11 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         },
         price: {
             enabled: false,
-            token: "",
+            tokenA: "",
+            tokenB: "",
             comparison: ComparisonType.GreaterThan,
-            value: ethers.utils.parseEther("150")
+            value: ethers.utils.parseEther("150"),
+            router: ""
         },
         repetitions: {
             enabled: false,
@@ -107,10 +110,6 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         gasTank = await GasTankContract.deploy();
         await gasTank.depositGas({ value: ethers.utils.parseEther("2.0") });
 
-        // Price retriever contract
-        const PriceRetrieverContract = await ethers.getContractFactory("PriceRetriever");
-        priceRetriever = await PriceRetrieverContract.deploy();
-
         // Add DAEM contracts
         const MockTokenContract = await ethers.getContractFactory("MockToken");
         DAEMToken = await MockTokenContract.deploy("Foo Token", "FOO");
@@ -123,7 +122,6 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         const BeefyScriptExecutorContract = await ethers.getContractFactory("BeefyScriptExecutor");
         executor = await BeefyScriptExecutorContract.deploy();
         await executor.setGasTank(gasTank.address);
-        await executor.setPriceRetriever(priceRetriever.address);
         await executor.setGasFeed(gasPriceFeed.address);
 
         // register executor in gas tank
@@ -145,7 +143,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         const amountWETH = ethers.utils.parseEther("1000");
         const wMATICAddress = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270";
         const wETHAddress = "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619";
-        const wETH = await ethers.getContractAt("IWETH", wETHAddress);
+        wETH = await ethers.getContractAt("IWETH", wETHAddress);
         await uniswapRouter.swapExactETHForTokens(
             0,
             [wMATICAddress, wETHAddress],
@@ -159,7 +157,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         // Use the MATIC balance to buy wBTC
         const amountWBTC = ethers.utils.parseEther("1000"); // in matic
         const wBTCAddress = "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6";
-        const wBTC = await ethers.getContractAt("IERC20", wBTCAddress);
+        wBTC = await ethers.getContractAt("IERC20", wBTCAddress);
         await uniswapRouter.swapExactETHForTokens(
             0,
             [wMATICAddress, wBTCAddress],
@@ -245,7 +243,9 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         message.lpAddress = lpToken.address;
         message.mooAddress = mooToken.address;
         message.balance.token = lpToken.address;
-        message.price.token = lpToken.address; // pricing an LP?
+        message.price.tokenA = wETH.address;
+        message.price.tokenB = wBTC.address;
+        message.price.router = uniswapRouter.address;
         message.follow.executor = executor.address; // following itself, it'll never be executed when condition is enabled
 
         // Sign message
@@ -587,48 +587,15 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
 
     /* ========== PRICE CONDITION CHECK ========== */
 
-    it("fails the verification if price is enabled, but token is not supported", async () => {
-        // update price in message and submit for signature.
-        // Condition: FOO > 150
-        let message: IBeefyAction = JSON.parse(JSON.stringify(baseMessage));
-        message.price.enabled = true;
-        message.price.token = DAEMToken.address;
-        message.price.comparison = ComparisonType.GreaterThan;
-        message.price.value = ethers.utils.parseEther("150");
-        message = await initialize(message);
-
-        // executor has no price feed for the token, so it should fail
-        await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
-            "[PriceRetriever] Unsupported token"
-        );
-    });
-
     it("fails the verification if price is enabled with GREATER_THAN condition and tokenPrice < value", async () => {
         // update price in message and submit for signature.
-        // Condition: DAEM > 150
+        // Condition: ETH > BTC 0.055
+        // PRICE AT SNAPSHOT: 0.05407170
         let message: IBeefyAction = JSON.parse(JSON.stringify(baseMessage));
         message.price.enabled = true;
-        message.price.token = DAEMToken.address;
         message.price.comparison = ComparisonType.GreaterThan;
-        message.price.value = ethers.utils.parseEther("150");
+        message.price.value = ethers.utils.parseUnits("0.055", 8);
         message = await initialize(message);
-
-        // define DAEM token price and feed decimals
-        const daemDecimals = 18;
-        const feedDecimals = 8;
-        const daemPrice = BigNumber.from("149").mul(
-            BigNumber.from(10).pow(BigNumber.from(feedDecimals))
-        ); // 149 * 10**8
-
-        // add feed for DAEM token
-        const mockFooPriceFeed = await ethers.getContractFactory("MockChainlinkAggregator");
-        const daemPriceFeed = await mockFooPriceFeed.deploy(daemPrice);
-        await priceRetriever.addPriceFeed(
-            DAEMToken.address,
-            daemPriceFeed.address,
-            daemDecimals,
-            feedDecimals
-        );
 
         // verification should fail as the price lower than expected
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
@@ -638,30 +605,13 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
 
     it("fails the verification if price is enabled with LESS_THAN condition and tokenPrice > value", async () => {
         // update price in message and submit for signature.
-        // Condition: FOO < 150
+        // Condition: ETH < BTC 0.053
+        // PRICE AT SNAPSHOT: 0.05407170
         let message: IBeefyAction = JSON.parse(JSON.stringify(baseMessage));
         message.price.enabled = true;
-        message.price.token = DAEMToken.address;
         message.price.comparison = ComparisonType.LessThan;
-        message.price.value = ethers.utils.parseEther("150");
+        message.price.value = ethers.utils.parseUnits("0.053", 8);
         message = await initialize(message);
-
-        // define FOO token price and feed decimals
-        const fooDecimals = 18;
-        const feedDecimals = 8;
-        const fooPrice = BigNumber.from("151").mul(
-            BigNumber.from(10).pow(BigNumber.from(feedDecimals))
-        ); // 151 * 10**8
-
-        // add feed for FOO token
-        const mockFooPriceFeed = await ethers.getContractFactory("MockChainlinkAggregator");
-        const fooPriceFeed = await mockFooPriceFeed.deploy(fooPrice);
-        await priceRetriever.addPriceFeed(
-            DAEMToken.address,
-            fooPriceFeed.address,
-            fooDecimals,
-            feedDecimals
-        );
 
         // verification should fail as the price lower than expected
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
@@ -671,30 +621,13 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
 
     it("passes the price verification if conditions are met", async () => {
         // update price in message and submit for signature.
-        // Condition: FOO < 150
+        // Condition: ETH > BTC 0.053
+        // PRICE AT SNAPSHOT: 0.05407170
         let message: IBeefyAction = JSON.parse(JSON.stringify(baseMessage));
         message.price.enabled = true;
-        message.price.token = DAEMToken.address;
         message.price.comparison = ComparisonType.GreaterThan;
-        message.price.value = ethers.utils.parseEther("150");
+        message.price.value = ethers.utils.parseUnits("0.053", 8);
         message = await initialize(message);
-
-        // define FOO token price and feed decimals
-        const fooDecimals = 18;
-        const feedDecimals = 8;
-        const fooPrice = BigNumber.from("151").mul(
-            BigNumber.from(10).pow(BigNumber.from(feedDecimals))
-        ); // 149 * 10**8
-
-        // add feed for FOO token
-        const mockFooPriceFeed = await ethers.getContractFactory("MockChainlinkAggregator");
-        const fooPriceFeed = await mockFooPriceFeed.deploy(fooPrice);
-        await priceRetriever.addPriceFeed(
-            DAEMToken.address,
-            fooPriceFeed.address,
-            fooDecimals,
-            feedDecimals
-        );
 
         // verification should go through and raise no errors!
         await executor.verify(message, sigR, sigS, sigV);

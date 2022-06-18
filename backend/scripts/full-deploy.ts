@@ -2,7 +2,6 @@ import hre from "hardhat";
 import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
 import { contracts, printContracts } from "./daemons-contracts";
-import { deployPriceRetriever } from "./single-deployments/a0-price-retriever";
 import { deployDaemToken } from "./single-deployments/a1-daem-token";
 import { deployGasTank } from "./single-deployments/a2-gas-tank";
 import { deployTreasury } from "./single-deployments/a3-treasury";
@@ -52,7 +51,6 @@ async function deployDaemons() {
     printContracts(currentContracts);
 
     // deploy side contracts
-    currentContracts = await deployPriceRetriever(currentChain, currentContracts);
     currentContracts = await deployDaemToken(currentContracts);
     currentContracts = await deployGasTank(currentContracts);
     currentContracts = await deployTreasury(currentContracts);
