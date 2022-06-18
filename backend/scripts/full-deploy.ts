@@ -30,6 +30,9 @@ import { registerZapOutExecutor } from "./single-deployments/g3-register-zapout-
 import { registerZapInExecutor } from "./single-deployments/f3-register-zapin-in-gas-tank";
 import { initializeZapInExecutor } from "./single-deployments/f2-initialize-zapin-executor";
 import { deployZapInExecutor } from "./single-deployments/f1-zapin-executor";
+import { deployBeefyExecutor } from "./single-deployments/h1-beefy-executor";
+import { initializeBeefyExecutor } from "./single-deployments/h2-initialize-beefy-executor";
+import { registerBeefyExecutor } from "./single-deployments/h3-register-beefy-in-gas-tank";
 
 async function deployDaemons() {
     // display deployer address and its balance
@@ -91,6 +94,11 @@ async function deployDaemons() {
     currentContracts = await deployZapOutExecutor(currentContracts);
     await initializeZapOutExecutor(currentContracts);
     await registerZapOutExecutor(currentContracts);
+
+    // deploy Beefy executor
+    currentContracts = await deployBeefyExecutor(currentContracts);
+    await initializeBeefyExecutor(currentContracts);
+    await registerBeefyExecutor(currentContracts);
 }
 
 deployDaemons().catch((error) => {
