@@ -1,6 +1,6 @@
 import { ContractInterface } from "ethers";
 
-export const swapScriptAbi: ContractInterface = [
+export const swapScriptABI: ContractInterface = [
   {
     anonymous: false,
     inputs: [
@@ -177,7 +177,12 @@ export const swapScriptAbi: ContractInterface = [
               },
               {
                 internalType: "address",
-                name: "token",
+                name: "tokenA",
+                type: "address",
+              },
+              {
+                internalType: "address",
+                name: "tokenB",
                 type: "address",
               },
               {
@@ -189,6 +194,11 @@ export const swapScriptAbi: ContractInterface = [
                 internalType: "uint256",
                 name: "value",
                 type: "uint256",
+              },
+              {
+                internalType: "address",
+                name: "router",
+                type: "address",
               },
             ],
             internalType: "struct Price",
@@ -367,19 +377,6 @@ export const swapScriptAbi: ContractInterface = [
     inputs: [
       {
         internalType: "address",
-        name: "_priceRetriever",
-        type: "address",
-      },
-    ],
-    name: "setPriceRetriever",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
         name: "newOwner",
         type: "address",
       },
@@ -501,7 +498,12 @@ export const swapScriptAbi: ContractInterface = [
               },
               {
                 internalType: "address",
-                name: "token",
+                name: "tokenA",
+                type: "address",
+              },
+              {
+                internalType: "address",
+                name: "tokenB",
                 type: "address",
               },
               {
@@ -513,6 +515,11 @@ export const swapScriptAbi: ContractInterface = [
                 internalType: "uint256",
                 name: "value",
                 type: "uint256",
+              },
+              {
+                internalType: "address",
+                name: "router",
+                type: "address",
               },
             ],
             internalType: "struct Price",
@@ -585,55 +592,6 @@ export const swapScriptAbi: ContractInterface = [
       },
     ],
     name: "verify",
-    outputs: [],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "user",
-        type: "address",
-      },
-    ],
-    name: "verifyGasTank",
-    outputs: [],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "user",
-        type: "address",
-      },
-      {
-        internalType: "bytes32",
-        name: "id",
-        type: "bytes32",
-      },
-    ],
-    name: "verifyRevocation",
-    outputs: [],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "tip",
-        type: "uint256",
-      },
-      {
-        internalType: "address",
-        name: "user",
-        type: "address",
-      },
-    ],
-    name: "verifyTip",
     outputs: [],
     stateMutability: "view",
     type: "function",

@@ -120,10 +120,16 @@ export const treasuryABI: ContractInterface = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "DAEMAmount",
+        type: "uint256",
+      },
+    ],
     name: "createLP",
     outputs: [],
-    stateMutability: "nonpayable",
+    stateMutability: "payable",
     type: "function",
   },
   {
@@ -442,9 +448,5 @@ export const treasuryABI: ContractInterface = [
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
-  },
-  {
-    stateMutability: "payable",
-    type: "receive",
   },
 ];

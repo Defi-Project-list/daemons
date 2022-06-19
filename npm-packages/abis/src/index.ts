@@ -2,7 +2,6 @@
 export * from "./ABIs/core/DAEM";
 export * from "./ABIs/core/gas-price-feed";
 export * from "./ABIs/core/gas-tank";
-export * from "./ABIs/core/price-retriever";
 export * from "./ABIs/core/treasury";
 export * from "./ABIs/core/vesting";
 
@@ -13,6 +12,7 @@ export * from "./ABIs/script-executors/swap-script";
 export * from "./ABIs/script-executors/transfer-script";
 export * from "./ABIs/script-executors/zap-in-script";
 export * from "./ABIs/script-executors/zap-out-script";
+export * from "./ABIs/script-executors/beefy-script";
 
 // utils
 export * from "./ABIs/utils/erc20";

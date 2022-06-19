@@ -1,6 +1,6 @@
 import { ContractInterface } from "ethers";
 
-export const mmAdvancedScriptABI: ContractInterface = [
+export const beefyScriptABI: ContractInterface = [
   {
     anonymous: false,
     inputs: [
@@ -76,12 +76,12 @@ export const mmAdvancedScriptABI: ContractInterface = [
           },
           {
             internalType: "address",
-            name: "token",
+            name: "lpAddress",
             type: "address",
           },
           {
             internalType: "address",
-            name: "debtToken",
+            name: "mooAddress",
             type: "address",
           },
           {
@@ -95,11 +95,6 @@ export const mmAdvancedScriptABI: ContractInterface = [
             type: "bytes1",
           },
           {
-            internalType: "bytes1",
-            name: "rateMode",
-            type: "bytes1",
-          },
-          {
             internalType: "uint256",
             name: "amount",
             type: "uint256",
@@ -107,11 +102,6 @@ export const mmAdvancedScriptABI: ContractInterface = [
           {
             internalType: "address",
             name: "user",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "kontract",
             type: "address",
           },
           {
@@ -259,35 +249,8 @@ export const mmAdvancedScriptABI: ContractInterface = [
             name: "follow",
             type: "tuple",
           },
-          {
-            components: [
-              {
-                internalType: "bool",
-                name: "enabled",
-                type: "bool",
-              },
-              {
-                internalType: "address",
-                name: "kontract",
-                type: "address",
-              },
-              {
-                internalType: "bytes1",
-                name: "comparison",
-                type: "bytes1",
-              },
-              {
-                internalType: "uint256",
-                name: "amount",
-                type: "uint256",
-              },
-            ],
-            internalType: "struct HealthFactor",
-            name: "healthFactor",
-            type: "tuple",
-          },
         ],
-        internalType: "struct MmAdvanced",
+        internalType: "struct Beefy",
         name: "message",
         type: "tuple",
       },
@@ -353,19 +316,6 @@ export const mmAdvancedScriptABI: ContractInterface = [
   },
   {
     inputs: [],
-    name: "priceOracle",
-    outputs: [
-      {
-        internalType: "contract IPriceOracleGetter",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "renounceOwnership",
     outputs: [],
     stateMutability: "nonpayable",
@@ -380,19 +330,6 @@ export const mmAdvancedScriptABI: ContractInterface = [
       },
     ],
     name: "revoke",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_priceOracle",
-        type: "address",
-      },
-    ],
-    name: "setAavePriceOracle",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -460,12 +397,12 @@ export const mmAdvancedScriptABI: ContractInterface = [
           },
           {
             internalType: "address",
-            name: "token",
+            name: "lpAddress",
             type: "address",
           },
           {
             internalType: "address",
-            name: "debtToken",
+            name: "mooAddress",
             type: "address",
           },
           {
@@ -479,11 +416,6 @@ export const mmAdvancedScriptABI: ContractInterface = [
             type: "bytes1",
           },
           {
-            internalType: "bytes1",
-            name: "rateMode",
-            type: "bytes1",
-          },
-          {
             internalType: "uint256",
             name: "amount",
             type: "uint256",
@@ -491,11 +423,6 @@ export const mmAdvancedScriptABI: ContractInterface = [
           {
             internalType: "address",
             name: "user",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "kontract",
             type: "address",
           },
           {
@@ -643,35 +570,8 @@ export const mmAdvancedScriptABI: ContractInterface = [
             name: "follow",
             type: "tuple",
           },
-          {
-            components: [
-              {
-                internalType: "bool",
-                name: "enabled",
-                type: "bool",
-              },
-              {
-                internalType: "address",
-                name: "kontract",
-                type: "address",
-              },
-              {
-                internalType: "bytes1",
-                name: "comparison",
-                type: "bytes1",
-              },
-              {
-                internalType: "uint256",
-                name: "amount",
-                type: "uint256",
-              },
-            ],
-            internalType: "struct HealthFactor",
-            name: "healthFactor",
-            type: "tuple",
-          },
         ],
-        internalType: "struct MmAdvanced",
+        internalType: "struct Beefy",
         name: "message",
         type: "tuple",
       },
