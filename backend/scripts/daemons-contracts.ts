@@ -5,37 +5,38 @@ export type DaemonsContracts = { [contractName: string]: string };
 export const contracts: { [chainId: number]: DaemonsContracts } = {
     // Kovan
     42: {
-        UniswapV2Router: "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",
+        IUniswapV2Router01: "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",
         AavePriceOracle: "0xb8be51e6563bb312cbb2aa26e352516c25c26ac1",
-        PriceRetriever: "0x5348715150E8a11Da072f8065CEF24ca5f97d4f5",
-        DaemonsToken: "0xD6b7248D6e2971064250F920E4C476Fb6b1fE4B4",
-        GasTank: "0x6A6D4991Bf6a9cA780a5d3D8A47ACda94caF71B7",
-        Treasury: "0xFc4eCEC41D91f843084d53b8b352867bc5A60324",
-        Vesting: "0x175c1AC32e6E2BFb2361203d6f8531c2d93aF81B",
-        GasPriceFeed: "0x884edAf39D938Ba2CB7D335F38FC58C105d2C96b",
-        SwapperScriptExecutor: "0x84e396e9E60A68e90F6D57CC38CB7A56019Ca2e8",
-        TransferScriptExecutor: "0xEcA0c2CFF4D7a85974Da1f288A6cef588498D41A",
-        MmBaseScriptExecutor: "0x6E8a070c7F8598d155EE3a5da13E5B3CeFd9aE15",
-        MmAdvancedScriptExecutor: "0x2fa5FB3e37C2802ef67823e38C09b1Dfe83A2d68",
-        ZapInScriptExecutor: "0xF767b1A5623F001aBe843b0B958d1a4e62100C6D",
-        ZapOutScriptExecutor: "0x422C9642a1f47C016f1E0153dBE83e6B9498EF16"
+        DaemonsToken: "0x5ef32D9ee682bad5F27B5baff54Cb74AbcCE984B",
+        GasTank: "0x904055a23980796D9D18643aaB601fdeE8fc9757",
+        Treasury: "0xA0E744D8Ebb5389a176058ecA02B9fDeD6975790",
+        Vesting: "0xf73Ae502cb30406eBe5f8f296eab7eC6315cde32",
+        GasPriceFeed: "0xFa0a7D790f76115375915e13272A138a8988FC8f",
+        wethDaemLp: "0xe2A309667b1bB73199A259f558eeE1896a0A3B38",
+        SwapperScriptExecutor: "0x5a7E0B41FaB98C5FF6aD82B0e07Ef1edd9e5f19c",
+        TransferScriptExecutor: "0x288fA4ddc71133B0c6aA2e4d23334498c4ABf17c",
+        MmBaseScriptExecutor: "0xaeA765b56B55BF8c8E499E3779D0e9078b2685c8",
+        MmAdvancedScriptExecutor: "0xA2a2d767Ef7Cfc56477c22dc91AC3Ddb143331E2",
+        ZapInScriptExecutor: "0xA67CF849e202B5425b4dc66901a23268D6e06d05",
+        ZapOutScriptExecutor: "0xf9874541C9f4288f3d32f84A7bcb35821E049df0"
     },
     // Fantom Testnet
     4002: {
-        UniswapV2Router: "0xa6AD18C2aC47803E193F75c3677b14BF19B94883",
+        IUniswapV2Router01: "0xa6AD18C2aC47803E193F75c3677b14BF19B94883",
         AavePriceOracle: "0xA840C768f7143495790eC8dc2D5f32B71B6Dc113",
-        PriceRetriever: "0x460ecd537e357890D3F888e92c5d5bF1452684bd",
-        DaemonsToken: "0x05Af9c3a34c9453e997ad73aBD6A65afCc75411B",
-        GasTank: "0xE3A2D9ddE8Be45809abC20529109CBed11e93003",
-        Treasury: "0xeFe6A3dc992FCe64403eCd11b04F1244A6efEdC1",
-        Vesting: "0x9418AB6CA02487700008866BdA18d7BB13ee7b7f",
-        GasPriceFeed: "0xD706CFe3B1cf42CF6024fCAcF356ef321005D9D2",
-        SwapperScriptExecutor: "0x0A24c2e6B7939e6C46844609Db88E512CB6a4122",
-        TransferScriptExecutor: "0xfD55cbA6E67D374fd1939159153bc1B50e18CCE5",
-        MmBaseScriptExecutor: "0xF4210c6bff554B8Ca9eF2c5cbFe33B0d3dfA9Fe7",
-        MmAdvancedScriptExecutor: "0x63486B2296Afb4a9C588B10aA7B210d97aD4F024",
-        ZapInScriptExecutor: "0xa94413716dCec6A7343E495d963e1bdc7c52945f",
-        ZapOutScriptExecutor: "0x9f82626CaD80b6C87ee681c21F1E46AFD5cE2222"
+        DaemonsToken: "0xa75900C86e0786867e00c58ba9a063C64bc29F50",
+        GasTank: "0x022d1a4EC0B1Cc1750Cc4edaB788ABC505E0FEdb",
+        Treasury: "0x1a8a6f0591564bE6F0700bCf65Fc2fec576ddB61",
+        Vesting: "0x7E593c1f2dAA27bE2aE23975866D1Aeb394CC0a1",
+        GasPriceFeed: "0xfdBb077349d89Bd6C13038d906B5e5cB848eA7eB",
+        wethDaemLp: "0xB3288F9C6d28876cBe9eada94a17eDb212fEc969",
+        SwapperScriptExecutor: "0x1125599412b1a830afD81996F0335D31d68a60A0",
+        TransferScriptExecutor: "0x672a8F6A07C612533E76c363Fb3e2BA051d403A7",
+        MmBaseScriptExecutor: "0x481e74117F2225D458C082C18dA5D3eF3Bc6913A",
+        MmAdvancedScriptExecutor: "0x3b1a45765b4fF76F5708f00a9BEA9c9FB6E0a75f",
+        ZapInScriptExecutor: "0xd27AD781A31c02A6CC72e5A3f266C67Ea21A265D",
+        ZapOutScriptExecutor: "0x876CDE52C84c11ac8d8C1729B7677E4D4016423A",
+        BeefyScriptExecutor: "0xd40e302c60b160A31e6Dca657136caE25fCA7BC0"
     }
 };
 

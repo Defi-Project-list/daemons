@@ -21,7 +21,7 @@ import { deployMmBaseExecutor } from "./single-deployments/d1-mmbase-executor";
 import { registerMmAdvancedExecutor } from "./single-deployments/e3-register-mmadvanced-in-gas-tank";
 import { initializeMmAdvancedExecutor } from "./single-deployments/e2-initialize-mmadvanced-executor";
 import { deployMmAdvancedExecutor } from "./single-deployments/e1-mmadvanced-executor";
-import { vestTokens } from "./single-deployments/a9-vesting";
+import { vestTokens } from "./single-deployments/a10-vesting";
 import { createLP } from "./single-deployments/a8-create-LP";
 import { deployZapOutExecutor } from "./single-deployments/g1-zapout-executor";
 import { initializeZapOutExecutor } from "./single-deployments/g2-initialize-zapout-executor";
@@ -32,6 +32,7 @@ import { deployZapInExecutor } from "./single-deployments/f1-zapin-executor";
 import { deployBeefyExecutor } from "./single-deployments/h1-beefy-executor";
 import { initializeBeefyExecutor } from "./single-deployments/h2-initialize-beefy-executor";
 import { registerBeefyExecutor } from "./single-deployments/h3-register-beefy-in-gas-tank";
+import { retrieveLPAddress } from "./single-deployments/a9-retrieve-LP-address";
 
 async function deployDaemons() {
     // display deployer address and its balance
@@ -58,9 +59,12 @@ async function deployDaemons() {
     currentContracts = await deployGasPriceFeed(currentContracts);
     await finalizeGasTank(currentContracts);
     await initializeToken(currentContracts);
-    const amountETH = ethers.utils.parseEther("1");
-    const amountDAEM = ethers.utils.parseEther("1500");
-    currentContracts = await createLP(currentContracts, amountETH, amountDAEM);
+
+    /** NOTE: LP proportions must be manually set!! */
+    const amountETH = ethers.utils.parseEther("5");
+    const amountDAEM = ethers.utils.parseEther("5");
+    await createLP(currentContracts, amountETH, amountDAEM);
+    currentContracts = await retrieveLPAddress(currentContracts);
     await vestTokens(currentContracts, owner);
 
     // deploy swapper executor
