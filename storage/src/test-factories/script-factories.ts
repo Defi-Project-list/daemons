@@ -49,7 +49,9 @@ function priceConditionFactory(args: any): IPriceCondition {
         enabled: args.enabled ?? false,
         comparison: args.comparison ?? ComparisonType.GreaterThan,
         value: args.value ?? randomEthAmount(),
-        token: args.token ?? faker.finance.ethereumAddress()
+        tokenA: args.tokenA ?? faker.finance.ethereumAddress(),
+        tokenB: args.tokenB ?? faker.finance.ethereumAddress(),
+        router: args.router ?? faker.finance.ethereumAddress()
     };
 }
 

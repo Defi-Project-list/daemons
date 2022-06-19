@@ -18,9 +18,11 @@ export const frequencyCondition = new mongoose.Schema({
 
 export const priceCondition = new mongoose.Schema({
     enabled: { type: Boolean, required: true },
-    token: { type: String, required: true },
+    tokenA: { type: String, required: true, set: utils.getAddress },
+    tokenB: { type: String, required: true, set: utils.getAddress },
     comparison: { type: Number, required: true },
     value: { type: String, required: true, set: stringifyBigNumber },
+    router: { type: String, required: true, set: utils.getAddress },
 });
 
 export const repetitionsCondition = new mongoose.Schema({
