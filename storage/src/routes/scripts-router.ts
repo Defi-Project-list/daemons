@@ -5,7 +5,7 @@ import { TransferScript } from "../models/scripts/transfer-script";
 import { Script } from "../models/scripts/script";
 import { SwapScript } from "../models/scripts/swap-script";
 import { MmBaseScript } from "../models/scripts/mm-base-script";
-import { ISignedMMAdvancedAction, ISignedZapInAction, ISignedZapOutAction } from "@daemons-fi/shared-definitions";
+import { ISignedBeefyAction, ISignedMMAdvancedAction, ISignedZapInAction, ISignedZapOutAction } from "@daemons-fi/shared-definitions";
 import { ISignedMMBaseAction } from "@daemons-fi/shared-definitions";
 import { ISignedSwapAction } from "@daemons-fi/shared-definitions";
 import { ISignedTransferAction } from "@daemons-fi/shared-definitions";
@@ -13,6 +13,7 @@ import { MmAdvancedScript } from "../models/scripts/mm-adv-script";
 import { BrokenScript } from "../models/queues/broken-scripts";
 import { ZapInScript } from "../models/scripts/zap-in-script";
 import { ZapOutScript } from "../models/scripts/zap-out-script";
+import { BeefyScript } from "../models/scripts/beefy-script";
 
 export const scriptsRouter = express.Router();
 
@@ -67,6 +68,9 @@ async function buildScript(script: any, type: string): Promise<any> {
             break;
         case "ZapOutScript":
             await ZapOutScript.build(script as ISignedZapOutAction).save();
+            break;
+        case "BeefyScript":
+            await BeefyScript.build(script as ISignedBeefyAction).save();
             break;
         default:
             throw new Error(`Unsupported script type ${type}`);

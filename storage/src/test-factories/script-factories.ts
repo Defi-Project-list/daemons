@@ -1,6 +1,7 @@
 import { BigNumber, utils } from "ethers";
 import {
     AmountType,
+    BeefyActionType,
     ComparisonType,
     IBalanceCondition,
     IFollowCondition,
@@ -9,6 +10,7 @@ import {
     IMaxRepetitionsCondition,
     InterestRateMode,
     IPriceCondition,
+    ISignedBeefyAction,
     ISignedMMAdvancedAction,
     ISignedZapInAction,
     ISignedZapOutAction,
@@ -24,6 +26,7 @@ import { MmBaseScript } from "../models/scripts/mm-base-script";
 import { MmAdvancedScript } from "../models/scripts/mm-adv-script";
 import { ZapInScript } from "../models/scripts/zap-in-script";
 import { ZapOutScript } from "../models/scripts/zap-out-script";
+import { BeefyScript } from "../models/scripts/beefy-script";
 
 const randomEthAmount = () =>
     utils.parseEther(faker.datatype.number({ min: 0.01, max: 10, precision: 0.01 }).toString());
@@ -194,7 +197,9 @@ export async function mmBaseScriptDocumentFactory(args: any): Promise<ISignedMMB
 }
 
 /** Returns a randomized signed mmAdvanced action */
-export function signedMmAdvancedActionFactory(args: any): ISignedMMAdvancedAction & { __type: string } {
+export function signedMmAdvancedActionFactory(
+    args: any
+): ISignedMMAdvancedAction & { __type: string } {
     return {
         signature: args.signature ?? utils.hexlify(utils.randomBytes(65)),
         description: args.description ?? faker.random.words(4),
@@ -302,4 +307,39 @@ export async function zapOutScriptDocumentFactory(args: any): Promise<ISignedZap
     const jsonTransformedScript = JSON.parse(JSON.stringify(signedScript));
 
     return await ZapOutScript.build(jsonTransformedScript).save();
+}
+
+/** Returns a randomized signed beefy action */
+export function signedBeefyActionFactory(args: any): ISignedBeefyAction & { __type: string } {
+    return {
+        signature: args.signature ?? utils.hexlify(utils.randomBytes(65)),
+        description: args.description ?? faker.random.words(4),
+        scriptId: args.scriptId ?? utils.hexlify(utils.randomBytes(32)),
+        lpAddress: args.lpAddress ?? faker.finance.ethereumAddress(),
+        mooAddress: args.mooAddress ?? faker.finance.ethereumAddress(),
+        action: args.action ?? BeefyActionType.Deposit,
+        typeAmt: args.typeAmt ?? AmountType.Absolute,
+        amount: args.amount ?? randomEthAmount(),
+        user: args.user ?? faker.finance.ethereumAddress(),
+        executor: args.executor ?? faker.finance.ethereumAddress(),
+        chainId: args.chainId ?? BigNumber.from("42"),
+        tip: args.amount ?? randomEthAmount(),
+        balance: balanceConditionFactory(args.balance ?? {}),
+        frequency: frequencyConditionFactory(args.frequency ?? {}),
+        price: priceConditionFactory(args.price ?? {}),
+        repetitions: repetitionsConditionFactory(args.repetitions ?? {}),
+        follow: followConditionFactory(args.follow ?? {}),
+        __type: "BeefyScript"
+    };
+}
+
+/** Adds a BeefyScript to mongo and returns it */
+export async function beefyScriptDocumentFactory(args: any): Promise<ISignedBeefyAction> {
+    const signedScript = signedBeefyActionFactory(args);
+
+    // this step simulates the transformation the object goes through when it is passed into
+    // the body of a POST (i.e. BigNumber fields are serialized and not deserialized to the original object)
+    const jsonTransformedScript = JSON.parse(JSON.stringify(signedScript));
+
+    return await BeefyScript.build(jsonTransformedScript).save();
 }
