@@ -205,9 +205,10 @@ export class ScriptDescriptionFactory {
     }
 
     private priceCondition(form: IPriceConditionForm): string {
-        const token = this.tokensDict[form.tokenAddress ?? ""];
+        const tokenA = this.tokensDict[form.tokenA ?? ""];
+        const tokenB = this.tokensDict[form.tokenB ?? ""];
         const comparison = form.comparison === ComparisonType.GreaterThan ? ">" : "<";
-        return `When ${token.symbol} in is worth ${comparison} ${form.floatValue}`;
+        return `When ${tokenA.symbol} is worth ${comparison} ${form.floatValue} ${tokenB.symbol}`;
     }
 
     private frequencyCondition(form: IFrequencyConditionForm): string {

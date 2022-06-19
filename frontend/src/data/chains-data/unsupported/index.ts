@@ -2,20 +2,23 @@ import { IContractsList } from "@daemons-fi/addresses/build";
 import { IChainInfo } from "../interfaces";
 
 const unsupportedContracts: IContractsList = {
-    DEXRouter: "",
+    IUniswapV2Router01: "",
+    AavePriceOracle: "",
 
     GasTank: "",
-    DAEMToken: "",
+    DaemonsToken: "",
     Treasury: "",
     GasPriceFeed: "",
-    PriceRetriever: "",
+    Vesting: "",
+    wethDaemLp: "",
 
-    SwapExecutor: "",
-    TransferExecutor: "",
-    MmBaseExecutor: "",
-    MmAdvancedExecutor: "",
-    ZapInExecutor: "",
-    ZapOutExecutor: ""
+    SwapperScriptExecutor: "",
+    TransferScriptExecutor: "",
+    MmBaseScriptExecutor: "",
+    MmAdvancedScriptExecutor: "",
+    ZapInScriptExecutor: "",
+    ZapOutScriptExecutor: "",
+    BeefyScriptExecutor: ""
 };
 
 export const unsupportedChain: IChainInfo = {
@@ -30,6 +33,7 @@ export const unsupportedChain: IChainInfo = {
     explorerUrl: "https://kovan.etherscan.io/",
     explorerTxUrl: "https://kovan.etherscan.io/tx/",
     tokens: [],
+    dexes: [],
     contracts: unsupportedContracts,
     actions: []
 };

@@ -1,7 +1,6 @@
 import { Dispatch } from 'redux';
 import { ActionType } from '../action-types';
 import { gasTankABI } from "@daemons-fi/abis";
-import { GasTankAction } from '../actions/gas-tank-actions';
 import { BigNumber, Contract } from 'ethers';
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
 import { TipJarAction } from "../actions/tip-jar-actions";

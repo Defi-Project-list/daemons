@@ -49,10 +49,10 @@ export const TokensModal = ({ tokens, selectedToken, setSelectedToken }: TokensM
         <>
             <div className={`token-address ${tokens?.length === 0 ? 'script-block__field--error' : ''}`}
                 onClick={() => { if (tokens?.length > 0) setModalIsOpen(true); }}>
-                {tokens?.length > 0 ?
+                {tokens?.length > 0 && selectedToken ?
                     <>
-                        <img className='token-img' src={selectedToken?.logoURI} alt={`${selectedToken?.symbol} logo`} />
-                        <div>{selectedToken?.symbol}</div>
+                        <img className='token-img' src={selectedToken.logoURI} alt={`${selectedToken.symbol} logo`} />
+                        <div>{selectedToken.symbol}</div>
                     </> :
                     <>
                         <div className='missing-img'></div>

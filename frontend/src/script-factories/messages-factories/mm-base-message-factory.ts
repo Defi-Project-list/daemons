@@ -67,7 +67,7 @@ export class MmBaseMessageFactory {
             repetitions: maxRepetitions,
             follow: followCondition,
             healthFactor: healthFactorCondition,
-            executor: chain.contracts.MmBaseExecutor,
+            executor: chain.contracts.MmBaseScriptExecutor,
             chainId: BigNumber.from(chain.id)
         };
     }

@@ -76,7 +76,7 @@ export class ZapInMessageFactory {
             price: priceCondition,
             repetitions: maxRepetitions,
             follow: followCondition,
-            executor: chain.contracts.ZapInExecutor,
+            executor: chain.contracts.ZapInScriptExecutor,
             chainId: BigNumber.from(chain.id)
         };
     }

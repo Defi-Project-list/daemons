@@ -33,7 +33,7 @@ export function Staking() {
     const checkForAllowance = async () => {
         const hasAllowance = await AllowanceHelper.checkForERC20Allowance(
             walletAddress!,
-            contracts.DAEMToken,
+            contracts.DaemonsToken,
             contracts.Treasury,
             ethers.utils.parseEther("100000"),
             signer
@@ -71,7 +71,7 @@ export function Staking() {
 
     const requestAllowance = async () => {
         const tx = await AllowanceHelper.requestERC20Allowance(
-            contracts.DAEMToken,
+            contracts.DaemonsToken,
             contracts.Treasury,
             signer
         );

@@ -23,7 +23,7 @@ const validateForm = (values: ITransferActionForm) => {
         errors.destinationAddress = 'required';
     }
     if (values.destinationAddress && !ethers.utils.isAddress(values.destinationAddress)) {
-        errors.destinationAddress = 'it does not seem a real address';
+        errors.destinationAddress = 'it does not seem a valid address';
     }
     return errors;
 };

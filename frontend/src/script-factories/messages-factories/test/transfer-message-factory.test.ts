@@ -52,7 +52,7 @@ describe("Transfer Message Factory", () => {
 
     const fakeChain: any = {
         id: "42",
-        contracts: { TransferExecutor: "0x88884444" },
+        contracts: { TransferScriptExecutor: "0x88884444" },
         tokens: tokens
     };
 

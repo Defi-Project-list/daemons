@@ -67,7 +67,7 @@ export class MmAdvMessageFactory {
             tip: tip,
             user: await provider.getSigner().getAddress(),
             kontract: moneyMarket.poolAddress,
-            executor: chain.contracts.MmAdvancedExecutor,
+            executor: chain.contracts.MmAdvancedScriptExecutor,
             chainId: BigNumber.from(chain.id),
             frequency: frequencyCondition,
             balance: balanceCondition,

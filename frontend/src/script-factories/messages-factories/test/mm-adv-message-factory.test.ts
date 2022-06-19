@@ -62,7 +62,7 @@ describe("MM Advanced Message Factory", () => {
 
     const fakeChain: any = {
         id: "42",
-        contracts: { MmAdvancedExecutor: "0x88884444" }
+        contracts: { MmAdvancedScriptExecutor: "0x88884444" }
     };
 
     it("throws an error if the action type does not correspond", async () => {

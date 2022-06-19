@@ -37,10 +37,10 @@
     "webpack-dev-server": "^4.6.0"
   },
   "dependencies": {
-    "@daemons-fi/abis": "0.0.5",
-    "@daemons-fi/addresses": "0.0.5",
-    "@daemons-fi/shared-definitions": "2.1.2",
-    "@daemons-fi/scripts-definitions": "0.1.20",
+    "@daemons-fi/abis": "0.1.0",
+    "@daemons-fi/addresses": "0.1.0",
+    "@daemons-fi/shared-definitions": "2.1.5",
+    "@daemons-fi/scripts-definitions": "0.1.22",
     "@metamask/detect-provider": "^1.2.0",
     "@types/react": "^17.0.37",
     "@types/react-dom": "^17.0.11",

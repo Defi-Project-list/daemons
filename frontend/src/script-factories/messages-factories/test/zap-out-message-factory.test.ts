@@ -65,7 +65,7 @@ describe("ZapOut Message Factory", () => {
 
     const fakeChain: any = {
         id: "42",
-        contracts: { ZapOutExecutor: "0x88884444" },
+        contracts: { ZapOutScriptExecutor: "0x88884444" },
         tokens: tokens
     };
 

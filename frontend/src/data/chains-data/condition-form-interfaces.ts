@@ -1,4 +1,5 @@
 import { ComparisonType } from '@daemons-fi/shared-definitions';
+import { DEX } from "./interfaces";
 
 
 export enum ScriptConditions {
@@ -33,7 +34,9 @@ export interface IBalanceConditionForm extends IScriptConditionForm {
 
 export interface IPriceConditionForm extends IScriptConditionForm {
     type: ScriptConditions.PRICE;
-    tokenAddress?: string;
+    dex?: DEX;
+    tokenA?: string;
+    tokenB?: string;
     comparison: ComparisonType;
     floatValue: number;
 }

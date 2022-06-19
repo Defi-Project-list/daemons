@@ -8,7 +8,6 @@ export interface IToken {
     address: string;
     logoURI: string;
     decimals: number;
-    hasPriceFeed?: boolean;
 }
 
 export type Token = IToken;
@@ -61,6 +60,7 @@ export interface IChainInfo {
     explorerUrl: string;
     explorerTxUrl: string;
     tokens: Token[];
+    dexes: DEX[];
     contracts: IContractsList;
     actions: IAction[];
 }

@@ -7,6 +7,7 @@ const gasLimits: { [scriptType: string]: number } = {
     MmAdvancedScript: 325000,
     ZapInScript: 320000,
     ZapOutScript: 400000,
+    BeefyScript: 410000,
 };
 
 export const getGasLimitForScript = (scriptType: string): BigNumber => {

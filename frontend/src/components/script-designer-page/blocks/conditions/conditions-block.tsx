@@ -1,5 +1,8 @@
 import React from "react";
-import { IBalanceConditionForm, IHealthFactorConditionForm } from "../../../../data/chains-data/condition-form-interfaces";
+import {
+    IBalanceConditionForm,
+    IHealthFactorConditionForm
+} from "../../../../data/chains-data/condition-form-interfaces";
 import { IFrequencyConditionForm } from "../../../../data/chains-data/condition-form-interfaces";
 import { IScriptConditionForm } from "../../../../data/chains-data/condition-form-interfaces";
 import { ScriptConditions } from "../../../../data/chains-data/condition-form-interfaces";

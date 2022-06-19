@@ -61,7 +61,7 @@ export class SwapMessageFactory {
             price: priceCondition,
             repetitions: maxRepetitions,
             follow: followCondition,
-            executor: chain.contracts.SwapExecutor,
+            executor: chain.contracts.SwapperScriptExecutor,
             chainId: BigNumber.from(chain.id)
         };
     }

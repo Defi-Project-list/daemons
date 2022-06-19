@@ -10,14 +10,19 @@ export class PriceConditionFactory extends PriceFactory {
     public static fromForm = (form: IPriceConditionForm, tokens: Token[]): IPriceCondition => {
         if (!form.valid) throw new Error("Cannot build Price condition from invalid form");
 
-        const token = tokens.filter((token) => token.address === form.tokenAddress)[0];
-        const value = utils.parseUnits(form.floatValue.toString(), token.decimals);
+        // Format the value using the number of decimals of TokenB
+        const tokenForPrice = tokens.find((token) => token.address === form.tokenB);
+        if (!tokenForPrice)
+            throw new Error(`Token ${form.tokenB} was not found in the given list of tokens`);
+        const value = utils.parseUnits(form.floatValue.toString(), tokenForPrice.decimals);
 
         return {
             enabled: true,
             value: value,
             comparison: form.comparison,
-            token: token.address
+            tokenA: form.tokenA!,
+            tokenB: form.tokenB!,
+            router: form.dex!.poolAddress
         };
     };
 

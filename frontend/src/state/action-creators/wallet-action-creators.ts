@@ -11,7 +11,7 @@ const getDAEMContract = async (chainId: string): Promise<Contract> => {
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);
 
     if (!IsChainSupported(chainId)) throw new Error(`Chain ${chainId} is not supported!`);
-    const DAEMAddress = GetCurrentChain(chainId).contracts.DAEMToken;
+    const DAEMAddress = GetCurrentChain(chainId).contracts.DaemonsToken;
 
     return new ethers.Contract(DAEMAddress, ERC20Abi, provider);
 };

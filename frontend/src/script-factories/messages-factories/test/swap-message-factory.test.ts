@@ -64,7 +64,7 @@ describe("Swap Message Factory", () => {
 
     const fakeChain: any = {
         id: "42",
-        contracts: { SwapExecutor: "0x88884444" },
+        contracts: { SwapperScriptExecutor: "0x88884444" },
         tokens: tokens
     };
 

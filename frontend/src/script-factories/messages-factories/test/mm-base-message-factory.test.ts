@@ -59,7 +59,7 @@ describe("MM Base Message Factory", () => {
 
     const fakeChain: any = {
         id: "42",
-        contracts: { MmBaseExecutor: "0x88884444" }
+        contracts: { MmBaseScriptExecutor: "0x88884444" }
     };
 
     it("throws an error if the action type does not correspond", async () => {

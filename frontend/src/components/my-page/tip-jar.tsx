@@ -29,7 +29,7 @@ export function TipJar(): JSX.Element {
     const checkForAllowance = async () => {
         const hasAllowance = await AllowanceHelper.checkForERC20Allowance(
             walletAddress!,
-            contracts.DAEMToken,
+            contracts.DaemonsToken,
             contracts.GasTank,
             ethers.utils.parseEther("10000000000"),
             signer
@@ -39,7 +39,7 @@ export function TipJar(): JSX.Element {
 
     const requestAllowance = async () => {
         const tx = await AllowanceHelper.requestERC20Allowance(
-            contracts.DAEMToken,
+            contracts.DaemonsToken,
             contracts.GasTank,
             signer
         );

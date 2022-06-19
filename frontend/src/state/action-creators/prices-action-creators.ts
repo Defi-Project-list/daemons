@@ -11,7 +11,7 @@ const getDEXRouterContract = async (chainId: string): Promise<Contract> => {
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);
 
     if (!IsChainSupported(chainId)) throw new Error(`Chain ${chainId} is not supported!`);
-    const contractAddress = GetCurrentChain(chainId).contracts.DEXRouter;
+    const contractAddress = GetCurrentChain(chainId).contracts.IUniswapV2Router01;
 
     return new ethers.Contract(contractAddress, UniswapV2RouterABI, provider);
 };
@@ -30,7 +30,7 @@ export const fetchDAEMPriceInEth = (chainId?: string) => {
         console.log("Retrieving DAEM price in ETH", chainId);
         const router = await getDEXRouterContract(chainId);
         const weth = await router.WETH();
-        const path = [GetCurrentChain(chainId).contracts.DAEMToken, weth];
+        const path = [GetCurrentChain(chainId).contracts.DaemonsToken, weth];
 
         // Get amount of ETH for 1 DAEM
         const rawPrice: BigNumber = (await router.getAmountsOut(utils.parseEther("1"), path))[1];

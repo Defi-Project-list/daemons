@@ -11,6 +11,7 @@ export enum ScriptAction {
     MM_ADV = "MM_ADV",
     ZAP_IN = "ZAP_IN",
     ZAP_OUT = "ZAP_OUT",
+    BEEFY = "BEEFY",
     // DAO = "DAO",
     // FARM = "FARM",
 }

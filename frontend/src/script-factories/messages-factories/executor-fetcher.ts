@@ -8,12 +8,13 @@ export function getExecutorFromScriptAction(action: ScriptAction, chainId: strin
 
     const contracts = GetCurrentChain(chainId).contracts;
     switch (action) {
-        case ScriptAction.SWAP: return contracts.SwapExecutor;
-        case ScriptAction.TRANSFER: return contracts.TransferExecutor;
-        case ScriptAction.MM_BASE: return contracts.MmBaseExecutor;
-        case ScriptAction.MM_ADV: return contracts.MmAdvancedExecutor;
-        case ScriptAction.ZAP_IN: return contracts.ZapInExecutor;
-        case ScriptAction.ZAP_OUT: return contracts.ZapOutExecutor;
+        case ScriptAction.SWAP: return contracts.SwapperScriptExecutor;
+        case ScriptAction.TRANSFER: return contracts.TransferScriptExecutor;
+        case ScriptAction.MM_BASE: return contracts.MmBaseScriptExecutor;
+        case ScriptAction.MM_ADV: return contracts.MmAdvancedScriptExecutor;
+        case ScriptAction.ZAP_IN: return contracts.ZapInScriptExecutor;
+        case ScriptAction.ZAP_OUT: return contracts.ZapOutScriptExecutor;
+        case ScriptAction.BEEFY: return contracts.BeefyScriptExecutor;
         default: throw new Error(`Cannot find executor address for action ${action}`);
     }
 }

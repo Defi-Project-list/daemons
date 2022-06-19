@@ -62,7 +62,7 @@ export class TransferMessageFactory {
             price: priceCondition,
             repetitions: maxRepetitions,
             follow: followCondition,
-            executor: chain.contracts.TransferExecutor,
+            executor: chain.contracts.TransferScriptExecutor,
             chainId: BigNumber.from(chain.id)
         };
     }

@@ -66,7 +66,7 @@ describe("ZapIn Message Factory", () => {
 
     const fakeChain: any = {
         id: "42",
-        contracts: { ZapInExecutor: "0x88884444" },
+        contracts: { ZapInScriptExecutor: "0x88884444" },
         tokens: tokens
     };
 
