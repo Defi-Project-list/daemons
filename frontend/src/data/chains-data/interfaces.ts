@@ -48,6 +48,8 @@ export enum ConditionTitles {
     HEALTH_FACTOR = "Health Factor"
 }
 
+export type BeefyMooForLP = {[lpAddress: string]: string};
+
 export interface IChainInfo {
     name: string;
     id: string;
@@ -61,6 +63,7 @@ export interface IChainInfo {
     explorerTxUrl: string;
     tokens: Token[];
     dexes: DEX[];
+    beefyMoos: BeefyMooForLP;
     contracts: IContractsList;
     actions: IAction[];
 }

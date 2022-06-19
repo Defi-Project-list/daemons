@@ -2,6 +2,7 @@ import {
     AdvancedMoneyMarketActionType,
     AmountType,
     BaseMoneyMarketActionType,
+    BeefyActionType,
     InterestRateMode,
     ZapOutputChoice
 } from "@daemons-fi/shared-definitions/build";
@@ -12,6 +13,7 @@ import {
     ITransferActionForm,
     IZapInActionForm,
     IZapOutActionForm,
+    IBeefyActionForm,
     ScriptAction
 } from "../action-form-interfaces";
 import { IAction } from "../interfaces";
@@ -134,7 +136,7 @@ export const ZapOutAction: IAction = {
 
     form: {
         type: ScriptAction.ZAP_OUT,
-        valid: true,
+        valid: false,
         tokenA: "",
         tokenB: "",
         amountType: AmountType.Percentage,
@@ -143,6 +145,25 @@ export const ZapOutAction: IAction = {
         outputChoice: ZapOutputChoice.bothTokens,
         dex: kovanSushiDEX
     } as IZapOutActionForm,
+
+    conditions: [FrequencyCondition, BalanceCondition, PriceCondition, RepetitionsCondition]
+};
+
+export const BeefyAction: IAction = {
+    title: "Beefy",
+    info: "Deposit or Withdraw LPs from Beefy",
+
+    form: {
+        type: ScriptAction.BEEFY,
+        valid: true,
+        lpAddress: "",
+        mooAddress: "",
+        lpName: "",
+        action: BeefyActionType.Deposit,
+        amountType: AmountType.Percentage,
+        floatAmount: 50,
+        floatTip: 0
+    } as IBeefyActionForm,
 
     conditions: [FrequencyCondition, BalanceCondition, PriceCondition, RepetitionsCondition]
 };

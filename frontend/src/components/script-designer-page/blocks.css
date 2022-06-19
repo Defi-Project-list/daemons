@@ -141,12 +141,8 @@
 
 /* Shared */
 
-.condition-block {
-    display: flex;
-    flex-direction: column;
-    row-gap: 10px;
-}
-
+.action-block,
+.condition-block,
 .swap-block,
 .transfer-block {
     display: flex;

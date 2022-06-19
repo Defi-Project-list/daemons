@@ -107,7 +107,7 @@ export const PriceCondition = ({
             }}
             render={({ handleSubmit }) => (
                 <form onSubmit={handleSubmit}>
-                    <div className="condition-block">
+                    <div className="action-block">
                         <div className="script-block__panel--two-columns price-block">
                             <div>Select DEX:</div>
                             <Field name="dex" component="select">
@@ -137,10 +137,7 @@ export const PriceCondition = ({
                             <div>When</div>
                             <TokensModal
                                 tokens={tokens}
-                                selectedToken={tokens.find((t) => {
-                                    console.log(form.tokenA);
-                                    return t.address === form.tokenA;
-                                })}
+                                selectedToken={tokens.find((t) => t.address === form.tokenA)}
                                 setSelectedToken={(token) => {
                                     const updatedForm = { ...form, tokenA: token.address };
                                     const valid = isFormValid(updatedForm);
@@ -219,6 +216,9 @@ export const PriceCondition = ({
                                 ? `The pair seems unsupported! Use at your own risk!`
                                 : `Current price: ${currentPrice}`}
                         </div>
+
+                        {/* ENABLE WHEN DEBUGGING!  */}
+                        {/* <p>{JSON.stringify(form, null, ' ')}</p> */}
                     </div>
                 </form>
             )}

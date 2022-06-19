@@ -1,21 +1,14 @@
-import {
-    ISwapAction,
-    IZapInAction,
-    IZapOutAction,
-    swapDomain,
-    swapTypes,
-    zapInDomain,
-    zapInTypes,
-    zapOutDomain,
-    zapOutTypes
-} from "@daemons-fi/shared-definitions";
 import { ITransferAction, transferDomain, transferTypes } from "@daemons-fi/shared-definitions";
-import { IMMBaseAction, mmBaseDomain, mmBaseTypes } from "@daemons-fi/shared-definitions";
 import { IMMAdvancedAction, mmAdvDomain, mmAdvTypes } from "@daemons-fi/shared-definitions";
+import { IMMBaseAction, mmBaseDomain, mmBaseTypes } from "@daemons-fi/shared-definitions";
+import { ISwapAction, swapDomain, swapTypes } from "@daemons-fi/shared-definitions";
+import { IZapInAction, zapInDomain, zapInTypes } from "@daemons-fi/shared-definitions";
+import { IZapOutAction, zapOutDomain, zapOutTypes } from "@daemons-fi/shared-definitions";
+import { IBeefyAction, BeefyDomain, BeefyTypes } from "@daemons-fi/shared-definitions";
 import { TransferMessageFactory } from "./messages-factories/transfer-message-factory";
 import { GetCurrentChain, IsChainSupported } from "../data/chain-info";
 import { ICurrentScript } from "./i-current-script";
-import { BaseScript, ZapInScript, ZapOutScript } from "@daemons-fi/scripts-definitions";
+import { BaseScript, BeefyScript, ZapInScript, ZapOutScript } from "@daemons-fi/scripts-definitions";
 import { ScriptAction } from "../data/chains-data/action-form-interfaces";
 import { SwapScript } from "@daemons-fi/scripts-definitions";
 import { TransferScript } from "@daemons-fi/scripts-definitions";
@@ -26,6 +19,7 @@ import { MmAdvMessageFactory } from "./messages-factories/mm-adv-message-factory
 import { MmAdvancedScript } from "@daemons-fi/scripts-definitions";
 import { ZapInMessageFactory } from "./messages-factories/zap-in-message-factory";
 import { ZapOutMessageFactory } from "./messages-factories/zap-out-message-factory";
+import { BeefyMessageFactory } from "./messages-factories/beefy-message-factory";
 
 type ScriptDefinition =
     | ISwapAction
@@ -33,7 +27,8 @@ type ScriptDefinition =
     | IMMBaseAction
     | IMMAdvancedAction
     | IZapInAction
-    | IZapOutAction;
+    | IZapOutAction
+    | IBeefyAction;
 
 interface IMessage {
     script: ScriptDefinition;
@@ -141,6 +136,19 @@ export class ScriptFactory {
                 return new ZapOutScript(
                     zapOutMessage.script,
                     zapOutScriptSignature,
+                    bundle.description
+                );
+
+            case ScriptAction.BEEFY:
+                const beefyMessage = {
+                    script: await BeefyMessageFactory.create(bundle, chain, this.provider),
+                    domain: BeefyDomain,
+                    types: BeefyTypes
+                };
+                const beefyScriptSignature = await getSignature(beefyMessage);
+                return new BeefyScript(
+                    beefyMessage.script,
+                    beefyScriptSignature,
                     bundle.description
                 );
 

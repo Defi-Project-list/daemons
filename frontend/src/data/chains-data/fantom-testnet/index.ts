@@ -1,7 +1,14 @@
 import { fantomTestnetContracts } from "@daemons-fi/addresses/build";
-import { IChainInfo } from '../interfaces';
-import { AaveMMAdvancedAction, AaveMMBaseAction, SwapAction, TransferAction, ZapInAction, ZapOutAction } from './action-forms';
-import { fantomTestnetDexes, fantomTestnetTokens } from './tokens';
+import { IChainInfo } from "../interfaces";
+import {
+    AaveMMAdvancedAction,
+    AaveMMBaseAction,
+    SwapAction,
+    TransferAction,
+    ZapInAction,
+    ZapOutAction
+} from "./action-forms";
+import { fantomTestnetDexes, fantomTestnetTokens } from "./tokens";
 
 export const fantomTestnetInfo: IChainInfo = {
     name: "FantomTestnet",
@@ -9,13 +16,21 @@ export const fantomTestnetInfo: IChainInfo = {
     hex: "0xfa2",
     defaultRPC: "https://rpc.testnet.fantom.network/",
     iconPath: "/icons/fantom.jpg",
-    coinName: 'Fantom',
-    coinSymbol: 'FTM',
+    coinName: "Fantom",
+    coinSymbol: "FTM",
     coinDecimals: 18,
-    explorerUrl: 'https://testnet.ftmscan.com/',
-    explorerTxUrl: 'https://testnet.ftmscan.com/tx/',
+    explorerUrl: "https://testnet.ftmscan.com/",
+    explorerTxUrl: "https://testnet.ftmscan.com/tx/",
     tokens: fantomTestnetTokens,
     dexes: fantomTestnetDexes,
+    beefyMoos: {},
     contracts: fantomTestnetContracts,
-    actions: [TransferAction, SwapAction, AaveMMBaseAction, AaveMMAdvancedAction, ZapInAction, ZapOutAction],
+    actions: [
+        TransferAction,
+        SwapAction,
+        AaveMMBaseAction,
+        AaveMMAdvancedAction,
+        ZapInAction,
+        ZapOutAction
+    ]
 };

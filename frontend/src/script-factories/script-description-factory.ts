@@ -2,6 +2,7 @@ import {
     AdvancedMoneyMarketActionType,
     AmountType,
     BaseMoneyMarketActionType,
+    BeefyActionType,
     ComparisonType,
     InterestRateMode,
     ZapOutputChoice
@@ -9,6 +10,7 @@ import {
 import {
     IAdvancedMMActionForm,
     IBaseMMActionForm,
+    IBeefyActionForm,
     ISwapActionForm,
     ITransferActionForm,
     IZapInActionForm,
@@ -58,6 +60,8 @@ export class ScriptDescriptionFactory {
                 return this.zapInAction(action.form as IZapInActionForm);
             case ScriptAction.ZAP_OUT:
                 return this.zapOutAction(action.form as IZapOutActionForm);
+            case ScriptAction.BEEFY:
+                return this.BeefyAction(action.form as IBeefyActionForm);
             default:
                 console.error(`Unknown action ${action.form.type}.`);
                 return `#!@!# Unknown action ${action.form.type}. Please add to factory #!@!#`;
@@ -176,6 +180,17 @@ export class ScriptDescriptionFactory {
         const lp = `${tokenA.symbol}-${tokenB.symbol}-LP`;
 
         return `Zap ${amount} ${lp} into ${outcome}`;
+    }
+
+    private BeefyAction(form: IBeefyActionForm): string {
+        const amount =
+            form.amountType === AmountType.Absolute
+                ? form.floatAmount.toString()
+                : `${form.floatAmount / 100}% of the available`;
+
+        return form.action === BeefyActionType.Deposit
+            ? `Deposit ${amount} ${form.lpName} into Beefy`
+            : `Withdraw ${amount} ${form.lpName} from Beefy`;
     }
 
     private extractConditionDescription(condition: ICondition): string {

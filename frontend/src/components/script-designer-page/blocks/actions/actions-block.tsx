@@ -2,6 +2,7 @@ import React from "react";
 import {
     IAdvancedMMActionForm,
     IBaseMMActionForm,
+    IBeefyActionForm,
     IScriptActionForm,
     ISwapActionForm,
     ITransferActionForm,
@@ -10,6 +11,7 @@ import {
     ScriptAction
 } from "../../../../data/chains-data/action-form-interfaces";
 import { IAction } from "../../../../data/chains-data/interfaces";
+import { BeefyAction } from "./beefy-action";
 import { MmAdvAction } from "./mm-adv-action";
 import { MmBaseAction } from "./mm-base-action";
 import { SwapAction } from "./swap-action";
@@ -45,6 +47,9 @@ export const ActionBlock = ({ action, onUpdate, onRemove }: IActionBlockProps) =
 
             case ScriptAction.ZAP_OUT:
                 return <ZapOutAction form={actionForm as IZapOutActionForm} update={onUpdate} />;
+
+            case ScriptAction.BEEFY:
+                return <BeefyAction form={actionForm as IBeefyActionForm} update={onUpdate} />;
 
             default:
                 throw new Error(`Unrecognized action ${actionForm.type}`);

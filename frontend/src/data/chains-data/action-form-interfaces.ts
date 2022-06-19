@@ -1,4 +1,4 @@
-import { AdvancedMoneyMarketActionType, AmountType, InterestRateMode, ZapOutputChoice } from '@daemons-fi/shared-definitions';
+import { AdvancedMoneyMarketActionType, AmountType, BeefyActionType, InterestRateMode, ZapOutputChoice } from '@daemons-fi/shared-definitions';
 import { BaseMoneyMarketActionType } from '@daemons-fi/shared-definitions';
 import { DEX, MoneyMarket } from './interfaces';
 
@@ -82,6 +82,17 @@ export interface IZapOutActionForm extends IScriptActionForm {
     outputChoice: ZapOutputChoice;
     floatTip: number;
     dex: DEX;
+}
+
+export interface IBeefyActionForm extends IScriptActionForm {
+    type: ScriptAction.BEEFY;
+    action: BeefyActionType;
+    lpAddress?: string;
+    mooAddress?: string;
+    lpName: string;
+    amountType: AmountType;
+    floatAmount: number;
+    floatTip: number;
 }
 
 export interface INoActionForm extends IScriptActionForm {
