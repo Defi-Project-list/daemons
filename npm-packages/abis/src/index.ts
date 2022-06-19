@@ -17,5 +17,6 @@ export * from "./ABIs/script-executors/beefy-script";
 // utils
 export * from "./ABIs/utils/erc20";
 export * from "./ABIs/utils/credit-delegation-token";
+export * from "./ABIs/utils/money-market";
 export * from "./ABIs/utils/uniswap-V2-router";
 export * from "./ABIs/utils/uniswap-V2-factory";
