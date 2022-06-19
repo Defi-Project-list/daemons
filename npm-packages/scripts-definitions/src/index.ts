@@ -6,6 +6,7 @@ export * from './script/swap-script';
 export * from './script/transfer-script';
 export * from './script/zap-in-script';
 export * from './script/zap-out-script';
+export * from './script/beefy-script';
 
 // condition factories
 export * from './condition-base-factories/balance-factory';

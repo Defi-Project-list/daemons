@@ -12,8 +12,10 @@ describe('Price Factory', () => {
 
         expect(empty.enabled).to.be.false;
         expect(empty.value.toNumber()).to.be.equal(0);
-        expect(empty.token).to.be.equal(ZeroAddress);
+        expect(empty.tokenA).to.be.equal(ZeroAddress);
+        expect(empty.tokenB).to.be.equal(ZeroAddress);
         expect(empty.comparison).to.be.equal(0);
+        expect(empty.router).to.be.equal(ZeroAddress);
     });
 
     it('returns an empty condition when trying to build from undefined json', async () => {
@@ -25,9 +27,11 @@ describe('Price Factory', () => {
     it('restores condition from json object', async () => {
         const originalCondition: IPriceCondition = {
             enabled: true,
-            token: '0x123',
+            tokenA: '0x123',
+            tokenB: '0x456',
             comparison: ComparisonType.GreaterThan,
             value: ethers.utils.parseEther('1.255'),
+            router: '0x789',
         };
         const jsonCondition = JSON.parse(JSON.stringify(originalCondition));
         const condition = PriceFactory.fromJson(jsonCondition);

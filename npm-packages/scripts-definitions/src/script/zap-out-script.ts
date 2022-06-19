@@ -7,7 +7,7 @@ import { PriceFactory } from "../condition-base-factories/price-factory";
 import { RepetitionsFactory } from "../condition-base-factories/repetitions-factory";
 import { FollowFactory } from "../condition-base-factories/follow-factory";
 import { IZapOutAction } from "@daemons-fi/shared-definitions/build";
-import { UniswapV2FactoryABI, UniswapV2RouterABI, zapOutScriptAbi } from "@daemons-fi/abis";
+import { UniswapV2FactoryABI, UniswapV2RouterABI, zapOutScriptABI } from "@daemons-fi/abis";
 import { AllowanceHelper } from "../allowance-helper";
 
 export class ZapOutScript extends BaseScript {
@@ -22,7 +22,7 @@ export class ZapOutScript extends BaseScript {
     private cachedLPAddress: string | undefined;
     public readonly ScriptType = "ZapOutScript";
     public getExecutorAddress = () => this.message.executor;
-    public getExecutorAbi = () => zapOutScriptAbi;
+    public getExecutorAbi = () => zapOutScriptABI;
     public getMessage = () => this.message;
     public getId = () => this.message.scriptId;
     public getUser = () => this.message.user;
@@ -74,29 +74,29 @@ export class ZapOutScript extends BaseScript {
     }
 
     private async getLPAddress(
-      signerOrProvider: ethers.providers.Provider | ethers.Signer
-  ): Promise<string> {
-      if (this.cachedLPAddress) return this.cachedLPAddress;
+        signerOrProvider: ethers.providers.Provider | ethers.Signer
+    ): Promise<string> {
+        if (this.cachedLPAddress) return this.cachedLPAddress;
 
-      // get UniswapV2 Router
-      const uniswapRouterAddress = this.message.kontract;
-      const uniswapV2Router = new ethers.Contract(
-          uniswapRouterAddress,
-          UniswapV2RouterABI,
-          signerOrProvider
-      );
-      // get UniswapV2 Factory
-      const uniswapFactoryAddress = await uniswapV2Router.factory();
-      const uniswapV2Factory = new ethers.Contract(
-          uniswapFactoryAddress,
-          UniswapV2FactoryABI,
-          signerOrProvider
-      );
+        // get UniswapV2 Router
+        const uniswapRouterAddress = this.message.kontract;
+        const uniswapV2Router = new ethers.Contract(
+            uniswapRouterAddress,
+            UniswapV2RouterABI,
+            signerOrProvider
+        );
+        // get UniswapV2 Factory
+        const uniswapFactoryAddress = await uniswapV2Router.factory();
+        const uniswapV2Factory = new ethers.Contract(
+            uniswapFactoryAddress,
+            UniswapV2FactoryABI,
+            signerOrProvider
+        );
 
-      this.cachedLPAddress = await uniswapV2Factory.getPair(
-          this.message.tokenA,
-          this.message.tokenB
-      );
-      return this.cachedLPAddress!;
-  }
+        this.cachedLPAddress = await uniswapV2Factory.getPair(
+            this.message.tokenA,
+            this.message.tokenB
+        );
+        return this.cachedLPAddress!;
+    }
 }

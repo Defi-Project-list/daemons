@@ -7,7 +7,7 @@ import { PriceFactory } from "../condition-base-factories/price-factory";
 import { RepetitionsFactory } from "../condition-base-factories/repetitions-factory";
 import { FollowFactory } from "../condition-base-factories/follow-factory";
 import { IZapInAction } from "@daemons-fi/shared-definitions/build";
-import { zapInScriptAbi } from "@daemons-fi/abis";
+import { zapInScriptABI } from "@daemons-fi/abis";
 import { AllowanceHelper } from "../allowance-helper";
 
 export class ZapInScript extends BaseScript {
@@ -21,7 +21,7 @@ export class ZapInScript extends BaseScript {
 
     public readonly ScriptType = "ZapInScript";
     public getExecutorAddress = () => this.message.executor;
-    public getExecutorAbi = () => zapInScriptAbi;
+    public getExecutorAbi = () => zapInScriptABI;
     public getMessage = () => this.message;
     public getId = () => this.message.scriptId;
     public getUser = () => this.message.user;

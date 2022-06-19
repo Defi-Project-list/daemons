@@ -5,22 +5,21 @@ import { FrequencyFactory } from "../condition-base-factories/frequency-factory"
 import { PriceFactory } from "../condition-base-factories/price-factory";
 import { RepetitionsFactory } from "../condition-base-factories/repetitions-factory";
 import { FollowFactory } from "../condition-base-factories/follow-factory";
-import { HealthFactorFactory } from "../condition-base-factories/health-factor-factory";
-import { BaseMoneyMarketActionType, IMMBaseAction } from "@daemons-fi/shared-definitions/build";
-import { mmBaseScriptABI } from "@daemons-fi/abis";
+import { BeefyActionType, IBeefyAction } from "@daemons-fi/shared-definitions/build";
+import { beefyScriptABI } from "@daemons-fi/abis";
 
-export class MmBaseScript extends BaseScript {
+export class BeefyScript extends BaseScript {
     public constructor(
-        private readonly message: IMMBaseAction,
+        private readonly message: IBeefyAction,
         signature: string,
         private readonly description: string
     ) {
         super(signature);
     }
 
-    public readonly ScriptType = "MmBaseScript";
+    public readonly ScriptType = "BeefyScript";
     public getExecutorAddress = () => this.message.executor;
-    public getExecutorAbi = () => mmBaseScriptABI;
+    public getExecutorAbi = () => beefyScriptABI;
     public getMessage = () => this.message;
     public getId = () => this.message.scriptId;
     public getUser = () => this.message.user;
@@ -28,17 +27,17 @@ export class MmBaseScript extends BaseScript {
     protected getAmount = () => this.message.amount;
     protected getTokenForAllowance = () => {
         switch (this.message.action) {
-            case BaseMoneyMarketActionType.Deposit:
-                return this.message.token;
-            case BaseMoneyMarketActionType.Withdraw:
-                return this.message.aToken;
+            case BeefyActionType.Deposit:
+                return this.message.lpAddress;
+            case BeefyActionType.Withdraw:
+                return this.message.mooAddress;
             default:
                 throw new Error(`Unsupported action ${this.message.action}`);
         }
     };
 
     public static async fromStorageJson(object: any) {
-        const message: IMMBaseAction = JSON.parse(JSON.stringify(object));
+        const message: IBeefyAction = JSON.parse(JSON.stringify(object));
 
         // complex objects are broken down and need to be recreated. Sigh.
         message.chainId = BigNumber.from(object.chainId);
@@ -50,8 +49,7 @@ export class MmBaseScript extends BaseScript {
         message.price = PriceFactory.fromJson(message.price);
         message.repetitions = RepetitionsFactory.fromJson(message.repetitions);
         message.follow = FollowFactory.fromJson(object.follow);
-        message.healthFactor = HealthFactorFactory.fromJson(object.healthFactor);
 
-        return new MmBaseScript(message, object.signature, object.description);
+        return new BeefyScript(message, object.signature, object.description);
     }
 }

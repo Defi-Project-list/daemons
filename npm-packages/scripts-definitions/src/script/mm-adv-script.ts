@@ -12,7 +12,7 @@ import {
     IMMAdvancedAction
 } from "@daemons-fi/shared-definitions/build";
 import { AllowanceHelper } from "../allowance-helper";
-import { mmAdvancedScriptAbi } from "@daemons-fi/abis";
+import { mmAdvancedScriptABI } from "@daemons-fi/abis";
 
 export class MmAdvancedScript extends BaseScript {
     public constructor(
@@ -25,7 +25,7 @@ export class MmAdvancedScript extends BaseScript {
 
     public readonly ScriptType = "MmAdvancedScript";
     public getExecutorAddress = () => this.message.executor;
-    public getExecutorAbi = () => mmAdvancedScriptAbi;
+    public getExecutorAbi = () => mmAdvancedScriptABI;
     public getMessage = () => this.message;
     public getId = () => this.message.scriptId;
     public getUser = () => this.message.user;
