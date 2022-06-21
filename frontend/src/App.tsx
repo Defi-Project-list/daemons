@@ -11,14 +11,15 @@ import { fetchGasTankBalance } from "./state/action-creators/gas-tank-action-cre
 import { fetchGasTankClaimable } from "./state/action-creators/gas-tank-action-creators";
 import { fetchUserHistory } from "./state/action-creators/transactions-action-creators";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import "./constants.css";
-import "./app.css";
 import { fetchTipJarBalance } from "./state/action-creators/tip-jar-action-creators";
 import { TipIndicator } from "./components/tip-indicator";
 import { fetchLatestGasPrice } from "./state/action-creators/gas-price-feed-action-creators";
 import { fetchDAEMPriceInEth } from "./state/action-creators/prices-action-creators";
 import { fetchDaemBalance, fetchEthBalance } from "./state/action-creators/wallet-action-creators";
+import "react-toastify/dist/ReactToastify.css";
+import "./fonts.css";
+import "./constants.css";
+import "./app.css";
 
 export const App = ({ children }: { children: any }) => {
     // redux

@@ -6,9 +6,16 @@
     --greyish-brown: #454545;
     --lighter-grey: #b9b9b9;
     --blue-green: #136f63;
+
     /* Toasts */
     --toastify-color-success: #1B9D51;
     --toastify-color-warning: #FFBA08;
     --toastify-color-error: #dd0143;
     --toastify-color-info: #3F88C5;
+
+    /* Fonts */
+    --regular: Poppins-Regular;
+    --medium: Poppins-Medium;
+    --semiBold: Poppins-SemiBold;
+    --bold: Poppins-Bold;
 }
