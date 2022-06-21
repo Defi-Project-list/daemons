@@ -17,11 +17,6 @@
     padding: 3px;
 }
 
-.tokens-modal__search input {
-    width: 100%;
-    box-sizing: border-box;
-}
-
 .tokens-modal__item {
     display: flex;
     padding: 10px 0px;
@@ -32,5 +27,5 @@
 .tokens-modal__list {
     max-height: 70vh;
     overflow-y: auto;
-    margin: 20px 0;
+    margin: 5px 0;
 }

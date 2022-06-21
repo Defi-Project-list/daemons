@@ -8,5 +8,9 @@ export function TipIndicator(): JSX.Element {
     const walletConnected = useSelector((state: RootState) => state.wallet.connected);
     const showBalance = balance !== undefined && walletConnected;
 
-    return <div>Tip Jar: {showBalance ? balance : '??'} DAEM</div>;
+    return (
+        <div className="header-indicator">
+            Tip Jar: {showBalance ? balance : '??'} DAEM
+        </div>
+        );
 }

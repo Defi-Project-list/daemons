@@ -18,14 +18,18 @@ import { availableChainsDialog } from "./chains-dialog";
 const modalStyles: any = {
     content: {
         width: "400px",
-        borderRadius: "32px",
+        borderRadius: "5px",
         transform: "translateX(-50%)",
         left: "50%",
         height: "fit-content",
         maxHeight: "80vh",
         padding: "25px",
-        boxShadow: "0 6px 4px 0 rgba(0, 0, 0, 0.19)",
-        overflow: "hidden"
+        boxShadow: " 0 0 12px 0 rgba(0, 0, 0)",
+        background: "var(--secondary-background)",
+        border: "none",
+    },
+    overlay: {
+        backgroundColor: "#191919bb",
     }
 };
 

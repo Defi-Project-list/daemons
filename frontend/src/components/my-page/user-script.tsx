@@ -111,7 +111,15 @@ export const MyPageScript = ({ script }: { script: BaseScript }) => {
                         Require Allowance
                     </button>
                 ) : (
-                    <div className="script__verification-state">{verification.toString()}</div>
+                    <div className="script__verification-result">
+                        <div className="script__verification-name">{verification.toString()}</div>
+                        {verification.state === VerificationState.errorCode ? (
+                            <div className="tooltip">
+                                <div className="tooltip__text">?</div>
+                                <div className="tooltip__content">{verification.description}</div>
+                            </div>
+                        ) : null}
+                    </div>
                 )}
             </div>
 

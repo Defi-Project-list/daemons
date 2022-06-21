@@ -33,13 +33,17 @@ export const App = ({ children }: { children: any }) => {
 
     // menu selection classes
     const dashboardLinkClassName = `menu__entry ${
-        document.location.href.endsWith("/") ? "menu__entry--selected" : ""
+        document.location.href.endsWith("/") ? "menu__entry--selected" : "menu__entry--unselected"
     }`;
     const myPageLinkClassName = `menu__entry ${
-        document.location.href.endsWith("/my-page") ? "menu__entry--selected" : ""
+        document.location.href.endsWith("/my-page")
+            ? "menu__entry--selected"
+            : "menu__entry--unselected"
     }`;
     const executeLinkClassName = `menu__entry ${
-        document.location.href.endsWith("/execute") ? "menu__entry--selected" : ""
+        document.location.href.endsWith("/execute")
+            ? "menu__entry--selected"
+            : "menu__entry--unselected"
     }`;
 
     useEffect(() => {

@@ -7,7 +7,7 @@
 .tooltip__content {
     visibility: hidden;
     width: 200px;
-    background-color: black;
+    background-color: #000a;
     color: #fff;
     text-align: center;
     border-radius: 6px;
@@ -21,9 +21,10 @@
 
 .tooltip__text {
     border-radius: 100%;
-    background-color: #ccc;
-    height: 20px;
-    width: 20px;
+    background-color: var(--bright-teal);
+    height: 23px;
+    width: 23px;
+    font-family: var(--bold);
     text-align: center;
 }
 
