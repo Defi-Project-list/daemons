@@ -14,25 +14,8 @@
     column-gap: 10px;
 }
 
-.gas-tank__balance {
-    border-radius: 5px;
-    margin: 15px 0;
-    padding: 5px;
-    border: 1px solid #AAA;
-    background-color: #FFF;
-    cursor: not-allowed;
-}
-
 .gas-tank__form {
     position: relative;
-}
-
-.gas-tank__input {
-    height: 30px;
-    box-sizing: border-box;
-    width: 100%;
-    border-radius: 5px;
-    border-color: #FFF;
 }
 
 .gas-tank__buttons-container {

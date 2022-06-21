@@ -80,7 +80,9 @@ export const QueueScriptComponent = ({ script }: { script: BaseScript }) => {
                         Execute
                     </button>
                 ) : (
-                    <div>{verification.toString()}</div>
+                    <div className="queue-script__verification-message">
+                        {verification.toString()}
+                    </div>
                 )}
             </div>
         </div>

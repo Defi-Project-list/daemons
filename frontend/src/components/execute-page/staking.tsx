@@ -187,7 +187,7 @@ export function Staking() {
                 render={({ form, handleSubmit }) => (
                     <form className="staking__form" onSubmit={handleSubmit}>
                         <Field
-                            className="staking__input"
+                            className="card__input"
                             id="id-staking-amount"
                             name="amount"
                             autoComplete="off"
@@ -245,7 +245,7 @@ export function Staking() {
                 render={({ form, handleSubmit }) => (
                     <form className="staking__form" onSubmit={handleSubmit}>
                         <Field
-                            className="staking__input"
+                            className="card__input"
                             id="id-staking-amount"
                             name="amount"
                             autoComplete="off"
@@ -285,6 +285,7 @@ export function Staking() {
     return (
         <div className="card staking">
             <div className="card__header">
+                <div className="card__title-icon card__title-icon--stake"></div>
                 <div className="card__title">Stake</div>
 
                 {/* Deposit/Withdraw switch */}
@@ -302,8 +303,8 @@ export function Staking() {
                 </div>
             </div>
 
-            <div>
-                <div className="staking__balance">
+            <div className="card__content">
+                <div className="card__fake-input">
                     {stakingBalance !== undefined ? stakingBalance : "??"} DAEM
                 </div>
                 <div className="staking__forms-container">
@@ -314,7 +315,7 @@ export function Staking() {
                     )}
                 </div>
             </div>
-            <div className="staking__reward-info">
+            <div className="card__content staking__reward-info">
                 <div className="staking__claimable">
                     {claimable !== undefined ? `Claimable: ${claimable} ${currencySymbol}` : "??"}
                 </div>

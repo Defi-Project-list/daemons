@@ -17,18 +17,20 @@ export function UserScriptsContainer(): JSX.Element {
     return (
         <div className="card">
             <div className="card__header">
-                <div className="card__title">Scripts</div>
+                <div className="card__title-icon card__title-icon--script"></div>
+                <div className="card__title">MY SCRIPTS</div>
                 <Link
                     onClick={() => dispatch(cleanWorkbench())}
                     className="add-new-script-button"
                     to={"/new-script"}
                 >
-                    New Script
+                    Add New Script
                 </Link>
             </div>
-
-            <div className="scripts-container">
-                {scripts.length > 0 ? scripts : <div>You don't have any script</div>}
+            <div className="card__content">
+                <div className="scripts-container">
+                    {scripts.length > 0 ? scripts : <div>You don't have any script</div>}
+                </div>
             </div>
         </div>
     );

@@ -46,9 +46,8 @@
     padding: 3px 15px;
     display: grid;
     grid-template-columns: 0.2fr 0.3fr 0.3fr 0.4fr;
-    width: 500px;
-    height: 40px;
-    background: #ededed;
+    height: 45px;
+    background-color: var(--greyish-brown);
     border-radius: 5px;
     align-items: center;
     user-select: none;
@@ -61,6 +60,11 @@
 .queue-script__actions {
     text-align: right;
     margin-left: auto;
+}
+
+.queue-script__verification-message {
+    color: var(--bright-teal);
+    text-transform: uppercase;
 }
 
 .queue-script__reward {

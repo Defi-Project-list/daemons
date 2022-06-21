@@ -120,7 +120,7 @@ export function GasTank(): JSX.Element {
                 render={({ form, handleSubmit }) => (
                     <form className="gas-tank__form" onSubmit={handleSubmit}>
                         <Field
-                            className="gas-tank__input"
+                            className="card__input"
                             id="id-gas-tank-amount"
                             name="amount"
                             autoComplete="off"
@@ -169,7 +169,7 @@ export function GasTank(): JSX.Element {
                 render={({ form, handleSubmit }) => (
                     <form className="gas-tank__form" onSubmit={handleSubmit}>
                         <Field
-                            className="gas-tank__input"
+                            className="card__input"
                             id="id-gas-tank-amount"
                             name="amount"
                             autoComplete="off"
@@ -209,6 +209,7 @@ export function GasTank(): JSX.Element {
     return (
         <div className="card gas-tank">
             <div className="card__header">
+                <div className="card__title-icon card__title-icon--gas-tank"></div>
                 <div className="card__title">Gas Tank</div>
 
                 {/* Deposit/Withdraw switch */}
@@ -226,8 +227,8 @@ export function GasTank(): JSX.Element {
                 </div>
             </div>
 
-            <div>
-                <div className="gas-tank__balance">
+            <div className="card__content">
+                <div className="card__fake-input">
                     {gasTankBalance !== undefined ? gasTankBalance : "??"} {currencySymbol}
                 </div>
                 <div className="gas-tank__forms-container">

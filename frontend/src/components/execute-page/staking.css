@@ -14,25 +14,8 @@
     column-gap: 10px;
 }
 
-.staking__balance {
-    border-radius: 5px;
-    margin: 15px 0;
-    padding: 5px;
-    border: 1px solid #AAA;
-    background-color: #FFF;
-    cursor: not-allowed;
-}
-
 .staking__forms-container {
     position: relative;
-}
-
-.staking__input {
-    height: 30px;
-    box-sizing: border-box;
-    width: 100%;
-    border-radius: 5px;
-    border-color: #FFF;
 }
 
 .staking__buttons-container {
@@ -76,7 +59,7 @@
 .staking__max-balance-button {
     position: absolute;
     user-select: none;
-    top: 8px;
+    top: 20px;
     right: 10px;
     font-size: 0.8rem;
     color: #aaa;

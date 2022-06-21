@@ -13,7 +13,6 @@ import { getGasLimitForScript } from "../../data/script-gas-limits";
 import { GetCurrentChain } from "../../data/chain-info";
 import { bigNumberToFloat } from "../../utils/big-number-to-float";
 
-
 export const MyPageScript = ({ script }: { script: BaseScript }) => {
     const [verification, setVerification] = useState(script.getVerification());
     const dispatch = useDispatch();
@@ -27,7 +26,10 @@ export const MyPageScript = ({ script }: { script: BaseScript }) => {
     const signer = provider.getSigner();
 
     // script execution costs
-    const ethCost = bigNumberToFloat(getGasLimitForScript(script.ScriptType).mul(currentGasPrice), 5);
+    const ethCost = bigNumberToFloat(
+        getGasLimitForScript(script.ScriptType).mul(currentGasPrice),
+        5
+    );
     const daemCost = bigNumberToFloat(script.getMessage().tip as BigNumber);
 
     const revokeScript = async () => {
@@ -82,9 +84,6 @@ export const MyPageScript = ({ script }: { script: BaseScript }) => {
             {/* Description */}
             <div className="script__description">{script.getDescription()}</div>
 
-            {/* Verification State */}
-            <div className="script__verificationState">{verification.toString()}</div>
-
             {/* Execution Costs */}
             <div className="script__execution-costs">
                 <div>Execution costs:</div>
@@ -98,12 +97,9 @@ export const MyPageScript = ({ script }: { script: BaseScript }) => {
 
             {/* Script Actions */}
             <div className="script__actions">
-                <button onClick={revokeScript} className="script__button">
-                    Revoke
-                </button>
-                <button onClick={verifyScript} className="script__button">
+                {/* <button onClick={verifyScript} className="script__button">
                     Verify
-                </button>
+                </button> */}
 
                 {verification.state === VerificationState.valid ? (
                     <button onClick={executeScript} className="script__button">
@@ -114,14 +110,22 @@ export const MyPageScript = ({ script }: { script: BaseScript }) => {
                     <button onClick={requestAllowance} className="script__button">
                         Require Allowance
                     </button>
-                ) : null}
+                ) : (
+                    <div className="script__verification-state">{verification.toString()}</div>
+                )}
             </div>
 
             <button
-                onClick={() => alert(JSON.stringify(script.getMessage(), null, " "))}
-                className="script__info-button"
+                onClick={revokeScript}
+                className="script__bubble-button script__bubble-button--revoke"
             >
-                i
+                x
+            </button>
+            <button
+                onClick={() => alert(JSON.stringify(script.getMessage(), null, " "))}
+                className="script__bubble-button script__bubble-button--action"
+            >
+                ..
             </button>
         </div>
     );

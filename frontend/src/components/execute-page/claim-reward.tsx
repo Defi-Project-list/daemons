@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
 import { RootState } from "../../state";
-import { fetchGasTankClaimable, setGasTankClaimableToZero } from "../../state/action-creators/gas-tank-action-creators";
+import {
+    fetchGasTankClaimable,
+    setGasTankClaimableToZero
+} from "../../state/action-creators/gas-tank-action-creators";
 import {
     fetchStakingBalance,
     fetchStakingClaimable
@@ -25,7 +28,7 @@ const confettiConfig: any = {
     height: "10px",
     perspective: "360px",
     colors: ["#000", "#f00"]
-  };
+};
 
 export function ClaimRewards() {
     const dispatch = useDispatch();
@@ -53,8 +56,7 @@ export function ClaimRewards() {
     };
 
     useEffect(() => {
-        if (!firstTime && claimable && claimable > 0)
-        {
+        if (!firstTime && claimable && claimable > 0) {
             setConfetti(true);
             setTimeout(() => setConfetti(false), 3000);
         }
@@ -91,8 +93,12 @@ export function ClaimRewards() {
 
     return (
         <div className="card">
-            <div className="card__title">Claim DAEM</div>
-            <div className="claim-reward">
+            <div className="card__header">
+                <div className="card__title-icon card__title-icon--profits"></div>
+                <div className="card__title">Claim Profits</div>
+            </div>
+
+            <div className="card__content claim-reward">
                 <div className="claim-reward__claimable">
                     {nothingToClaim ? `Nothing to claim` : `${claimable} DAEM to be claimed`}
                     <Confetti active={confetti} config={confettiConfig} />

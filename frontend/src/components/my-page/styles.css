@@ -10,10 +10,11 @@
 }
 
 .add-new-script-button {
-    width: 90px;
+    width: 140px;
     text-align: center;
-    line-height: 15px;
-    height: 15px;
+    font-size: 1rem;
+    line-height: 22px;
+    height: 22px;
     padding: 8px 15px;
     border-radius: 5px;
     color: white;
@@ -32,43 +33,52 @@
 
 .script {
     position: relative;
-    width: 200px;
-    margin: 5px;
-    padding: 10px;
+    width: 250px;
+    margin: 15px;
+    text-align: center;
+    padding: 15px;
     border-radius: 5px;
-    border: 1px solid #aaa;
+    font-size: 0.95rem;
+    font-family: var(--medium);
+    color: var(--white);
+    background-color: var(--greyish-brown);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     user-select: none;
 }
 
+.script__verification-state {
+    color: var(--bright-teal);
+    text-transform: uppercase;
+}
+
 .script__execution-costs {
-    margin-top: 10px;
+    margin-top: 15px;
+    font-family: var(--regular);
+    font-size: 0.9rem;
 }
 
 .script__execution-costs-table {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
 }
 
 .script__actions {
     margin-top: 15px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    justify-content: space-evenly;
     justify-items: center;
 }
 
 .script__button {
-    width: 66px;
-    height: 30px;
-
-    line-height: 15px;
+    width: 100px;
+    height: 35px;
     border-radius: 5px;
-    color: white;
+    color: var(--white);
     border: none;
     background-color: var(--primary-colour);
+    font-family: var(--semiBold);
+    font-size: 1rem;
     cursor: pointer;
     margin-left: auto;
     text-decoration: none;
@@ -78,17 +88,29 @@
     opacity: 0.8;
 }
 
-.script__info-button {
+.script__bubble-button {
     position: absolute;
-    top: 0;
-    right: 0;
     border-radius: 100%;
-    height: 17px;
-    width: 17px;
+    height: 25px;
+    width: 25px;
+    top: -12px;
+    line-height: 17px;
     background-color: transparent;
     outline: none;
-    border: 1px solid gray;
+    border: 2px solid var(--secondary-background);
     cursor: pointer;
+    background: var(--greyish-brown);
+    font-family: var(--semiBold);
+    font-size: 1rem;
+    color: var(--white);
+}
+
+.script__bubble-button--revoke {
+    left: -12px;
+}
+
+.script__bubble-button--action {
+    right: -12px;
 }
 
 .history {

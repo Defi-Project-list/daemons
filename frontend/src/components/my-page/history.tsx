@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { TransactionReceipt } from '@ethersproject/abstract-provider';
-import { ITransaction, TransactionOutcome } from '@daemons-fi/shared-definitions';
-import { GetCurrentChain } from '../../data/chain-info';
-import { StorageProxy } from '../../data/storage-proxy';
-import { RootState } from '../../state';
-import './history.css';
-import { updateSingleTransaction } from '../../state/action-creators/transactions-action-creators';
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { TransactionReceipt } from "@ethersproject/abstract-provider";
+import { ITransaction, TransactionOutcome } from "@daemons-fi/shared-definitions";
+import { GetCurrentChain } from "../../data/chain-info";
+import { StorageProxy } from "../../data/storage-proxy";
+import { RootState } from "../../state";
+import "./history.css";
+import { updateSingleTransaction } from "../../state/action-creators/transactions-action-creators";
 
 export function History(): JSX.Element {
     const userTransactions = useSelector((state: RootState) => state.history.userTransactions);
@@ -17,7 +17,8 @@ export function History(): JSX.Element {
     const explorerTxUrl = GetCurrentChain(chainId!).explorerTxUrl;
 
     const transactions = userTransactions.map((tx: ITransaction) => (
-        <HistoryEntry key={tx.hash}
+        <HistoryEntry
+            key={tx.hash}
             transaction={tx}
             selected={tx.hash === selected}
             setSelected={setSelected}
@@ -26,15 +27,15 @@ export function History(): JSX.Element {
     ));
 
     return (
-        <div className='card history'>
-            <div className='card__title'>History</div>
-            <div className='history__entries-container'>
-                {transactions}
+        <div className="card history">
+            <div className="card__header">
+                <div className="card__title-icon card__title-icon--gas-tank"></div>
+                <div className="card__title">History</div>
             </div>
+            <div className="card__content history__entries-container">{transactions}</div>
         </div>
     );
 }
-
 
 interface IHistoryEntryProps {
     transaction: ITransaction;
@@ -43,15 +44,22 @@ interface IHistoryEntryProps {
     explorerTxUrl: string;
 }
 
-function HistoryEntry({ transaction, selected, setSelected, explorerTxUrl }: IHistoryEntryProps): JSX.Element {
+function HistoryEntry({
+    transaction,
+    selected,
+    setSelected,
+    explorerTxUrl
+}: IHistoryEntryProps): JSX.Element {
     const dispatch = useDispatch();
     const date = Intl.DateTimeFormat().format(new Date(transaction.date));
     const [isVerifying, setVerifying] = useState<boolean>(false);
 
     const verifyTransaction = async (transaction: ITransaction): Promise<void> => {
-        const ethers = require('ethers');
+        const ethers = require("ethers");
         const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-        const receipt = await provider.getTransactionReceipt(transaction.hash) as TransactionReceipt | null;
+        const receipt = (await provider.getTransactionReceipt(
+            transaction.hash
+        )) as TransactionReceipt | null;
 
         if (receipt) {
             // receipt is found, the tx can be confirmed and updated
@@ -80,21 +88,27 @@ function HistoryEntry({ transaction, selected, setSelected, explorerTxUrl }: IHi
     });
 
     return (
-        <div className={'history-entry ' + (selected ? 'history-entry--selected' : '')}>
-
-            <div className='history-entry__header' onClick={() => setSelected(transaction.hash)}>
-                <span className='history-entry__outcome'>{isVerifying ? 'checking..' : transaction.outcome}</span>
-                <span className='history-entry__description'>{transaction.description}</span>
-                <span className='history-entry__date'>{date}</span>
+        <div className={"history-entry " + (selected ? "history-entry--selected" : "")}>
+            <div className="history-entry__header" onClick={() => setSelected(transaction.hash)}>
+                <span className="history-entry__outcome">
+                    {isVerifying ? "checking.." : transaction.outcome}
+                </span>
+                <span className="history-entry__description">{transaction.description}</span>
+                <span className="history-entry__date">{date}</span>
             </div>
 
-            {
-                selected &&
-                <div className='history-entry__body'>
-                    <span className='history-entry__cost'>Cost: 0.001 DAEM</span>
-                    <a className='history-entry__explorer' href={explorerTxUrl + transaction.hash} target="_blank">Check out</a>
+            {selected && (
+                <div className="history-entry__body">
+                    <span className="history-entry__cost">Cost: 0.001 DAEM</span>
+                    <a
+                        className="history-entry__explorer"
+                        href={explorerTxUrl + transaction.hash}
+                        target="_blank"
+                    >
+                        Check out
+                    </a>
                 </div>
-            }
+            )}
         </div>
     );
 }

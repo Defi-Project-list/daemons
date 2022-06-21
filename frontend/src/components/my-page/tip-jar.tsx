@@ -160,7 +160,7 @@ export function TipJar(): JSX.Element {
                 render={({ form, handleSubmit }) => (
                     <form className="tip-jar__form" onSubmit={handleSubmit}>
                         <Field
-                            className="tip-jar__input"
+                            className="card__input"
                             id="id-tip-jar-amount"
                             name="amount"
                             autoComplete="off"
@@ -215,7 +215,7 @@ export function TipJar(): JSX.Element {
                 render={({ form, handleSubmit }) => (
                     <form className="tip-jar__form" onSubmit={handleSubmit}>
                         <Field
-                            className="tip-jar__input"
+                            className="card__input"
                             id="id-tip-jar-amount"
                             name="amount"
                             autoComplete="off"
@@ -254,6 +254,7 @@ export function TipJar(): JSX.Element {
     return (
         <div className="card tip-jar">
             <div className="card__header">
+                <div className="card__title-icon card__title-icon--tip-jar"></div>
                 <div className="card__title">Tip Jar</div>
 
                 {/* Deposit/Withdraw switch */}
@@ -271,8 +272,8 @@ export function TipJar(): JSX.Element {
                 </div>
             </div>
 
-            <div>
-                <div className="tip-jar__balance">
+            <div className="card__content">
+                <div className="card__fake-input">
                     {tipJarBalance !== undefined ? tipJarBalance : "??"} DAEM
                 </div>
                 <div className="tip-jar__forms-container">
