@@ -9,6 +9,7 @@ import { ScriptsChart } from "./scripts-chart";
 import { TransactionsChart } from "./transactions-chart";
 import { TreasuryData } from "./treasury-data";
 import { BannedPage } from "../error-pages/banned-page";
+import { Card } from "../card-component/card";
 Chart.register(...registerables);
 
 export function DashboardPage() {
@@ -23,45 +24,21 @@ export function DashboardPage() {
             <div className="page-title">Dashboard</div>
 
             <div className="dashboard-page__layout">
-                <div className="card">
-                    <div className="card__header">
-                        <div className="card__title-icon card__title-icon--bank"></div>
-                        <div className="card__title">Treasury</div>
-                    </div>
-                    <div className="card__content">
-                        <TreasuryData />
-                    </div>
-                </div>
+                <Card title="Treasury" iconClass="card__title-icon--bank">
+                    <TreasuryData />
+                </Card>
 
-                <div className="card">
-                    <div className="card__header">
-                        <div className="card__title-icon card__title-icon--script"></div>
-                        <div className="card__title">Scripts</div>
-                    </div>
-                    <div className="card__content">
-                        <ScriptsChart />
-                    </div>
-                </div>
+                <Card title="Scripts" iconClass="card__title-icon--script">
+                    <ScriptsChart />
+                </Card>
 
-                <div className="card">
-                    <div className="card__header">
-                        <div className="card__title-icon card__title-icon--users"></div>
-                        <div className="card__title">Users</div>
-                    </div>
-                    <div className="card__content">
-                        <UsersChart />
-                    </div>
-                </div>
+                <Card title="Users" iconClass="card__title-icon--users">
+                    <UsersChart />
+                </Card>
 
-                <div className="card">
-                    <div className="card__header">
-                        <div className="card__title-icon card__title-icon--transactions"></div>
-                        <div className="card__title">Transactions</div>
-                    </div>
-                    <div className="card__content">
-                        <TransactionsChart />
-                    </div>
-                </div>
+                <Card title="Transactions" iconClass="card__title-icon--transactions">
+                    <TransactionsChart />
+                </Card>
             </div>
         </div>
     );

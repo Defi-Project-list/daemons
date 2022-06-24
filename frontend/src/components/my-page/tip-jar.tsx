@@ -11,6 +11,7 @@ import { fetchTipJarBalance } from "../../state/action-creators/tip-jar-action-c
 import { fetchDaemBalance } from "../../state/action-creators/wallet-action-creators";
 import { AllowanceHelper } from "@daemons-fi/scripts-definitions/build";
 import { ethers } from "ethers";
+import { Card } from "../card-component/card";
 
 export function TipJar(): JSX.Element {
     const dispatch = useDispatch();
@@ -251,39 +252,37 @@ export function TipJar(): JSX.Element {
         );
     };
 
-    return (
-        <div className="card tip-jar">
-            <div className="card__header">
-                <div className="card__title-icon card__title-icon--tip-jar"></div>
-                <div className="card__title">Tip Jar</div>
-
-                {/* Deposit/Withdraw switch */}
-                <div className="tip-jar__switch">
-                    Deposit
-                    <label className="switch">
-                        <input
-                            type="checkbox"
-                            value={String(toggleDeposit)}
-                            onChange={() => setToggleDeposit(!toggleDeposit)}
-                        />
-                        <span className="slider round"></span>
-                    </label>
-                    Withdraw
-                </div>
-            </div>
-
-            <div className="card__content">
-                <div className="card__fake-input">
-                    {tipJarBalance !== undefined ? tipJarBalance : "??"} DAEM
-                </div>
-                <div className="tip-jar__forms-container">
-                    {tipJarBalance === undefined || walletAddress === undefined ? (
-                        renderLoadingMessage()
-                    ) : (
-                        <div>{toggleDeposit ? renderDepositForm() : renderWithdrawForm()}</div>
-                    )}
-                </div>
-            </div>
+    const depositWithdrawSwitch = (
+        <div className="tip-jar__switch">
+            Deposit
+            <label className="switch">
+                <input
+                    type="checkbox"
+                    value={String(toggleDeposit)}
+                    onChange={() => setToggleDeposit(!toggleDeposit)}
+                />
+                <span className="slider round"></span>
+            </label>
+            Withdraw
         </div>
+    );
+
+    return (
+        <Card
+            title="Tip Jar"
+            iconClass="card__title-icon--tip-jar"
+            actionComponent={depositWithdrawSwitch}
+        >
+            <div className="card__fake-input">
+                {tipJarBalance !== undefined ? tipJarBalance : "??"} DAEM
+            </div>
+            <div className="tip-jar__forms-container">
+                {tipJarBalance === undefined || walletAddress === undefined ? (
+                    renderLoadingMessage()
+                ) : (
+                    <div>{toggleDeposit ? renderDepositForm() : renderWithdrawForm()}</div>
+                )}
+            </div>
+        </Card>
     );
 }

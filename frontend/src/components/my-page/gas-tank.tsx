@@ -8,6 +8,7 @@ import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
 import { promiseToast } from "../toaster";
 import "./gas-tank.css";
 import "../switch.css";
+import { Card } from "../card-component/card";
 
 export function GasTank(): JSX.Element {
     const dispatch = useDispatch();
@@ -206,39 +207,37 @@ export function GasTank(): JSX.Element {
         );
     };
 
-    return (
-        <div className="card gas-tank">
-            <div className="card__header">
-                <div className="card__title-icon card__title-icon--gas-tank"></div>
-                <div className="card__title">Gas Tank</div>
-
-                {/* Deposit/Withdraw switch */}
-                <div className="gas-tank__switch">
-                    Deposit
-                    <label className="switch">
-                        <input
-                            type="checkbox"
-                            value={String(toggleDeposit)}
-                            onChange={() => setToggleDeposit(!toggleDeposit)}
-                        />
-                        <span className="slider round"></span>
-                    </label>
-                    Withdraw
-                </div>
-            </div>
-
-            <div className="card__content">
-                <div className="card__fake-input">
-                    {gasTankBalance !== undefined ? gasTankBalance : "??"} {currencySymbol}
-                </div>
-                <div className="gas-tank__forms-container">
-                    {gasTankBalance === undefined || walletAddress === undefined ? (
-                        renderLoadingMessage()
-                    ) : (
-                        <div>{toggleDeposit ? renderDepositForm() : renderWithdrawForm()}</div>
-                    )}
-                </div>
-            </div>
+    const depositWithdrawSwitch = (
+        <div className="gas-tank__switch">
+            Deposit
+            <label className="switch">
+                <input
+                    type="checkbox"
+                    value={String(toggleDeposit)}
+                    onChange={() => setToggleDeposit(!toggleDeposit)}
+                />
+                <span className="slider round"></span>
+            </label>
+            Withdraw
         </div>
+    );
+
+    return (
+        <Card
+            title="Gas Tank"
+            iconClass="card__title-icon--gas-tank"
+            actionComponent={depositWithdrawSwitch}
+        >
+            <div className="card__fake-input">
+                {gasTankBalance !== undefined ? gasTankBalance : "??"} {currencySymbol}
+            </div>
+            <div className="gas-tank__forms-container">
+                {gasTankBalance === undefined || walletAddress === undefined ? (
+                    renderLoadingMessage()
+                ) : (
+                    <div>{toggleDeposit ? renderDepositForm() : renderWithdrawForm()}</div>
+                )}
+            </div>
+        </Card>
     );
 }

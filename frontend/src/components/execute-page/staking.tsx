@@ -13,6 +13,7 @@ import { AllowanceHelper } from "@daemons-fi/scripts-definitions";
 import { treasuryABI } from "@daemons-fi/abis";
 import { errorToast, promiseToast } from "../toaster";
 import "./staking.css";
+import { Card, HeadlessCard } from "../card-component/card";
 
 export function Staking() {
     const dispatch = useDispatch();
@@ -282,28 +283,28 @@ export function Staking() {
         );
     };
 
+    const depositWithdrawSwitch = (
+        <div className="staking__switch">
+            Deposit
+            <label className="switch">
+                <input
+                    type="checkbox"
+                    value={String(toggleDeposit)}
+                    onChange={() => setToggleDeposit(!toggleDeposit)}
+                />
+                <span className="slider round"></span>
+            </label>
+            Withdraw
+        </div>
+    );
+
     return (
-        <div className="card staking">
-            <div className="card__header">
-                <div className="card__title-icon card__title-icon--stake"></div>
-                <div className="card__title">Stake</div>
-
-                {/* Deposit/Withdraw switch */}
-                <div className="staking__switch">
-                    Deposit
-                    <label className="switch">
-                        <input
-                            type="checkbox"
-                            value={String(toggleDeposit)}
-                            onChange={() => setToggleDeposit(!toggleDeposit)}
-                        />
-                        <span className="slider round"></span>
-                    </label>
-                    Withdraw
-                </div>
-            </div>
-
-            <div className="card__content">
+        <>
+            <Card
+                title="Stake"
+                iconClass="card__title-icon--stake"
+                actionComponent={depositWithdrawSwitch}
+            >
                 <div className="card__fake-input">
                     {stakingBalance !== undefined ? stakingBalance : "??"} DAEM
                 </div>
@@ -314,19 +315,24 @@ export function Staking() {
                         <div>{toggleDeposit ? renderDepositForm() : renderWithdrawForm()}</div>
                     )}
                 </div>
-            </div>
-            <div className="card__content staking__reward-info">
-                <div className="staking__claimable">
-                    {claimable !== undefined ? `Claimable: ${claimable} ${currencySymbol}` : "??"}
+            </Card>
+
+            <HeadlessCard>
+                <div className=" staking__reward-info">
+                    <div className="staking__claimable">
+                        {claimable !== undefined
+                            ? `Claimable: ${claimable} ${currencySymbol}`
+                            : "??"}
+                    </div>
+                    <input
+                        disabled={!claimable}
+                        className="staking__button staking__button--small"
+                        type="submit"
+                        onClick={claim}
+                        value="Claim"
+                    />
                 </div>
-                <input
-                    disabled={!claimable}
-                    className="staking__button staking__button--small"
-                    type="submit"
-                    onClick={claim}
-                    value="Claim"
-                />
-            </div>
-        </div>
+            </HeadlessCard>
+        </>
     );
 }

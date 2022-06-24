@@ -7,6 +7,7 @@ import { StorageProxy } from "../../data/storage-proxy";
 import { RootState } from "../../state";
 import "./history.css";
 import { updateSingleTransaction } from "../../state/action-creators/transactions-action-creators";
+import { Card } from "../card-component/card";
 
 export function History(): JSX.Element {
     const userTransactions = useSelector((state: RootState) => state.history.userTransactions);
@@ -27,13 +28,11 @@ export function History(): JSX.Element {
     ));
 
     return (
-        <div className="card history">
-            <div className="card__header">
-                <div className="card__title-icon card__title-icon--gas-tank"></div>
-                <div className="card__title">History</div>
+        <Card title="Transactions History" iconClass="card__title-icon--history">
+             <div className="history__entries-container">
+                {transactions}
             </div>
-            <div className="card__content history__entries-container">{transactions}</div>
-        </div>
+        </Card>
     );
 }
 

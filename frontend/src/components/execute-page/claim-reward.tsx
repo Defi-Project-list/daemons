@@ -15,6 +15,7 @@ import Confetti from "react-dom-confetti";
 import "./claim-reward.css";
 import { promiseToast } from "../toaster";
 import { gasTankABI } from "@daemons-fi/abis";
+import { Card } from "../card-component/card";
 
 const confettiConfig: any = {
     angle: "127",
@@ -92,13 +93,8 @@ export function ClaimRewards() {
     };
 
     return (
-        <div className="card">
-            <div className="card__header">
-                <div className="card__title-icon card__title-icon--profits"></div>
-                <div className="card__title">Claim Profits</div>
-            </div>
-
-            <div className="card__content claim-reward">
+        <Card title="Claim Profits" iconClass="card__title-icon--profits">
+            <div className="claim-reward">
                 <div className="claim-reward__claimable">
                     {nothingToClaim ? `Nothing to claim` : `${claimable} DAEM to be claimed`}
                     <Confetti active={confetti} config={confettiConfig} />
@@ -124,6 +120,6 @@ export function ClaimRewards() {
                     </button>
                 </div>
             </div>
-        </div>
+        </Card>
     );
 }
