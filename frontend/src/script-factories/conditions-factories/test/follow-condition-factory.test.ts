@@ -4,11 +4,9 @@ import { IFollowCondition } from '@daemons-fi/shared-definitions';
 import chai from 'chai';
 import { ZeroAddress, ZeroId } from '../../../data/chain-info';
 import { FollowConditionFactory } from '../follow-condition-factory';
-import Sinon from 'sinon';
 import { IFollowConditionForm, ScriptConditions } from "../../../data/chains-data/condition-form-interfaces";
 import { ICurrentScript } from "../../i-current-script";
 import { ScriptAction } from "../../../data/chains-data/action-form-interfaces";
-const sinon = require('sinon');
 
 chai.use(require('chai-as-promised'));
 
