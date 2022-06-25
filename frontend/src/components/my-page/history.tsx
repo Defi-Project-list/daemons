@@ -28,7 +28,7 @@ export function History(): JSX.Element {
     ));
 
     return (
-        <Card title="Transactions History" iconClass="card__title-icon--history">
+        <Card title="Latest Transactions" iconClass="card__title-icon--transactions">
              <div className="history__entries-container">
                 {transactions}
             </div>
