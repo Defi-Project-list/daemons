@@ -9,11 +9,25 @@ import { userStatsToLineChartData } from "./data-processing";
 const options = {
     maintainAspectRatio: true,
     responsive: true,
-    plugins: {
-        legend: {
-            display: false,
+    elements: {
+        point: {
+            radius: 0
         }
     },
+    plugins: {
+        legend: {
+            display: false
+        }
+    },
+    scales: {
+        y: {
+            suggestedMin: 0,
+            suggestedMax: 4,
+            ticks: {
+                stepSize: 1
+            }
+        }
+    }
 };
 
 export function UsersChart(): JSX.Element {
