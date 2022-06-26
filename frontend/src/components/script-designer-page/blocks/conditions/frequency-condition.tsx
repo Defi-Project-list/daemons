@@ -40,7 +40,7 @@ export const FrequencyCondition = ({ form, update }: { form: IFrequencyCondition
                                 {({ input, meta }) =>
                                     <input
                                         {...input}
-                                        className={`frequency-block__ticks ${meta.error ? 'script-block__field--error' : null}`}
+                                        className={`frequency-block__ticks ${meta.error ? 'script-block__input--error' : null}`}
                                         onChange={(e) => {
                                             e.target.value = String(Number(e.target.value));
                                             e.target.value = Number(e.target.value) < 1 ? '1' : e.target.value;

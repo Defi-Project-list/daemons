@@ -1,21 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { ISwapActionForm } from '../../../../data/chains-data/action-form-interfaces';
-import { Form, Field } from 'react-final-form';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../../state';
+import React, { useEffect, useState } from "react";
+import { ISwapActionForm } from "../../../../data/chains-data/action-form-interfaces";
+import { Form, Field } from "react-final-form";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../state";
 import { TokensModal } from "../shared/tokens-modal";
-import { AmountType } from '@daemons-fi/shared-definitions/build';
-import { ToggleButtonField } from '../shared/toggle-button';
-import { Token } from '../../../../data/chains-data/interfaces';
-import { GetCurrentChain } from '../../../../data/chain-info';
+import { AmountType } from "@daemons-fi/shared-definitions/build";
+import { ToggleButtonField } from "../shared/toggle-button";
+import { Token } from "../../../../data/chains-data/interfaces";
+import { GetCurrentChain } from "../../../../data/chain-info";
+import { AmountInput } from "../shared/amount-input";
+import { fetchTokenBalance } from "../../../../data/fetch-token-balance";
 
 const validateForm = (values: ISwapActionForm) => {
     const errors: any = {};
-    if (!values.floatAmount || (values.floatAmount as any) === '') {
-        errors.floatAmount = 'required';
+    if (!values.floatAmount || (values.floatAmount as any) === "") {
+        errors.floatAmount = "required";
     }
     if (values.floatAmount && Number(values.floatAmount) <= 0) {
-        errors.floatAmount = 'required > 0';
+        errors.floatAmount = "required > 0";
     }
     return errors;
 };
@@ -26,109 +28,102 @@ const isFormValid = (values: ISwapActionForm) => {
     return isValid;
 };
 
-export const SwapAction = ({ form, update }: { form: ISwapActionForm; update: (next: ISwapActionForm) => void; }) => {
+export const SwapAction = ({
+    form,
+    update
+}: {
+    form: ISwapActionForm;
+    update: (next: ISwapActionForm) => void;
+}) => {
+    const walletAddress = useSelector((state: RootState) => state.wallet.address);
     const chainId = useSelector((state: RootState) => state.wallet.chainId);
     const [tokens, setTokens] = useState<Token[]>([]);
+    const [selectedFromToken, setSelectedFromToken] = useState<Token | undefined>();
+    const [currentBalance, setCurrentBalance] = useState<number | undefined>(undefined);
 
     useEffect(() => {
-        if (!form.tokenFromAddress || !form.tokenToAddress)
+        if (!form.tokenFromAddress || !form.tokenToAddress) {
+            const selectedFromToken = tokens[0];
+            setSelectedFromToken(selectedFromToken);
             update({
                 ...form,
                 tokenFromAddress: tokens[0]?.address,
                 tokenToAddress: tokens[1]?.address
             });
+        }
     }, [tokens]);
 
     useEffect(() => {
-        if (chainId)
-            setTokens(GetCurrentChain(chainId).tokens)
+        if (chainId) setTokens(GetCurrentChain(chainId).tokens);
     }, [chainId]);
+
+    useEffect(() => {
+        if (!selectedFromToken) return;
+        fetchTokenBalance(walletAddress!, selectedFromToken?.address).then((balance) =>
+            setCurrentBalance(balance)
+        );
+    }, [selectedFromToken]);
 
     return (
         <Form
             initialValues={form}
             validate={validateForm}
-            onSubmit={() => { /** Individual forms are not submitted */ }}
+            onSubmit={() => {
+                /** Individual forms are not submitted */
+            }}
             render={({ handleSubmit, valid }) => (
                 <form onSubmit={handleSubmit}>
-
-                    <div className='swap-block'>
-                        <div className='script-block__panel--two-columns'>
+                    <div className="swap-block">
+                        <div className="script-block__panel--three-columns">
                             <TokensModal
-                                tokens={tokens.filter(t => t.address !== form.tokenToAddress)}
-                                selectedToken={tokens.filter(t => t.address === form.tokenFromAddress)[0]}
-                                setSelectedToken={(token) => update({ ...form, tokenFromAddress: token.address })}
-                            />
-
-                            <ToggleButtonField
-                                name='amountType'
-                                valuesEnum={AmountType}
-                                updateFunction={(newValue: AmountType) => {
-                                    const updatedForm = { ...form, amountType: newValue, floatAmount: (newValue === AmountType.Percentage ? 50 : 0) };
-                                    const valid = isFormValid(updatedForm);
-                                    update({ ...updatedForm, valid });
-                                }}
-                                initial={form.amountType}
-                            />
-
-                        </div>
-                        {form.amountType === AmountType.Absolute
-                            ? <Field name="floatAmount"
-                                component="input"
-                                type="number"
-                                placeholder='1.00'
-                            >
-                                {({ input, meta }) =>
-                                    <input
-                                        {...input}
-                                        className={`balance-block__amount ${meta.error ? 'script-block__field--error' : null}`}
-                                        onChange={(e) => {
-                                            e.target.value = Number(e.target.value) < 0 ? '0' : e.target.value;
-                                            input.onChange(e);
-                                            const updatedForm = { ...form, floatAmount: Number(e.target.value) };
-                                            const valid = isFormValid(updatedForm);
-                                            update({ ...updatedForm, valid });
-                                        }}
-                                    />
+                                tokens={tokens.filter((t) => t.address !== form.tokenToAddress)}
+                                selectedToken={
+                                    tokens.filter((t) => t.address === form.tokenFromAddress)[0]
                                 }
-                            </Field>
-                            : (<div className='slider-container'>
-                                <Field name="floatAmount"
-                                    component="input"
-                                    type="range"
-                                >
-                                    {({ input, meta }) =>
-                                        <input
-                                            min="50"
-                                            max="10000"
-                                            step="50"
-                                            {...input}
-                                            className={`${meta.error ? 'script-block__field--error' : ''}`}
-                                            onChange={(e) => {
-                                                input.onChange(e);
-                                                const updatedForm = { ...form, floatAmount: Number(e.target.value) };
-                                                const valid = isFormValid(updatedForm);
-                                                update({ ...updatedForm, valid });
-                                            }}
-                                        />
-                                    }
-                                </Field>
-
-                                <div className='slider-container__slider-value'>
-                                    {`${form.floatAmount / 100}%`}
-                                </div>
-
-                            </div>)
-                        }
-
-                        <div className='script-block__panel--two-columns'>
-                            <TokensModal
-                                tokens={tokens.filter(t => t.address !== form.tokenFromAddress)}
-                                selectedToken={tokens.filter(t => t.address === form.tokenToAddress)[0]}
-                                setSelectedToken={(token) => update({ ...form, tokenToAddress: token.address })}
+                                setSelectedToken={(token) => {
+                                    setSelectedFromToken(token);
+                                    setCurrentBalance(undefined);
+                                    update({ ...form, tokenFromAddress: token.address });
+                                }}
                             />
-                        </div >
-                    </div >
+
+                            <div
+                                className="script-block__icon script-block__icon--right script-block__icon--clickable"
+                                onClick={() => {
+                                    update({
+                                        ...form,
+                                        tokenFromAddress: form.tokenToAddress,
+                                        tokenToAddress: form.tokenFromAddress
+                                    });
+                                }}
+                            />
+
+                            <TokensModal
+                                tokens={tokens.filter((t) => t.address !== form.tokenFromAddress)}
+                                selectedToken={
+                                    tokens.filter((t) => t.address === form.tokenToAddress)[0]
+                                }
+                                setSelectedToken={(token) =>
+                                    update({ ...form, tokenToAddress: token.address })
+                                }
+                            />
+                        </div>
+
+                        <AmountInput
+                            initialAmountType={form.amountType}
+                            processNewValue={(amountType: AmountType, floatAmount: number) => {
+                                const updatedForm = { ...form, amountType, floatAmount };
+                                const valid = isFormValid(updatedForm);
+                                update({ ...updatedForm, valid });
+                            }}
+                        />
+
+                        <div className="script-block__info">
+                            {currentBalance === undefined
+                                ? `..fetching balance..`
+                                : `Current ${selectedFromToken?.symbol} balance: ${currentBalance}`}
+                        </div>
+                    </div>
                 </form>
             )}
         />

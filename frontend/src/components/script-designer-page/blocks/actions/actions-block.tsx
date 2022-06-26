@@ -58,10 +58,8 @@ export const ActionBlock = ({ action, onUpdate, onRemove }: IActionBlockProps) =
 
     return (
         <div key={action.title} className="script-block">
-            <div className="script-block__button-remove" onClick={onRemove}>
-                x
-            </div>
-            <label className="script-block__title">{action.title}</label>
+            <div className="script-block__button-remove" onClick={onRemove}/>
+            <div className="script-block__title">{action.title}</div>
             {getContent(action.form)}
         </div>
     );

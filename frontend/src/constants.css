@@ -1,14 +1,29 @@
 :root {
-    --black: #121212;
-    --body-background: #191919;
-    --secondary-background: #292929;
+    --grey-999: #12191f;
+    --grey-900: #1f2933;
+    --grey-800: #323f4b;
+    --grey-700: #334c59;
+    --grey-600: #52606d;
+    --grey-500: #616e7c;
+    --grey-400: #7b8794;
+    --grey-300: #9aa5b1;
+    --grey-200: #cbd2d9;
+    --grey-100: #e4e7eb;
+    --grey-050: #f5f7fa;
+
+
+    --black: var(--grey-999);
+    --body-background: var(--grey-900);
+    --secondary-background: var(--grey-700);
+    --greyish-brown: var(--grey-600);
+    --lighter-grey: var(--grey-200);
+    --white: var(--grey-100);
+
     --primary-colour: #136f63;
-    --white: #ffffff;
-    --greyish-brown: #454545;
-    --lighter-grey: #b9b9b9;
     --blue-green: #136f63;
     --bright-teal: #00e5c7;
     --turquoise-green: #00e58d;
+    --dark-red: #980430;
 
     /* Toasts */
     --toastify-color-success: #1B9D51;

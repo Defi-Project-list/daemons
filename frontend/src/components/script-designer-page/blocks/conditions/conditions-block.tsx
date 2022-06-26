@@ -93,10 +93,11 @@ export const ConditionBlock = ({ condition, onUpdate, onRemove }: IConditionBloc
 
     return (
         <div key={condition.title} className="script-block">
-            <div className="script-block__button-remove" onClick={() => onRemove(condition.title)}>
-                x
-            </div>
-            <label className="script-block__title">{condition.title}</label>
+            <div
+                className="script-block__button-remove"
+                onClick={() => onRemove(condition.title)}
+            />
+            <div className="script-block__title">{condition.title}</div>
             {getContent(condition.form)}
         </div>
     );

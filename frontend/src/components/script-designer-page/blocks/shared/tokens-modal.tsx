@@ -5,7 +5,7 @@ import "./tokens-modal.css";
 
 const modalStyles: any = {
     content: {
-        width: "320px",
+        width: "400px",
         borderRadius: "5px",
         transform: "translateX(-50%)",
         left: "50%",
@@ -13,7 +13,7 @@ const modalStyles: any = {
         padding: "24px",
         boxShadow: " 0 0 12px 0 rgba(0, 0, 0)",
         overflow: "hidden",
-        background: "var(--secondary-background)",
+        background: "var(--body-background)",
         border: "none",
     },
     overlay: {
@@ -55,8 +55,8 @@ export const TokensModal = ({ tokens, selectedToken, setSelectedToken }: TokensM
     return (
         <>
             <div
-                className={`token-address ${
-                    tokens?.length === 0 ? "script-block__field--error" : ""
+                className={`chosen-token ${
+                    tokens?.length === 0 ? "script-block__input--error" : ""
                 }`}
                 onClick={() => {
                     if (tokens?.length > 0) setModalIsOpen(true);
@@ -65,7 +65,7 @@ export const TokensModal = ({ tokens, selectedToken, setSelectedToken }: TokensM
                 {tokens?.length > 0 && selectedToken ? (
                     <>
                         <img
-                            className="token-img"
+                            className="chosen-token__token-img"
                             src={selectedToken.logoURI}
                             alt={`${selectedToken.symbol} logo`}
                         />
@@ -73,10 +73,10 @@ export const TokensModal = ({ tokens, selectedToken, setSelectedToken }: TokensM
                     </>
                 ) : (
                     <>
-                        <div className="missing-img"></div>
+                        <div className="chosen-token__missing-img"></div>
                     </>
                 )}
-                <i className="arrow-down"></i>
+                <i className="chosen-token__arrow-down"></i>
             </div>
 
             <Modal
@@ -87,7 +87,7 @@ export const TokensModal = ({ tokens, selectedToken, setSelectedToken }: TokensM
             >
                 <div className="tokens-modal">
                     <input
-                        className="card__input"
+                        className="script-block__input"
                         autoFocus
                         onChange={(e) => {
                             filterDisplayedTokens(e.target.value);
@@ -104,10 +104,10 @@ export const TokensModal = ({ tokens, selectedToken, setSelectedToken }: TokensM
                                     closeModal();
                                 }}
                             >
-                                <img className="token-img" src={token.logoURI} />
+                                <img className="tokens-modal__token-img" src={token.logoURI} />
                                 <div>
-                                    <div>{token.symbol}</div>
-                                    <div>{token.name}</div>
+                                    <div className="tokens-modal__symbol">{token.symbol} - {token.name}</div>
+                                    <div className="tokens-modal__address">{token.address}</div>
                                 </div>
                             </div>
                         ))}

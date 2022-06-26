@@ -1,7 +1,7 @@
 .page-title {
     font-size: 3.483rem;
     font-family: var(--medium);
-    margin-bottom: 60px;
+    margin-bottom: 40px;
 }
 
 .page-title::after {

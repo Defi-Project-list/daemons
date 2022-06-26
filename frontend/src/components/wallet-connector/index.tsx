@@ -25,11 +25,11 @@ const modalStyles: any = {
         maxHeight: "80vh",
         padding: "25px",
         boxShadow: " 0 0 12px 0 rgba(0, 0, 0)",
-        background: "var(--secondary-background)",
-        border: "none",
+        background: "var(--body-background)",
+        border: "none"
     },
     overlay: {
-        backgroundColor: "#191919bb",
+        backgroundColor: "#191919bb"
     }
 };
 

@@ -16,10 +16,11 @@
     height: 45px;
     padding: 3px;
     border-radius: 9px;
-    background-color: #292929;
+    background-color: var(--secondary-background);
     background-repeat: no-repeat;
     background-position: center;
     margin-right: 17px;
+    box-shadow: 5px 5px 15px 0 var(--black);
 }
 
 .card__title {
@@ -41,9 +42,10 @@
     height: 45px;
     padding: 0px 14px;
     border-radius: 9px;
-    background-color: #292929;
+    background-color: var(--secondary-background);
     cursor: pointer;
     user-select: none;
+    box-shadow: 5px 5px 15px 0 var(--black);
 }
 
 .card__content {
@@ -51,7 +53,7 @@
     border-radius: 5px;
     padding: 10px 15px;
     background: var(--secondary-background);
-    box-shadow: 0 1px 15px rgb(0 0 0 / 4%), 0 1px 6px rgb(0 0 0 / 4%);
+    box-shadow: 5px 5px 15px 0 var(--black);
 }
 
 .card__fake-input {

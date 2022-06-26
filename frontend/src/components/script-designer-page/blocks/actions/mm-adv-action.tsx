@@ -1,11 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Field } from "react-final-form";
 import { TokensModal } from "../shared/tokens-modal";
 import { ToggleButtonField } from "../shared/toggle-button";
 import { AdvancedMoneyMarketActionType, InterestRateMode } from "@daemons-fi/shared-definitions";
 import { AmountType } from "@daemons-fi/shared-definitions/build";
 import { IAdvancedMMActionForm } from "../../../../data/chains-data/action-form-interfaces";
-import { IToken } from "../../../../data/chains-data/interfaces";
+import { IToken, Token } from "../../../../data/chains-data/interfaces";
+import { AmountInput } from "../shared/amount-input";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../state";
+import { fetchTokenBalance } from "../../../../data/fetch-token-balance";
 
 const validateForm = (values: IAdvancedMMActionForm) => {
     const errors: any = {};
@@ -31,11 +35,39 @@ export const MmAdvAction = ({
     form: IAdvancedMMActionForm;
     update: (next: IAdvancedMMActionForm) => void;
 }) => {
+    const walletAddress = useSelector((state: RootState) => state.wallet.address);
+    const [selectedToken, setSelectedToken] = useState<Token | undefined>();
+    const [currentBalance, setCurrentBalance] = useState<number | undefined>(undefined);
+    const [currentLoan, setCurrentLoan] = useState<number | undefined>(undefined);
     const tokens = form.moneyMarket.supportedTokens;
 
     useEffect(() => {
-        if (!form.tokenAddress) update({ ...form, tokenAddress: tokens[0]?.address });
+        if (!form.tokenAddress && tokens.length > 0) {
+            const selectedToken = tokens[0];
+            setSelectedToken(selectedToken);
+            update({ ...form, tokenAddress: selectedToken.address });
+        }
     }, []);
+
+    useEffect(() => {
+        if (!selectedToken) return;
+        if (form.actionType === AdvancedMoneyMarketActionType.Borrow) return;
+
+        fetchTokenBalance(walletAddress!, selectedToken.address).then((balance) =>
+            setCurrentBalance(balance)
+        );
+    }, [selectedToken, form.actionType, form.interestType]);
+
+    useEffect(() => {
+        if (!selectedToken) return;
+        if (form.actionType === AdvancedMoneyMarketActionType.Borrow) return;
+
+        const tokenAddress =
+            form.interestType === InterestRateMode.Fixed
+                ? form.moneyMarket.mmTokens[selectedToken.address].fixDebtToken
+                : form.moneyMarket.mmTokens[selectedToken.address].varDebtToken;
+        fetchTokenBalance(walletAddress!, tokenAddress).then((balance) => setCurrentLoan(balance));
+    }, [selectedToken, form.actionType, form.interestType]);
 
     return (
         <Form
@@ -52,6 +84,8 @@ export const MmAdvAction = ({
                                 name="actionType"
                                 valuesEnum={AdvancedMoneyMarketActionType}
                                 updateFunction={(newValue) => {
+                                    setCurrentBalance(undefined);
+                                    setCurrentLoan(undefined);
                                     update({
                                         ...form,
                                         actionType: newValue,
@@ -63,105 +97,56 @@ export const MmAdvAction = ({
                                 }}
                                 initial={form.actionType}
                             />
-                            <ToggleButtonField
-                                name="amountType"
-                                valuesEnum={AmountType}
-                                updateFunction={(newValue: AmountType) => {
-                                    const updatedForm = {
-                                        ...form,
-                                        amountType: newValue,
-                                        floatAmount: newValue === AmountType.Percentage ? 50 : 0
-                                    };
-                                    const valid = isFormValid(updatedForm);
-                                    update({ ...updatedForm, valid });
-                                }}
-                                initial={form.amountType}
-                            />
-                        </div>
-
-                        {form.amountType === AmountType.Absolute ? (
-                            <Field
-                                name="floatAmount"
-                                component="input"
-                                type="number"
-                                placeholder="1.00"
-                            >
-                                {({ input, meta }) => (
-                                    <input
-                                        {...input}
-                                        className={`balance-block__amount ${
-                                            meta.error ? "script-block__field--error" : null
-                                        }`}
-                                        onChange={(e) => {
-                                            e.target.value =
-                                                Number(e.target.value) < 0 ? "0" : e.target.value;
-                                            input.onChange(e);
-                                            const updatedForm = {
-                                                ...form,
-                                                floatAmount: Number(e.target.value)
-                                            };
-                                            const valid = isFormValid(updatedForm);
-                                            update({ ...updatedForm, valid });
-                                        }}
-                                        placeholder="Amount"
-                                    />
-                                )}
-                            </Field>
-                        ) : (
-                            <div className="slider-container">
-                                <Field name="floatAmount" component="input" type="range">
-                                    {({ input, meta }) => (
-                                        <input
-                                            min="50"
-                                            max={
-                                                form.actionType ===
-                                                AdvancedMoneyMarketActionType.Repay
-                                                    ? "10000" // 100% max for repay
-                                                    : "9500" //  95% max for repay
-                                            }
-                                            step="50"
-                                            {...input}
-                                            className={`${
-                                                meta.error ? "script-block__field--error" : null
-                                            }`}
-                                            onChange={(e) => {
-                                                input.onChange(e);
-                                                const updatedForm = {
-                                                    ...form,
-                                                    floatAmount: Number(e.target.value)
-                                                };
-                                                const valid = isFormValid(updatedForm);
-                                                update({ ...updatedForm, valid });
-                                            }}
-                                        />
-                                    )}
-                                </Field>
-
-                                <div className="slider-container__slider-value">
-                                    {`${form.floatAmount / 100}%`}
-                                </div>
-                            </div>
-                        )}
-
-                        <div className="script-block__panel--two-columns">
-                            <TokensModal
-                                tokens={tokens}
-                                selectedToken={tokens.find(
-                                    (t: IToken) => t.address === form.tokenAddress
-                                )}
-                                setSelectedToken={(token) =>
-                                    update({ ...form, tokenAddress: token.address })
-                                }
-                            />
 
                             <ToggleButtonField
                                 name="interestType"
                                 valuesEnum={InterestRateMode}
                                 updateFunction={(newValue) => {
+                                    setCurrentLoan(undefined);
                                     update({ ...form, interestType: newValue });
                                 }}
                                 initial={form.interestType}
                             />
+                        </div>
+
+                        <TokensModal
+                            tokens={tokens}
+                            selectedToken={tokens.find(
+                                (t: IToken) => t.address === form.tokenAddress
+                            )}
+                            setSelectedToken={(token) => {
+                                setCurrentBalance(undefined);
+                                setCurrentLoan(undefined);
+                                setSelectedToken(token);
+                                update({ ...form, tokenAddress: token.address });
+                            }}
+                        />
+
+                        <AmountInput
+                            initialAmountType={form.amountType}
+                            processNewValue={(amountType: AmountType, floatAmount: number) => {
+                                const updatedForm = { ...form, amountType, floatAmount };
+                                const valid = isFormValid(updatedForm);
+                                update({ ...updatedForm, valid });
+                            }}
+                        />
+
+                        <div className="script-block__info">
+                            {form.actionType === AdvancedMoneyMarketActionType.Borrow
+                                ? ""
+                                : currentBalance === undefined
+                                ? `..fetching balance..`
+                                : `${selectedToken?.symbol} balance: ${currentBalance}`}
+                        </div>
+
+                        <div className="script-block__info">
+                            {form.actionType === AdvancedMoneyMarketActionType.Borrow
+                                ? ""
+                                : currentBalance === undefined
+                                ? `..fetching loan info..`
+                                : form.interestType === InterestRateMode.Fixed
+                                ? `${currentLoan} ${selectedToken?.symbol} borrowed at FIXED rate`
+                                : `${currentLoan} ${selectedToken?.symbol} borrowed at VARIABLE rate`}
                         </div>
                     </div>
                 </form>

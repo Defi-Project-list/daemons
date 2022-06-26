@@ -118,8 +118,8 @@ export const ZapOutAction = ({
                                 {({ input, meta }) => (
                                     <input
                                         {...input}
-                                        className={`balance-block__amount ${
-                                            meta.error ? "script-block__field--error" : null
+                                        className={`script-block__input ${
+                                            meta.error ? "script-block__input--error" : null
                                         }`}
                                         onChange={(e) => {
                                             e.target.value =
@@ -145,7 +145,7 @@ export const ZapOutAction = ({
                                             step="50"
                                             {...input}
                                             className={`${
-                                                meta.error ? "script-block__field--error" : ""
+                                                meta.error ? "script-block__input--error" : ""
                                             }`}
                                             onChange={(e) => {
                                                 input.onChange(e);

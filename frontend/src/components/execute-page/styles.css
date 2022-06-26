@@ -51,6 +51,7 @@
     border-radius: 5px;
     align-items: center;
     user-select: none;
+    box-shadow: 5px 5px 15px 0 var(--grey-900);
 }
 
 .queue-script--disabled {

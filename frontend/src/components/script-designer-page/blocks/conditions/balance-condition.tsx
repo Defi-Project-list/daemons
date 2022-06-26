@@ -79,7 +79,7 @@ export const BalanceCondition = ({ form, update }: { form: IBalanceConditionForm
                             {({ input, meta }) =>
                                 <input
                                     {...input}
-                                    className={`balance-block__amount ${meta.error ? 'script-block__field--error' : null}`}
+                                    className={`script-block__input ${meta.error ? 'script-block__input--error' : null}`}
                                     onChange={(e) => {
                                         e.target.value = Number(e.target.value) < 0 ? '0' : e.target.value;
                                         input.onChange(e);

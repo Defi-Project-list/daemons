@@ -33,7 +33,7 @@ export const FollowCondition = ({ form, update }: { form: IFollowConditionForm; 
                         >
                             {({ input, meta }) => <select
                                 {...input}
-                                className={`follow-block__parent ${meta.error ? 'script-block__field--error' : null}`}
+                                className={`follow-block__parent ${meta.error ? 'script-block__input--error' : null}`}
                                 onChange={(e) => {
                                     input.onChange(e);
                                     const script: BaseScript | undefined = userScripts.find(script => script.getId() === e.target.value);
