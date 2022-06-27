@@ -25,7 +25,7 @@ authenticationRouter.get(
         const user = await User.findOneOrCreate(userAddress);
 
         // check if they are banned
-        if (user.banned) {
+        if (user.banned || !user.whitelisted) {
             return res.status(403).send(user);
         }
 

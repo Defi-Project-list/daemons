@@ -10,13 +10,17 @@ import { TransactionsChart } from "./transactions-chart";
 import { TreasuryData } from "./treasury-data";
 import { BannedPage } from "../error-pages/banned-page";
 import { Card } from "../card-component/card";
+import { NotWhitelistedPage } from "../error-pages/not-whitelisted-page";
 Chart.register(...registerables);
 
 export function DashboardPage() {
     const banned: boolean = useSelector((state: RootState) => state.wallet.banned);
+    const authenticated: boolean = useSelector((state: RootState) => state.wallet.authenticated);
+    const whitelisted: boolean = useSelector((state: RootState) => state.wallet.whitelisted);
     const supportedChain: boolean = useSelector((state: RootState) => state.wallet.supportedChain);
 
     if (banned) return <BannedPage />;
+    if (authenticated && !whitelisted) return <NotWhitelistedPage />;
     if (!supportedChain) return <UnsupportedChainPage />;
 
     return (

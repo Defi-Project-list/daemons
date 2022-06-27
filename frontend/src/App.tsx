@@ -68,7 +68,8 @@ export const App = ({ children }: { children: any }) => {
         <div>
             <ToastContainer />
             <div className="header">
-                <img src={logo} alt="Daemons logo" className="page-logo" />
+                <img src={logo} alt="Daemons logo" className="page-logo"/>
+                <div className="page-logo__beta-sign">BETA</div>
                 {authenticated && (
                     <div className="menu">
                         <Link className={dashboardLinkClassName} to="/">

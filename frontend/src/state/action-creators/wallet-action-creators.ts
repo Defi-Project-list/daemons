@@ -39,7 +39,8 @@ export const authenticationCheck = (address?: string) => {
             dispatch({
                 type: ActionType.AUTH_CHECK,
                 authenticated: false,
-                banned: false
+                banned: false,
+                whitelisted: false,
             });
             return;
         }
@@ -50,7 +51,8 @@ export const authenticationCheck = (address?: string) => {
             dispatch({
                 type: ActionType.AUTH_CHECK,
                 authenticated: false,
-                banned: false
+                banned: false,
+                whitelisted: false,
             });
             return;
         }
@@ -59,7 +61,8 @@ export const authenticationCheck = (address?: string) => {
         dispatch({
             type: ActionType.AUTH_CHECK,
             authenticated: true,
-            banned: user.banned
+            banned: user.banned,
+            whitelisted: user.whitelisted,
         });
     };
 };

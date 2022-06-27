@@ -12,6 +12,7 @@ export interface IAuthCheck {
     type: ActionType.AUTH_CHECK;
     authenticated: boolean;
     banned: boolean;
+    whitelisted: boolean;
 }
 
 export interface IFetchDaemBalance {
