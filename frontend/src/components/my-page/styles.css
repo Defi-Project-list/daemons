@@ -46,7 +46,7 @@
     flex-direction: column;
     justify-content: space-between;
     user-select: none;
-    box-shadow: 5px 5px 15px 0 var(--grey-900);
+    box-shadow: 5px 5px 15px 0 var(--grey-800);
 }
 
 .script__verification-result {
