@@ -17,7 +17,7 @@ const initialState: WalletState = {
     connected: false,
     authenticated: false,
     banned: false,
-    whitelisted: false,
+    whitelisted: true,
     supportedChain: false,
     DAEMBalance: 0,
     ETHBalance: 0

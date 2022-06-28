@@ -40,7 +40,7 @@ export const authenticationCheck = (address?: string) => {
                 type: ActionType.AUTH_CHECK,
                 authenticated: false,
                 banned: false,
-                whitelisted: false,
+                whitelisted: true,
             });
             return;
         }
@@ -52,7 +52,7 @@ export const authenticationCheck = (address?: string) => {
                 type: ActionType.AUTH_CHECK,
                 authenticated: false,
                 banned: false,
-                whitelisted: false,
+                whitelisted: true,
             });
             return;
         }
