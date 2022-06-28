@@ -18,6 +18,7 @@ import {
     ScriptAction
 } from "../data/chains-data/action-form-interfaces";
 import {
+    FrequencyUnits,
     IBalanceConditionForm,
     IFollowConditionForm,
     IFrequencyConditionForm,
@@ -149,7 +150,7 @@ export class ScriptDescriptionFactory {
         const zapped = [];
         if (form.floatAmountA > 0) zapped.push(`${amountA} ${tokenA.symbol}`);
         if (form.floatAmountB > 0) zapped.push(`${amountB} ${tokenB.symbol}`);
-        const inputs = zapped.join(' + ');
+        const inputs = zapped.join(" + ");
 
         return `Zap ${inputs} into ${lp}`;
     }
@@ -228,7 +229,9 @@ export class ScriptDescriptionFactory {
 
     private frequencyCondition(form: IFrequencyConditionForm): string {
         const startingNow = form.startNow ? ", starting now" : "";
-        return `With a minimum delay of ${form.ticks} ${form.unit} between executions${startingNow}`;
+        return `With a minimum delay of ${form.ticks} ${FrequencyUnits[
+            form.unit
+        ].toLowerCase()} between executions${startingNow}`;
     }
 
     private repetitionsCondition(form: IRepetitionsConditionForm): string {
