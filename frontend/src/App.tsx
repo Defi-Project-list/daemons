@@ -29,6 +29,8 @@ export const App = ({ children }: { children: any }) => {
         (state: RootState) => state.wallet.address
     );
     const authenticated: boolean = useSelector((state: RootState) => state.wallet.authenticated);
+    const whitelisted: boolean = useSelector((state: RootState) => state.wallet.whitelisted);
+    const banned: boolean = useSelector((state: RootState) => state.wallet.banned);
     const supportedChain: boolean = useSelector((state: RootState) => state.wallet.supportedChain);
 
     // menu selection classes
@@ -68,7 +70,7 @@ export const App = ({ children }: { children: any }) => {
         <div>
             <ToastContainer />
             <div className="header">
-                <img src={logo} alt="Daemons logo" className="page-logo"/>
+                <img src={logo} alt="Daemons logo" className="page-logo" />
                 <div className="page-logo__beta-sign">BETA</div>
                 {authenticated && (
                     <div className="menu">
@@ -99,6 +101,21 @@ export const App = ({ children }: { children: any }) => {
             </div>
 
             <div className="page">{children}</div>
+            {authenticated && whitelisted && !banned && (
+                <a
+                    className="beta-tester-button"
+                    target="_blank"
+                    href="mailto:info@daemons.fi?subject=Beta tester report"
+                >
+                    <div className="beta-tester-button__icon"></div>
+                    <div className="beta-tester-button__content">
+                        Hi tester,
+                        <br />
+                        Thanks for your help, we really appreciate it! Please let us know about any
+                        bug, tips, suggestions, doubts you have. Your opinion matters a lot to us!
+                    </div>
+                </a>
+            )}
         </div>
     );
 };
