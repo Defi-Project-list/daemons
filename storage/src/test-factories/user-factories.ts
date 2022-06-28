@@ -7,7 +7,8 @@ export function userFactory(args: any): IUser {
         address: args.address ?? faker.finance.ethereumAddress(),
         username: args.username ?? faker.internet.userName(),
         creationDate: args.date ?? new Date(),
-        banned: args.banned ?? false
+        banned: args.banned ?? false,
+        whitelisted: args.whitelisted ?? true,
     };
 }
 
