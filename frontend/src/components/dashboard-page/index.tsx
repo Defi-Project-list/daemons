@@ -32,11 +32,11 @@ export function DashboardPage() {
                     <TreasuryData />
                 </Card>
 
-                <Card title="Scripts" iconClass="card__title-icon--script">
+                <Card title="Active Scripts" iconClass="card__title-icon--script">
                     <ScriptsChart />
                 </Card>
 
-                <Card title="Users" iconClass="card__title-icon--users">
+                <Card title="Users with active scripts" iconClass="card__title-icon--users">
                     <UsersChart />
                 </Card>
 
