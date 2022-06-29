@@ -105,7 +105,7 @@ export const App = ({ children }: { children: any }) => {
                 <a
                     className="beta-tester-button"
                     target="_blank"
-                    href="mailto:info@daemons.fi?subject=Beta tester report"
+                    href={`mailto:info@daemons.fi?subject=Beta tester report - ${walletAddress}`}
                 >
                     <div className="beta-tester-button__icon"></div>
                     <div className="beta-tester-button__content">
