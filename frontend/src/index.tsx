@@ -10,6 +10,7 @@ import { MyPage } from './components/my-page';
 import { ExecutePage } from './components/execute-page';
 import { ScriptDesignerPage } from "./components/script-designer-page";
 import { ReviewPage } from "./components/review-page";
+import { TransactionsPage } from "./components/transactions-page";
 
 ReactDOM.render(
     <Provider store={store}>
@@ -20,6 +21,7 @@ ReactDOM.render(
                 <Route path="new-script" element={<App><ScriptDesignerPage /></App>} />
                 <Route path="review" element={<App><ReviewPage /></App>} />
                 <Route path="execute" element={<App><ExecutePage /></App>} />
+                <Route path="transactions" element={<App><TransactionsPage/></App>} />
             </Routes>
         </BrowserRouter>
     </Provider>,

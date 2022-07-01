@@ -7,7 +7,6 @@ import { UserScriptsContainer } from "./user-scripts";
 import { GasTank } from "./gas-tank";
 import "./styles.css";
 import "../shared.css";
-import { History } from "./history";
 import { TipJar } from "./tip-jar";
 import { BannedPage } from "../error-pages/banned-page";
 import { NotWhitelistedPage } from "../error-pages/not-whitelisted-page";
@@ -34,7 +33,6 @@ export function MyPage(): JSX.Element {
                 <div className="my-page__right-panel">
                     <GasTank />
                     <TipJar />
-                    <History />
                 </div>
             </div>
         </div>

@@ -9,7 +9,6 @@ import { GasIndicator } from "./components/gas-indicator";
 import { fetchUserScripts } from "./state/action-creators/script-action-creators";
 import { fetchGasTankBalance } from "./state/action-creators/gas-tank-action-creators";
 import { fetchGasTankClaimable } from "./state/action-creators/gas-tank-action-creators";
-import { fetchUserHistory } from "./state/action-creators/transactions-action-creators";
 import { ToastContainer } from "react-toastify";
 import { fetchTipJarBalance } from "./state/action-creators/tip-jar-action-creators";
 import { TipIndicator } from "./components/tip-indicator";
@@ -47,6 +46,11 @@ export const App = ({ children }: { children: any }) => {
             ? "menu__entry--selected"
             : "menu__entry--unselected"
     }`;
+    const transactionsLinkClassName = `menu__entry ${
+        document.location.href.endsWith("/transactions")
+            ? "menu__entry--selected"
+            : "menu__entry--unselected"
+    }`;
 
     useEffect(() => {
         if (authenticated && walletAddress && supportedChain) {
@@ -54,7 +58,6 @@ export const App = ({ children }: { children: any }) => {
             dispatch(fetchGasTankBalance(walletAddress, chainId));
             dispatch(fetchGasTankClaimable(walletAddress, chainId));
             dispatch(fetchTipJarBalance(walletAddress, chainId));
-            dispatch(fetchUserHistory(chainId, walletAddress));
             dispatch(fetchDaemBalance(walletAddress, chainId));
             dispatch(fetchEthBalance(walletAddress, chainId));
         }
@@ -82,6 +85,9 @@ export const App = ({ children }: { children: any }) => {
                         </Link>
                         <Link className={executeLinkClassName} to="/execute">
                             Execute
+                        </Link>
+                        <Link className={transactionsLinkClassName} to="/transactions">
+                            Transactions
                         </Link>
                     </div>
                 )}

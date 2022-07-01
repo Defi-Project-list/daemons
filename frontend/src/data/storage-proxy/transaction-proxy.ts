@@ -89,7 +89,24 @@ export class TransactionProxy {
         }
 
         console.log(`Fetching user ${user} transactions for chain ${chainId}`);
-        const url = `${storageAddress}/transactions/${chainId}/${user}`;
+        const url = `${storageAddress}/transactions/receiver/${chainId}/${user}`;
+
+        const requestOptions = { method: 'GET', credentials: 'include' };
+        const response = await fetch(url, requestOptions as any);
+        if (response.status !== 200) return [];
+
+        const transactions: ITransaction[] = await response.json();
+        return transactions;
+    }
+
+    public static async fetchExecutedTransactions(chainId?: string, user?: string, page?: number): Promise<ITransaction[]> {
+        if (!user || !chainId) {
+            console.warn("Missing user or chain id. Executed transactions fetch aborted");
+            return [];
+        }
+
+        console.log(`Fetching transactions executed by ${user} on chain ${chainId}`);
+        const url = `${storageAddress}/transactions/executor/${chainId}/${user}`;
 
         const requestOptions = { method: 'GET', credentials: 'include' };
         const response = await fetch(url, requestOptions as any);

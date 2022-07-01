@@ -1,0 +1,41 @@
+.transaction-page__layout {
+    display: grid;
+    grid-template-columns: 50fr 50fr;
+    column-gap: 20px;
+}
+
+
+/* Transactions Panel */
+
+.transactions-panel__table {
+    width: 100%;
+    font-size: 0.9rem;
+    font-family: var(--regular);
+}
+
+.transactions-panel__table-head {
+    display: table-header-group;
+    height: 50px;
+    border-bottom: 1px solid var(--white);
+}
+
+.transactions-panel__header--left {
+    text-align: left;
+}
+
+.transactions-panel__separator {
+    border: none;
+    border-bottom: 1px solid #fff5;
+}
+
+/* Transaction Record */
+
+.transaction-record__cell--center {
+    text-align: center;
+}
+
+.transaction-record__outcome-icon {
+    margin: auto;
+    width: 25px;
+    height: 25px;
+}
