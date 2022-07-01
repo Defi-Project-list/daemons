@@ -22,7 +22,7 @@ export function stringifyBigNumber(bigNumber: any): string {
  * Truncates and removes dangerous characters from the text
  */
 export const truncateAndEscapeText = (text: string, length: number = 150): string => {
-    return text.substring(0, length).replace(/[~`!@#$%^&*()+={}\[\];:\'\"<>,\/\\\?-]/g, "");
+    return text.substring(0, length).replace(/[~`!@#$^&*()+={}\[\];:\'\"<>,\/\\\?-]/g, "");
 };
 
 /**

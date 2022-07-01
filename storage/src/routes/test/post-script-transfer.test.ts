@@ -131,6 +131,22 @@ describe("POST api/scripts/    [Transfer]", () => {
         expect(script?.description.length).to.be.lessThanOrEqual(150);
     });
 
+    it("keeps percentage signs in description", async () => {
+        const payload = signedTransferActionFactory({
+            description: "Some % of some tokens",
+            user: userAddress
+        });
+
+        await supertest(app)
+            .post("/api/scripts/")
+            .set("Cookie", `token=${jwToken}`)
+            .send({ script: payload, type: "TransferScript" })
+            .expect(200);
+
+        const script = await TransferScript.findOne({ scriptId: payload.scriptId });
+        expect(script?.description).to.be.equal("Some % of some tokens");
+    });
+
     it("escapes dangerous characters from the description", async () => {
         const payload = signedTransferActionFactory({
             description: '<script>window.location.href="dangerous-site"</script>',
