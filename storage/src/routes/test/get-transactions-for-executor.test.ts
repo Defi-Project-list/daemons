@@ -9,7 +9,7 @@ import { transactionDocumentFactory } from '../../test-factories/transactions-fa
 import { ITransaction } from '@daemons-fi/shared-definitions';
 
 
-describe('GET api/transactions/:chainId/:userAddress', () => {
+describe('GET api/transactions/executor/:chainId/:userAddress', () => {
 
     before(async () => await connectToTestDb());
     afterEach(async () => await clearTestDb());
@@ -19,10 +19,10 @@ describe('GET api/transactions/:chainId/:userAddress', () => {
     const jwToken = jwt.sign({ userAddress }, process.env.JWT_SECRET as string);
 
 
-    it('only fetches transactions belonging to the specified user', async () => {
+    it('only fetches transactions executed by the specified user', async () => {
         // add to the db a couple of transactions from the known user address
-        const tx1 = await transactionDocumentFactory({ beneficiaryUser: userAddress });
-        const tx2 = await transactionDocumentFactory({ beneficiaryUser: userAddress });
+        const tx1 = await transactionDocumentFactory({ executingUser: userAddress });
+        const tx2 = await transactionDocumentFactory({ executingUser: userAddress });
         const hashes = [tx1.hash, tx2.hash];
 
         // and another couple from random addresses
@@ -31,7 +31,7 @@ describe('GET api/transactions/:chainId/:userAddress', () => {
 
         const chainId = "42";
         const response = await supertest(app)
-            .get(`/api/transactions/${chainId}/${userAddress}`)
+            .get(`/api/transactions/executor/${chainId}/${userAddress}`)
             .set('Cookie', `token=${jwToken}`);
 
         const fetchedTransactions = response.body as ITransaction[];
@@ -43,8 +43,8 @@ describe('GET api/transactions/:chainId/:userAddress', () => {
 
     it('only fetches transactions targeting the specified chain', async () => {
         // add to the db a couple of transactions on chain 42
-        const tx1 = await transactionDocumentFactory({ beneficiaryUser: userAddress, chainId: BigNumber.from("42") });
-        const tx2 = await transactionDocumentFactory({ beneficiaryUser: userAddress, chainId: BigNumber.from("42") });
+        const tx1 = await transactionDocumentFactory({ executingUser: userAddress, chainId: BigNumber.from("42") });
+        const tx2 = await transactionDocumentFactory({ executingUser: userAddress, chainId: BigNumber.from("42") });
         const hashes = [tx1.hash, tx2.hash];
 
         // and another couple from random addresses
@@ -53,7 +53,7 @@ describe('GET api/transactions/:chainId/:userAddress', () => {
 
         const chainId = "42";
         const response = await supertest(app)
-            .get(`/api/transactions/${chainId}/${userAddress}`)
+            .get(`/api/transactions/executor/${chainId}/${userAddress}`)
             .set('Cookie', `token=${jwToken}`);
 
         const fetchedTransactions = response.body as ITransaction[];
@@ -65,13 +65,13 @@ describe('GET api/transactions/:chainId/:userAddress', () => {
 
     it('is insensitive to the casing of the passed user address', async () => {
         // add to the db a couple of transactions from the known user address
-        await transactionDocumentFactory({ beneficiaryUser: userAddress });
-        await transactionDocumentFactory({ beneficiaryUser: userAddress });
+        await transactionDocumentFactory({ executingUser: userAddress });
+        await transactionDocumentFactory({ executingUser: userAddress });
 
         // call the API with a lowercase address
         const lowercaseAddress = userAddress.toLowerCase();
         const lowercaseAddressResponse = await supertest(app)
-            .get(`/api/transactions/42/${lowercaseAddress}`)
+            .get(`/api/transactions/executor/42/${lowercaseAddress}`)
             .set('Cookie', `token=${jwToken}`);
 
         const lowercaseAddressFetchedTransactions = lowercaseAddressResponse.body as ITransaction[];
@@ -79,7 +79,7 @@ describe('GET api/transactions/:chainId/:userAddress', () => {
         // call the API with an address with checksum
         const checksumAddress = utils.getAddress(userAddress);
         const checksumAddressResponse = await supertest(app)
-            .get(`/api/transactions/42/${checksumAddress}`)
+            .get(`/api/transactions/executor/42/${checksumAddress}`)
             .set('Cookie', `token=${jwToken}`);
 
         const checksumAddressFetchedTransactions = checksumAddressResponse.body as ITransaction[];
@@ -92,7 +92,7 @@ describe('GET api/transactions/:chainId/:userAddress', () => {
         const randomUser = faker.finance.ethereumAddress();
 
         await supertest(app)
-            .get(`/api/transactions/${chainId}/${randomUser}`)
+            .get(`/api/transactions/executor/${chainId}/${randomUser}`)
             .set('Cookie', `token=${jwToken}`)
             .expect(403);
     });
@@ -100,7 +100,7 @@ describe('GET api/transactions/:chainId/:userAddress', () => {
     it('returns a 401 error if trying to fetch transactions while not authenticated', async () => {
         const chainId = "42";
         await supertest(app)
-            .get(`/api/transactions/${chainId}/${userAddress}`)
+            .get(`/api/transactions/executor/${chainId}/${userAddress}`)
             .expect(401);
     });
 });

@@ -57,7 +57,7 @@ transactionsRouter.post('/:hash/update', authenticate, async (req: Request, res:
 });
 
 
-transactionsRouter.get('/:chainId/:userAddress', authenticate, async (req: Request, res: Response) => {
+transactionsRouter.get('/receiver/:chainId/:userAddress', authenticate, async (req: Request, res: Response) => {
     // adds checksum to address (uppercase characters)
     const userAddress = utils.getAddress(req.params.userAddress);
     if (req.userAddress !== userAddress) {
@@ -68,6 +68,21 @@ transactionsRouter.get('/:chainId/:userAddress', authenticate, async (req: Reque
 
     const transactions = await Transaction
         .find({ chainId, beneficiaryUser: userAddress })
+        .sort({ date: 'desc' });
+    return res.send(transactions);
+});
+
+transactionsRouter.get('/executor/:chainId/:userAddress', authenticate, async (req: Request, res: Response) => {
+    // adds checksum to address (uppercase characters)
+    const userAddress = utils.getAddress(req.params.userAddress);
+    if (req.userAddress !== userAddress) {
+        return res.sendStatus(403);
+    }
+
+    const chainId = String(req.params.chainId);
+
+    const transactions = await Transaction
+        .find({ chainId, executingUser: userAddress })
         .sort({ date: 'desc' });
     return res.send(transactions);
 });
