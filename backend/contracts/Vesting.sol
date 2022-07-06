@@ -15,9 +15,9 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * Anyone can release the due amount, by calling the release function and specifying the beneficiary address
  */
 contract Vesting is Ownable {
-    IERC20 public token;
-    uint256 public start;
-    uint256 public duration;
+    IERC20 public immutable token;
+    uint256 public immutable start;
+    uint256 public immutable duration;
 
     uint256 public allocated;
     mapping(address => uint256) public totalBalance;

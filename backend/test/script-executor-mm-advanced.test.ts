@@ -306,7 +306,7 @@ describe("ScriptExecutor - Money Market Advanced", function () {
 
     it("repaying is cheap - ABS", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000258426002067408 ETH.
+        // execute the script was 0.000266268270638225 ETH.
 
         let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
         message.amount = ethers.utils.parseEther("100");
@@ -325,7 +325,7 @@ describe("ScriptExecutor - Money Market Advanced", function () {
 
     it("repaying is cheap - PRC", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000267068002136544 ETH.
+        // execute the script was 0.000275080827289030 ETH.
 
         let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
         message.amount = BigNumber.from(7500); // 75%
@@ -344,7 +344,7 @@ describe("ScriptExecutor - Money Market Advanced", function () {
 
     it("borrowing is cheap - ABS", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000210066001680528 ETH.
+        // execute the script was 0.000215030917927000 ETH.
 
         let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
         message.amount = ethers.utils.parseEther("25");
@@ -362,7 +362,7 @@ describe("ScriptExecutor - Money Market Advanced", function () {
 
     it("borrowing is cheap - PRC", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000215473001723784 ETH.
+        // execute the script was 0.000219232576706820 ETH.
 
         let message: IMMAdvancedAction = JSON.parse(JSON.stringify(baseMessage));
         message.amount = BigNumber.from("5000"); // Borrow 50% of borrowable

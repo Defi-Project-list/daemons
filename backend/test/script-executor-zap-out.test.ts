@@ -313,7 +313,7 @@ describe("ScriptExecutor - ZapOut", function () {
 
     it("zapping is cheap - ABS", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000317447002539576 ETH.
+        // execute the script was 0.000318543005415231 ETH.
         const message = await initialize(baseMessage);
 
         const initialBalance = await owner.getBalance();

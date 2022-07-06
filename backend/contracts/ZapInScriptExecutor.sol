@@ -8,7 +8,7 @@ import "./interfaces/IUniswapV2Router.sol";
 import "./interfaces/IUniswapV2Factory.sol";
 
 contract ZapInScriptExecutor is ConditionsChecker {
-    uint256 public GAS_LIMIT = 320000; // 0.00032 GWEI
+    uint256 public constant GAS_LIMIT = 320000; // 0.00032 GWEI
 
     /* ========== HASH FUNCTIONS ========== */
 

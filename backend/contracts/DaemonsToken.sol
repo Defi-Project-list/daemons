@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/ITreasury.sol";
 
 contract DaemonsToken is ERC20, Ownable {
-    uint256 public MAX_SUPPLY = 1e9 * 1e18; // 1 Billion
+    uint256 public constant MAX_SUPPLY = 1e9 * 1e18; // 1 Billion
 
     address private treasury;
     address private vestingContract;

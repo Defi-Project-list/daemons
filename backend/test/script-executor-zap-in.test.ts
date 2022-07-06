@@ -330,7 +330,7 @@ describe("ScriptExecutor - ZapIn", function () {
 
     it("zapping is cheap - ABS ABS", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000379177003033416 ETH.
+        // execute the script was 0.000385386118313502 ETH.
         const message = await initialize(baseMessage);
 
         const initialBalance = await owner.getBalance();
@@ -344,7 +344,7 @@ describe("ScriptExecutor - ZapIn", function () {
 
     it("zapping is cheap - ABS PRC", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000385537003084296 ETH.
+        // execute the script was 0.000391746120266022 ETH.
 
         let message: IZapInAction = JSON.parse(JSON.stringify(baseMessage));
         message.typeAmtA = AmountType.Percentage;
@@ -362,7 +362,7 @@ describe("ScriptExecutor - ZapIn", function () {
 
     it("zapping is cheap - PRC PRC", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000396709003173672 ETH.
+        // execute the script was 0.000402918123695826 ETH.
 
         let message: IZapInAction = JSON.parse(JSON.stringify(baseMessage));
         message.typeAmtA = AmountType.Percentage;

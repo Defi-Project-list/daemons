@@ -375,7 +375,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
 
     it("depositing is cheap - ABS", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000393723044096976 ETH.
+        // execute the script was 0.000380248048291496 ETH.
 
         let message: IBeefyAction = JSON.parse(JSON.stringify(baseMessage));
         message.action = BeefyActionType.Deposit;
@@ -392,7 +392,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
 
     it("depositing is cheap - PRC", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000399760044773120 ETH.
+        // execute the script was 0.000386284049058068 ETH.
 
         let message: IBeefyAction = JSON.parse(JSON.stringify(baseMessage));
         message.action = BeefyActionType.Deposit;
@@ -411,7 +411,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
 
     it("withdrawing is cheap - ABS", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000328337028565319 ETH.
+        // execute the script was 0.000317851035599312 ETH.
 
         // first deposit
         let depositMessage: IBeefyAction = JSON.parse(JSON.stringify(baseMessage));
@@ -440,7 +440,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
 
     it("withdrawing is cheap - PRC", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000334423029094801 ETH.
+        // execute the script was 0.000323949036282288 ETH.
 
         // first deposit
         let depositMessage: IBeefyAction = JSON.parse(JSON.stringify(baseMessage));
