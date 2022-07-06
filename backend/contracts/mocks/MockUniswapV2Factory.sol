@@ -50,13 +50,9 @@ contract MockUniswapV2Factory is IUniswapV2Factory {
         return 0;
     }
 
-    function createPair(address tokenA, address tokenB)
-        external
-        view
-        override
-        returns (address pair)
-    {
+    function createPair(address, address) external pure override returns (address) {
         require(1 == 2, "'createPair' has not been implemented");
+        return (address(0));
     }
 
     function setFeeTo(address) external override {}

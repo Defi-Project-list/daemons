@@ -10,7 +10,11 @@ contract MockMoneyMarketPool is IMoneyMarket {
     MockToken private aToken;
     MockToken private debtToken;
 
-    constructor(address _token, address _aToken, address _debtToken) {
+    constructor(
+        address _token,
+        address _aToken,
+        address _debtToken
+    ) {
         token = MockToken(_token);
         aToken = MockToken(_aToken);
         debtToken = MockToken(_debtToken);
@@ -20,7 +24,7 @@ contract MockMoneyMarketPool is IMoneyMarket {
         address asset,
         uint256 amount,
         address onBehalfOf,
-        uint16 referralCode
+        uint16
     ) external override {
         require(asset == address(token), "Always specify token, not aToken");
 
@@ -53,8 +57,8 @@ contract MockMoneyMarketPool is IMoneyMarket {
     function borrow(
         address asset,
         uint256 amount,
-        uint256 interestRateMode,
-        uint16 referralCode,
+        uint256,
+        uint16,
         address onBehalfOf
     ) external override {
         require(asset == address(token), "Always specify token, not aToken");
@@ -69,7 +73,7 @@ contract MockMoneyMarketPool is IMoneyMarket {
     function repay(
         address asset,
         uint256 amount,
-        uint256 interestRateMode,
+        uint256,
         address onBehalfOf
     ) external override returns (uint256) {
         require(asset == address(token), "Always specify token, not aToken");
@@ -91,9 +95,9 @@ contract MockMoneyMarketPool is IMoneyMarket {
         return debt;
     }
 
-    function getUserAccountData(address user)
+    function getUserAccountData(address)
         external
-        view
+        pure
         override
         returns (
             uint256 totalCollateralBase,

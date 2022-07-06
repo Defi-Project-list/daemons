@@ -26,10 +26,10 @@ contract MockUniswapV2Router is IUniswapV2Router01 {
         address tokenB,
         uint256 amountADesired,
         uint256 amountBDesired,
-        uint256 amountAMin,
-        uint256 amountBMin,
+        uint256,
+        uint256,
         address to,
-        uint256 deadline
+        uint256
     )
         external
         override
@@ -57,31 +57,32 @@ contract MockUniswapV2Router is IUniswapV2Router01 {
     function addLiquidityETH(
         address token,
         uint256 amountTokenDesired,
-        uint256 amountTokenMin,
-        uint256 amountETHMin,
-        address to,
-        uint256 deadline
+        uint256,
+        uint256,
+        address,
+        uint256
     )
         external
         payable
         override
         returns (
-            uint256 amountToken,
-            uint256 amountETH,
-            uint256 liquidity
+            uint256,
+            uint256,
+            uint256
         )
     {
         MockToken(token).transferFrom(msg.sender, address(this), amountTokenDesired);
+        return (0,0,0);
     }
 
     function removeLiquidity(
         address tokenA,
         address tokenB,
         uint256 liquidity,
-        uint256 amountAMin,
-        uint256 amountBMin,
+        uint256,
+        uint256,
         address to,
-        uint256 deadline
+        uint256
     ) external override returns (uint256 amountA, uint256 amountB) {
         // get LP address
         require(factoryAddress != address(0), "Factory has not been set");
@@ -98,46 +99,46 @@ contract MockUniswapV2Router is IUniswapV2Router01 {
     }
 
     function removeLiquidityETH(
-        address token,
-        uint256 liquidity,
-        uint256 amountTokenMin,
-        uint256 amountETHMin,
-        address to,
-        uint256 deadline
-    ) external override returns (uint256 amountToken, uint256 amountETH) {
+        address,
+        uint256,
+        uint256,
+        uint256,
+        address,
+        uint256
+    ) external pure override returns (uint256 amountToken, uint256 amountETH) {
         require(1 == 2, "'removeLiquidityETH' has not been implemented");
         return (0, 0);
     }
 
     function removeLiquidityWithPermit(
-        address tokenA,
-        address tokenB,
-        uint256 liquidity,
-        uint256 amountAMin,
-        uint256 amountBMin,
-        address to,
-        uint256 deadline,
-        bool approveMax,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external override returns (uint256 amountA, uint256 amountB) {
+        address,
+        address,
+        uint256,
+        uint256,
+        uint256,
+        address,
+        uint256,
+        bool,
+        uint8,
+        bytes32,
+        bytes32
+    ) external pure override returns (uint256 amountA, uint256 amountB) {
         require(1 == 2, "'removeLiquidityWithPermit' has not been implemented");
         return (0, 0);
     }
 
     function removeLiquidityETHWithPermit(
-        address token,
-        uint256 liquidity,
-        uint256 amountTokenMin,
-        uint256 amountETHMin,
-        address to,
-        uint256 deadline,
-        bool approveMax,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external override returns (uint256 amountToken, uint256 amountETH) {
+        address,
+        uint256,
+        uint256,
+        uint256,
+        address,
+        uint256,
+        bool,
+        uint8,
+        bytes32,
+        bytes32
+    ) external pure override returns (uint256 amountToken, uint256 amountETH) {
         require(1 == 2, "'removeLiquidityETHWithPermit' has not been implemented");
         return (0, 0);
     }
@@ -147,7 +148,7 @@ contract MockUniswapV2Router is IUniswapV2Router01 {
         uint256 amountOutMin,
         address[] calldata path,
         address to,
-        uint256 deadline
+        uint256
     ) external override returns (uint256[] memory amounts) {
         console.log("swapExactTokensForTokens");
         console.log("swapping", path[0], "to", path[1]);
@@ -168,12 +169,12 @@ contract MockUniswapV2Router is IUniswapV2Router01 {
     }
 
     function swapTokensForExactTokens(
-        uint256 amountOut,
-        uint256 amountInMax,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external override returns (uint256[] memory amounts) {
+        uint256,
+        uint256,
+        address[] calldata,
+        address,
+        uint256
+    ) external pure override returns (uint256[] memory amounts) {
         require(1 == 2, "'swapTokensForExactTokens' has not been implemented");
         return new uint256[](2);
     }
@@ -182,7 +183,7 @@ contract MockUniswapV2Router is IUniswapV2Router01 {
         uint256 amountOutMin,
         address[] calldata path,
         address to,
-        uint256 deadline
+        uint256
     ) external payable override returns (uint256[] memory amounts) {
         require(amountOutMin > 0, "amountOutMin should be > 0 to avoid frontrunning");
         console.log("swapExactETHForTokens");
@@ -201,67 +202,67 @@ contract MockUniswapV2Router is IUniswapV2Router01 {
     }
 
     function swapTokensForExactETH(
-        uint256 amountOut,
-        uint256 amountInMax,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external override returns (uint256[] memory amounts) {
+        uint256,
+        uint256,
+        address[] calldata,
+        address,
+        uint256
+    ) external pure override returns (uint256[] memory amounts) {
         require(1 == 2, "'swapTokensForExactETH' has not been implemented");
         return new uint256[](2);
     }
 
     function swapExactTokensForETH(
-        uint256 amountIn,
-        uint256 amountOutMin,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external override returns (uint256[] memory amounts) {
+        uint256,
+        uint256,
+        address[] calldata,
+        address,
+        uint256
+    ) external pure override returns (uint256[] memory amounts) {
         require(1 == 2, "'swapExactTokensForETH' has not been implemented");
         return new uint256[](2);
     }
 
     function swapETHForExactTokens(
-        uint256 amountOut,
-        address[] calldata path,
-        address to,
-        uint256 deadline
+        uint256,
+        address[] calldata,
+        address,
+        uint256
     ) external payable override returns (uint256[] memory amounts) {
         require(1 == 2, "'swapETHForExactTokens' has not been implemented");
         return new uint256[](2);
     }
 
     function quote(
-        uint256 amountA,
-        uint256 reserveA,
-        uint256 reserveB
+        uint256,
+        uint256,
+        uint256
     ) external pure override returns (uint256 amountB) {
         require(1 == 2, "'quote' has not been implemented");
         return 0;
     }
 
     function getAmountOut(
-        uint256 amountIn,
-        uint256 reserveIn,
-        uint256 reserveOut
+        uint256,
+        uint256,
+        uint256
     ) external pure override returns (uint256 amountOut) {
         require(1 == 2, "'getAmountOut' has not been implemented");
         return 0;
     }
 
     function getAmountIn(
-        uint256 amountOut,
-        uint256 reserveIn,
-        uint256 reserveOut
+        uint256,
+        uint256,
+        uint256
     ) external pure override returns (uint256 amountIn) {
         require(1 == 2, "'getAmountIn' has not been implemented");
         return 0;
     }
 
-    function getAmountsOut(uint256 amountIn, address[] calldata path)
+    function getAmountsOut(uint256 amountIn, address[] calldata)
         external
-        view
+        pure
         override
         returns (uint256[] memory amounts)
     {
@@ -271,9 +272,9 @@ contract MockUniswapV2Router is IUniswapV2Router01 {
         return result;
     }
 
-    function getAmountsIn(uint256 amountOut, address[] calldata path)
+    function getAmountsIn(uint256, address[] calldata)
         external
-        view
+        pure
         override
         returns (uint256[] memory amounts)
     {

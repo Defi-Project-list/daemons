@@ -11,7 +11,7 @@ contract MockPriceOracleGetter is IPriceOracleGetter {
     }
 
     /// @inheritdoc IPriceOracleGetter
-    function getAssetPrice(address asset) external override view returns (uint256) {
+    function getAssetPrice(address) external override view returns (uint256) {
         return fakePrice;
     }
 }
