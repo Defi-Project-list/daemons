@@ -14,18 +14,31 @@ const icons = {
 };
 
 const messages = {
-    [TransactionOutcome.Confirmed]: "The transaction was successful",
+    [TransactionOutcome.Confirmed]: "The transaction was successful.",
     [TransactionOutcome.Waiting]:
-        "The transaction has not been confirmed yet. Only Daemons or the script user can verify it",
-    [TransactionOutcome.Failed]: "The transaction execution failed",
-    [TransactionOutcome.NotFound]: "The transaction could not be found and will be removed"
+        "The transaction has not been confirmed yet. Either Daemons or the script user will verify it.",
+    [TransactionOutcome.Failed]: "The transaction execution failed.",
+    [TransactionOutcome.NotFound]: "The transaction could not be found and will be removed."
 };
 
-export function TransactionRecord({ transaction }: ITransactionRecordProps): JSX.Element {
+const getExplorerLink = (transaction: ITransaction, explorerTxUrl: string): JSX.Element => (
+    <a className="transaction-record__explorer-link" href={`${explorerTxUrl}/${transaction.hash}`}>
+        See explorer.
+    </a>
+);
+
+export function TransactionRecord({
+    transaction,
+    explorerTxUrl
+}: ITransactionRecordProps): JSX.Element {
     const date = Intl.DateTimeFormat().format(new Date(transaction.date));
     const outcomeIcon = icons[transaction.outcome] ?? "";
     const message = messages[transaction.outcome] ?? `Unknown outcome ${transaction.outcome}`;
-    const shortenedDescription = transaction.description.slice(0, 20) + "...";
+    const link = getExplorerLink(transaction, explorerTxUrl);
+    const shortenedDescription =
+        transaction.description.length <= 40
+            ? transaction.description
+            : transaction.description.slice(0, 40) + "...";
 
     return (
         <tr className="transaction-record">
@@ -39,7 +52,12 @@ export function TransactionRecord({ transaction }: ITransactionRecordProps): JSX
                 <span className="transaction-record__date">{date}</span>
             </td>
             <td className="transaction-record__cell--center">
-                <div className={"transaction-record__outcome-icon " + outcomeIcon} />
+                <div className="tooltip">
+                    <div className={"transaction-record__outcome-icon " + outcomeIcon} />
+                    <div className="tooltip__content tooltip__content--left">
+                        {message} {link}
+                    </div>
+                </div>
             </td>
         </tr>
     );

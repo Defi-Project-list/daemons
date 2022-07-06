@@ -39,3 +39,7 @@
     width: 25px;
     height: 25px;
 }
+
+.transaction-record__explorer-link {
+    color: var(--bright-teal);
+}
