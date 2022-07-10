@@ -2,34 +2,44 @@
 pragma solidity ^0.8.4;
 
 interface IGasTank {
-    /** Gets the amount of ETH the user has deposited in the gas tank */
+    /// @notice Get the amount of ETH the user has deposited in the gas tank
+    /// @param user the address of the user to inspect
+    /// @return the user gas balance
     function gasBalanceOf(address user) external view returns (uint256);
 
-    /** Adds ETH to the gas tank */
+    /// @notice Add ETH to the gas tank
     function depositGas() external payable;
 
-    /** Removes ETH to the gas tank */
+    /// @notice Withdraw ETH from the gas tank
+    /// @param amount the amount of gas to withdraw
     function withdrawGas(uint256 amount) external;
 
-    /** Removes all ETH to the gas tank */
+    /// @notice Withdraw all ETH from the gas tank
     function withdrawAllGas() external;
 
-    /** Gets the amount of DAEM the user has deposited in the gas tank (tip jar) */
+    /// @notice Get the amount of DAEM the user has deposited in the tip jar
+    /// @param user the address of the user to inspect
+    /// @return the user gas balance
     function tipBalanceOf(address user) external view returns (uint256);
 
-    /** Adds DAEM to the gas tank (tip jar) */
+    /// @notice Deposits DAEM into the tip jar
+    /// @param amount the amount of DAEM to deposit
     function depositTip(uint256 amount) external;
 
-    /** Removes DAEM to the gas tank (tip jar) */
+    /// @notice Withdraws DAEM from the tip jar
+    /// @param amount the amount of DAEM to deposit
     function withdrawTip(uint256 amount) external;
 
-    /** Removes all DAEM to the gas tank (tip jar) */
+    /// @notice Withdraws all DAEM from the tip jar
     function withdrawAllTip() external;
 
-    /** Removes funds from the gas tank of a user,
-     * in order to have them employed as payment for the execution of a script.
-     * note: only executor contracts can call this function.
-     */
+    /// @notice Removes funds from the gas tank of a user,
+    /// in order to have them employed as payment for the execution of a script.
+    /// @dev note: only executor contracts can call this function.
+    /// @param ethAmount the amount of ETH to withdraw from the user gas tank
+    /// @param tipAmount the amount of DAEM to withdraw from the user tip jar
+    /// @param user the script owner
+    /// @param executor the script executor
     function addReward(
         uint256 ethAmount,
         uint256 tipAmount,
@@ -37,12 +47,13 @@ interface IGasTank {
         address executor
     ) external;
 
-    /** The amount of tokens that can be claimed as payment for an executor work */
+    /// @notice The amount of tokens that can be claimed as payment for an executor work
+    /// @param user the address of the user to inspect
     function claimable(address user) external view returns (uint256);
 
-    /** Claims the token received as payment for an executor work */
+    /// @notice Claim the token received as payment for an executor work
     function claimReward() external;
 
-    /** Immediately deposits the user's claimable amount into the treasury for staking purposes */
+    /// @notice Immediately deposit the user's claimable amount into the treasury for staking purposes
     function claimAndStakeReward() external;
 }

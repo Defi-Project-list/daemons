@@ -214,3 +214,19 @@ struct Beefy {
 }
 string constant BEEFY_TYPE = "Beefy(bytes32 scriptId,address lpAddress,address mooAddress,bytes1 action,bytes1 typeAmt,uint256 amount,address user,address executor,uint256 chainId,uint256 tip,Balance balance,Frequency frequency,Price price,Repetitions repetitions,Follow follow)Balance(bool enabled,address token,bytes1 comparison,uint256 amount)Follow(bool enabled,uint256 shift,bytes32 scriptId,address executor)Frequency(bool enabled,uint256 delay,uint256 start)Price(bool enabled,address tokenA,address tokenB,bytes1 comparison,uint256 value,address router)Repetitions(bool enabled,uint32 amount)";
 bytes32 constant BEEFY_TYPEHASH = keccak256(abi.encodePacked(BEEFY_TYPE));
+
+struct Pass {
+    bytes32 scriptId;
+    address user;
+    address executor;
+    uint256 chainId;
+    uint256 tip;
+    Balance balance;
+    Frequency frequency;
+    Price price;
+    Repetitions repetitions;
+    Follow follow;
+    HealthFactor healthFactor;
+}
+string constant PASS_TYPE = "Pass(bytes32 scriptId,address user,address executor,uint256 chainId,uint256 tip,Balance balance,Frequency frequency,Price price,Repetitions repetitions,Follow follow,HealthFactor healthFactor)Balance(bool enabled,address token,bytes1 comparison,uint256 amount)Follow(bool enabled,uint256 shift,bytes32 scriptId,address executor)Frequency(bool enabled,uint256 delay,uint256 start)HealthFactor(bool enabled,address kontract,bytes1 comparison,uint256 amount)Price(bool enabled,address tokenA,address tokenB,bytes1 comparison,uint256 value,address router)Repetitions(bool enabled,uint32 amount)";
+bytes32 constant PASS_TYPEHASH = keccak256(abi.encodePacked(PASS_TYPE));

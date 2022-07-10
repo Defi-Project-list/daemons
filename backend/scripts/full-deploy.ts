@@ -33,6 +33,10 @@ import { deployBeefyExecutor } from "./single-deployments/h1-beefy-executor";
 import { initializeBeefyExecutor } from "./single-deployments/h2-initialize-beefy-executor";
 import { registerBeefyExecutor } from "./single-deployments/h3-register-beefy-in-gas-tank";
 import { retrieveLPAddress } from "./single-deployments/a9-retrieve-LP-address";
+import { deployPassExecutor } from "./single-deployments/i1-pass-executor";
+import { verifyPassExecutor } from "./single-deployments/i1b-verify-pass-executor";
+import { initializePassExecutor } from "./single-deployments/i2-initialize-pass-executor";
+import { registerPassExecutor } from "./single-deployments/i3-register-pass-in-gas-tank";
 
 async function deployDaemons() {
     // display deployer address and its balance
@@ -101,6 +105,12 @@ async function deployDaemons() {
     currentContracts = await deployBeefyExecutor(currentContracts);
     await initializeBeefyExecutor(currentContracts);
     await registerBeefyExecutor(currentContracts);
+
+    // deploy Pass executor
+    currentContracts = await deployPassExecutor(currentContracts);
+    await verifyPassExecutor(currentContracts);
+    await initializePassExecutor(currentContracts);
+    await registerPassExecutor(currentContracts);
 }
 
 deployDaemons().catch((error) => {
