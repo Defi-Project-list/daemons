@@ -2,21 +2,17 @@ import { BigNumber } from 'ethers';
 import { IBalanceCondition, Balance } from "../conditions/balance";
 import { IFollowCondition, Follow } from "../conditions/follow";
 import { IFrequencyCondition, Frequency } from "../conditions/frequency";
+import { IHealthFactorCondition, HealthFactor } from '../conditions/health-factor';
 import { IMaxRepetitionsCondition, Repetitions } from "../conditions/max-repetitions";
 import { IPriceCondition, Price } from "../conditions/price";
-import { AmountType } from "../conditions/shared";
 
-export interface ISignedTransferAction extends ITransferAction {
+export interface ISignedPassAction extends IPassAction {
     signature: string;
     description: string;
 }
 
-export interface ITransferAction {
+export interface IPassAction {
     scriptId: string;
-    token: string;
-    destination: string;
-    typeAmt: AmountType;
-    amount: BigNumber;
     user: string;
     executor: string;
     chainId: BigNumber;
@@ -26,14 +22,11 @@ export interface ITransferAction {
     price: IPriceCondition;
     repetitions: IMaxRepetitionsCondition;
     follow: IFollowCondition;
+    healthFactor: IHealthFactorCondition;
 }
 
-const Transfer = [
+const Pass = [
     { name: "scriptId", type: "bytes32" },              // the script identifier
-    { name: "token", type: "address" },                 // the token owned by the user
-    { name: "destination", type: "address" },           // the token that should be swapped
-    { name: "typeAmt", type: "bytes1" },                // indicated the amount type [Absolute, Percentage]
-    { name: "amount", type: "uint256" },                // the amount to swap
     { name: "user", type: "address" },                  // the user that is signing the transaction
     { name: "executor", type: "address" },              // the executor contract this message will be sent to
     { name: "chainId", type: "uint256" },               // the chain in which the message was signed
@@ -43,17 +36,19 @@ const Transfer = [
     { name: "price", type: "Price" },                   // condition: balance
     { name: "repetitions", type: "Repetitions" },       // condition: max repetitions
     { name: "follow", type: "Follow" },                 // condition: after script
+    { name: "healthFactor", type: "HealthFactor" },     // condition: MM health factor
 ];
 
-export const transferDomain = {
-    name: "Daemons-Transfer-v01"
+export const passDomain = {
+    name: "Daemons-Pass-v01"
 };
 
-export const transferTypes = {
+export const passTypes = {
     Follow,
     Frequency,
     Balance,
-    Transfer,
+    Pass,
     Price,
     Repetitions,
+    HealthFactor,
 };

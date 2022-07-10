@@ -6,6 +6,7 @@ export * from './actions/transfer-action-messages';
 export * from './actions/zap-in-action-messages';
 export * from './actions/zap-out-action-messages';
 export * from './actions/beefy-action-messages';
+export * from './actions/pass-action-messages';
 
 // conditions
 export * from './conditions/balance';

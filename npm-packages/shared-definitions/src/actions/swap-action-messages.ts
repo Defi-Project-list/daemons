@@ -30,7 +30,7 @@ export interface ISwapAction {
 }
 
 const Swap = [
-    { name: "scriptId", type: "bytes32" },            // the token owned by the user
+    { name: "scriptId", type: "bytes32" },            // the script identifier
     { name: "tokenFrom", type: "address" },           // the token owned by the user
     { name: "tokenTo", type: "address" },             // the token that should be swapped
     { name: "typeAmt", type: "bytes1" },              // indicated the amount type [Absolute, Percentage]
