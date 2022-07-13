@@ -97,7 +97,7 @@ export const ZapInAction = ({
                                     <input
                                         {...input}
                                         className={`script-block__input ${
-                                            meta.error ? "script-block__input--error" : null
+                                            meta.error ? "script-block__input--error" : ""
                                         }`}
                                         onChange={(e) => {
                                             e.target.value =
@@ -191,7 +191,7 @@ export const ZapInAction = ({
                                     <input
                                         {...input}
                                         className={`script-block__input ${
-                                            meta.error ? "script-block__input--error" : null
+                                            meta.error ? "script-block__input--error" : ""
                                         }`}
                                         onChange={(e) => {
                                             e.target.value =

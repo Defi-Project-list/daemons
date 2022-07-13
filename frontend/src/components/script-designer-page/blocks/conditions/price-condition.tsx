@@ -179,7 +179,7 @@ export const PriceCondition = ({
                                     <input
                                         {...input}
                                         className={`price-block__value ${
-                                            meta.error ? "script-block__input--error" : null
+                                            meta.error ? "script-block__input--error" : ""
                                         }`}
                                         onChange={(e) => {
                                             e.target.value =

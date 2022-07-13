@@ -150,7 +150,7 @@ export const BeefyAction = ({
                                         <input
                                             {...input}
                                             className={`script-block__input ${
-                                                meta.error ? "script-block__input--error" : null
+                                                meta.error ? "script-block__input--error" : ""
                                             }`}
                                             onChange={(e) => {
                                                 e.target.value =
@@ -179,7 +179,7 @@ export const BeefyAction = ({
                                                 step="50"
                                                 {...input}
                                                 className={`${
-                                                    meta.error ? "script-block__input--error" : null
+                                                    meta.error ? "script-block__input--error" : ""
                                                 }`}
                                                 onChange={(e) => {
                                                     input.onChange(e);

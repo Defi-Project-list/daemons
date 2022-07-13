@@ -166,6 +166,28 @@
     text-align: center;
 }
 
+.repetitions-block__sentence {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.repetitions-block__ticks {
+    background: transparent;
+    color: var(--white);
+    width: fit-content;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1PX SOLID var(--white);
+    outline: none;
+}
+
+.repetitions-block__ticks--error {
+    border-bottom: 1PX SOLID #dd0143;
+}
+
+.repetitions-block__ticks:active {
+}
+
 /* ZapOut Block */
 
 .zap-out-block__outcome-radio {

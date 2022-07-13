@@ -19,7 +19,7 @@ export const AmountInput = (props: IAmountInputProps) => {
                 <input
                     {...input}
                     className={`block-amount__input ${
-                        meta.error ? "script-block__input--error" : null
+                        meta.error ? "script-block__input--error" : ""
                     }`}
                     onChange={(e) => {
                         const n = Number(e.target.value);
@@ -44,7 +44,7 @@ export const AmountInput = (props: IAmountInputProps) => {
                         step="50"
                         {...input}
                         className={`block-amount__slider ${
-                            meta.error ? "script-block__input--error" : null
+                            meta.error ? "script-block__input--error" : ""
                         }`}
                         onChange={(e) => {
                             const n = Number(e.target.value);
