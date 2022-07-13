@@ -62,7 +62,7 @@ export const ZapInAction = ({
             render={({ handleSubmit }) => (
                 <form onSubmit={handleSubmit}>
                     <div className="zap-in-block">
-                        <div className="script-block__panel--two-columns">
+                        <div style={{marginBottom: "5px"}} className="script-block__panel--two-columns">
                             <TokensModal
                                 tokens={tokens.filter((t) => t.address !== form.tokenB)}
                                 selectedToken={tokens.filter((t) => t.address === form.tokenA)[0]}
@@ -86,6 +86,7 @@ export const ZapInAction = ({
                                 initial={form.amountTypeA}
                             />
                         </div>
+
                         {form.amountTypeA === AmountType.Absolute ? (
                             <Field
                                 name="floatAmountA"
@@ -156,7 +157,7 @@ export const ZapInAction = ({
                             <span>+</span>
                         </div>
 
-                        <div className="script-block__panel--two-columns">
+                        <div style={{marginBottom: "5px"}} className="script-block__panel--two-columns">
                             <TokensModal
                                 tokens={tokens.filter((t) => t.address !== form.tokenA)}
                                 selectedToken={tokens.filter((t) => t.address === form.tokenB)[0]}
