@@ -64,7 +64,7 @@ export const BalanceCondition = ({ form, update }: { form: IBalanceConditionForm
                                     input.onChange(e);
                                     update({ ...form, comparison: Number(e.target.value) });
                                 }}
-                                className='balance-block__comparison'
+                                className='script-block__comparison'
                             >
                                 <option value={0}>&gt;</option>
                                 <option value={1}>&lt;</option>
