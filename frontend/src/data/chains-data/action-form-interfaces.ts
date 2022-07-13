@@ -12,6 +12,7 @@ export enum ScriptAction {
     ZAP_IN = "ZAP_IN",
     ZAP_OUT = "ZAP_OUT",
     BEEFY = "BEEFY",
+    PASS = "PASS",
     // DAO = "DAO",
     // FARM = "FARM",
 }
@@ -92,6 +93,10 @@ export interface IBeefyActionForm extends IScriptActionForm {
     lpName: string;
     amountType: AmountType;
     floatAmount: number;
+    floatTip: number;
+}
+
+export interface IPassActionForm extends IScriptActionForm {
     floatTip: number;
 }
 

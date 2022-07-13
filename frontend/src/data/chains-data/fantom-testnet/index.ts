@@ -3,6 +3,7 @@ import { IChainInfo } from "../interfaces";
 import {
     AaveMMAdvancedAction,
     AaveMMBaseAction,
+    PassAction,
     SwapAction,
     TransferAction,
     ZapInAction,
@@ -31,6 +32,7 @@ export const fantomTestnetInfo: IChainInfo = {
         AaveMMBaseAction,
         AaveMMAdvancedAction,
         ZapInAction,
-        ZapOutAction
+        ZapOutAction,
+        PassAction
     ]
 };

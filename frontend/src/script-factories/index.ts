@@ -1,4 +1,5 @@
 import { ITransferAction, transferDomain, transferTypes } from "@daemons-fi/shared-definitions";
+import { IPassAction, passDomain, passTypes } from "@daemons-fi/shared-definitions";
 import { IMMAdvancedAction, mmAdvDomain, mmAdvTypes } from "@daemons-fi/shared-definitions";
 import { IMMBaseAction, mmBaseDomain, mmBaseTypes } from "@daemons-fi/shared-definitions";
 import { ISwapAction, swapDomain, swapTypes } from "@daemons-fi/shared-definitions";
@@ -8,7 +9,7 @@ import { IBeefyAction, BeefyDomain, BeefyTypes } from "@daemons-fi/shared-defini
 import { TransferMessageFactory } from "./messages-factories/transfer-message-factory";
 import { GetCurrentChain, IsChainSupported } from "../data/chain-info";
 import { ICurrentScript } from "./i-current-script";
-import { BaseScript, BeefyScript, ZapInScript, ZapOutScript } from "@daemons-fi/scripts-definitions";
+import { BaseScript, BeefyScript, PassScript, ZapInScript, ZapOutScript } from "@daemons-fi/scripts-definitions";
 import { ScriptAction } from "../data/chains-data/action-form-interfaces";
 import { SwapScript } from "@daemons-fi/scripts-definitions";
 import { TransferScript } from "@daemons-fi/scripts-definitions";
@@ -20,6 +21,7 @@ import { MmAdvancedScript } from "@daemons-fi/scripts-definitions";
 import { ZapInMessageFactory } from "./messages-factories/zap-in-message-factory";
 import { ZapOutMessageFactory } from "./messages-factories/zap-out-message-factory";
 import { BeefyMessageFactory } from "./messages-factories/beefy-message-factory";
+import { PassMessageFactory } from "./messages-factories/pass-message-factory";
 
 type ScriptDefinition =
     | ISwapAction
@@ -28,7 +30,8 @@ type ScriptDefinition =
     | IMMAdvancedAction
     | IZapInAction
     | IZapOutAction
-    | IBeefyAction;
+    | IBeefyAction
+    | IPassAction;
 
 interface IMessage {
     script: ScriptDefinition;
@@ -149,6 +152,19 @@ export class ScriptFactory {
                 return new BeefyScript(
                     beefyMessage.script,
                     beefyScriptSignature,
+                    bundle.description
+                );
+
+            case ScriptAction.PASS:
+                const passMessage = {
+                    script: await PassMessageFactory.create(bundle, chain, this.provider),
+                    domain: passDomain,
+                    types: passTypes
+                };
+                const passScriptSignature = await getSignature(passMessage);
+                return new PassScript(
+                    passMessage.script,
+                    passScriptSignature,
                     bundle.description
                 );
 

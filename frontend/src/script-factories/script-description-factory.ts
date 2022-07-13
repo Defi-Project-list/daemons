@@ -11,6 +11,7 @@ import {
     IAdvancedMMActionForm,
     IBaseMMActionForm,
     IBeefyActionForm,
+    IPassActionForm,
     ISwapActionForm,
     ITransferActionForm,
     IZapInActionForm,
@@ -63,6 +64,8 @@ export class ScriptDescriptionFactory {
                 return this.zapOutAction(action.form as IZapOutActionForm);
             case ScriptAction.BEEFY:
                 return this.BeefyAction(action.form as IBeefyActionForm);
+            case ScriptAction.PASS:
+                return this.PassAction(action.form as IPassActionForm);
             default:
                 console.error(`Unknown action ${action.form.type}.`);
                 return `#!@!# Unknown action ${action.form.type}. Please add to factory #!@!#`;
@@ -192,6 +195,10 @@ export class ScriptDescriptionFactory {
         return form.action === BeefyActionType.Deposit
             ? `Deposit ${amount} ${form.lpName} into Beefy`
             : `Withdraw ${amount} ${form.lpName} from Beefy`;
+    }
+
+    private PassAction(form: IPassActionForm): string {
+        return "Pass";
     }
 
     private extractConditionDescription(condition: ICondition): string {

@@ -4,6 +4,7 @@ import {
     AaveMMAdvancedAction,
     AaveMMBaseAction,
     BeefyAction,
+    PassAction,
     SwapAction,
     TransferAction,
     ZapInAction,
@@ -35,6 +36,7 @@ export const kovanInfo: IChainInfo = {
         AaveMMAdvancedAction,
         ZapInAction,
         ZapOutAction,
-        BeefyAction
+        BeefyAction,
+        PassAction
     ]
 };

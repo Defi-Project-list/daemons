@@ -8,6 +8,7 @@ import {
 import {
     IAdvancedMMActionForm,
     IBaseMMActionForm,
+    IPassActionForm,
     ISwapActionForm,
     ITransferActionForm,
     IZapInActionForm,
@@ -145,4 +146,23 @@ export const ZapOutAction: IAction = {
     } as IZapOutActionForm,
 
     conditions: [FrequencyCondition, BalanceCondition, PriceCondition, RepetitionsCondition]
+};
+
+export const PassAction: IAction = {
+    title: "Pass",
+    info: "This action does nothing but checking. Can be chained to other actions to create more complex behaviors (e.g. a transfer using the health score as condition)",
+
+    form: {
+        type: ScriptAction.PASS,
+        valid: true,
+        floatTip: 0
+    } as IPassActionForm,
+
+    conditions: [
+        FrequencyCondition,
+        BalanceCondition,
+        PriceCondition,
+        RepetitionsCondition,
+        AaveHealthFactorCondition
+    ]
 };

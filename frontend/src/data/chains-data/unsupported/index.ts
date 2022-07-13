@@ -18,7 +18,8 @@ const unsupportedContracts: IContractsList = {
     MmAdvancedScriptExecutor: "",
     ZapInScriptExecutor: "",
     ZapOutScriptExecutor: "",
-    BeefyScriptExecutor: ""
+    BeefyScriptExecutor: "",
+    PassScriptExecutor: ""
 };
 
 export const unsupportedChain: IChainInfo = {
