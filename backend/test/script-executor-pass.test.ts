@@ -223,9 +223,9 @@ describe("ScriptExecutor - Pass", function () {
         expect((await gasTank.claimable(otherWallet.address)).toNumber()).to.not.equal(0);
     });
 
-    it("passing is cheap - ABS", async () => {
+    it("passing is cheap", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000292630726051116 ETH.
+        // execute the script was 0.000146489388359836 ETH.
 
         let message: IPassAction = JSON.parse(JSON.stringify(baseMessage));
         message = await initialize(message);
@@ -234,7 +234,7 @@ describe("ScriptExecutor - Pass", function () {
         await executor.execute(message, sigR, sigS, sigV);
         const spentAmount = initialBalance.sub(await owner.getBalance());
 
-        const threshold = ethers.utils.parseEther("0.0003");
+        const threshold = ethers.utils.parseEther("0.00016");
         console.log("Spent for supply:", spentAmount.toString());
         expect(spentAmount.lte(threshold)).to.equal(true);
     });
