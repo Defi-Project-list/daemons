@@ -1,4 +1,4 @@
-import { BaseScript } from "@daemons-fi/scripts-definitions";
+import { BaseScript, PassScript } from "@daemons-fi/scripts-definitions";
 import { SwapScript } from "@daemons-fi/scripts-definitions";
 import { TransferScript } from "@daemons-fi/scripts-definitions";
 import { MmBaseScript } from "@daemons-fi/scripts-definitions";
@@ -23,6 +23,8 @@ export async function parseScript(script: any): Promise<BaseScript> {
             return await ZapOutScript.fromStorageJson(script);
         case "BeefyScript":
             return await BeefyScript.fromStorageJson(script);
+        case "PassScript":
+            return await PassScript.fromStorageJson(script);
         default:
             throw new Error("Unsupported script type: " + script.__type);
     }

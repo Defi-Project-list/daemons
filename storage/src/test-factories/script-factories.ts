@@ -12,6 +12,7 @@ import {
     IPriceCondition,
     ISignedBeefyAction,
     ISignedMMAdvancedAction,
+    ISignedPassAction,
     ISignedZapInAction,
     ISignedZapOutAction,
     ZapOutputChoice
@@ -27,6 +28,7 @@ import { MmAdvancedScript } from "../models/scripts/mm-adv-script";
 import { ZapInScript } from "../models/scripts/zap-in-script";
 import { ZapOutScript } from "../models/scripts/zap-out-script";
 import { BeefyScript } from "../models/scripts/beefy-script";
+import { PassScript } from "../models/scripts/pass-script";
 
 const randomEthAmount = () =>
     utils.parseEther(faker.datatype.number({ min: 0.01, max: 10, precision: 0.01 }).toString());
@@ -102,7 +104,7 @@ export function signedSwapActionFactory(args: any): ISignedSwapAction & { __type
         tokenTo: args.tokenTo ?? faker.finance.ethereumAddress(),
         typeAmt: args.typeAmt ?? AmountType.Absolute,
         amount: args.amount ?? randomEthAmount(),
-        tip: args.amount ?? randomEthAmount(),
+        tip: args.tip ?? randomEthAmount(),
         user: args.user ?? faker.finance.ethereumAddress(),
         kontract: args.kontract ?? faker.finance.ethereumAddress(),
         executor: args.executor ?? faker.finance.ethereumAddress(),
@@ -137,7 +139,7 @@ export function signedTransferActionFactory(args: any): ISignedTransferAction & 
         destination: args.destination ?? faker.finance.ethereumAddress(),
         typeAmt: args.typeAmt ?? AmountType.Absolute,
         amount: args.amount ?? randomEthAmount(),
-        tip: args.amount ?? randomEthAmount(),
+        tip: args.tip ?? randomEthAmount(),
         user: args.user ?? faker.finance.ethereumAddress(),
         executor: args.executor ?? faker.finance.ethereumAddress(),
         chainId: args.chainId ?? BigNumber.from("42"),
@@ -172,7 +174,7 @@ export function signedMmBaseActionFactory(args: any): ISignedMMBaseAction & { __
         action: args.typeAmt ?? BaseMoneyMarketActionType.Deposit,
         typeAmt: args.typeAmt ?? AmountType.Absolute,
         amount: args.amount ?? randomEthAmount(),
-        tip: args.amount ?? randomEthAmount(),
+        tip: args.tip ?? randomEthAmount(),
         user: args.user ?? faker.finance.ethereumAddress(),
         kontract: args.kontract ?? faker.finance.ethereumAddress(),
         executor: args.executor ?? faker.finance.ethereumAddress(),
@@ -212,7 +214,7 @@ export function signedMmAdvancedActionFactory(
         rateMode: args.rateMode ?? InterestRateMode.Variable,
         typeAmt: args.typeAmt ?? AmountType.Absolute,
         amount: args.amount ?? randomEthAmount(),
-        tip: args.amount ?? randomEthAmount(),
+        tip: args.tip ?? randomEthAmount(),
         user: args.user ?? faker.finance.ethereumAddress(),
         kontract: args.kontract ?? faker.finance.ethereumAddress(),
         executor: args.executor ?? faker.finance.ethereumAddress(),
@@ -250,7 +252,7 @@ export function signedZapInActionFactory(args: any): ISignedZapInAction & { __ty
         amountB: args.amountB ?? randomEthAmount(),
         typeAmtA: args.typeAmtA ?? AmountType.Absolute,
         typeAmtB: args.typeAmtB ?? AmountType.Absolute,
-        tip: args.amount ?? randomEthAmount(),
+        tip: args.tip ?? randomEthAmount(),
         user: args.user ?? faker.finance.ethereumAddress(),
         kontract: args.kontract ?? faker.finance.ethereumAddress(),
         executor: args.executor ?? faker.finance.ethereumAddress(),
@@ -286,7 +288,7 @@ export function signedZapOutActionFactory(args: any): ISignedZapOutAction & { __
         amount: args.amount ?? randomEthAmount(),
         typeAmt: args.typeAmt ?? AmountType.Absolute,
         outputChoice: args.outputChoice ?? ZapOutputChoice.bothTokens,
-        tip: args.amount ?? randomEthAmount(),
+        tip: args.tip ?? randomEthAmount(),
         user: args.user ?? faker.finance.ethereumAddress(),
         kontract: args.kontract ?? faker.finance.ethereumAddress(),
         executor: args.executor ?? faker.finance.ethereumAddress(),
@@ -325,7 +327,7 @@ export function signedBeefyActionFactory(args: any): ISignedBeefyAction & { __ty
         user: args.user ?? faker.finance.ethereumAddress(),
         executor: args.executor ?? faker.finance.ethereumAddress(),
         chainId: args.chainId ?? BigNumber.from("42"),
-        tip: args.amount ?? randomEthAmount(),
+        tip: args.tip ?? randomEthAmount(),
         balance: balanceConditionFactory(args.balance ?? {}),
         frequency: frequencyConditionFactory(args.frequency ?? {}),
         price: priceConditionFactory(args.price ?? {}),
@@ -344,4 +346,35 @@ export async function beefyScriptDocumentFactory(args: any): Promise<ISignedBeef
     const jsonTransformedScript = JSON.parse(JSON.stringify(signedScript));
 
     return await BeefyScript.build(jsonTransformedScript).save();
+}
+
+/** Returns a randomized signed pass action */
+export function signedPassActionFactory(args: any): ISignedPassAction & { __type: string } {
+    return {
+        signature: args.signature ?? utils.hexlify(utils.randomBytes(65)),
+        description: args.description ?? faker.random.words(4),
+        scriptId: args.scriptId ?? utils.hexlify(utils.randomBytes(32)),
+        user: args.user ?? faker.finance.ethereumAddress(),
+        executor: args.executor ?? faker.finance.ethereumAddress(),
+        chainId: args.chainId ?? BigNumber.from("42"),
+        tip: args.tip ?? randomEthAmount(),
+        balance: balanceConditionFactory(args.balance ?? {}),
+        frequency: frequencyConditionFactory(args.frequency ?? {}),
+        price: priceConditionFactory(args.price ?? {}),
+        repetitions: repetitionsConditionFactory(args.repetitions ?? {}),
+        follow: followConditionFactory(args.follow ?? {}),
+        healthFactor: healthFactorConditionFactory(args.healthFactor ?? {}),
+        __type: "PassScript"
+    };
+}
+
+/** Adds a PassScript to mongo and returns it */
+export async function passScriptDocumentFactory(args: any): Promise<ISignedPassAction> {
+    const signedScript = signedPassActionFactory(args);
+
+    // this step simulates the transformation the object goes through when it is passed into
+    // the body of a POST (i.e. BigNumber fields are serialized and not deserialized to the original object)
+    const jsonTransformedScript = JSON.parse(JSON.stringify(signedScript));
+
+    return await PassScript.build(jsonTransformedScript).save();
 }
