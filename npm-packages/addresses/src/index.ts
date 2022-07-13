@@ -19,6 +19,7 @@ export interface IContractsList {
     ZapInScriptExecutor: string;
     ZapOutScriptExecutor: string;
     BeefyScriptExecutor?: string;
+    PassScriptExecutor: string;
 }
 
 export const kovanContracts: IContractsList = {
@@ -37,7 +38,8 @@ export const kovanContracts: IContractsList = {
     MmBaseScriptExecutor: "0xaeA765b56B55BF8c8E499E3779D0e9078b2685c8",
     MmAdvancedScriptExecutor: "0xA2a2d767Ef7Cfc56477c22dc91AC3Ddb143331E2",
     ZapInScriptExecutor: "0xA67CF849e202B5425b4dc66901a23268D6e06d05",
-    ZapOutScriptExecutor: "0xf9874541C9f4288f3d32f84A7bcb35821E049df0"
+    ZapOutScriptExecutor: "0xf9874541C9f4288f3d32f84A7bcb35821E049df0",
+    PassScriptExecutor: "0xe2EFAE7066Ff40905Fd39885356678b5E38B4768"
 };
 
 export const fantomTestnetContracts: IContractsList = {
@@ -57,5 +59,6 @@ export const fantomTestnetContracts: IContractsList = {
     MmAdvancedScriptExecutor: "0x3b1a45765b4fF76F5708f00a9BEA9c9FB6E0a75f",
     ZapInScriptExecutor: "0xd27AD781A31c02A6CC72e5A3f266C67Ea21A265D",
     ZapOutScriptExecutor: "0x876CDE52C84c11ac8d8C1729B7677E4D4016423A",
-    BeefyScriptExecutor: "0xd40e302c60b160A31e6Dca657136caE25fCA7BC0"
+    BeefyScriptExecutor: "0xd40e302c60b160A31e6Dca657136caE25fCA7BC0",
+    PassScriptExecutor: "0x3Fbb711dA39880FC880e30129798CC35aaE72967"
 };
