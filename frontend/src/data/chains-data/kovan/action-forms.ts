@@ -98,7 +98,7 @@ export const AaveMMAdvancedAction: IAction = {
         amountType: AmountType.Absolute,
         floatAmount: 0,
         floatTip: 0,
-        actionType: AdvancedMoneyMarketActionType.Borrow,
+        actionType: AdvancedMoneyMarketActionType.Repay,
         moneyMarket: kovanAaveMM
     } as IAdvancedMMActionForm,
 
