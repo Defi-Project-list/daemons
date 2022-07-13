@@ -157,7 +157,7 @@ export const PriceCondition = ({
                                             input.onChange(e);
                                             update({ ...form, comparison: Number(e.target.value) });
                                         }}
-                                        className="price-block__comparison"
+                                        className="script-block__comparison"
                                     >
                                         <option value={0}>&gt;</option>
                                         <option value={1}>&lt;</option>
@@ -178,7 +178,7 @@ export const PriceCondition = ({
                                 {({ input, meta }) => (
                                     <input
                                         {...input}
-                                        className={`price-block__value ${
+                                        className={`block-amount__input ${
                                             meta.error ? "script-block__input--error" : ""
                                         }`}
                                         onChange={(e) => {

@@ -103,6 +103,30 @@
     color: var(--grey-500);
 }
 
+.script-block__comparison {
+    width: 30px;
+    text-align: center;
+    border: none;
+    border-bottom: 1px solid var(--white);
+    cursor: pointer;
+    border-radius: 0;
+    padding: 5px;
+    color: var(--white);
+    background: transparent;
+    outline: none;
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+}
+
+.price-block__dex
+.script-block__comparison option {
+    background-color: var(--grey-700);
+    color: var(--white);
+    height: 40px;
+    border-radius: 0;
+}
+
 /* Balance Block */
 
 .balance-block__token {

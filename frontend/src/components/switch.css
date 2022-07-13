@@ -52,6 +52,21 @@ input:checked+.slider:before {
     transform: translateX(18px);
 }
 
+/* Select */
+
+select {
+    padding: 5px;
+    color: var(--white);
+    background: transparent;
+}
+
+select option {
+    background-color: var(--grey-700);
+    color: var(--white);
+    height: 40px;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
 /* Rounded sliders */
 .slider.round {
     border-radius: 34px;
