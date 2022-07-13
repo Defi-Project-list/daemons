@@ -10,6 +10,7 @@ import { ethers } from "ethers";
 import { UniswapV2FactoryABI, UniswapV2RouterABI } from "@daemons-fi/abis/build";
 import { ToggleButtonField } from "../shared/toggle-button";
 import { AmountType, BeefyActionType } from "@daemons-fi/shared-definitions/build";
+import { AmountInput } from "../shared/amount-input";
 
 const validateForm = (form: IBeefyActionForm) => {
     const errors: any = {};
@@ -115,91 +116,23 @@ export const BeefyAction = ({
             render={({ handleSubmit }) => (
                 <form onSubmit={handleSubmit}>
                     <div className="condition-block">
-                        <div className="script-block__panel--three-columns">
-                            <ToggleButtonField
-                                name="action"
-                                valuesEnum={BeefyActionType}
-                                updateFunction={(newValue) => {
-                                    update({ ...form, action: newValue });
-                                }}
-                                initial={form.action}
-                            />
-                            <ToggleButtonField
-                                name="amountType"
-                                valuesEnum={AmountType}
-                                updateFunction={(newValue: AmountType) => {
-                                    const updatedForm = {
-                                        ...form,
-                                        amountType: newValue,
-                                        floatAmount: newValue === AmountType.Percentage ? 50 : 0
-                                    };
-                                    const valid = isFormValid(updatedForm);
-                                    update({ ...updatedForm, valid });
-                                }}
-                                initial={form.amountType}
-                            />
+                        <ToggleButtonField
+                            name="action"
+                            valuesEnum={BeefyActionType}
+                            updateFunction={(newValue) => {
+                                update({ ...form, action: newValue });
+                            }}
+                            initial={form.action}
+                        />
 
-                            {form.amountType === AmountType.Absolute ? (
-                                <Field
-                                    name="floatAmount"
-                                    component="input"
-                                    type="number"
-                                    placeholder="1.00"
-                                >
-                                    {({ input, meta }) => (
-                                        <input
-                                            {...input}
-                                            className={`script-block__input ${
-                                                meta.error ? "script-block__input--error" : ""
-                                            }`}
-                                            onChange={(e) => {
-                                                e.target.value =
-                                                    Number(e.target.value) < 0
-                                                        ? "0"
-                                                        : e.target.value;
-                                                input.onChange(e);
-                                                const updatedForm = {
-                                                    ...form,
-                                                    floatAmount: Number(e.target.value)
-                                                };
-                                                const valid = isFormValid(updatedForm);
-                                                update({ ...updatedForm, valid });
-                                            }}
-                                            placeholder="Amount"
-                                        />
-                                    )}
-                                </Field>
-                            ) : (
-                                <div className="slider-container">
-                                    <Field name="floatAmount" component="input" type="range">
-                                        {({ input, meta }) => (
-                                            <input
-                                                min="50"
-                                                max="10000"
-                                                step="50"
-                                                {...input}
-                                                className={`${
-                                                    meta.error ? "script-block__input--error" : ""
-                                                }`}
-                                                onChange={(e) => {
-                                                    input.onChange(e);
-                                                    const updatedForm = {
-                                                        ...form,
-                                                        floatAmount: Number(e.target.value)
-                                                    };
-                                                    const valid = isFormValid(updatedForm);
-                                                    update({ ...updatedForm, valid });
-                                                }}
-                                            />
-                                        )}
-                                    </Field>
-
-                                    <div className="slider-container__slider-value">
-                                        {`${form.floatAmount / 100}%`}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+                        <AmountInput
+                            initialAmountType={form.amountType}
+                            processNewValue={(amountType: AmountType, floatAmount: number) => {
+                                const updatedForm = { ...form, amountType, floatAmount };
+                                const valid = isFormValid(updatedForm);
+                                update({ ...updatedForm, valid });
+                            }}
+                        />
 
                         <div className="script-block__panel--three-columns price-block">
                             <Field name="dex" component="select">
@@ -239,7 +172,7 @@ export const BeefyAction = ({
 
                         <div>
                             <div>LP Address:</div>
-                            <div>
+                            <div style={{ wordBreak: "break-word" }}>
                                 {loadingLP
                                     ? "Fetching LP address..."
                                     : currentLP === "0x0000000000000000000000000000000000000000"
@@ -250,7 +183,7 @@ export const BeefyAction = ({
 
                         <div>
                             <div>Beefy Vault:</div>
-                            <div>
+                            <div style={{ wordBreak: "break-word" }}>
                                 {!currentLP ||
                                 currentLP === "0x0000000000000000000000000000000000000000" ? (
                                     "Please select a valid LP"
