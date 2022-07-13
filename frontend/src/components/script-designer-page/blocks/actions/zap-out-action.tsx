@@ -8,14 +8,18 @@ import { AmountType, ZapOutputChoice } from "@daemons-fi/shared-definitions/buil
 import { ToggleButtonField } from "../shared/toggle-button";
 import { Token } from "../../../../data/chains-data/interfaces";
 import { GetCurrentChain } from "../../../../data/chain-info";
+import { AmountInput } from "../shared/amount-input";
+import { ethers } from "ethers";
+import { UniswapV2FactoryABI, UniswapV2RouterABI } from "@daemons-fi/abis/build";
+import { fetchTokenBalance } from "../../../../data/fetch-token-balance";
 
 const validateForm = (values: IZapOutActionForm) => {
     const errors: any = {};
     if (!values.floatAmount || (values.floatAmount as any) === "") {
-        errors.floatAmountA = "required";
+        errors.floatAmount = "required";
     }
-    if (!values.floatAmount || (values.floatAmount as any) === "") {
-        errors.floatAmountB = "required";
+    if (values.floatAmount && Number(values.floatAmount) <= 0) {
+        errors.floatAmount = "required > 0";
     }
     return errors;
 };
@@ -26,6 +30,25 @@ const isFormValid = (values: IZapOutActionForm) => {
     return isValid;
 };
 
+const retrieveLpAddress = async (
+    tokenA?: string,
+    tokenB?: string,
+    dexRouter?: string
+): Promise<string | undefined> => {
+    if (!tokenA || !tokenB || !dexRouter) return;
+
+    // Get DEX router contract
+    const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+    const dex = new ethers.Contract(dexRouter, UniswapV2RouterABI, provider);
+
+    // Get DEX factory
+    const factoryAddress = await dex.factory();
+    const factory = new ethers.Contract(factoryAddress, UniswapV2FactoryABI, provider);
+
+    const pairAddress = await factory.getPair(tokenA, tokenB);
+    return pairAddress;
+};
+
 export const ZapOutAction = ({
     form,
     update
@@ -33,24 +56,48 @@ export const ZapOutAction = ({
     form: IZapOutActionForm;
     update: (next: IZapOutActionForm) => void;
 }) => {
+    const walletAddress = useSelector((state: RootState) => state.wallet.address);
     const chainId = useSelector((state: RootState) => state.wallet.chainId);
     const [tokens, setTokens] = useState<Token[]>([]);
+    const [currentBalance, setCurrentBalance] = useState<number | undefined>(undefined);
+    const [tokenA, setTokenA] = useState<string | undefined>();
+    const [tokenB, setTokenB] = useState<string | undefined>();
 
     const getTokenName = (address: string) =>
         tokens.find((t) => t.address === address)?.symbol ?? address;
 
     useEffect(() => {
-        if (!form.tokenA || !form.tokenB)
-            update({
-                ...form,
-                tokenA: tokens[0]?.address,
-                tokenB: tokens[1]?.address
-            });
+        if (!tokenA && tokens.length) setTokenA(tokens[0].address);
+        if (!tokenB && tokens.length) setTokenB(tokens[1].address);
     }, [tokens]);
 
     useEffect(() => {
         if (chainId) setTokens(GetCurrentChain(chainId).tokens);
     }, [chainId]);
+
+    useEffect(() => {
+        setCurrentBalance(undefined);
+        if (!tokenA || !tokenB || !walletAddress) return;
+
+        retrieveLpAddress(tokenA, tokenB, form.dex.poolAddress).then((lpAddress) => {
+            if (lpAddress) {
+                if (lpAddress === "0x0000000000000000000000000000000000000000") {
+                    setCurrentBalance(-1);
+                } else {
+                    fetchTokenBalance(walletAddress, lpAddress).then((balance) =>
+                        setCurrentBalance(balance)
+                    );
+                }
+            }
+            const updatedForm = {
+                ...form,
+                tokenA,
+                tokenB
+            };
+            const valid = isFormValid(updatedForm);
+            update({ ...updatedForm, valid });
+        });
+    }, [chainId, tokenA, tokenB]);
 
     return (
         <Form
@@ -65,10 +112,8 @@ export const ZapOutAction = ({
                         <div className="script-block__panel--three-columns">
                             <TokensModal
                                 tokens={tokens.filter((t) => t.address !== form.tokenB)}
-                                selectedToken={tokens.filter((t) => t.address === form.tokenA)[0]}
-                                setSelectedToken={(token) =>
-                                    update({ ...form, tokenA: token.address })
-                                }
+                                selectedToken={tokens.find((t) => t.address === tokenA)}
+                                setSelectedToken={(token) => setTokenA(token.address)}
                             />
 
                             <div
@@ -85,86 +130,19 @@ export const ZapOutAction = ({
 
                             <TokensModal
                                 tokens={tokens.filter((t) => t.address !== form.tokenA)}
-                                selectedToken={tokens.filter((t) => t.address === form.tokenB)[0]}
-                                setSelectedToken={(token) =>
-                                    update({ ...form, tokenB: token.address })
-                                }
+                                selectedToken={tokens.find((t) => t.address === tokenB)}
+                                setSelectedToken={(token) => setTokenB(token.address)}
                             />
                         </div>
 
-                        <div className="script-block__panel--three-columns">
-                            <ToggleButtonField
-                                name="amountType"
-                                valuesEnum={AmountType}
-                                updateFunction={(newValue: AmountType) => {
-                                    const updatedForm = {
-                                        ...form,
-                                        amountType: newValue,
-                                        floatAmount: newValue === AmountType.Percentage ? 50 : 0
-                                    };
-                                    const valid = isFormValid(updatedForm);
-                                    update({ ...updatedForm, valid });
-                                }}
-                                initial={form.amountType}
-                            />
-                        </div>
-                        {form.amountType === AmountType.Absolute ? (
-                            <Field
-                                name="floatAmount"
-                                component="input"
-                                type="number"
-                                placeholder="1.00"
-                            >
-                                {({ input, meta }) => (
-                                    <input
-                                        {...input}
-                                        className={`script-block__input ${
-                                            meta.error ? "script-block__input--error" : ""
-                                        }`}
-                                        onChange={(e) => {
-                                            e.target.value =
-                                                Number(e.target.value) < 0 ? "0" : e.target.value;
-                                            input.onChange(e);
-                                            const updatedForm = {
-                                                ...form,
-                                                floatAmount: Number(e.target.value)
-                                            };
-                                            const valid = isFormValid(updatedForm);
-                                            update({ ...updatedForm, valid });
-                                        }}
-                                    />
-                                )}
-                            </Field>
-                        ) : (
-                            <div className="slider-container">
-                                <Field name="floatAmount" component="input" type="range">
-                                    {({ input, meta }) => (
-                                        <input
-                                            min="50"
-                                            max="10000"
-                                            step="50"
-                                            {...input}
-                                            className={`${
-                                                meta.error ? "script-block__input--error" : ""
-                                            }`}
-                                            onChange={(e) => {
-                                                input.onChange(e);
-                                                const updatedForm = {
-                                                    ...form,
-                                                    floatAmount: Number(e.target.value)
-                                                };
-                                                const valid = isFormValid(updatedForm);
-                                                update({ ...updatedForm, valid });
-                                            }}
-                                        />
-                                    )}
-                                </Field>
-
-                                <div className="slider-container__slider-value">
-                                    {`${form.floatAmount / 100}%`}
-                                </div>
-                            </div>
-                        )}
+                        <AmountInput
+                            initialAmountType={form.amountType}
+                            processNewValue={(amountType: AmountType, floatAmount: number) => {
+                                const updatedForm = { ...form, amountType, floatAmount };
+                                const valid = isFormValid(updatedForm);
+                                update({ ...updatedForm, valid });
+                            }}
+                        />
 
                         <p>Select the zap outcome</p>
                         <div className="zap-out-block__outcome-radio">
@@ -240,6 +218,14 @@ export const ZapOutAction = ({
                             <label htmlFor="id-radio-outcome-token-2">
                                 {getTokenName(form.tokenB)}
                             </label>
+                        </div>
+
+                        <div className="script-block__info">
+                            {currentBalance === undefined
+                                ? `..fetching balance..`
+                                : currentBalance === -1
+                                ? "LP not supported by this DEX"
+                                : `Current LP balance: ${currentBalance}`}
                         </div>
 
                         {/* ENABLE WHEN DEBUGGING!  */}
