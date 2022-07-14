@@ -53,7 +53,7 @@ transactionsRouter.post("/:hash/update", authenticate, async (req: Request, res:
 
     const updatedValues = req.body;
     transaction.outcome = updatedValues.outcome;
-    transaction.save();
+    await transaction.save();
     return res.send(transaction);
 });
 

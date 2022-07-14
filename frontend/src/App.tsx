@@ -32,6 +32,9 @@ export const App = ({ children }: { children: any }) => {
     const whitelisted: boolean = useSelector((state: RootState) => state.wallet.whitelisted);
     const banned: boolean = useSelector((state: RootState) => state.wallet.banned);
     const supportedChain: boolean = useSelector((state: RootState) => state.wallet.supportedChain);
+    const unseenTransactions: number = useSelector(
+        (state: RootState) => state.wallet.unseenTransactions
+    );
 
     // menu selection classes
     const dashboardLinkClassName = `menu__entry ${
@@ -90,6 +93,9 @@ export const App = ({ children }: { children: any }) => {
                         </Link>
                         <Link className={transactionsLinkClassName} to="/transactions">
                             Transactions
+                            {unseenTransactions ? (
+                                <div className="menu__notification">{unseenTransactions}</div>
+                            ) : (null)}
                         </Link>
                     </div>
                 )}

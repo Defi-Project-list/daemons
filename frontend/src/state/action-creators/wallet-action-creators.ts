@@ -41,6 +41,7 @@ export const authenticationCheck = (address?: string) => {
                 authenticated: false,
                 banned: false,
                 whitelisted: true,
+                unseenTransactions: 0
             });
             return;
         }
@@ -53,6 +54,7 @@ export const authenticationCheck = (address?: string) => {
                 authenticated: false,
                 banned: false,
                 whitelisted: true,
+                unseenTransactions: 0
             });
             return;
         }
@@ -63,6 +65,7 @@ export const authenticationCheck = (address?: string) => {
             authenticated: true,
             banned: user.banned,
             whitelisted: user.whitelisted,
+            unseenTransactions: user.unseenTransactions
         });
     };
 };
@@ -111,6 +114,14 @@ export const fetchEthBalance = (address?: string, chainId?: string) => {
         dispatch({
             type: ActionType.FETCH_ETH_BALANCE,
             balance
+        });
+    };
+};
+
+export const clearUnseenTransactions = () => {
+    return async (dispatch: Dispatch<WalletAction>) => {
+        dispatch({
+            type: ActionType.SET_TX_AS_SEEN
         });
     };
 };

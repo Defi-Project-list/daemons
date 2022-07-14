@@ -6,6 +6,7 @@ export interface IUser {
     username: string;
     banned: boolean;
     whitelisted: boolean;
+    unseenTransactions: number;
 }
 
 export class AuthProxy {

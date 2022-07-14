@@ -7,6 +7,7 @@ import { IUser, User } from "../../models/user";
 import { clearTestDb, closeTestDb, connectToTestDb } from "../../test/test-db-handler";
 import { ethers } from "ethers";
 import { userDocumentFactory } from "../../test-factories/user-factories";
+import { transactionDocumentFactory } from "../../test-factories/transactions-factories";
 
 describe("GET api/auth/is-authenticated/:userAddress", () => {
     before(async () => await connectToTestDb());
@@ -62,6 +63,27 @@ describe("GET api/auth/is-authenticated/:userAddress", () => {
 
         const user = response.body as IUser;
         expect(user.username).to.equal("scaloppino");
+    });
+
+    it("returns unseen transactions along the response", async () => {
+        const addressWithChecksum = ethers.utils.getAddress(userAddress);
+        // add some transactions happened before the user's last login date
+        await transactionDocumentFactory({beneficiaryUser: addressWithChecksum});
+        await transactionDocumentFactory({beneficiaryUser: addressWithChecksum});
+
+        await userDocumentFactory({ address: addressWithChecksum });
+
+        await transactionDocumentFactory({beneficiaryUser: addressWithChecksum});
+        await transactionDocumentFactory({beneficiaryUser: addressWithChecksum});
+        await transactionDocumentFactory({beneficiaryUser: addressWithChecksum});
+
+        const response = await supertest(app)
+            .get(`/api/auth/is-authenticated/${userAddress}`)
+            .set("Cookie", `token=${jwToken}`)
+            .expect(200);
+
+        const user = response.body;
+        expect(user.unseenTransactions).to.equal(3);
     });
 
     it("returns 403 if the user is banned", async () => {

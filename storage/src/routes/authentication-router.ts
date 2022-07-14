@@ -2,11 +2,11 @@ import { utils } from "ethers";
 import express, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { authenticate } from "../middlewares/authentication";
+import { Transaction } from "../models/transaction";
 import { User } from "../models/user";
 
 export const authenticationRouter = express.Router();
 const OTPs: { [address: string]: number } = {};
-
 
 authenticationRouter.get(
     "/is-authenticated/:userAddress",
@@ -29,8 +29,23 @@ authenticationRouter.get(
             return res.status(403).send(user);
         }
 
+        // retrieve extra info to be sent along with the user
+        const unseenTransactions = await Transaction.countDocuments({
+            beneficiaryUser: userAddress,
+            date: { $gt: user.lastLogin }
+        });
+
+        // update last login date
+        await User.findOneAndUpdate({ address: userAddress }, { $set: { lastLogin: new Date() } });
+
         // and return it otherwise
-        return res.status(200).send(user);
+        return res.status(200).send({
+            address: user.address,
+            username: user.username,
+            banned: user.banned,
+            whitelisted: user.whitelisted,
+            unseenTransactions
+        });
     }
 );
 

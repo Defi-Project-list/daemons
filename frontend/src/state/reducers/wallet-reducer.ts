@@ -11,6 +11,7 @@ export type WalletState = {
     supportedChain: boolean;
     DAEMBalance: number;
     ETHBalance: number;
+    unseenTransactions: number;
 };
 
 const initialState: WalletState = {
@@ -20,7 +21,8 @@ const initialState: WalletState = {
     whitelisted: true,
     supportedChain: false,
     DAEMBalance: 0,
-    ETHBalance: 0
+    ETHBalance: 0,
+    unseenTransactions: 0
 };
 
 export const walletReducer = (
@@ -42,6 +44,7 @@ export const walletReducer = (
                 authenticated: action.authenticated,
                 banned: action.banned,
                 whitelisted: action.whitelisted,
+                unseenTransactions: action.unseenTransactions
             };
         case ActionType.FETCH_DAEM_BALANCE:
             return {
@@ -52,6 +55,11 @@ export const walletReducer = (
             return {
                 ...state,
                 ETHBalance: action.balance
+            };
+        case ActionType.SET_TX_AS_SEEN:
+            return {
+                ...state,
+                unseenTransactions: 0
             };
         default:
             return state;

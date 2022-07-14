@@ -15,6 +15,7 @@
     --greyish-brown: var(--grey-600);
     --lighter-grey: var(--grey-200);
     --white: var(--grey-100);
+    --opaque-white: var(#f8f9fc55);
 
     --primary-colour: #136f63;
     --blue-green: #136f63;

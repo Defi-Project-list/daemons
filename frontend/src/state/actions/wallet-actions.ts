@@ -13,6 +13,7 @@ export interface IAuthCheck {
     authenticated: boolean;
     banned: boolean;
     whitelisted: boolean;
+    unseenTransactions: number;
 }
 
 export interface IFetchDaemBalance {
@@ -25,4 +26,13 @@ export interface IEthDaemBalance {
     balance: number;
 }
 
-export type WalletAction = IUpdateWalletAction | IAuthCheck | IFetchDaemBalance | IEthDaemBalance;
+export interface ISetTxAsSeen {
+    type: ActionType.SET_TX_AS_SEEN;
+}
+
+export type WalletAction =
+    | IUpdateWalletAction
+    | IAuthCheck
+    | IFetchDaemBalance
+    | IEthDaemBalance
+    | ISetTxAsSeen;

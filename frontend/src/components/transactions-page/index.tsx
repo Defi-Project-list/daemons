@@ -1,5 +1,5 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../state";
 import { DisconnectedPage } from "../error-pages/disconnected-page";
 import { UnsupportedChainPage } from "../error-pages/unsupported-chain-page";
@@ -10,8 +10,10 @@ import { TransactionsPanel } from "./transactions-panel";
 import "./styles.css";
 import "../shared.css";
 import { TransactionProxy } from "../../data/storage-proxy/transaction-proxy";
+import { clearUnseenTransactions } from "../../state/action-creators/wallet-action-creators";
 
 export function TransactionsPage(): JSX.Element {
+    const dispatch = useDispatch();
     const authenticated: boolean = useSelector((state: RootState) => state.wallet.authenticated);
     const banned: boolean = useSelector((state: RootState) => state.wallet.banned);
     const whitelisted: boolean = useSelector((state: RootState) => state.wallet.whitelisted);
@@ -33,7 +35,11 @@ export function TransactionsPage(): JSX.Element {
                         iconClass="card__title-icon--transactions"
                     >
                         <TransactionsPanel
-                            fetchTransactions={TransactionProxy.fetchUserTransactions}
+                            fetchTransactions={async (chainId?: string, page?: number) => {
+                                const txs = await TransactionProxy.fetchUserTransactions(chainId, page);
+                                dispatch(clearUnseenTransactions());
+                                return txs;
+                            }}
                         />
                     </Card>
                 </div>

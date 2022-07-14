@@ -7,6 +7,7 @@ export interface IUser {
     banned: boolean;
     whitelisted: boolean;
     creationDate: Date;
+    lastLogin: Date;
 }
 
 const userSchema = new mongoose.Schema({
@@ -14,7 +15,8 @@ const userSchema = new mongoose.Schema({
     username: { type: String, required: true, index: { unique: true } },
     banned: { type: Boolean, required: false, default: false },
     whitelisted: { type: Boolean, required: false, default: false },
-    creationDate: { type: Date, required: false, default: () => new Date() }
+    creationDate: { type: Date, required: false, default: () => new Date() },
+    lastLogin: { type: Date, required: false, default: () => new Date() }
 });
 mongooseUniqueValidator(userSchema);
 

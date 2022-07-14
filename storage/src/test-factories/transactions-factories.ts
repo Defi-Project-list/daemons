@@ -17,7 +17,7 @@ export function transactionFactory(args: any): ITransaction {
         chainId: args.chainId ?? BigNumber.from("42"),
         executingUser: args.executingUser ?? faker.finance.ethereumAddress(),
         beneficiaryUser: args.beneficiaryUser ?? faker.finance.ethereumAddress(),
-        date: args.date ?? new Date(),
+        date: args.date ?? new Date(), // NOTE: date is always set by the endpoint. This line is just a filler.
         outcome: args.outcome ?? randomOutcome()
     };
 }

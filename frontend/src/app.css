@@ -80,6 +80,7 @@ input[type=range] {
     color: var(--white);
     margin: 10px;
     text-decoration: none;
+    position: relative;
 }
 
 .menu__entry:visited {
@@ -92,7 +93,7 @@ input[type=range] {
 }
 
 .menu__entry--unselected {
-    opacity: 0.7;
+    color: #f8f9fcaa;
 }
 
 .menu__entry--selected {
@@ -112,6 +113,20 @@ input[type=range] {
 .menu__entry--gas:hover {
     text-decoration: none;
     cursor: auto;
+}
+
+.menu__notification {
+    position: absolute;
+    top: 0px;
+    right: -13px;
+    border-radius: 100%;
+    width: 15px;
+    height: 15px;
+    text-align: center;
+    line-height: 16px;
+    font-size: 0.75rem;
+    color: var(--white);
+    background-color: var(--toastify-color-error);
 }
 
 .header-indicator {
