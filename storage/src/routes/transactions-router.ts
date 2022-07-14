@@ -1,12 +1,13 @@
-import { utils } from 'ethers';
-import express, { Request, Response } from 'express';
-import { ITransaction, TransactionOutcome } from '@daemons-fi/shared-definitions';
-import { authenticate } from '../middlewares/authentication';
-import { Transaction } from '../models/transaction';
+import { utils } from "ethers";
+import express, { Request, Response } from "express";
+import { ITransaction, TransactionOutcome } from "@daemons-fi/shared-definitions";
+import { authenticate } from "../middlewares/authentication";
+import { Transaction } from "../models/transaction";
 
 export const transactionsRouter = express.Router();
 
-transactionsRouter.post('/', authenticate, async (req: Request, res: Response) => {
+/** Add a new transaction */
+transactionsRouter.post("/", authenticate, async (req: Request, res: Response) => {
     const transaction: ITransaction = req.body;
 
     /**
@@ -34,8 +35,8 @@ transactionsRouter.post('/', authenticate, async (req: Request, res: Response) =
     }
 });
 
-
-transactionsRouter.post('/:hash/update', authenticate, async (req: Request, res: Response) => {
+/** Updates the outcome of the specified transaction */
+transactionsRouter.post("/:hash/update", authenticate, async (req: Request, res: Response) => {
     const hash = req.params.hash;
     const transaction = await Transaction.findOne({ hash });
 
@@ -56,33 +57,40 @@ transactionsRouter.post('/:hash/update', authenticate, async (req: Request, res:
     return res.send(transaction);
 });
 
-
-transactionsRouter.get('/receiver/:chainId/:userAddress', authenticate, async (req: Request, res: Response) => {
-    // adds checksum to address (uppercase characters)
-    const userAddress = utils.getAddress(req.params.userAddress);
-    if (req.userAddress !== userAddress) {
-        return res.sendStatus(403);
-    }
-
+/** Get the transactions for this user */
+transactionsRouter.get("/receiver/:chainId", authenticate, async (req: Request, res: Response) => {
     const chainId = String(req.params.chainId);
 
-    const transactions = await Transaction
-        .find({ chainId, beneficiaryUser: userAddress })
-        .sort({ date: 'desc' });
+    const transactions = await Transaction.find({ chainId, beneficiaryUser: req.userAddress }).sort(
+        { date: "desc" }
+    );
     return res.send(transactions);
 });
 
-transactionsRouter.get('/executor/:chainId/:userAddress', authenticate, async (req: Request, res: Response) => {
-    // adds checksum to address (uppercase characters)
-    const userAddress = utils.getAddress(req.params.userAddress);
-    if (req.userAddress !== userAddress) {
-        return res.sendStatus(403);
-    }
-
+/** Get the transactions for this executor */
+transactionsRouter.get("/executor/:chainId/", authenticate, async (req: Request, res: Response) => {
     const chainId = String(req.params.chainId);
 
-    const transactions = await Transaction
-        .find({ chainId, executingUser: userAddress })
-        .sort({ date: 'desc' });
+    const transactions = await Transaction.find({ chainId, executingUser: req.userAddress }).sort({
+        date: "desc"
+    });
     return res.send(transactions);
 });
+
+/** Get the *unverified* transactions for this user */
+transactionsRouter.get(
+    "/unverified/:chainId/",
+    authenticate,
+    async (req: Request, res: Response) => {
+        const chainId = String(req.params.chainId);
+
+        const transactions = await Transaction.find({
+            chainId,
+            beneficiaryUser: req.userAddress,
+            outcome: TransactionOutcome.Waiting
+        }).sort({ date: "desc" });
+
+        const minimalTx = transactions.map((t) => ({ hash: t.hash, date: t.date }));
+        return res.send(minimalTx);
+    }
+);

@@ -6,17 +6,16 @@ import { RootState } from "../../state";
 import { TransactionRecord } from "./transaction-record";
 
 interface ITransactionsPanelProps {
-    fetchTransactions: (chainId?: string, user?: string, page?: number) => Promise<ITransaction[]>;
+    fetchTransactions: (chainId?: string, page?: number) => Promise<ITransaction[]>;
 }
 
 export function TransactionsPanel({ fetchTransactions }: ITransactionsPanelProps): JSX.Element {
-    const userWallet = useSelector((state: RootState) => state.wallet.address);
     const chainId = useSelector((state: RootState) => state.wallet.chainId);
     const explorerTxUrl = GetCurrentChain(chainId!).explorerTxUrl;
     const [transactions, setTransactions] = useState<ITransaction[]>([]);
 
     useEffect(() => {
-        fetchTransactions(chainId, userWallet).then((txs) => setTransactions(txs));
+        fetchTransactions(chainId).then((txs) => setTransactions(txs));
     }, []);
 
     return (

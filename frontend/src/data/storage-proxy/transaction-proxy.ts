@@ -4,6 +4,11 @@ import { TransactionResponse, TransactionReceipt } from '@ethersproject/abstract
 import { utils } from 'ethers';
 import { storageAddress } from '.';
 
+interface IMinimalTransaction {
+    hash: string;
+    date: string;
+}
+
 
 export class TransactionProxy {
 
@@ -46,50 +51,29 @@ export class TransactionProxy {
      * */
     public static async confirmTransaction(
         txHash: string,
-        txReceipt: TransactionReceipt,
+        outcome: TransactionOutcome,
     ): Promise<ITransaction> {
-        if (!txReceipt) {
-            throw new Error('Tx Receipt is empty, cannot verify');
-        }
-
-        console.log(`Confirming transaction ${txHash}`);
-        const transactionAdditionalInfo = {
-            outcome: this.extractOutcomeFromStatus(txReceipt.status),
-        };
 
         const url = `${storageAddress}/transactions/${txHash}/update`;
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify(transactionAdditionalInfo),
+            body: JSON.stringify({outcome}),
         };
 
         const response = await fetch(url, requestOptions as any);
         return await response.json();
     }
 
-    private static extractOutcomeFromStatus(status?: number): TransactionOutcome {
-        switch (status) {
-            case undefined:
-                return TransactionOutcome.NotFound;
-            case 0:
-                return TransactionOutcome.Failed;
-            case 1:
-                return TransactionOutcome.Confirmed;
-            default:
-                return TransactionOutcome.NotFound;
-        };
-    }
-
-    public static async fetchUserTransactions(chainId?: string, user?: string, page?: number): Promise<ITransaction[]> {
-        if (!user || !chainId) {
-            console.warn("Missing user or chain id. User transactions fetch aborted");
+    public static async fetchUserTransactions(chainId?: string, page?: number): Promise<ITransaction[]> {
+        if (!chainId) {
+            console.warn("Missing chain id. User transactions fetch aborted");
             return [];
         }
 
-        console.log(`Fetching user ${user} transactions for chain ${chainId}`);
-        const url = `${storageAddress}/transactions/receiver/${chainId}/${user}`;
+        console.log(`Fetching user transactions for chain ${chainId}`);
+        const url = `${storageAddress}/transactions/receiver/${chainId}`;
 
         const requestOptions = { method: 'GET', credentials: 'include' };
         const response = await fetch(url, requestOptions as any);
@@ -99,20 +83,32 @@ export class TransactionProxy {
         return transactions;
     }
 
-    public static async fetchExecutedTransactions(chainId?: string, user?: string, page?: number): Promise<ITransaction[]> {
-        if (!user || !chainId) {
-            console.warn("Missing user or chain id. Executed transactions fetch aborted");
+    public static async fetchExecutedTransactions(chainId?: string, page?: number): Promise<ITransaction[]> {
+        if (!chainId) {
+            console.warn("Missing chain id. Executed transactions fetch aborted");
             return [];
         }
 
-        console.log(`Fetching transactions executed by ${user} on chain ${chainId}`);
-        const url = `${storageAddress}/transactions/executor/${chainId}/${user}`;
+        console.log(`Fetching transactions executed on chain ${chainId}`);
+        const url = `${storageAddress}/transactions/executor/${chainId}`;
 
         const requestOptions = { method: 'GET', credentials: 'include' };
         const response = await fetch(url, requestOptions as any);
         if (response.status !== 200) return [];
 
         const transactions: ITransaction[] = await response.json();
+        return transactions;
+    }
+
+    public static async fetchUnverifiedTransactions(chainId: string): Promise<IMinimalTransaction[]> {
+        console.log(`Fetching unverified transactions for chain ${chainId}`);
+        const url = `${storageAddress}/transactions/unverified/${chainId}`;
+
+        const requestOptions = { method: 'GET', credentials: 'include' };
+        const response = await fetch(url, requestOptions as any);
+        if (response.status !== 200) return [];
+
+        const transactions: IMinimalTransaction[] = await response.json();
         return transactions;
     }
 }

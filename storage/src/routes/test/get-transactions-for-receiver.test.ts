@@ -31,7 +31,7 @@ describe('GET api/transactions/receiver/:chainId/:userAddress', () => {
 
         const chainId = "42";
         const response = await supertest(app)
-            .get(`/api/transactions/receiver/${chainId}/${userAddress}`)
+            .get(`/api/transactions/receiver/${chainId}`)
             .set('Cookie', `token=${jwToken}`);
 
         const fetchedTransactions = response.body as ITransaction[];
@@ -53,7 +53,7 @@ describe('GET api/transactions/receiver/:chainId/:userAddress', () => {
 
         const chainId = "42";
         const response = await supertest(app)
-            .get(`/api/transactions/receiver/${chainId}/${userAddress}`)
+            .get(`/api/transactions/receiver/${chainId}`)
             .set('Cookie', `token=${jwToken}`);
 
         const fetchedTransactions = response.body as ITransaction[];
@@ -63,44 +63,10 @@ describe('GET api/transactions/receiver/:chainId/:userAddress', () => {
         expect(hashes).to.include(fetchedTransactions[1].hash);
     });
 
-    it('is insensitive to the casing of the passed user address', async () => {
-        // add to the db a couple of transactions from the known user address
-        await transactionDocumentFactory({ beneficiaryUser: userAddress });
-        await transactionDocumentFactory({ beneficiaryUser: userAddress });
-
-        // call the API with a lowercase address
-        const lowercaseAddress = userAddress.toLowerCase();
-        const lowercaseAddressResponse = await supertest(app)
-            .get(`/api/transactions/receiver/42/${lowercaseAddress}`)
-            .set('Cookie', `token=${jwToken}`);
-
-        const lowercaseAddressFetchedTransactions = lowercaseAddressResponse.body as ITransaction[];
-
-        // call the API with an address with checksum
-        const checksumAddress = utils.getAddress(userAddress);
-        const checksumAddressResponse = await supertest(app)
-            .get(`/api/transactions/receiver/42/${checksumAddress}`)
-            .set('Cookie', `token=${jwToken}`);
-
-        const checksumAddressFetchedTransactions = checksumAddressResponse.body as ITransaction[];
-
-        expect(JSON.stringify(lowercaseAddressFetchedTransactions)).to.equal(JSON.stringify(checksumAddressFetchedTransactions));
-    });
-
-    it('returns a 403 error if trying to fetch transactions belonging to other users', async () => {
-        const chainId = "42";
-        const randomUser = faker.finance.ethereumAddress();
-
-        await supertest(app)
-            .get(`/api/transactions/receiver/${chainId}/${randomUser}`)
-            .set('Cookie', `token=${jwToken}`)
-            .expect(403);
-    });
-
     it('returns a 401 error if trying to fetch transactions while not authenticated', async () => {
         const chainId = "42";
         await supertest(app)
-            .get(`/api/transactions/receiver/${chainId}/${userAddress}`)
+            .get(`/api/transactions/receiver/${chainId}`)
             .expect(401);
     });
 });
