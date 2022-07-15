@@ -23,13 +23,20 @@ transactionsRouter.post("/", authenticate, async (req: Request, res: Response) =
      * Maybe someone from the internet knows? (no good answers, like always in there)
      * https://ethereum.stackexchange.com/questions/122625/verify-a-transaction-response-correctness
      */
-    if (req.userAddress !== utils.getAddress(transaction.executingUser)) {
-        return res.sendStatus(403);
-    }
-
     try {
+        if (req.userAddress !== utils.getAddress(transaction.executingUser)) {
+            return res.sendStatus(403);
+        }
+
+        if (
+            utils.getAddress(transaction.beneficiaryUser) ===
+            utils.getAddress(transaction.executingUser)
+        ) {
+            return res.status(400).send({ error: "Self-executing does not generate transactions" });
+        }
+
         await Transaction.build(transaction).save();
-        return res.sendStatus(200);
+        return res.sendStatus(201);
     } catch (error) {
         return res.status(400).send(error);
     }

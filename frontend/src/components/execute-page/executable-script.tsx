@@ -51,7 +51,7 @@ export const QueueScriptComponent = ({ script }: { script: BaseScript }) => {
         const transactionResponse = await script.execute(signer);
         if (!transactionResponse) return;
 
-        await StorageProxy.txs.addTransaction(transactionResponse, script, walletAddress!);
+        await StorageProxy.txs.addTransaction(transactionResponse.hash, script, walletAddress!);
         transactionResponse.wait().then(() => {
             dispatch(fetchGasTankClaimable(walletAddress, chainId));
             verifyScript();
