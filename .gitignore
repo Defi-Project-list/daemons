@@ -11,3 +11,4 @@ typechain-types/
 
 #Compiled filed
 dist/
+.vscode
