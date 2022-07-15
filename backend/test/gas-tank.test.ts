@@ -13,6 +13,8 @@ describe("GasTank", function () {
     let treasury: Contract;
     let fooToken: Contract;
 
+    const fakeScriptId = "0x7465737400000000000000000000000000000000000000000000000000000000";
+
     this.beforeEach(async () => {
         // get the default provider
         provider = ethers.provider;
@@ -173,7 +175,7 @@ describe("GasTank", function () {
             const rewardAmount = ethers.utils.parseEther("0.05");
             await gasTank
                 .connect(owner)
-                .addReward(rewardAmount, zeroTip, user1.address, user2.address);
+                .addReward(fakeScriptId, rewardAmount, zeroTip, user1.address, user2.address);
 
             // balances should have been updated
             expect(await gasTank.claimable(user2.address)).to.equal(rewardAmount);
@@ -193,7 +195,7 @@ describe("GasTank", function () {
             await expect(
                 gasTank
                     .connect(owner)
-                    .addReward(rewardAmount, zeroTip, user1.address, user2.address)
+                    .addReward(fakeScriptId, rewardAmount, zeroTip, user1.address, user2.address)
             ).to.be.revertedWith("Unauthorized. Only Executors");
         });
 
@@ -205,7 +207,7 @@ describe("GasTank", function () {
             await gasTank.connect(user1).depositGas({ value: oneEth });
             await gasTank
                 .connect(owner)
-                .addReward(rewardAmount, zeroTip, user1.address, user2.address);
+                .addReward(fakeScriptId, rewardAmount, zeroTip, user1.address, user2.address);
 
             // user 2 claim their reward
             await gasTank.connect(user2).claimReward();
@@ -230,7 +232,7 @@ describe("GasTank", function () {
             await gasTank.connect(user1).depositGas({ value: oneEth });
             await gasTank
                 .connect(owner)
-                .addReward(rewardAmount, zeroTip, user1.address, user2.address);
+                .addReward(fakeScriptId, rewardAmount, zeroTip, user1.address, user2.address);
 
             // user 2 claim AND STAKE their reward
             await gasTank.connect(user2).claimAndStakeReward();
@@ -268,7 +270,7 @@ describe("GasTank", function () {
             const tipAmount = ethers.utils.parseEther("0.5"); // 0.5 DAEM
             await gasTank
                 .connect(owner)
-                .addReward(rewardAmount, tipAmount, user1.address, user2.address);
+                .addReward(fakeScriptId, rewardAmount, tipAmount, user1.address, user2.address);
 
             // balances should have been updated
             const tipForExecutor = ethers.utils.parseEther("0.4"); // 80% of full tip
@@ -288,7 +290,7 @@ describe("GasTank", function () {
 
             await gasTank
                 .connect(owner)
-                .addReward(rewardAmount, tipAmount, user1.address, user2.address);
+                .addReward(fakeScriptId, rewardAmount, tipAmount, user1.address, user2.address);
 
             const DAEMBalanceAfterReward = await fooToken.balanceOf(treasury.address);
             const difference = DAEMBalanceAfterReward.sub(DAEMBalanceBeforeReward);
@@ -304,7 +306,7 @@ describe("GasTank", function () {
             await gasTank.connect(user1).depositTip(oneDAEMTip);
             await gasTank
                 .connect(owner)
-                .addReward(rewardAmount, tipAmount, user1.address, user2.address);
+                .addReward(fakeScriptId, rewardAmount, tipAmount, user1.address, user2.address);
 
             const DAEMBalanceBeforeClaiming = await fooToken.balanceOf(treasury.address);
 
@@ -330,7 +332,7 @@ describe("GasTank", function () {
             await gasTank.connect(user1).depositTip(oneDAEMTip);
             await gasTank
                 .connect(owner)
-                .addReward(rewardAmount, tipAmount, user1.address, user2.address);
+                .addReward(fakeScriptId, rewardAmount, tipAmount, user1.address, user2.address);
 
             const DAEMBalanceBeforeClaiming = await fooToken.balanceOf(treasury.address);
 

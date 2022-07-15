@@ -98,6 +98,7 @@ contract BeefyScriptExecutor is ConditionsChecker {
 
         // reward executor
         gasTank.addReward(
+            message.scriptId,
             GAS_LIMIT * gasPriceFeed.lastGasPrice(),
             message.tip,
             message.user,

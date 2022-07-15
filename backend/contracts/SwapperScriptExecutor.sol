@@ -123,6 +123,7 @@ contract SwapperScriptExecutor is ConditionsChecker {
 
         // step 4: reward executor
         gasTank.addReward(
+            message.scriptId,
             GAS_LIMIT * gasPriceFeed.lastGasPrice(),
             message.tip,
             message.user,

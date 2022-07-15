@@ -154,6 +154,7 @@ contract MmAdvancedScriptExecutor is ConditionsChecker, ConditionsCheckerForMone
 
         // Reward executor
         gasTank.addReward(
+            message.scriptId,
             GAS_LIMIT * gasPriceFeed.lastGasPrice(),
             message.tip,
             message.user,

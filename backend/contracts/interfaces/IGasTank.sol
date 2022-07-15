@@ -2,6 +2,8 @@
 pragma solidity ^0.8.4;
 
 interface IGasTank {
+    event ScriptExecuted(bytes32 scriptId, address executor);
+
     /// @notice Get the amount of ETH the user has deposited in the gas tank
     /// @param user the address of the user to inspect
     /// @return the user gas balance
@@ -36,11 +38,13 @@ interface IGasTank {
     /// @notice Removes funds from the gas tank of a user,
     /// in order to have them employed as payment for the execution of a script.
     /// @dev note: only executor contracts can call this function.
+    /// @param scriptId the id of the script being executed
     /// @param ethAmount the amount of ETH to withdraw from the user gas tank
     /// @param tipAmount the amount of DAEM to withdraw from the user tip jar
     /// @param user the script owner
     /// @param executor the script executor
     function addReward(
+        bytes32 scriptId,
         uint256 ethAmount,
         uint256 tipAmount,
         address user,

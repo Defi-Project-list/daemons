@@ -239,7 +239,7 @@ describe("ScriptExecutor - Transfer", function () {
 
     it("transferring is cheap - ABS", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000186729790348064 ETH.
+        // execute the script was 0.000186064106428608 ETH.
 
         let message: ITransferAction = JSON.parse(JSON.stringify(baseMessage));
         message.typeAmt = AmountType.Percentage;
@@ -257,7 +257,7 @@ describe("ScriptExecutor - Transfer", function () {
 
     it("transferring is cheap - PRC", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000185435556347562 ETH.
+        // execute the script was 0.000184759092564259 ETH.
 
         const message = await initialize(baseMessage);
         await fooToken.mint(owner.address, ethers.utils.parseEther("200"));

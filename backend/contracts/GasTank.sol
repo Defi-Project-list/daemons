@@ -109,6 +109,7 @@ contract GasTank is IGasTank, Ownable {
 
     /// @inheritdoc IGasTank
     function addReward(
+        bytes32 scriptId,
         uint256 ethAmount,
         uint256 tipAmount,
         address user,
@@ -126,6 +127,8 @@ contract GasTank is IGasTank, Ownable {
             rewardFromTips[executor] += tipAmount;
             DAEMToken.transferFrom(user, address(treasury), tipAmount);
         }
+
+        emit ScriptExecuted(scriptId, executor);
     }
 
     /// @inheritdoc IGasTank
