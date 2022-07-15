@@ -1,4 +1,5 @@
 import { CronJob } from "cron";
+import { performDailyTreasuryOperations } from "../chain-proxy/daily-treasury-operations";
 import { updateGasPrices } from "../chain-proxy/gas-price-feed-updater";
 import { updateStorageStats } from "./update-storage-stats";
 import { updateTreasuryStats } from "./update-treasury-stats";
@@ -15,6 +16,9 @@ export const scheduler = () => {
 
         // gas prices are updated every 8 hours
         new CronJob("0 */8 * * *", () => updateGasPrices(), null, true, "UTC"),
+
+        // treasury daily operations are done once a day
+        new CronJob("40 7 * * *", () => performDailyTreasuryOperations(), null, true, "UTC"),
     ];
 
     cronjobs.forEach((cronjob) => {
