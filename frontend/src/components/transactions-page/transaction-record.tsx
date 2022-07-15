@@ -22,7 +22,7 @@ const messages = {
 };
 
 const getExplorerLink = (transaction: ITransaction, explorerTxUrl: string): JSX.Element => (
-    <a className="transaction-record__explorer-link" href={`${explorerTxUrl}/${transaction.hash}`}>
+    <a className="transaction-record__explorer-link" href={`${explorerTxUrl}${transaction.hash}`}>
         See explorer.
     </a>
 );
