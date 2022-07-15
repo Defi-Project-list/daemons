@@ -4,6 +4,7 @@ interface ICachedData {
 }
 
 export enum CacheDuration {
+    zero = 0,
     oneHour = 1000 * 60 * 60,
     sixHours = 1000 * 60 * 60 * 6,
     oneDay = 1000 * 60 * 60 * 24

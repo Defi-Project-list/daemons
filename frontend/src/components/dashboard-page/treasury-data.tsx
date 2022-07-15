@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
 import { RootState } from "../../state";
-import { ERC20Abi, treasuryABI } from "@daemons-fi/abis";
+import { treasuryABI, UniswapV2PairABI } from "@daemons-fi/abis";
 import { bigNumberToFloat } from "../../utils/big-number-to-float";
-import { Cacher } from "../../data/cacher";
+import { CacheDuration, Cacher } from "../../data/cacher";
 import CountUp from "react-countup";
 
 const getTreasuryContract = (chainId: string) => {
@@ -16,12 +16,16 @@ const getTreasuryContract = (chainId: string) => {
     return new ethers.Contract(treasuryAddress, treasuryABI, provider);
 };
 
+type reserves = { resETH: number; resDAEM: number };
+
 export function TreasuryData(): JSX.Element {
     const chainId = useSelector((state: RootState) => state.wallet.chainId)!;
     const [redistributionPool, setRedistributionPool] = useState<number | undefined>();
     const [stakedAmount, setStakedAmount] = useState<number | undefined>();
     const [distrInterval, setDistrInterval] = useState<number | undefined>();
     const [lpTreasuryBalance, setLpTreasuryBalance] = useState<number | undefined>();
+    const [lpOwnedPercentage, setLpOwnedPercentage] = useState<number | undefined>();
+    const [lpReserves, setLpReserves] = useState<reserves | undefined>();
     const [apr, setApr] = useState<number | undefined>();
     const [apy, setApy] = useState<number | undefined>();
     const currencySymbol = GetCurrentChain(chainId).coinSymbol;
@@ -58,12 +62,29 @@ export function TreasuryData(): JSX.Element {
             const lpAddress = GetCurrentChain(chainId).contracts.wethDaemLp;
             const treasuryAddress = GetCurrentChain(chainId).contracts.Treasury;
 
-            const lpToken = new ethers.Contract(lpAddress, ERC20Abi, provider);
-            const lpTreasuryBalanceRaw = await lpToken.balanceOf(treasuryAddress);
-            return bigNumberToFloat(lpTreasuryBalanceRaw);
+            // get treasury owned amount
+            const lpPair = new ethers.Contract(lpAddress, UniswapV2PairABI, provider);
+            const lpTreasuryBalanceRaw = await lpPair.balanceOf(treasuryAddress);
+            const lpBalance = bigNumberToFloat(lpTreasuryBalanceRaw);
+
+            // get total LP amount
+            const totalSupplyRaw = await lpPair.totalSupply();
+            const totalSupply = bigNumberToFloat(totalSupplyRaw);
+
+            // get owned percentage
+            const ownedPercentage = lpBalance / totalSupply;
+
+            // get reserves
+            const lpReservesRaw = await lpPair.getReserves();
+            const daemReserve = bigNumberToFloat(lpReservesRaw[0]);
+            const ethReserve = bigNumberToFloat(lpReservesRaw[1]);
+
+            return { lpBalance, ownedPercentage, ethReserve, daemReserve };
         };
-        const lpBalance = await Cacher.fetchData(`B/lpBalance/${chainId}`, f);
-        setLpTreasuryBalance(lpBalance);
+        const lpStats = await Cacher.fetchData(`B/lpBalance/${chainId}`, f);
+        setLpTreasuryBalance(lpStats.lpBalance);
+        setLpOwnedPercentage(lpStats.ownedPercentage);
+        setLpReserves({ resETH: lpStats.ethReserve, resDAEM: lpStats.daemReserve });
     };
 
     useEffect(() => {
@@ -110,14 +131,38 @@ export function TreasuryData(): JSX.Element {
                     <CountUp duration={0.5} decimals={5} suffix={` DAEM`} end={stakedAmount ?? 0} />
                 </div>
             </div>
+            <br/>
             <div className="treasury-stats__group">
                 <div className="treasury-stats__title">Treasury owned LP</div>
                 <div className="treasury-stats__value">
                     <CountUp
                         duration={0.5}
                         decimals={4}
-                        suffix={` DAEM-${currencySymbol}-LP`}
                         end={lpTreasuryBalance ?? 0}
+                    />
+                    <CountUp
+                        duration={0.5}
+                        decimals={2}
+                        prefix={` (`}
+                        suffix={`% of total)`}
+                        end={(lpOwnedPercentage ?? 0) * 100}
+                    />
+                </div>
+            </div>
+            <div className="treasury-stats__group">
+                <div className="treasury-stats__title">Owned LP composition</div>
+                <div className="treasury-stats__value">
+                    <CountUp
+                        duration={0.5}
+                        decimals={4}
+                        suffix={` ${currencySymbol} + `}
+                        end={(lpOwnedPercentage ?? 0) * (lpReserves?.resETH ?? 0)}
+                    />
+                    <CountUp
+                        duration={0.5}
+                        decimals={2}
+                        suffix={`DAEM`}
+                        end={(lpOwnedPercentage ?? 0) * (lpReserves?.resDAEM ?? 0)}
                     />
                 </div>
             </div>
