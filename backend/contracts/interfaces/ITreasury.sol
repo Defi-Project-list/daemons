@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: Unlicense
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.9;
 
 interface ITreasury {
     /** The percentage that will be given to the executor after the taxes on tips have been calculated */

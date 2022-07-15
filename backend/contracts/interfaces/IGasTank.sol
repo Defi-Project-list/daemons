@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: Unlicense
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.9;
 
 interface IGasTank {
     event ScriptExecuted(bytes32 scriptId, address executor);
