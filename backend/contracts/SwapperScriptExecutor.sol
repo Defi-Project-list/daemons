@@ -112,10 +112,9 @@ contract SwapperScriptExecutor is ConditionsChecker {
         if (!allowances[message.kontract][tokenFrom]) giveAllowance(tokenFrom, message.kontract);
 
         // step 3: swap
-        uint256 quote = IUniswapV2Router01(message.kontract).getAmountsOut(amount, path)[1];
         IUniswapV2Router01(message.kontract).swapExactTokensForTokens(
             amount,
-            (quote * 99) / 100,
+            0,
             path,
             message.user,
             block.timestamp + 600000 // 10 minutes

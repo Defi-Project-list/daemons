@@ -173,11 +173,11 @@ contract Treasury is ITreasury, Ownable {
     }
 
     /** Adds funds to the Protocol-owned-Liquidity LP */
-    function fundLP() external onlyOwner {
+    function fundLP(uint256 amountOutMin) external onlyOwner {
         require(polIsInitialized, "PoL not initialized yet");
         // First we buy back some DAEM at market price using half of the polPool
         IUniswapV2Router01(lpRouter).swapExactETHForTokens{value: polPool / 2}(
-            (ethToDAEM(polPool / 2) * 99) / 100, // 1% slippage
+            amountOutMin,
             ethToDAEMPath,
             address(this),
             block.timestamp

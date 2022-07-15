@@ -502,10 +502,7 @@ describe("Treasury", function () {
         });
 
         it("LP funding can only be executed by admin", async () => {
-            const ETHAmount = utils.parseEther("1.0");
-            const DAEMAmount = utils.parseEther("1500");
-
-            await expect(treasury.connect(user1).fundLP()).to.be.revertedWith(
+            await expect(treasury.connect(user1).fundLP(0)).to.be.revertedWith(
                 "Ownable: caller is not the owner"
             );
         });
@@ -535,7 +532,7 @@ describe("Treasury", function () {
         });
 
         it("LP funding cannot be used before of LP creation", async () => {
-            await expect(treasury.connect(owner).fundLP()).to.be.revertedWith(
+            await expect(treasury.connect(owner).fundLP(0)).to.be.revertedWith(
                 "PoL not initialized yet"
             );
         });
@@ -552,7 +549,7 @@ describe("Treasury", function () {
             expect(await treasury.polPool()).to.equal(ethers.utils.parseEther("0.49"));
 
             // fund the LP and verify polPool has been emptied
-            await treasury.connect(owner).fundLP();
+            await treasury.connect(owner).fundLP(0);
             expect(await treasury.polPool()).to.equal(ethers.utils.parseEther("0"));
         });
     });
