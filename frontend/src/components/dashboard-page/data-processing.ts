@@ -12,9 +12,10 @@ const colors: { [k: string]: string } = {
     // alt5: "#B5E48C",
     // alt6: "#D9ED92",
 
-    Beefy: "#76C893",
-    MmAdvanced: "#52B69A",
-    MmBase: "#34A0A4",
+    Beefy: "#99D98C",
+    MmAdvanced: "#76C893",
+    MmBase: "#52B69A",
+    Pass: "#34A0A4",
     Swap: "#168AAD",
     Transfer: "#1A759F",
     ZapIn: "#1E6091",
