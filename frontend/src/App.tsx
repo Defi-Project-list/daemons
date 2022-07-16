@@ -19,7 +19,6 @@ import "react-toastify/dist/ReactToastify.css";
 import "./fonts.css";
 import "./constants.css";
 import "./app.css";
-import { TransactionsVerifier } from "./transactions-verifier";
 
 export const App = ({ children }: { children: any }) => {
     // redux
@@ -76,7 +75,6 @@ export const App = ({ children }: { children: any }) => {
     return (
         <div>
             <ToastContainer />
-            <TransactionsVerifier />
             <div className="header">
                 <img src={logo} alt="Daemons logo" className="page-logo" />
                 <div className="page-logo__beta-sign">BETA</div>

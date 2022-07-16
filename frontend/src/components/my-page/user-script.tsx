@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { BaseScript } from "@daemons-fi/scripts-definitions";
+import { BaseScript, getGasLimitForScript } from "@daemons-fi/scripts-definitions";
 import { VerificationFailedScript, VerificationState } from "@daemons-fi/scripts-definitions";
 import { RootState } from "../../state";
 import { fetchGasTankClaimable } from "../../state/action-creators/gas-tank-action-creators";
@@ -9,7 +9,6 @@ import { BigNumber, ethers, utils } from "ethers";
 import { promiseToast } from "../toaster";
 import { StorageProxy } from "../../data/storage-proxy";
 import { ScriptProxy } from "../../data/storage-proxy/scripts-proxy";
-import { getGasLimitForScript } from "../../data/script-gas-limits";
 import { GetCurrentChain } from "../../data/chain-info";
 import { bigNumberToFloat } from "../../utils/big-number-to-float";
 

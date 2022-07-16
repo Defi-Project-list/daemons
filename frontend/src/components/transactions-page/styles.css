@@ -34,12 +34,6 @@
     text-align: center;
 }
 
-.transaction-record__outcome-icon {
-    margin: auto;
-    width: 25px;
-    height: 25px;
-}
-
 .transaction-record__explorer-link {
     color: var(--bright-teal);
 }

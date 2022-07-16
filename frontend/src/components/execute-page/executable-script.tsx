@@ -1,13 +1,12 @@
 import {
     VerificationState,
     BaseScript,
-    VerificationFailedScript
+    VerificationFailedScript,
+    getGasLimitForScript
 } from "@daemons-fi/scripts-definitions";
 import { BigNumber, ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getGasLimitForScript } from "../../data/script-gas-limits";
-import { StorageProxy } from "../../data/storage-proxy";
 import { ScriptProxy } from "../../data/storage-proxy/scripts-proxy";
 import { RootState } from "../../state";
 import { fetchGasTankClaimable } from "../../state/action-creators/gas-tank-action-creators";
@@ -51,7 +50,6 @@ export const QueueScriptComponent = ({ script }: { script: BaseScript }) => {
         const transactionResponse = await script.execute(signer);
         if (!transactionResponse) return;
 
-        await StorageProxy.txs.addTransaction(transactionResponse.hash, script, walletAddress!);
         transactionResponse.wait().then(() => {
             dispatch(fetchGasTankClaimable(walletAddress, chainId));
             verifyScript();
