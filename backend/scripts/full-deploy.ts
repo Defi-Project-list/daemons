@@ -37,6 +37,17 @@ import { deployPassExecutor } from "./single-deployments/i1-pass-executor";
 import { verifyPassExecutor } from "./single-deployments/i1b-verify-pass-executor";
 import { initializePassExecutor } from "./single-deployments/i2-initialize-pass-executor";
 import { registerPassExecutor } from "./single-deployments/i3-register-pass-in-gas-tank";
+import { verifyDaemToken } from "./single-deployments/a1b-verify-daem-token";
+import { verifyGasTank } from "./single-deployments/a2b-verify-gas-tank";
+import { verifyTreasury } from "./single-deployments/a3b-verify-treasury";
+import { verifyGasPriceFeed } from "./single-deployments/a5b-verify-gas-price-feed";
+import { verifyBeefyExecutor } from "./single-deployments/h1b-verify-beefy-executor";
+import { verifyZapOutExecutor } from "./single-deployments/g1b-verify-zapout-executor";
+import { verifyZapInExecutor } from "./single-deployments/f1b-verify-zapin-executor";
+import { verifyMmAdvancedExecutor } from "./single-deployments/e1b-verify-mmadvanced-executor";
+import { verifyMmBaseExecutor } from "./single-deployments/d1b-verify-mmbase-executor";
+import { verifyTransferExecutor } from "./single-deployments/c1b-verify-transfer-executor";
+import { verifySwapperExecutor } from "./single-deployments/b1b-verify-swapper-executor";
 
 async function deployDaemons() {
     // display deployer address and its balance
@@ -57,10 +68,14 @@ async function deployDaemons() {
 
     // deploy side contracts
     currentContracts = await deployDaemToken(currentContracts);
+    await verifyDaemToken(currentContracts);
     currentContracts = await deployGasTank(currentContracts);
+    await verifyGasTank(currentContracts);
     currentContracts = await deployTreasury(currentContracts);
+    await verifyTreasury(currentContracts);
     currentContracts = await deployVesting(currentContracts);
     currentContracts = await deployGasPriceFeed(currentContracts);
+    await verifyGasPriceFeed(currentContracts);
     await finalizeGasTank(currentContracts);
     await initializeToken(currentContracts);
 
@@ -73,36 +88,43 @@ async function deployDaemons() {
 
     // deploy swapper executor
     currentContracts = await deploySwapperExecutor(currentContracts);
+    await verifySwapperExecutor(currentContracts);
     await initializeSwapperExecutor(currentContracts);
     await registerSwapperExecutor(currentContracts);
 
     // deploy transfer executor
     currentContracts = await deployTransferExecutor(currentContracts);
+    await verifyTransferExecutor(currentContracts);
     await initializeTransferExecutor(currentContracts);
     await registerTransferExecutor(currentContracts);
 
     // deploy mmBase executor
     currentContracts = await deployMmBaseExecutor(currentContracts);
+    await verifyMmBaseExecutor(currentContracts);
     await initializeMmBaseExecutor(currentContracts);
     await registerMmBaseExecutor(currentContracts);
 
     // deploy MmAdvanced executor
     currentContracts = await deployMmAdvancedExecutor(currentContracts);
+    await verifyMmAdvancedExecutor(currentContracts);
     await initializeMmAdvancedExecutor(currentContracts);
     await registerMmAdvancedExecutor(currentContracts);
 
     // deploy ZapIn executor
     currentContracts = await deployZapInExecutor(currentContracts);
+    await verifyZapInExecutor(currentContracts);
     await initializeZapInExecutor(currentContracts);
     await registerZapInExecutor(currentContracts);
 
     // deploy ZapOut executor
     currentContracts = await deployZapOutExecutor(currentContracts);
+    await verifyZapOutExecutor(currentContracts);
     await initializeZapOutExecutor(currentContracts);
     await registerZapOutExecutor(currentContracts);
 
     // deploy Beefy executor
     currentContracts = await deployBeefyExecutor(currentContracts);
+    await verifyBeefyExecutor(currentContracts);
     await initializeBeefyExecutor(currentContracts);
     await registerBeefyExecutor(currentContracts);
 
