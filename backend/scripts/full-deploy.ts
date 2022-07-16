@@ -68,16 +68,18 @@ async function deployDaemons() {
 
     // deploy side contracts
     currentContracts = await deployDaemToken(currentContracts);
-    await verifyDaemToken(currentContracts);
     currentContracts = await deployGasTank(currentContracts);
-    await verifyGasTank(currentContracts);
     currentContracts = await deployTreasury(currentContracts);
-    await verifyTreasury(currentContracts);
     currentContracts = await deployVesting(currentContracts);
     currentContracts = await deployGasPriceFeed(currentContracts);
-    await verifyGasPriceFeed(currentContracts);
     await finalizeGasTank(currentContracts);
     await initializeToken(currentContracts);
+
+    // verify side contracts
+    await verifyDaemToken(currentContracts);
+    await verifyGasTank(currentContracts);
+    await verifyTreasury(currentContracts);
+    await verifyGasPriceFeed(currentContracts);
 
     /** NOTE: LP proportions must be manually set!! */
     const amountETH = ethers.utils.parseEther("5");
@@ -88,51 +90,53 @@ async function deployDaemons() {
 
     // deploy swapper executor
     currentContracts = await deploySwapperExecutor(currentContracts);
-    await verifySwapperExecutor(currentContracts);
     await initializeSwapperExecutor(currentContracts);
     await registerSwapperExecutor(currentContracts);
 
     // deploy transfer executor
     currentContracts = await deployTransferExecutor(currentContracts);
     await verifyTransferExecutor(currentContracts);
-    await initializeTransferExecutor(currentContracts);
     await registerTransferExecutor(currentContracts);
 
     // deploy mmBase executor
     currentContracts = await deployMmBaseExecutor(currentContracts);
-    await verifyMmBaseExecutor(currentContracts);
     await initializeMmBaseExecutor(currentContracts);
     await registerMmBaseExecutor(currentContracts);
 
     // deploy MmAdvanced executor
     currentContracts = await deployMmAdvancedExecutor(currentContracts);
-    await verifyMmAdvancedExecutor(currentContracts);
     await initializeMmAdvancedExecutor(currentContracts);
     await registerMmAdvancedExecutor(currentContracts);
 
     // deploy ZapIn executor
     currentContracts = await deployZapInExecutor(currentContracts);
-    await verifyZapInExecutor(currentContracts);
     await initializeZapInExecutor(currentContracts);
     await registerZapInExecutor(currentContracts);
 
     // deploy ZapOut executor
     currentContracts = await deployZapOutExecutor(currentContracts);
-    await verifyZapOutExecutor(currentContracts);
     await initializeZapOutExecutor(currentContracts);
     await registerZapOutExecutor(currentContracts);
 
     // deploy Beefy executor
     currentContracts = await deployBeefyExecutor(currentContracts);
-    await verifyBeefyExecutor(currentContracts);
     await initializeBeefyExecutor(currentContracts);
     await registerBeefyExecutor(currentContracts);
 
     // deploy Pass executor
     currentContracts = await deployPassExecutor(currentContracts);
-    await verifyPassExecutor(currentContracts);
     await initializePassExecutor(currentContracts);
     await registerPassExecutor(currentContracts);
+
+    // verify executors
+    // await verifySwapperExecutor(currentContracts);
+    // await initializeTransferExecutor(currentContracts);
+    // await verifyMmBaseExecutor(currentContracts);
+    // await verifyMmAdvancedExecutor(currentContracts);
+    // await verifyZapInExecutor(currentContracts);
+    // await verifyZapOutExecutor(currentContracts);
+    // await verifyBeefyExecutor(currentContracts);
+    // await verifyPassExecutor(currentContracts);
 }
 
 deployDaemons().catch((error) => {

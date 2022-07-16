@@ -56,8 +56,10 @@ const config: HardhatUserConfig = {
     etherscan: {
         apiKey: {
             mainnet: process.env.ETH_ETHERSCAN_KEY!,
+            kovan: process.env.ETH_ETHERSCAN_KEY!,
             arbitrumOne: process.env.ARBITRUM_ETHERSCAN_KEY!,
-            fantom: process.env.FANTOM_ETHERSCAN_KEY!
+            fantom: process.env.FANTOM_ETHERSCAN_KEY!,
+            ftmTestnet: process.env.FANTOM_ETHERSCAN_KEY!,
         }
     },
     mocha: {
