@@ -21,6 +21,25 @@ export const gasTankABI: ContractInterface = [
     type: "event",
   },
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "bytes32",
+        name: "scriptId",
+        type: "bytes32",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "executor",
+        type: "address",
+      },
+    ],
+    name: "ScriptExecuted",
+    type: "event",
+  },
+  {
     inputs: [
       {
         internalType: "address",
@@ -35,6 +54,11 @@ export const gasTankABI: ContractInterface = [
   },
   {
     inputs: [
+      {
+        internalType: "bytes32",
+        name: "scriptId",
+        type: "bytes32",
+      },
       {
         internalType: "uint256",
         name: "ethAmount",
