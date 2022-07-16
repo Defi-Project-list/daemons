@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { parseScript } from "../script-builder";
 import chai from "chai";
-import { signedTransferActionFactory } from "../../test-factories/script-factories";
+import { signedTransferActionFactory } from "../../../test-factories/script-factories";
 chai.use(require("chai-as-promised"));
 
 describe("Script builder", () => {

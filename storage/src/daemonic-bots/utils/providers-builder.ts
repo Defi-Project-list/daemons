@@ -1,18 +1,27 @@
 import { ethers } from "ethers";
 import { BaseProvider } from "@ethersproject/providers";
+import { fantomTestnetContracts, kovanContracts } from "@daemons-fi/addresses/build";
+import { IContractsList } from "@daemons-fi/addresses/build";
 
-const supportedChains: { [chain: string]: { chainName: string; url: string } } = {
+export interface IChainWithContracts {
+    id: string;
+    name: string;
+    rpc_url: () => string;
+    contracts: IContractsList;
+}
+
+export const supportedChains: { [chain: string]: IChainWithContracts } = {
     "42": {
-        chainName: "kovan",
-        url: "wss://kovan.infura.io/ws/v3/7e8620d1891c4cd38bdc567d79e22cf8"
-    },
-    "4": {
-        chainName: "rinkeby",
-        url: "wss://rinkeby.infura.io/ws/v3/7e8620d1891c4cd38bdc567d79e22cf8"
+        id: "42",
+        name: "kovan",
+        rpc_url: () => process.env.KOVAN_RPC!,
+        contracts: kovanContracts
     },
     "4002": {
-        chainName: "Fantom Testnet",
-        url: "https://rpc.testnet.fantom.network/"
+        id: "4002",
+        name: "Fantom Testnet",
+        rpc_url: () => process.env.FANTOM_TESTNET_RPC!,
+        contracts: fantomTestnetContracts
     }
 };
 
@@ -22,7 +31,7 @@ export const getProvider = (chainId: string): ethers.providers.Provider => {
     if (!providers[chainId]) {
         const chainInfo = supportedChains[chainId];
         if (!chainInfo) throw new Error(`Chain ${chainId} does not seem to be supported`);
-        providers[chainId] = instantiateProvider(chainInfo.url);
+        providers[chainId] = instantiateProvider(chainInfo.rpc_url());
     }
     return providers[chainId];
 };

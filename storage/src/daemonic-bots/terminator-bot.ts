@@ -7,9 +7,15 @@ import {
 import { INotification, Notification } from "../models/notification";
 import { BrokenScript } from "../models/queues/broken-scripts";
 import { Script } from "../models/scripts/script";
-import { getProvider } from "./providers-builder";
-import { parseScript } from "./script-builder";
+import { getProvider } from "./utils/providers-builder";
+import { parseScript } from "./utils/script-builder";
 
+/**
+ * ## Terminator Bot 🤖🪓
+ *
+ * The Terminator bot (Arny) takes care of scripts that have been signaled as broken.
+ * It verifies them and if they really are unusable, it will remove them from the DB.
+ */
 export class TerminatorBot {
     public static execute = async (): Promise<number> => {
         console.log(`[🤖🪓 Terminator Bot] Starting`);

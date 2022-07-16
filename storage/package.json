@@ -12,6 +12,8 @@
   "author": "Daemons Finance",
   "license": "ISC",
   "dependencies": {
+    "@daemons-fi/abis": "0.1.4",
+    "@daemons-fi/addresses": "0.1.4",
     "@daemons-fi/scripts-definitions": "0.1.24",
     "@daemons-fi/shared-definitions": "2.1.7",
     "body-parser": "^1.19.1",

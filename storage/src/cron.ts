@@ -1,5 +1,6 @@
 import { CronJob } from "cron";
 import { TerminatorBot } from "./daemonic-bots/terminator-bot";
+import { TxAdderBot } from "./daemonic-bots/tx-adder-bot";
 
 export const scheduler = () => {
     console.log("Storage scheduler started");
@@ -12,4 +13,7 @@ export const scheduler = () => {
     cronjobs.forEach((cronjob) => {
         cronjob.start();
     });
+
+    // Tx-Adder Bot listens in the background
+    TxAdderBot.execute();
 };
