@@ -68,8 +68,8 @@ describe("GET api/auth/is-authenticated/:userAddress", () => {
     it("returns unseen transactions along the response", async () => {
         const addressWithChecksum = ethers.utils.getAddress(userAddress);
         // add some transactions happened before the user's last login date
-        await transactionDocumentFactory({beneficiaryUser: addressWithChecksum});
-        await transactionDocumentFactory({beneficiaryUser: addressWithChecksum});
+        await transactionDocumentFactory({beneficiaryUser: addressWithChecksum });
+        await transactionDocumentFactory({beneficiaryUser: addressWithChecksum });
 
         await userDocumentFactory({ address: addressWithChecksum });
 

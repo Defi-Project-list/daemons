@@ -1,11 +1,10 @@
-import { BigNumber, utils } from "ethers";
-import { ITransaction, TransactionOutcome } from "@daemons-fi/shared-definitions";
+import { utils } from "ethers";
+import { ITransaction } from "@daemons-fi/shared-definitions";
 import { Transaction } from "../models/transaction";
 import faker from "@faker-js/faker";
 
-const randomOutcome = () => faker.random.arrayElement(Object.values(TransactionOutcome));
 const randomScriptType = () =>
-    faker.random.arrayElement(["Swap", "Transaction", "MmBase", "MmAdvanced", "Bridge"]);
+    faker.helpers.arrayElement(["Swap", "Transaction", "MmBase", "MmAdvanced", "Bridge"]);
 
 /** Returns a randomized transaction */
 export function transactionFactory(args: any): ITransaction {
@@ -14,11 +13,14 @@ export function transactionFactory(args: any): ITransaction {
         scriptId: args.scriptId ?? utils.hexlify(utils.randomBytes(32)),
         scriptType: args.scriptType ?? randomScriptType(),
         description: args.description ?? faker.random.words(4),
-        chainId: args.chainId ?? BigNumber.from("42"),
+        chainId: args.chainId ?? "42",
         executingUser: args.executingUser ?? faker.finance.ethereumAddress(),
         beneficiaryUser: args.beneficiaryUser ?? faker.finance.ethereumAddress(),
-        date: args.date ?? new Date(), // NOTE: date is always set by the endpoint. This line is just a filler.
-        outcome: args.outcome ?? randomOutcome()
+        date: args.date ?? new Date,
+        costEth: args.costEth ?? faker.datatype.number({ min: 0.01, max: 0.1, precision: 0.005 }),
+        costDAEM: args.costDAEM ?? faker.datatype.number({ min: 0.01, max: 0.1, precision: 0.005 }),
+        profitDAEM:
+            args.profitDAEM ?? faker.datatype.number({ min: 0.01, max: 0.1, precision: 0.005 })
     };
 }
 

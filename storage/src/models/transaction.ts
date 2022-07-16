@@ -1,18 +1,20 @@
 import { utils } from "ethers";
 import mongoose from "mongoose";
-import { TransactionOutcome, ITransaction } from "@daemons-fi/shared-definitions";
-import { cleanScriptType, stringifyBigNumber, truncateAndEscapeText } from "./utils";
+import { ITransaction } from "@daemons-fi/shared-definitions";
+import { cleanScriptType, truncateAndEscapeText } from "./utils";
 
 const transactionSchema = new mongoose.Schema({
     hash: { type: String, required: true, index: { unique: true } },
-    chainId: { type: String, required: true, set: stringifyBigNumber },
+    chainId: { type: String, required: true },
     scriptId: { type: String, required: true },
     scriptType: { type: String, required: true, set: cleanScriptType },
     description: { type: String, required: true, maxlength: 150, set: truncateAndEscapeText },
     executingUser: { type: String, required: true, set: utils.getAddress },
     beneficiaryUser: { type: String, required: true, index: true, set: utils.getAddress },
-    date: { type: Date, required: false, set: () => new Date() }, // set date on server side
-    outcome: { type: String, enum: TransactionOutcome, default: TransactionOutcome.Waiting }
+    date: { type: Date, required: true },
+    costEth: { type: Number, required: true },
+    costDAEM: { type: Number, required: true },
+    profitDAEM: { type: Number, required: true },
 });
 
 interface ITransactionDocument extends ITransaction, mongoose.Document {}
