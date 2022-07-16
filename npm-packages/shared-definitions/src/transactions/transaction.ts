@@ -6,7 +6,7 @@ export interface ITransaction {
     description: string;
     executingUser: string;
     beneficiaryUser: string;
-    timestamp: number;
+    date: Date|string;
     costEth: number;
     costDAEM: number;
     profitDAEM: number;
