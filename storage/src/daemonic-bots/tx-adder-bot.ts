@@ -42,30 +42,36 @@ export class TxAdderBot {
                     return;
                 }
 
-                const scriptType = (script as any).__type;
-                const costDAEM = bigNumberToFloat(BigNumber.from((script as any).tip), 4);
-                const costETH = 0;
-                const profitDAEM = 0;
+                try {
+                    const scriptType = (script as any).__type;
+                    const costDAEM = bigNumberToFloat(BigNumber.from((script as any).tip), 4);
+                    const costETH = 0;
+                    const profitDAEM = 0;
+                    const block = await event.getBlock();
+                    const timestamp = block ? block.timestamp * 1000 : Date.now();
 
-                const tx = {
-                    hash: txHash,
-                    scriptId: scriptId,
-                    chainId: chain.id,
-                    description: script.description,
-                    beneficiaryUser: utils.getAddress(scriptOwner),
-                    executingUser: utils.getAddress(executor),
-                    date: new Date((await event.getBlock()).timestamp * 1000),
-                    scriptType: scriptType,
-                    costDAEM: costDAEM,
-                    costEth: costETH,
-                    profitDAEM: profitDAEM
-                } as ITransaction;
+                    const tx = {
+                        hash: txHash,
+                        scriptId: scriptId,
+                        chainId: chain.id,
+                        description: script.description,
+                        beneficiaryUser: utils.getAddress(scriptOwner),
+                        executingUser: utils.getAddress(executor),
+                        date: new Date(timestamp),
+                        scriptType: scriptType,
+                        costDAEM: costDAEM,
+                        costEth: costETH,
+                        profitDAEM: profitDAEM
+                    } as ITransaction;
 
-                await Transaction.build(tx).save();
-                console.log({
-                    message: `[🤖🔌 Tx-Adder Bot] transaction detected`,
-                    tx
-                });
+                    await Transaction.build(tx).save();
+                    console.log({
+                        message: `[🤖🔌 Tx-Adder Bot] transaction detected`,
+                        tx
+                    });
+                } catch (error) {
+                    console.error({ message: `Tx insertion aborted`, error });
+                }
             }
         );
 
