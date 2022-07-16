@@ -56,6 +56,8 @@ contract SwapperScriptExecutor is ConditionsChecker {
         require(message.user == ecrecover(hash(message), v, r, s), "[SIGNATURE][FINAL]");
     }
 
+    /// @notice verifies if all conditions of the given message are true
+    /// @param message the message to verify
     function verify(
         Swap calldata message,
         bytes32 r,
@@ -86,6 +88,8 @@ contract SwapperScriptExecutor is ConditionsChecker {
 
     /* ========== EXECUTION FUNCTIONS ========== */
 
+    /// @notice executes the given message, if the verification step passes
+    /// @param message the message to execute
     function execute(
         Swap calldata message,
         bytes32 r,

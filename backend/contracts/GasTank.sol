@@ -6,6 +6,10 @@ import "./interfaces/ITreasury.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+
+/// @title GasTank Contract
+/// @notice Contract in which the user will deposit ETH (to pay gas costs) and DAEM (to pay tips).
+/// Executors will inform the GasTank each time a script is run and this will subtract the due amounts.
 contract GasTank is IGasTank, Ownable {
     ITreasury public treasury;
     IERC20 internal DAEMToken;
@@ -128,7 +132,7 @@ contract GasTank is IGasTank, Ownable {
             DAEMToken.transferFrom(user, address(treasury), tipAmount);
         }
 
-        emit ScriptExecuted(scriptId, executor);
+        emit ScriptExecuted(scriptId, user, executor);
     }
 
     /// @inheritdoc IGasTank

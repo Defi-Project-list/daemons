@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
+ * @title DAEM Vesting Contract
  * @dev Contract used to linearly vest tokens for multiple beneficiaries.
  * How to use:
  * Step 1: deploy the contract, defining the address of the token to be vested, a start date and a duration
@@ -39,19 +40,12 @@ contract Vesting is Ownable {
 
     /* ========== RESTRICTED FUNCTIONS ========== */
 
-    /** Adds a beneficiary for the vesting and the amount of tokens that belong to it */
-    function addBeneficiary(address beneficiary, uint256 amount)
-        external
-        onlyOwner
-    {
-        require(
-            block.timestamp < start,
-            "Vesting started. Modifications forbidden"
-        );
-        require(
-            totalBalance[beneficiary] == 0,
-            "Beneficiary is already in use"
-        );
+    /// @notice Adds a beneficiary for the vesting and the amount of tokens that belong to it
+    /// @param beneficiary the address that will be able to withdraw the tokens after the vesting period
+    /// @param amount the amount of tokens the beneficiary will be able to withdraw
+    function addBeneficiary(address beneficiary, uint256 amount) external onlyOwner {
+        require(block.timestamp < start, "Vesting started. Modifications forbidden");
+        require(totalBalance[beneficiary] == 0, "Beneficiary is already in use");
         require(
             amount <= token.balanceOf(address(this)) - allocated,
             "Amount is higher than available for vesting"
@@ -61,7 +55,8 @@ contract Vesting is Ownable {
         totalBalance[beneficiary] = amount;
     }
 
-    /** Once the contract has started, the unallocated tokens can be sent back to the owner */
+    /// @notice Send back to the owner the unallocated tokens
+    /// @dev to call this function, the vesting period must have started
     function claimUnallocatedTokens() external onlyOwner {
         require(block.timestamp > start, "Vesting has not started yet");
         uint256 unallocated = token.balanceOf(address(this)) - allocated;
@@ -71,7 +66,8 @@ contract Vesting is Ownable {
 
     /* ========== EXTERNAL FUNCTIONS ========== */
 
-    /** Sends the due amount of tokens to the specified beneficiary */
+    /// @notice Sends the due amount of tokens to the specified beneficiary
+    /// @param beneficiary the address that will receive its due part
     function release(address beneficiary) external {
         uint256 unreleased = releasableAmount(beneficiary);
         require(unreleased > 0, "Nothing to release");
@@ -82,30 +78,26 @@ contract Vesting is Ownable {
 
     /* ========== VIEWS FUNCTIONS ========== */
 
-    /** The amount of tokens that have not been assigned to any beneficiary */
+    /// @notice The amount of tokens that have not been assigned to any beneficiary
     function unallocatedTokens() public view returns (uint256) {
         return token.balanceOf(address(this)) - allocated;
     }
 
-    /** The amount a beneficiary can release in this moment */
-    function releasableAmount(address beneficiary)
-        public
-        view
-        returns (uint256)
-    {
+    /// @notice The amount a beneficiary can release in this moment
+    /// @param beneficiary the address to check
+    function releasableAmount(address beneficiary) public view returns (uint256) {
         return vestedAmount(beneficiary) - released[beneficiary];
     }
 
-    /** The amount of tokens that have been vested for a beneficiary */
+    /// @notice The amount of tokens that have been vested for a beneficiary
+    /// @param beneficiary the address to check
     function vestedAmount(address beneficiary) public view returns (uint256) {
         if (block.timestamp < start) {
             return 0;
         } else if (block.timestamp >= start + duration) {
             return totalBalance[beneficiary];
         } else {
-            return
-                (totalBalance[beneficiary] * (block.timestamp - start)) /
-                duration;
+            return (totalBalance[beneficiary] * (block.timestamp - start)) / duration;
         }
     }
 }

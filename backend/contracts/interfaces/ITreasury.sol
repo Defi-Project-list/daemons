@@ -2,18 +2,23 @@
 pragma solidity ^0.8.9;
 
 interface ITreasury {
-    /** The percentage that will be given to the executor after the taxes on tips have been calculated */
+    /// @notice The percentage that will be given to the executor after the taxes on tips have been calculated
     function TIPS_AFTER_TAXES_PERCENTAGE() external view returns (uint16);
 
-    /** The amount of DAEM tokens left to be distributed */
+    /// @notice The amount of DAEM tokens left to be distributed
     function tokensForDistribution() external view returns (uint256);
 
-    /** Function called by the gas tank to initialize a payout to the specified user */
+    /// @notice Function called by the gas tank to initialize a payout to the specified user
+    /// @param user the user to be paid
+    /// @param dueFromTips the amount the user earned via DAEM tips
     function requestPayout(address user, uint256 dueFromTips) external payable;
 
-    /** Function called by the gas tank to immediately stake the payout of the specified user */
+    /// @notice Function called by the gas tank to immediately stake the payout of the specified user
+    /// @param user the user to be paid
+    /// @param dueFromTips the amount the user earned via DAEM tips
     function stakePayout(address user, uint256 dueFromTips) external payable;
 
-    /** Given an amount of Ethereum, calculates how many DAEM it corresponds to */
+    /// @notice Given an amount of Ethereum, calculates how many DAEM it corresponds to
+    /// @param ethAmount the ethereum amount
     function ethToDAEM(uint256 ethAmount) external view returns (uint256);
 }

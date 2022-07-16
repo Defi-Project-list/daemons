@@ -2,7 +2,10 @@
 pragma solidity ^0.8.9;
 
 interface IGasTank {
-    event ScriptExecuted(bytes32 scriptId, address executor);
+    /// @notice Event fired each time a script has been executed.
+    /// @dev This event will be listened to in the Storage and
+    /// it will trigger the creation of new transactions in the DB.
+    event ScriptExecuted(bytes32 scriptId, address scriptOwner, address executor);
 
     /// @notice Get the amount of ETH the user has deposited in the gas tank
     /// @param user the address of the user to inspect

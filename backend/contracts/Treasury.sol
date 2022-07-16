@@ -6,13 +6,12 @@ import "./interfaces/IUniswapV2Router.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-/**
- * Contract taking care of:
- * - rewarding users for the executions of scripts
- * - taking care of rewards distributions to users that staked DAEM
- * - holds the commissions money, until it's withdrawn by the owner
- * - buy and hold the DAEM-ETH LP
- */
+/// @title Treasury Contract
+/// @notice Contract taking care of:
+/// - rewarding users for the executions of scripts
+/// - taking care of rewards distributions to users that staked DAEM
+/// - holds the commissions money, until it's withdrawn by the owner
+/// - buy and hold the DAEM-ETH LP
 contract Treasury is ITreasury, Ownable {
     address private gasTank;
     IERC20 private token;
@@ -58,45 +57,50 @@ contract Treasury is ITreasury, Ownable {
 
     /* ========== VIEWS STAKING ========== */
 
+    /// @inheritdoc ITreasury
     function tokensForDistribution() external view override returns (uint256) {
         return token.balanceOf(address(this)) - stakedAmount;
     }
 
+    /// @notice The staked balance of a user
+    /// @param user the user that should be checked
     function balanceOf(address user) external view returns (uint256) {
         return balances[user];
     }
 
+    /// @notice The amount of DAEM earned by a user
+    /// @param user the user that should be checked
     function earned(address user) public view returns (uint256) {
         return
             ((balances[user] * (rewardPerToken() - userRewardPerTokenPaid[user])) / 1e18) +
             rewards[user];
     }
 
-    function rewardPerToken() public view returns (uint256) {
+    function rewardPerToken() private view returns (uint256) {
         if (stakedAmount == 0) return 0;
         return
             rewardPerTokenStored +
             (((block.timestamp - lastUpdateTime) * getRewardRate() * 1e18) / stakedAmount);
     }
 
-    /**
-     * Number of ETH that will be distributed each second.
-     * This depends on the amount in the redistributionPool and the
-     * time we intend to distribute this amount in.
-     */
+    /// @notice Number of ETH that will be distributed each second
+    /// @dev This depends on the amount in the redistributionPool and
+    /// the time we intend to distribute this amount in.
     function getRewardRate() public view returns (uint256) {
         return redistributionPool / redistributionInterval;
     }
 
     /* ========== OTHER VIEWS ========== */
 
-    /** Given an amount of Ethereum, calculates how many DAEM it corresponds to */
+    /// @inheritdoc ITreasury
     function ethToDAEM(uint256 ethAmount) public view override returns (uint256) {
         return IUniswapV2Router01(lpRouter).getAmountsOut(ethAmount, ethToDAEMPath)[1];
     }
 
     /* ========== MUTATIVE FUNCTIONS ========== */
 
+    /// @notice Stake a certain amount of DAEM tokens in the treasury
+    /// @param amount the amount of tokens to stake
     function stake(uint256 amount) external updateReward(msg.sender) {
         require(amount > 0, "Cannot stake 0");
         token.transferFrom(msg.sender, address(this), amount);
@@ -111,6 +115,8 @@ contract Treasury is ITreasury, Ownable {
         balances[user] += amount;
     }
 
+    /// @notice Withdraw a certain amount of DAEM tokens from the treasury
+    /// @param amount the amount of tokens to withdraw
     function withdraw(uint256 amount) public updateReward(msg.sender) {
         require(amount > 0, "Cannot withdraw 0");
         require(balances[msg.sender] >= amount, "Insufficient staked funds");
@@ -120,6 +126,7 @@ contract Treasury is ITreasury, Ownable {
         token.transfer(msg.sender, amount);
     }
 
+    /// @notice Claims the earned DAEM tokens
     function getReward() public updateReward(msg.sender) {
         require(rewards[msg.sender] > 0, "Nothing to claim");
         uint256 reward = rewards[msg.sender];
@@ -128,6 +135,7 @@ contract Treasury is ITreasury, Ownable {
         distributed = distributed + reward;
     }
 
+    /// @notice Withdraw all staked DAEM tokens and claim the due reward
     function exit() external {
         getReward();
         withdraw(balances[msg.sender]);
@@ -135,35 +143,47 @@ contract Treasury is ITreasury, Ownable {
 
     /* ========== RESTRICTED FUNCTIONS ========== */
 
+    /// @notice Set the address of a new GasTank
+    /// @param _gasTank the new GasTank address
     function setGasTank(address _gasTank) external onlyOwner {
         gasTank = _gasTank;
     }
 
-    /** Checks whether the contract is ready to operate */
+    /// @notice Checks whether the contract is ready to operate
     function preliminaryCheck() external view {
         require(address(gasTank) != address(0), "GasTank");
         require(token.balanceOf(address(this)) > 0, "Treasury is empty");
         require(polIsInitialized, "POL not initialized");
     }
 
+    /// @notice Set the commission percentage value
+    /// @dev this value can be at most 5%
+    /// @param value the new commission percentage
     function setCommissionPercentage(uint16 value) external onlyOwner {
         require(value <= 500, "Commission must be at most 5%");
         PERCENTAGE_COMMISSION = value;
     }
 
+    /// @notice Set the PoL percentage value
+    /// @dev this value can be at most 50% and at least 5%
+    /// @param value the new PoL percentage
     function setPolPercentage(uint16 value) external onlyOwner {
         require(value >= 500, "POL must be at least 5%");
         require(value <= 5000, "POL must be at most 50%");
         PERCENTAGE_POL = value;
     }
 
+    /// @notice Defines how fast the ETH in the redistribution pool will be given out to DAEM stakers
+    /// @dev this value must be between 30 and 730 days
+    /// @param newInterval the new PoL percentage
     function setRedistributionInterval(uint256 newInterval) external onlyOwner {
         require(newInterval >= 30 days, "RI must be at least 30 days");
         require(newInterval <= 730 days, "RI must be at most 730 days");
         redistributionInterval = newInterval;
     }
 
-    /** Creates the Protocol-owned-Liquidity LP */
+    /// @notice Creates the Protocol-owned-Liquidity LP
+    /// @param DAEMAmount the amount of DAEM tokens to be deposited in the LP, together with 100% of owned ETH
     function createLP(uint256 DAEMAmount) external payable onlyOwner {
         require(!polIsInitialized, "PoL already initialized");
 
@@ -172,7 +192,9 @@ contract Treasury is ITreasury, Ownable {
         polIsInitialized = true;
     }
 
-    /** Adds funds to the Protocol-owned-Liquidity LP */
+    /// @notice Adds funds to the Protocol-owned-Liquidity LP
+    /// @dev Funds in the PoL pool will be used. 50% of it to buyback DAEM and then funding the LP.
+    /// @param amountOutMin the minimum amount of DAEM tokens to receive during buyback
     function fundLP(uint256 amountOutMin) external onlyOwner {
         require(polIsInitialized, "PoL not initialized yet");
         // First we buy back some DAEM at market price using half of the polPool
@@ -189,6 +211,7 @@ contract Treasury is ITreasury, Ownable {
         polPool = 0;
     }
 
+    /// @notice Claims the commissions and send them to the contract owner wallet
     function claimCommission() external onlyOwner {
         uint256 amount = commissionsPool;
         commissionsPool = 0;
@@ -197,6 +220,7 @@ contract Treasury is ITreasury, Ownable {
 
     /* ========== EXTERNAL FUNCTIONS ========== */
 
+    /// @inheritdoc ITreasury
     function requestPayout(address user, uint256 dueFromTips) external payable override {
         require(gasTank == _msgSender(), "Unauthorized. Only GasTank");
         uint256 payoutFromGas = calculatePayout();
@@ -204,6 +228,7 @@ contract Treasury is ITreasury, Ownable {
         token.transfer(user, payoutFromGas + payoutFromTips);
     }
 
+    /// @inheritdoc ITreasury
     function stakePayout(address user, uint256 dueFromTips) external payable override {
         require(gasTank == _msgSender(), "Unauthorized. Only GasTank");
         uint256 payoutFromGas = calculatePayout();

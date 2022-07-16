@@ -6,7 +6,7 @@ import "./Messages.sol";
 import "./interfaces/IUniswapV2Router.sol";
 
 contract TransferScriptExecutor is ConditionsChecker {
-    uint256 public constant GAS_LIMIT = 150000; // 0.00015 GWEI
+    uint256 public constant GAS_LIMIT = 200000; // 0.00020 GWEI
 
     /* ========== HASH FUNCTIONS ========== */
 
@@ -54,6 +54,8 @@ contract TransferScriptExecutor is ConditionsChecker {
         require(message.user == ecrecover(hash(message), v, r, s), "[SIGNATURE][FINAL]");
     }
 
+    /// @notice verifies if all conditions of the given message are true
+    /// @param message the message to verify
     function verify(
         Transfer calldata message,
         bytes32 r,
@@ -81,6 +83,8 @@ contract TransferScriptExecutor is ConditionsChecker {
 
     /* ========== EXECUTION FUNCTIONS ========== */
 
+    /// @notice executes the given message, if the verification step passes
+    /// @param message the message to execute
     function execute(
         Transfer calldata message,
         bytes32 r,

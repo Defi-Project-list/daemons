@@ -38,22 +38,30 @@ abstract contract ConditionsChecker is Ownable {
 
     /* ========== RESTRICTED FUNCTIONS ========== */
 
+    /// @notice Set the address of a new GasTank
+    /// @param _gasTank the new GasTank address
     function setGasTank(address _gasTank) external onlyOwner {
         require(_gasTank != address(0));
         gasTank = IGasTank(_gasTank);
     }
 
+    /// @notice Set the address of a new GasPriceFeed
+    /// @param _gasPriceFeed the new GasPriceFeed address
     function setGasFeed(address _gasPriceFeed) external onlyOwner {
         require(_gasPriceFeed != address(0));
         gasPriceFeed = GasPriceFeed(_gasPriceFeed);
     }
 
+    /// @notice Set the minimum amount of gas that should be stored
+    /// in the user Gas tank to execute the script
+    /// @param _amount the amount that will represent the new minimum
+    /// @dev the amount must be greater than 0
     function setMinimumGas(uint256 _amount) external onlyOwner {
         require(_amount > 0, "Amount must be greater than 0");
         MINIMUM_GAS_FOR_SCRIPT_EXECUTION = _amount;
     }
 
-    /** Checks whether the contract is ready to operate */
+    /// @notice Checks whether the contract is ready to operate
     function preliminaryCheck() external view {
         require(address(gasTank) != address(0), "GasTank");
         require(address(gasPriceFeed) != address(0), "GasPriceFeed");
@@ -61,17 +69,22 @@ abstract contract ConditionsChecker is Ownable {
 
     /* ========== PUBLIC FUNCTIONS ========== */
 
+    /// @notice Revokes the script with the given ID.
+    /// After revoking, it won't be possible to execute the specified script.
+    /// @param _id the id of the script to revoke.
     function revoke(bytes32 _id) external {
         revocations[msg.sender][_id] = true;
     }
 
+    /// @notice The number of times the specified script has been executed.
+    /// @param _id the id of the script to check.
     function getRepetitions(bytes32 _id) external view returns (uint32) {
         return repetitionsCount[_id];
     }
 
     /* ========== HASH FUNCTIONS ========== */
 
-    /** Returns the hashed version of the balance */
+    /// @notice Returns the hashed version of the balance
     function hashBalance(Balance calldata balance) internal pure returns (bytes32) {
         return
             keccak256(
@@ -85,7 +98,7 @@ abstract contract ConditionsChecker is Ownable {
             );
     }
 
-    /** Returns the hashed version of the price condition */
+    /// @notice Returns the hashed version of the price condition
     function hashPrice(Price calldata price) internal pure returns (bytes32) {
         return
             keccak256(
@@ -101,7 +114,7 @@ abstract contract ConditionsChecker is Ownable {
             );
     }
 
-    /** Returns the hashed version of the frequency */
+    /// @notice Returns the hashed version of the frequency
     function hashFrequency(Frequency calldata frequency) internal pure returns (bytes32) {
         return
             keccak256(
@@ -109,12 +122,12 @@ abstract contract ConditionsChecker is Ownable {
             );
     }
 
-    /** Returns the hashed version of the repetitions */
+    /// @notice Returns the hashed version of the repetitions
     function hashRepetitions(Repetitions calldata repetitions) internal pure returns (bytes32) {
         return keccak256(abi.encode(REPETITIONS_TYPEHASH, repetitions.enabled, repetitions.amount));
     }
 
-    /** Returns the hashed version of the follow condition */
+    /// @notice Returns the hashed version of the follow condition
     function hashFollow(Follow calldata follow) internal pure returns (bytes32) {
         return
             keccak256(
@@ -130,22 +143,22 @@ abstract contract ConditionsChecker is Ownable {
 
     /* ========== VERIFICATION FUNCTIONS ========== */
 
-    /** Checks whether the user has revoked the script execution */
+    /// @notice Checks whether the user has revoked the script execution
     function verifyRevocation(address user, bytes32 id) internal view {
         require(!revocations[user][id], "[REVOKED][FINAL]");
     }
 
-    /** Checks whether the user has enough funds in the GasTank to cover a script execution */
+    /// @notice Checks whether the user has enough funds in the GasTank to cover a script execution
     function verifyGasTank(address user) internal view {
         require(gasTank.gasBalanceOf(user) >= MINIMUM_GAS_FOR_SCRIPT_EXECUTION, "[GAS][TMP]");
     }
 
-    /** Checks whether the user has enough funds to pay the tip to the executor */
+    /// @notice Checks whether the user has enough funds to pay the tip to the executor
     function verifyTip(uint256 tip, address user) internal view {
         require(tip == 0 || gasTank.tipBalanceOf(user) >= tip, "[TIP][TMP]");
     }
 
-    /** If the balance condition is enabled, it checks the user balance for it */
+    /// @notice If the balance condition is enabled, it checks the user balance for it
     function verifyBalance(Balance calldata balance, address user) internal view {
         if (!balance.enabled) return;
 
@@ -160,7 +173,7 @@ abstract contract ConditionsChecker is Ownable {
             require(userBalance < balance.amount, "[BALANCE_CONDITION_HIGH][TMP]");
     }
 
-    /** If the price condition is enabled, it checks the token price for it */
+    /// @notice If the price condition is enabled, it checks the token price for it
     function verifyPrice(Price calldata price) internal view {
         if (!price.enabled) return;
 
@@ -179,7 +192,7 @@ abstract contract ConditionsChecker is Ownable {
             require(tokenPrice < price.value, "[PRICE_CONDITION_HIGH][TMP]");
     }
 
-    /** If the frequency condition is enabled, it checks whether enough blocks have been minted since the last execution */
+    /// @notice If the frequency condition is enabled, it checks whether enough blocks have been minted since the last execution
     function verifyFrequency(Frequency calldata frequency, bytes32 id) internal view {
         if (!frequency.enabled) return;
 
@@ -196,13 +209,13 @@ abstract contract ConditionsChecker is Ownable {
         require(block.timestamp > frequency.start + frequency.delay, "[FREQUENCY_CONDITION][TMP]");
     }
 
-    /** If the repetitions condition is enabled, it checks whether the script has reached its maximum number of executions */
+    /// @notice If the repetitions condition is enabled, it checks whether the script has reached its maximum number of executions
     function verifyRepetitions(Repetitions calldata repetitions, bytes32 id) internal view {
         if (!repetitions.enabled) return;
         require(repetitionsCount[id] < repetitions.amount, "[REPETITIONS_CONDITION][FINAL]");
     }
 
-    /** If the follow condition is enabled, it checks whether the script it's supposed to follow has been executed */
+    /// @notice If the follow condition is enabled, it checks whether the script it's supposed to follow has been executed
     function verifyFollow(Follow calldata follow, bytes32 id) internal view {
         if (!follow.enabled) return;
         uint32 parentCount = follow.executor == address(this)
@@ -211,7 +224,7 @@ abstract contract ConditionsChecker is Ownable {
         require(parentCount + follow.shift == repetitionsCount[id] + 1, "[FOLLOW_CONDITION][TMP]");
     }
 
-    /** Verifies that the user gave the allowance to the contract to move their tokens */
+    /// @notice Verifies that the user gave the allowance to the contract to move their tokens
     function verifyAllowance(
         address user,
         address token,

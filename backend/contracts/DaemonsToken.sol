@@ -13,12 +13,10 @@ contract DaemonsToken is ERC20, Ownable {
 
     constructor() ERC20("Daemons", "DAEM") {}
 
-    /**
-     * Mints the whole supply of tokens.
-     * A part will go to the owner, that will deposit it in the vesting contract,
-     * the remaining part will go to the treasury, that will slowly release to
-     * the public.
-     */
+    /// @notice Mints the whole supply of tokens.
+    /// @dev A part will go to the owner, that will deposit it in the vesting contract,
+    /// the remaining part will go to the treasury, that will slowly release to
+    /// the public.
     function initialize(address _treasury, address _vesting) public onlyOwner {
         require(treasury == address(0), "Can only initialize once");
         require(_treasury != address(0), "Invalid treasury address");
@@ -34,11 +32,9 @@ contract DaemonsToken is ERC20, Ownable {
         _mint(_msgSender(), vestingAmount);
     }
 
-    /**
-     * The current circulating supply, given by the max supply, minus
-     * the amount stored in the treasury and the vesting contract,
-     * as they are not accessible to anyone and will be slowly released.
-     */
+    /// @notice The current circulating supply, given by the max supply, minus
+    /// the amount stored in the treasury and the vesting contract,
+    /// as they are not accessible to anyone and will be slowly released.
     function circulatingSupply() public view returns (uint256) {
         return
             totalSupply() -

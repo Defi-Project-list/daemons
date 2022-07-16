@@ -69,6 +69,8 @@ contract MmAdvancedScriptExecutor is ConditionsChecker, ConditionsCheckerForMone
         require(message.user == ecrecover(hash(message), v, r, s), "[SIGNATURE][FINAL]");
     }
 
+    /// @notice verifies if all conditions of the given message are true
+    /// @param message the message to verify
     function verify(
         MmAdvanced calldata message,
         bytes32 r,
@@ -136,6 +138,8 @@ contract MmAdvancedScriptExecutor is ConditionsChecker, ConditionsCheckerForMone
 
     /* ========== EXECUTION FUNCTIONS ========== */
 
+    /// @notice executes the given message, if the verification step passes
+    /// @param message the message to execute
     function execute(
         MmAdvanced calldata message,
         bytes32 r,

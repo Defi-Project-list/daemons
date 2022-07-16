@@ -41,6 +41,8 @@ contract PassScriptExecutor is ConditionsChecker, ConditionsCheckerForMoneyMarke
 
     /* ========== VERIFICATION FUNCTIONS ========== */
 
+    /// @notice verifies if all conditions of the given message are true
+    /// @param message the message to verify
     function verify(
         Pass calldata message,
         bytes32 r,
@@ -63,6 +65,8 @@ contract PassScriptExecutor is ConditionsChecker, ConditionsCheckerForMoneyMarke
 
     /* ========== EXECUTION FUNCTIONS ========== */
 
+    /// @notice executes the given message, if the verification step passes
+    /// @param message the message to execute
     function execute(
         Pass calldata message,
         bytes32 r,

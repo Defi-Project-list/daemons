@@ -49,6 +49,8 @@ contract ZapInScriptExecutor is ConditionsChecker {
 
     /* ========== VERIFICATION FUNCTIONS ========== */
 
+    /// @notice verifies if all conditions of the given message are true
+    /// @param message the message to verify
     function verify(
         ZapIn calldata message,
         bytes32 r,
@@ -101,6 +103,8 @@ contract ZapInScriptExecutor is ConditionsChecker {
 
     /* ========== EXECUTION FUNCTIONS ========== */
 
+    /// @notice executes the given message, if the verification step passes
+    /// @param message the message to execute
     function execute(
         ZapIn calldata message,
         bytes32 r,

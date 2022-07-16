@@ -9,7 +9,7 @@ abstract contract ConditionsCheckerForMoneyMarket {
 
     /* ========== HASH FUNCTIONS ========== */
 
-    /** Returns the hashed version of the balance */
+    /// @notice  Returns the hashed version of the balance
     function hashHealthFactor(HealthFactor calldata healthFactor)
         internal
         pure
@@ -29,7 +29,7 @@ abstract contract ConditionsCheckerForMoneyMarket {
 
     /* ========== VERIFICATION FUNCTIONS ========== */
 
-    /** If the healthFactor condition is enabled, it checks the user HF for the given MM contract */
+    /// @notice If the healthFactor condition is enabled, it checks the user HF for the given MM contract
     function verifyHealthFactor(HealthFactor calldata healthFactor, address user)
         internal
         view
