@@ -32,6 +32,12 @@ export const gasTankABI: ContractInterface = [
       {
         indexed: false,
         internalType: "address",
+        name: "scriptOwner",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
         name: "executor",
         type: "address",
       },
