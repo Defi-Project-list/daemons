@@ -7,8 +7,8 @@ const convertToDecimal = (bn: BigNumber) => bn.div(BigNumber.from(10).pow(13)).t
 type Thresholds = { minCommission: number; minPolPool: number };
 const chainThresholds: { [chain: string]: Thresholds } = {
     "42": {
-        minCommission: 0.0001,
-        minPolPool: 0.0001
+        minCommission: 0.001,
+        minPolPool: 0.001
     },
     "4002": {
         minCommission: 1,
@@ -52,10 +52,29 @@ async function performDailyTreasuryOperationsForChain(chain: IChainWithContracts
 
     if (commissions > thresholds.minCommission) {
         console.log("Claiming commission");
-        treasuryContract.claimCommission(); // fire&forget
+        try {
+            await treasuryContract.claimCommission();
+        } catch (error) {
+            console.error({
+                message: `Error while claiming commissions`,
+                chain: chain.name,
+                error
+            });
+        }
     }
+
     if (polPool > thresholds.minPolPool) {
         console.log("Funding LP");
-        treasuryContract.fundLP(); // fire&forget
+        try {
+            const quoteHalfETHtoDAEM = await treasuryContract.ethToDAEM(polPoolRaw.div(2));
+            const minAmountDAEM = quoteHalfETHtoDAEM.mul(99).div(100);
+            await treasuryContract.fundLP(minAmountDAEM);
+        } catch (error) {
+            console.error({
+                message: `Error while funding PoL`,
+                chain: chain.name,
+                error
+            });
+        }
     }
 }

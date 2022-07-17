@@ -29,6 +29,7 @@ async function updateGasPriceForChain(chain: IChainWithContracts): Promise<void>
         console.info({
             message: `Updated gas prices`,
             chain: chain.name,
+            gasPriceFeed: chain.contracts.GasPriceFeed,
             newGasPrice: newGasPrice.toString(),
             oldGasPrice: oldGasPrice.toString()
         });
