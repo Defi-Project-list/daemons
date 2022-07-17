@@ -5,6 +5,7 @@ import { expect } from 'chai';
 import jwt from 'jsonwebtoken';
 import { transactionDocumentFactory } from '../../test-factories/transactions-factories';
 import { ITransaction } from '@daemons-fi/shared-definitions';
+import { IFetchedTxs, TRANSACTIONS_PAGE_SIZE } from "../transactions-router";
 
 
 describe('GET api/transactions/receiver/:chainId/:userAddress', () => {
@@ -32,11 +33,12 @@ describe('GET api/transactions/receiver/:chainId/:userAddress', () => {
             .get(`/api/transactions/receiver/${chainId}`)
             .set('Cookie', `token=${jwToken}`);
 
-        const fetchedTransactions = response.body as ITransaction[];
+        const fetchedTransactions = response.body as IFetchedTxs;
 
-        expect(fetchedTransactions.length).to.equal(2);
-        expect(hashes).to.include(fetchedTransactions[0].hash);
-        expect(hashes).to.include(fetchedTransactions[1].hash);
+        expect(fetchedTransactions.nrPages).to.equal(1);
+        expect(fetchedTransactions.transactions.length).to.equal(2);
+        expect(hashes).to.include(fetchedTransactions.transactions[0].hash);
+        expect(hashes).to.include(fetchedTransactions.transactions[1].hash);
     });
 
     it('only fetches transactions targeting the specified chain', async () => {
@@ -54,11 +56,12 @@ describe('GET api/transactions/receiver/:chainId/:userAddress', () => {
             .get(`/api/transactions/receiver/${chainId}`)
             .set('Cookie', `token=${jwToken}`);
 
-        const fetchedTransactions = response.body as ITransaction[];
+            const fetchedTransactions = response.body as IFetchedTxs;
 
-        expect(fetchedTransactions.length).to.equal(2);
-        expect(hashes).to.include(fetchedTransactions[0].hash);
-        expect(hashes).to.include(fetchedTransactions[1].hash);
+            expect(fetchedTransactions.nrPages).to.equal(1);
+            expect(fetchedTransactions.transactions.length).to.equal(2);
+            expect(hashes).to.include(fetchedTransactions.transactions[0].hash);
+            expect(hashes).to.include(fetchedTransactions.transactions[1].hash);
     });
 
     it('returns a 401 error if trying to fetch transactions while not authenticated', async () => {
@@ -66,5 +69,30 @@ describe('GET api/transactions/receiver/:chainId/:userAddress', () => {
         await supertest(app)
             .get(`/api/transactions/receiver/${chainId}`)
             .expect(401);
+    });
+
+    it("returns paginated results", async () => {
+        // create TRANSACTIONS_PAGE_SIZE + 2 transactions
+        for (let i = 0; i < TRANSACTIONS_PAGE_SIZE + 2; i++)
+            await transactionDocumentFactory({ beneficiaryUser: userAddress });
+
+        const chainId = "42";
+        const response = await supertest(app)
+            .get(`/api/transactions/receiver/${chainId}`)
+            .set("Cookie", `token=${jwToken}`);
+
+        // The first page should contain TRANSACTIONS_PAGE_SIZE elements
+        const fetchedTransactionPage1 = response.body as IFetchedTxs;
+        expect(fetchedTransactionPage1.nrPages).to.equal(2);
+        expect(fetchedTransactionPage1.transactions.length).to.equal(TRANSACTIONS_PAGE_SIZE);
+
+        const response2 = await supertest(app)
+            .get(`/api/transactions/receiver/${chainId}?page=2`)
+            .set("Cookie", `token=${jwToken}`);
+
+        // The second page should contain 2 elements
+        const fetchedTransactionPage2 = response2.body as IFetchedTxs;
+        expect(fetchedTransactionPage2.nrPages).to.equal(2);
+        expect(fetchedTransactionPage2.transactions.length).to.equal(2);
     });
 });
