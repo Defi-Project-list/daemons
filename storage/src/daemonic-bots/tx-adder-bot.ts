@@ -1,7 +1,7 @@
 import { gasTankABI } from "@daemons-fi/abis/build";
 import { ethers } from "ethers";
 import { Transaction } from "../models/transactions/transaction";
-import { getProvider, IChainWithContracts, supportedChains } from "./utils/providers-builder";
+import { getProvider, IChainWithContracts, supportedChains } from "../utils/providers-builder";
 
 /**
  * ## Tx-Adder Bot 🤖🔌

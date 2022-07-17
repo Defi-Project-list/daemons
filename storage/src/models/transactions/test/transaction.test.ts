@@ -3,10 +3,20 @@ import { expect } from "chai";
 import { Transaction } from "../transaction";
 import { transactionDocumentFactory } from "../../../test-factories/transactions-factories";
 import { swapScriptDocumentFactory } from "../../../test-factories/script-factories";
+const sinon = require("sinon");
+const TxCostsAndProfits = require("../tx-cost-and-profits");
 
 describe("Transaction.buildFromEvent", () => {
     before(async () => await connectToTestDb());
-    afterEach(async () => await clearTestDb());
+    beforeEach(async () => {
+        // mock TxCostsAndProfits so to avoid tons of blockchain calls
+        const fakeCostsAndProfits = { costDAEM: 0.25, costETH: 0.0001, profitDAEM: 0.5}
+        sinon.stub(TxCostsAndProfits, "getTxCostsAndProfits").returns(fakeCostsAndProfits);
+    });
+    afterEach(async () => {
+        await clearTestDb();
+        sinon.restore();
+    });
     after(async () => await closeTestDb());
 
     const userAddress = "0xb79f76ef2c5f0286176833e7b2eee103b1cc3244";

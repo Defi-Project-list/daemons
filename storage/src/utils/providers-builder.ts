@@ -10,6 +10,9 @@ export interface IChainWithContracts {
     contracts: IContractsList;
 }
 
+/**
+ * The chains currently supported by Daemons
+ */
 export const supportedChains: { [chain: string]: IChainWithContracts } = {
     "42": {
         id: "42",
@@ -27,6 +30,10 @@ export const supportedChains: { [chain: string]: IChainWithContracts } = {
 
 const providers: { [chainId: string]: ethers.providers.Provider } = {};
 
+/**
+ * Get a provider. If one has already been instantiated for this chain, it will use that.
+ * @param chainId The chain the provider should be connected to.
+ */
 export const getProvider = (chainId: string): ethers.providers.Provider => {
     if (!providers[chainId]) {
         const chainInfo = supportedChains[chainId];

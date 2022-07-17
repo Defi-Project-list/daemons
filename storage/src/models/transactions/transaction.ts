@@ -1,9 +1,9 @@
-import { BigNumber, Event, utils } from "ethers";
+import { Event, utils } from "ethers";
 import mongoose from "mongoose";
 import { ITransaction } from "@daemons-fi/shared-definitions";
 import { cleanScriptType, truncateAndEscapeText } from "../utils";
-import { bigNumberToFloat } from "../../utils/big-number-to-float";
 import { Script } from "../scripts/script";
+import { getTxCostsAndProfits } from "./tx-cost-and-profits";
 
 const transactionSchema = new mongoose.Schema({
     hash: { type: String, required: true, index: { unique: true } },
@@ -61,9 +61,7 @@ transactionSchema.statics.buildFromEvent = async (
 
     try {
         const scriptType = (script as any).__type;
-        const costDAEM = bigNumberToFloat(BigNumber.from((script as any).tip), 4);
-        const costETH = 0;
-        const profitDAEM = 0;
+        const costsAndProfits = await getTxCostsAndProfits(script);
         const block = await event.getBlock();
         const timestamp = block ? block.timestamp * 1000 : Date.now();
 
@@ -76,9 +74,9 @@ transactionSchema.statics.buildFromEvent = async (
             executingUser: utils.getAddress(executor),
             date: new Date(timestamp),
             scriptType: scriptType,
-            costDAEM: costDAEM,
-            costEth: costETH,
-            profitDAEM: profitDAEM
+            costDAEM: costsAndProfits.costDAEM,
+            costEth: costsAndProfits.costETH,
+            profitDAEM: costsAndProfits.profitDAEM
         } as ITransaction;
 
         console.log({

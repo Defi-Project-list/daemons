@@ -7,7 +7,7 @@ import {
 import { INotification, Notification } from "../models/notification";
 import { BrokenScript } from "../models/queues/broken-scripts";
 import { Script } from "../models/scripts/script";
-import { getProvider } from "./utils/providers-builder";
+import { getProvider } from "../utils/providers-builder";
 import { parseScript } from "./utils/script-builder";
 
 /**
