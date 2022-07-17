@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { authenticate } from "../middlewares/authentication";
-import { Transaction } from "../models/transaction";
+import { Transaction } from "../models/transactions/transaction";
 
 export const transactionsRouter = express.Router();
 

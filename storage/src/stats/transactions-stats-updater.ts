@@ -1,6 +1,6 @@
 import { ChainInfo } from ".";
 import { ITransactionStats, TransactionStats } from "../models/stats/transaction-stats";
-import { Transaction } from "../models/transaction";
+import { Transaction } from "../models/transactions/transaction";
 
 export async function updateTransactionStats(): Promise<void> {
     // add today's partials statistics

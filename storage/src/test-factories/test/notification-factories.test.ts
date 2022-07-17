@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { notificationDocumentFactory, notificationFactory } from '../../test-factories/notification-factories';
-import { Notification } from '../notification';
+import { notificationDocumentFactory, notificationFactory } from '../notification-factories';
+import { Notification } from '../../models/notification';
 import { connectToTestDb, closeTestDb, clearTestDb } from "../../test/test-db-handler";
 
 describe('notificationFactory', () => {
@@ -9,7 +9,7 @@ describe('notificationFactory', () => {
     after(async () => await closeTestDb());
 
     it('factory returns a notification', async () => {
-        const notification = await notificationFactory({});
+        const notification = notificationFactory({});
         expect(notification.date).is.not.null;
         expect(notification.title).is.not.null;
         expect(notification.description).is.not.null;
@@ -33,7 +33,7 @@ describe('notificationFactory', () => {
         expect(notifications[0].user).to.equal("0xB79f76EF2c5F0286176833E7B2eEe103b1CC3244");
     });
 
-    it('adds the checsum to the user address', async () => {
+    it('adds the checksum to the user address', async () => {
         await notificationDocumentFactory({
             title: "New notification!",
             description: "Something happened",

@@ -2,7 +2,7 @@ import { utils } from "ethers";
 import express, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { authenticate } from "../middlewares/authentication";
-import { Transaction } from "../models/transaction";
+import { Transaction } from "../models/transactions/transaction";
 import { User } from "../models/user";
 
 export const authenticationRouter = express.Router();

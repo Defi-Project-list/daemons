@@ -1,6 +1,6 @@
 import { utils } from "ethers";
 import { ITransaction } from "@daemons-fi/shared-definitions";
-import { Transaction } from "../models/transaction";
+import { Transaction } from "../models/transactions/transaction";
 import faker from "@faker-js/faker";
 
 const randomScriptType = () =>
