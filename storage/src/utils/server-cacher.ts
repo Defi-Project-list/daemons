@@ -50,7 +50,7 @@ export class ServerCacher {
 
     private static storeData(key: string, data: any): void {
         const cachedData: ICachedData = { timestamp: Date.now(), data };
-        ServerCacher.localStorage.setItem(key, JSON.stringify(cachedData));
+        ServerCacher.localStorage.setItem(key, cachedData);
     }
 
     private static fetchCachedData(key: string, cacheDuration: CacheDuration): any | undefined {
@@ -58,7 +58,7 @@ export class ServerCacher {
         if (!cache) return;
 
         const maxTimestamp = cacheDuration;
-        const cachedData = JSON.parse(cache);
+        const cachedData = cache;
         if (Date.now() - cachedData.timestamp > maxTimestamp) return;
 
         return cachedData.data;
