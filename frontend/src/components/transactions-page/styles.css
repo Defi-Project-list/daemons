@@ -37,3 +37,31 @@
 .transaction-record__explorer-link {
     color: var(--bright-teal);
 }
+
+.transaction-record__amount {
+    border-radius: 20px;
+    padding: 1px 10px;
+    width: max-content;
+    color: #fff;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    font-size: 0.85rem;
+    column-gap: 5px;
+}
+
+.transaction-record__amount--profits {
+    background-color: #166165;
+}
+
+.transaction-record__amount--costs {
+    background-color: #166165;
+}
+
+.transaction-record__token-icon {
+    height: 17px;
+    width: 17px;
+    border-radius: 100%;
+}

@@ -21,6 +21,7 @@ export const kovanInfo: IChainInfo = {
     coinName: "Ether",
     coinSymbol: "ETH",
     coinDecimals: 18,
+    coinIconPath: "https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png",
     explorerUrl: "https://kovan.etherscan.io/",
     explorerTxUrl: "https://kovan.etherscan.io/tx/",
     tokens: kovanTokens,

@@ -31,6 +31,7 @@ export const unsupportedChain: IChainInfo = {
     coinName: "Ether",
     coinSymbol: "ETH",
     coinDecimals: 18,
+    coinIconPath: "/icons/unknown.png",
     explorerUrl: "https://kovan.etherscan.io/",
     explorerTxUrl: "https://kovan.etherscan.io/tx/",
     tokens: [],

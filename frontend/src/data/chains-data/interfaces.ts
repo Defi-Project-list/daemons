@@ -59,6 +59,7 @@ export interface IChainInfo {
     coinName: string;
     coinSymbol: string;
     coinDecimals: number;
+    coinIconPath: string;
     explorerUrl: string;
     explorerTxUrl: string;
     tokens: Token[];

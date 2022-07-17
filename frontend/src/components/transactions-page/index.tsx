@@ -35,6 +35,7 @@ export function TransactionsPage(): JSX.Element {
                         iconClass="card__title-icon--transactions"
                     >
                         <TransactionsPanel
+                            isBeneficiary={true}
                             fetchTransactions={async (chainId?: string, page?: number) => {
                                 const txs = await TransactionProxy.fetchUserTransactions(chainId, page);
                                 dispatch(clearUnseenTransactions());
@@ -49,6 +50,7 @@ export function TransactionsPage(): JSX.Element {
                         iconClass="card__title-icon--transactions"
                     >
                         <TransactionsPanel
+                            isBeneficiary={false}
                             fetchTransactions={TransactionProxy.fetchExecutedTransactions}
                         />
                     </Card>

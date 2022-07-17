@@ -20,6 +20,7 @@ export const fantomTestnetInfo: IChainInfo = {
     coinName: "Fantom",
     coinSymbol: "FTM",
     coinDecimals: 18,
+    coinIconPath: "https://tokens.1inch.io/0x4e15361fd6b4bb609fa63c81a2be19d873717870.png",
     explorerUrl: "https://testnet.ftmscan.com/",
     explorerTxUrl: "https://testnet.ftmscan.com/tx/",
     tokens: fantomTestnetTokens,

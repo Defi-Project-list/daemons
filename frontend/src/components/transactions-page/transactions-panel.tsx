@@ -6,10 +6,14 @@ import { RootState } from "../../state";
 import { TransactionRecord } from "./transaction-record";
 
 interface ITransactionsPanelProps {
+    isBeneficiary: boolean;
     fetchTransactions: (chainId?: string, page?: number) => Promise<ITransaction[]>;
 }
 
-export function TransactionsPanel({ fetchTransactions }: ITransactionsPanelProps): JSX.Element {
+export function TransactionsPanel({
+    isBeneficiary,
+    fetchTransactions
+}: ITransactionsPanelProps): JSX.Element {
     const chainId = useSelector((state: RootState) => state.wallet.chainId);
     const explorerTxUrl = GetCurrentChain(chainId!).explorerTxUrl;
     const [transactions, setTransactions] = useState<ITransaction[]>([]);
@@ -26,11 +30,12 @@ export function TransactionsPanel({ fetchTransactions }: ITransactionsPanelProps
                         <th className="transactions-panel__header--left">Description</th>
                         <th>Type</th>
                         <th>Date</th>
-                        <th>Outcome</th>
+                        <th>Link</th>
+                        <th>{isBeneficiary ? "Cost" : "Profit"}</th>
                     </tr>
                     <tr>
-                        <td colSpan={4}>
-                            <hr className="transactions-panel__separator"/>
+                        <td colSpan={5}>
+                            <hr className="transactions-panel__separator" />
                         </td>
                     </tr>
                 </thead>
@@ -38,6 +43,7 @@ export function TransactionsPanel({ fetchTransactions }: ITransactionsPanelProps
                     {transactions.map((tx: ITransaction) => (
                         <TransactionRecord
                             key={tx.hash}
+                            isBeneficiary={isBeneficiary}
                             transaction={tx}
                             explorerTxUrl={explorerTxUrl}
                         />
