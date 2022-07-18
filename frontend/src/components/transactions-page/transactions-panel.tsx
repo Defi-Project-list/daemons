@@ -4,10 +4,11 @@ import { ITransaction } from "@daemons-fi/shared-definitions";
 import { GetCurrentChain } from "../../data/chain-info";
 import { RootState } from "../../state";
 import { TransactionRecord } from "./transaction-record";
+import { IFetchedTxs } from "../../data/storage-proxy/transaction-proxy";
 
 interface ITransactionsPanelProps {
     isBeneficiary: boolean;
-    fetchTransactions: (chainId?: string, page?: number) => Promise<ITransaction[]>;
+    fetchTransactions: (chainId?: string, page?: number) => Promise<IFetchedTxs>;
 }
 
 export function TransactionsPanel({
@@ -17,10 +18,15 @@ export function TransactionsPanel({
     const chainId = useSelector((state: RootState) => state.wallet.chainId);
     const explorerTxUrl = GetCurrentChain(chainId!).explorerTxUrl;
     const [transactions, setTransactions] = useState<ITransaction[]>([]);
+    const [page, setPage] = useState<number>(1);
+    const [nrPages, setNrPages] = useState<number>(1);
 
     useEffect(() => {
-        fetchTransactions(chainId).then((txs) => setTransactions(txs));
-    }, []);
+        fetchTransactions(chainId, page).then((txs) => {
+            setTransactions(txs.transactions);
+            setNrPages(txs.nrPages);
+        });
+    }, [page]);
 
     return (
         <div className="transactions-panel">
@@ -51,7 +57,25 @@ export function TransactionsPanel({
                 </tbody>
             </table>
 
-            <div className="transactions-panel__pagination">{/* PAGINATION TO BE ADDED! */}</div>
+            <div className="transactions-panel__pagination-container">
+                <div className="pagination">
+                    {page > 1 ? (
+                        <div className="pagination__arrow" onClick={() => setPage(page - 1)}>
+                            {"<"}
+                        </div>
+                    ) : (
+                        <div className="pagination__arrow pagination__arrow--disabled">{"<"}</div>
+                    )}
+                    <div>{page}/{nrPages}</div>
+                    {page < nrPages ? (
+                        <div className="pagination__arrow" onClick={() => setPage(page + 1)}>
+                            {">"}
+                        </div>
+                    ) : (
+                        <div className="pagination__arrow pagination__arrow--disabled">{">"}</div>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }
