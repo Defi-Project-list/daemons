@@ -7,7 +7,10 @@
     "test": "mocha ./**/*test.ts",
     "start": "echo started?",
     "dev": "webpack serve --port 3000",
-    "heroku-postbuild": "NODE_ENV=production webpack"
+    "heroku-postbuild": "NODE_ENV=production webpack",
+    "clean": "rimraf dist",
+    "build:webpack": "NODE_ENV=production webpack --config webpack.config.js",
+    "build": "npm run clean && npm run build:webpack"
   },
   "author": "Daemons Finance",
   "license": "ISC",
@@ -26,6 +29,7 @@
     "mocha-param": "^2.0.1",
     "nock": "^13.2.4",
     "prettier": "^2.6.2",
+    "rimraf": "^3.0.2",
     "ts-loader": "^9.2.6",
     "ts-node": "^10.6.0",
     "typescript": "^4.5.3",
