@@ -13,9 +13,9 @@ import {
 import { fetchDaemBalance } from "../../state/action-creators/wallet-action-creators";
 import Confetti from "react-dom-confetti";
 import "./claim-reward.css";
-import { promiseToast } from "../toaster";
+import { promiseToast } from "../../components/toaster";
 import { gasTankABI } from "@daemons-fi/abis";
-import { Card } from "../card-component/card";
+import { Card } from "../../components/card/card";
 
 const confettiConfig: any = {
     angle: "127",

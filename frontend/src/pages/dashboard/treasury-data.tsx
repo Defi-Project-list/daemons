@@ -5,7 +5,7 @@ import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
 import { RootState } from "../../state";
 import { treasuryABI, UniswapV2PairABI } from "@daemons-fi/abis";
 import { bigNumberToFloat } from "../../utils/big-number-to-float";
-import { CacheDuration, Cacher } from "../../data/cacher";
+import { Cacher } from "../../data/cacher";
 import CountUp from "react-countup";
 
 const getTreasuryContract = (chainId: string) => {

@@ -16,7 +16,7 @@ import {
 } from "../../data/chains-data/condition-form-interfaces";
 import { getExecutorFromScriptAction } from "../../script-factories/messages-factories/executor-fetcher";
 import { ConditionTitles } from "../../data/chains-data/interfaces";
-import { errorToast, successToast } from "../toaster";
+import { errorToast, successToast } from "../../components/toaster";
 import { ethers } from "ethers";
 
 export function ReviewPage(): JSX.Element {

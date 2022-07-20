@@ -5,12 +5,12 @@ import { store } from './state';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import { App } from './App';
-import { DashboardPage } from './components/dashboard-page';
-import { MyPage } from './components/my-page';
-import { ExecutePage } from './components/execute-page';
-import { ScriptDesignerPage } from "./components/script-designer-page";
-import { ReviewPage } from "./components/review-page";
-import { TransactionsPage } from "./components/transactions-page";
+import { DashboardPage } from './pages/dashboard';
+import { MyPage } from './pages/my-page';
+import { ExecutePage } from './pages/execute';
+import { ScriptDesignerPage } from "./pages/script-designer";
+import { ReviewPage } from "./pages/review";
+import { TransactionsPage } from "./pages/transactions";
 
 ReactDOM.render(
     <Provider store={store}>

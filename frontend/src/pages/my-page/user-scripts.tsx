@@ -6,7 +6,7 @@ import { MyPageScript } from "./user-script";
 import "./styles.css";
 import { Link } from "react-router-dom";
 import { cleanWorkbench } from "../../state/action-creators/workbench-action-creators";
-import { Card } from "../card-component/card";
+import { Card } from "../../components/card/card";
 
 export function UserScriptsContainer(): JSX.Element {
     const dispatch = useDispatch();

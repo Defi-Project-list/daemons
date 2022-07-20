@@ -5,8 +5,8 @@ import { VerificationFailedScript, VerificationState } from "@daemons-fi/scripts
 import { RootState } from "../../state";
 import { fetchGasTankClaimable } from "../../state/action-creators/gas-tank-action-creators";
 import { removeUserScript } from "../../state/action-creators/script-action-creators";
-import { BigNumber, ethers, utils } from "ethers";
-import { promiseToast } from "../toaster";
+import { BigNumber, ethers } from "ethers";
+import { promiseToast } from "../../components/toaster";
 import { StorageProxy } from "../../data/storage-proxy";
 import { ScriptProxy } from "../../data/storage-proxy/scripts-proxy";
 import { GetCurrentChain } from "../../data/chain-info";

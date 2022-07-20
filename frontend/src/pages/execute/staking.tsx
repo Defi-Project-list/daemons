@@ -11,9 +11,9 @@ import {
 import { fetchDaemBalance } from "../../state/action-creators/wallet-action-creators";
 import { AllowanceHelper } from "@daemons-fi/scripts-definitions";
 import { treasuryABI } from "@daemons-fi/abis";
-import { errorToast, promiseToast } from "../toaster";
+import { errorToast, promiseToast } from "../../components/toaster";
 import "./staking.css";
-import { Card, HeadlessCard } from "../card-component/card";
+import { Card, HeadlessCard } from "../../components/card/card";
 
 export function Staking() {
     const dispatch = useDispatch();

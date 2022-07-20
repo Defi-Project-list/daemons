@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Field } from "react-final-form";
 import { AmountType } from "@daemons-fi/shared-definitions/build";
-import { ToggleButtonField } from "../shared/toggle-button";
 import "./amount-input.css";
 
 interface IAmountInputProps {

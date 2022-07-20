@@ -4,14 +4,13 @@ import { gasTankABI } from "@daemons-fi/abis";
 import { RootState } from "../../state";
 import { Field, Form } from "react-final-form";
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
-import { promiseToast } from "../toaster";
+import { promiseToast } from "../../components/toaster";
 import "./tip-jar.css";
-import "../switch.css";
 import { fetchTipJarBalance } from "../../state/action-creators/tip-jar-action-creators";
 import { fetchDaemBalance } from "../../state/action-creators/wallet-action-creators";
 import { AllowanceHelper } from "@daemons-fi/scripts-definitions/build";
 import { ethers } from "ethers";
-import { Card } from "../card-component/card";
+import { Card } from "../../components/card/card";
 
 export function TipJar(): JSX.Element {
     const dispatch = useDispatch();

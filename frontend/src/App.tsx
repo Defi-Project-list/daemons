@@ -19,6 +19,8 @@ import "react-toastify/dist/ReactToastify.css";
 import "./fonts.css";
 import "./constants.css";
 import "./app.css";
+import "./switch.css";
+import "./components/tooltip.css";
 
 export const App = ({ children }: { children: any }) => {
     // redux

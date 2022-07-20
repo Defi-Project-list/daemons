@@ -5,7 +5,7 @@ import { DisconnectedPage } from "../error-pages/disconnected-page";
 import { UnsupportedChainPage } from "../error-pages/unsupported-chain-page";
 import { BannedPage } from "../error-pages/banned-page";
 import { NotWhitelistedPage } from "../error-pages/not-whitelisted-page";
-import { Card } from "../card-component/card";
+import { Card } from "../../components/card/card";
 import { TransactionsPanel } from "./transactions-panel";
 import "./styles.css";
 import "../shared.css";

@@ -9,7 +9,7 @@ import { ScriptsChart } from "./scripts-chart";
 import { TransactionsChart } from "./transactions-chart";
 import { TreasuryData } from "./treasury-data";
 import { BannedPage } from "../error-pages/banned-page";
-import { Card } from "../card-component/card";
+import { Card } from "../../components/card/card";
 import { NotWhitelistedPage } from "../error-pages/not-whitelisted-page";
 Chart.register(...registerables);
 

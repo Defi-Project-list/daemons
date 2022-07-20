@@ -11,7 +11,6 @@ import { IScriptConditionForm } from "../../data/chains-data/condition-form-inte
 import { ICurrentScript } from "../../script-factories/i-current-script";
 import "./styles.css";
 import "./blocks.css";
-import "../tooltip.css";
 import { ethers } from "ethers";
 import { ScriptDescriptionFactory } from "../../script-factories/script-description-factory";
 import { addScriptToWorkbench } from "../../state/action-creators/workbench-action-creators";

@@ -5,10 +5,9 @@ import { RootState } from "../../state";
 import { fetchGasTankBalance } from "../../state/action-creators/gas-tank-action-creators";
 import { Field, Form } from "react-final-form";
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
-import { promiseToast } from "../toaster";
+import { promiseToast } from "../../components/toaster";
 import "./gas-tank.css";
-import "../switch.css";
-import { Card } from "../card-component/card";
+import { Card } from "../../components/card/card";
 
 export function GasTank(): JSX.Element {
     const dispatch = useDispatch();

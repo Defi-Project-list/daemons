@@ -5,7 +5,7 @@ import { RootState } from "../../state";
 import { fetchExecutableScripts } from "../../state/action-creators/script-action-creators";
 import { toggleScriptsLoading } from "../../state/action-creators/script-action-creators";
 import { QueueScriptComponent } from "./executable-script";
-import { Card } from "../card-component/card";
+import { Card } from "../../components/card/card";
 import "./styles.css";
 
 export function ExecutableScriptsContainer() {
