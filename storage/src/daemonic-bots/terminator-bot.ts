@@ -26,7 +26,7 @@ export class TerminatorBot {
         }
         console.log(`[🤖🪓 Terminator Bot] ${ids.length} scripts to be processed`);
 
-        const scripts: any[] = await Script.find({ scriptId: { $in: ids } });
+        const scripts: any[] = await Script.find({ scriptId: { $in: ids } }).lean();
         const scriptIds = new Set(scripts.map((s) => s.scriptId));
 
         const falsePositive: string[] = [];

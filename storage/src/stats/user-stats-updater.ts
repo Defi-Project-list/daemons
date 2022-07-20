@@ -22,9 +22,9 @@ async function updateUserStatsForChain(chainId: string): Promise<void> {
     const chainName = ChainInfo()[chainId];
 
     const distinctAcrossAllScriptTypes = new Set([
-        ...(await SwapScript.find({ chainId }).distinct('user')),
-        ...(await TransferScript.find({ chainId }).distinct('user')),
-        ...(await MmBaseScript.find({ chainId }).distinct('user')),
+        ...(await SwapScript.find({ chainId }).distinct('user').lean()),
+        ...(await TransferScript.find({ chainId }).distinct('user').lean()),
+        ...(await MmBaseScript.find({ chainId }).distinct('user').lean()),
     ])
 
     if (distinctAcrossAllScriptTypes.size === 0) return;

@@ -11,7 +11,7 @@ notificationsRouter.get("/", authenticate, async (req: Request, res: Response) =
     try {
         const notifications = await Notification.find({
             user: req.userAddress
-        });
+        }).lean();
         return res.status(200).send(notifications);
     } catch (error) {
         return res.status(500).send(error);

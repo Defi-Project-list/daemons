@@ -17,7 +17,7 @@ statisticsRouter.get("/users/:chainId", async (req: Request, res: Response) => {
         const stats = await UserStats.find({
             date: { $gte: date.toISOString().substring(0, 10) },
             chain: chainName
-        });
+        }).lean();
         return res.status(200).send(stats);
     } catch (error) {
         return res.status(500).send(error);
@@ -35,7 +35,7 @@ statisticsRouter.get("/scripts/:chainId", async (req: Request, res: Response) =>
         const stats = await ScriptStats.find({
             date: { $gte: date.toISOString().substring(0, 10) },
             chain: chainName
-        });
+        }).lean();
         return res.status(200).send(stats);
     } catch (error) {
         return res.status(500).send(error);
@@ -53,7 +53,7 @@ statisticsRouter.get("/transactions/:chainId", async (req: Request, res: Respons
         const stats = await TransactionStats.find({
             date: { $gte: date.toISOString().substring(0, 10) },
             chain: chainName
-        });
+        }).lean();
         return res.status(200).send(stats);
     } catch (error) {
         return res.status(500).send(error);

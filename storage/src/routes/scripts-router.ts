@@ -5,7 +5,13 @@ import { TransferScript } from "../models/scripts/transfer-script";
 import { Script } from "../models/scripts/script";
 import { SwapScript } from "../models/scripts/swap-script";
 import { MmBaseScript } from "../models/scripts/mm-base-script";
-import { ISignedBeefyAction, ISignedMMAdvancedAction, ISignedPassAction, ISignedZapInAction, ISignedZapOutAction } from "@daemons-fi/shared-definitions";
+import {
+    ISignedBeefyAction,
+    ISignedMMAdvancedAction,
+    ISignedPassAction,
+    ISignedZapInAction,
+    ISignedZapOutAction
+} from "@daemons-fi/shared-definitions";
 import { ISignedMMBaseAction } from "@daemons-fi/shared-definitions";
 import { ISignedSwapAction } from "@daemons-fi/shared-definitions";
 import { ISignedTransferAction } from "@daemons-fi/shared-definitions";
@@ -20,7 +26,7 @@ export const scriptsRouter = express.Router();
 
 scriptsRouter.get("/:chainId", authenticate, async (req: Request, res: Response) => {
     const chainId = String(req.params.chainId);
-    const scripts = await Script.find({ chainId: chainId });
+    const scripts = await Script.find({ chainId: chainId }).lean();
     return res.send(scripts);
 });
 
@@ -32,7 +38,7 @@ scriptsRouter.get("/:chainId/:userAddress", authenticate, async (req: Request, r
     }
 
     const chainId = String(req.params.chainId);
-    const scripts = await Script.find({ user: userAddress, chainId: chainId });
+    const scripts = await Script.find({ user: userAddress, chainId: chainId }).lean();
     return res.send(scripts);
 });
 
@@ -112,7 +118,7 @@ scriptsRouter.post("/mark-as-broken", authenticate, async (req: Request, res: Re
     try {
         await BrokenScript.build({
             reporter: req.userAddress!,
-            scriptId: scriptId,
+            scriptId: scriptId
         }).save();
         return res.send();
     } catch (error) {
