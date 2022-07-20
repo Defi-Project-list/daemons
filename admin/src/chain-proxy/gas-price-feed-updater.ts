@@ -24,6 +24,18 @@ async function updateGasPriceForChain(chain: IChainWithContracts): Promise<void>
     const oldGasPrice = await gasPriceFeedContract.lastGasPrice();
 
     try {
+        const GAS_UPDATE_THRESHOLD = 1000000;
+        const deltaPrice = Math.abs(newGasPrice.toNumber() - oldGasPrice.toNumber());
+        if (deltaPrice < GAS_UPDATE_THRESHOLD) {
+            console.info({
+                message: `Gas price update skipped as delta < threshold`,
+                chain: chain.name,
+                gasPriceFeed: chain.contracts.GasPriceFeed,
+                newGasPrice: newGasPrice.toString(),
+                oldGasPrice: oldGasPrice.toString()
+            });
+        }
+
         const tx = await gasPriceFeedContract.setGasPrice(newGasPrice);
         await tx.wait();
         console.info({
