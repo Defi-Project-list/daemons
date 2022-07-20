@@ -4,7 +4,7 @@ import { StatsProxy } from "./stats-proxy";
 import { TransactionProxy } from './transaction-proxy';
 
 const localStorageAddress = 'http://localhost:5000/api';
-const productionStorageAddress = 'https://daemons-storage.onrender.com';
+const productionStorageAddress = 'https://daemons-storage.onrender.com/api';
 
 // define storage URL depending on frontend URL
 const isTest = typeof window === "undefined";
