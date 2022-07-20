@@ -7,7 +7,6 @@
     "test": "mocha ./**/*test.ts",
     "start": "echo started?",
     "dev": "webpack serve --port 3000",
-    "heroku-postbuild": "NODE_ENV=production webpack",
     "clean": "rimraf dist",
     "build:webpack": "NODE_ENV=production webpack --config webpack.config.js",
     "build": "npm run clean && npm run build:webpack"
