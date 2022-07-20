@@ -2,10 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 const corsWhitelist: Set<string> = new Set([
     "http://localhost:3000",
-    "https://daemonsfi-front.herokuapp.com",
-    "http://app.daemons.fi",
-    "http://daemons.fi",
-    "http://www.daemons.fi"
+    "https://app.daemons.fi",
 ]);
 
 /**
