@@ -1,3 +1,6 @@
+[![Deploy Frontend](https://github.com/daemons-fi/daemons/actions/workflows/deploy-frontend.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-frontend.yml)
+[![Deploy Storage](https://github.com/daemons-fi/daemons/actions/workflows/deploy-storage.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-storage.yml)
+
 # Daemons Finance
 
 An environment in which users can **script operations on the blockchain and have them automatically executed** with a certain frequency or when a condition becomes true.
