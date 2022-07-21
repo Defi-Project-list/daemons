@@ -25,7 +25,7 @@ jobs:
         run: |
           cd storage/
           npm install
-          npm run test
+          npm run test:ci
 
       - name: Push
         uses: s0/git-publish-subdir-action@develop
