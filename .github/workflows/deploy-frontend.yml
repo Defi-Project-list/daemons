@@ -34,7 +34,7 @@ jobs:
         uses: s0/git-publish-subdir-action@develop
         env:
           REPO: self
-          BRANCH: deploy-frontend
+          BRANCH: depl-frontend
           FOLDER: frontend/dist
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MESSAGE: "Frontend tested, built and deployed"
