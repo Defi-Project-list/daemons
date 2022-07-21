@@ -16,6 +16,12 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Test
+        env:
+          JWT_SECRET: jwt_secret_for_tests
+          ADMIN_KEY: admin_key_for_test
+          MONGO_DB_CONN_STRING: mongodb://127.0.0.1:27017/daemons
+          KOVAN_RPC: not_used_in_tests
+          FANTOM_TESTNET_RPC: not_used_in_tests
         run: |
           cd storage/
           npm install
