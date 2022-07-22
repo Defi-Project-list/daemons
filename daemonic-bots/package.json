@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@daemons-fi/contracts": "0.0.1",
-    "@daemons-fi/scripts-definitions": "0.1.27",
+    "@daemons-fi/scripts-definitions": "0.1.28",
     "@daemons-fi/shared-definitions": "2.1.9",
     "@daemons-fi/db-schema": "0.0.2",
     "express": "^4.17.2",
