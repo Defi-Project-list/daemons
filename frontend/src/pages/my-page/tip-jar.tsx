@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { gasTankABI } from "@daemons-fi/abis";
+import { gasTankABI } from "@daemons-fi/contracts";
 import { RootState } from "../../state";
 import { Field, Form } from "react-final-form";
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";

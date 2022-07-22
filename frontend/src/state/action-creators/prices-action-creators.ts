@@ -1,10 +1,10 @@
 import { Dispatch } from "redux";
 import { ActionType } from "../action-types";
-import { UniswapV2RouterABI } from "@daemons-fi/abis";
+import { UniswapV2RouterABI } from "@daemons-fi/contracts";
 import { BigNumber, Contract, utils } from "ethers";
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
 import { PriceAction } from "../actions/price-actions";
-import { bigNumberToFloat } from "../../utils/big-number-to-float";
+import { bigNumberToFloat } from "@daemons-fi/contracts";
 
 const getDEXRouterContract = async (chainId: string): Promise<Contract> => {
     const ethers = require("ethers");

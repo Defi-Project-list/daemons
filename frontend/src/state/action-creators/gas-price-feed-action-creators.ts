@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux';
 import { ActionType } from '../action-types';
-import { gasPriceFeedABI } from "@daemons-fi/abis";
+import { gasPriceFeedABI } from "@daemons-fi/contracts";
 import { BigNumber, Contract } from 'ethers';
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
 import { GasPriceAction } from "../actions/gas-price-feed-actions";

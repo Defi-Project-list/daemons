@@ -10,7 +10,7 @@ import {
 } from "../../state/action-creators/staking-action-creators";
 import { fetchDaemBalance } from "../../state/action-creators/wallet-action-creators";
 import { AllowanceHelper } from "@daemons-fi/scripts-definitions";
-import { treasuryABI } from "@daemons-fi/abis";
+import { treasuryABI } from "@daemons-fi/contracts";
 import { errorToast, promiseToast } from "../../components/toaster";
 import "./staking.css";
 import { Card, HeadlessCard } from "../../components/card/card";

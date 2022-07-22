@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha ./**/*test.ts",
+    "test:ci": "mocha ./**/*test.ts --exit",
     "start": "echo started?",
     "dev": "webpack serve --port 3000",
     "clean": "rimraf dist",
@@ -38,8 +39,7 @@
     "webpack-dev-server": "^4.6.0"
   },
   "dependencies": {
-    "@daemons-fi/abis": "0.1.5",
-    "@daemons-fi/addresses": "0.1.5",
+    "@daemons-fi/contracts": "0.0.1",
     "@daemons-fi/scripts-definitions": "0.1.27",
     "@daemons-fi/shared-definitions": "2.1.9",
     "@metamask/detect-provider": "^1.2.0",

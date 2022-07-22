@@ -10,7 +10,7 @@ import { Token } from "../../../../data/chains-data/interfaces";
 import { GetCurrentChain } from "../../../../data/chain-info";
 import { AmountInput } from "../shared/amount-input";
 import { ethers } from "ethers";
-import { UniswapV2FactoryABI, UniswapV2RouterABI } from "@daemons-fi/abis/build";
+import { UniswapV2FactoryABI, UniswapV2RouterABI } from "@daemons-fi/contracts";
 import { fetchTokenBalance } from "../../../../data/fetch-token-balance";
 
 const validateForm = (values: IZapOutActionForm) => {

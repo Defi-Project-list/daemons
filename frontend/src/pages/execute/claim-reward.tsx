@@ -14,7 +14,7 @@ import { fetchDaemBalance } from "../../state/action-creators/wallet-action-crea
 import Confetti from "react-dom-confetti";
 import "./claim-reward.css";
 import { promiseToast } from "../../components/toaster";
-import { gasTankABI } from "@daemons-fi/abis";
+import { gasTankABI } from "@daemons-fi/contracts";
 import { Card } from "../../components/card/card";
 
 const confettiConfig: any = {

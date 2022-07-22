@@ -1,4 +1,4 @@
-import { IContractsList } from "@daemons-fi/addresses/build";
+import { IContractsList } from "@daemons-fi/contracts";
 import { IScriptActionForm } from "./action-form-interfaces";
 import { IScriptConditionForm } from "./condition-form-interfaces";
 

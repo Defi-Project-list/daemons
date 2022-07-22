@@ -1,10 +1,10 @@
 import { Dispatch } from 'redux';
 import { ActionType } from '../action-types';
-import { gasTankABI } from "@daemons-fi/abis";
+import { gasTankABI } from "@daemons-fi/contracts";
 import { BigNumber, Contract } from 'ethers';
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
 import { TipJarAction } from "../actions/tip-jar-actions";
-import { bigNumberToFloat } from "../../utils/big-number-to-float";
+import { bigNumberToFloat } from "@daemons-fi/contracts";
 
 const getGasTankContract = async (chainId: string): Promise<Contract> => {
     const ethers = require('ethers');

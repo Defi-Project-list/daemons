@@ -7,7 +7,7 @@ import { TokensModal } from "../shared/tokens-modal";
 import { DEX, Token } from "../../../../data/chains-data/interfaces";
 import { GetCurrentChain } from "../../../../data/chain-info";
 import { ethers } from "ethers";
-import { UniswapV2FactoryABI, UniswapV2RouterABI } from "@daemons-fi/abis/build";
+import { UniswapV2FactoryABI, UniswapV2RouterABI } from "@daemons-fi/contracts";
 import { ToggleButtonField } from "../shared/toggle-button";
 import { AmountType, BeefyActionType } from "@daemons-fi/shared-definitions/build";
 import { AmountInput } from "../shared/amount-input";

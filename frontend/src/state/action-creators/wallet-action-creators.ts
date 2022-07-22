@@ -2,10 +2,10 @@ import { BigNumber, Contract, ethers } from "ethers";
 import { Dispatch } from "redux";
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
 import { StorageProxy } from "../../data/storage-proxy";
-import { ERC20Abi } from "@daemons-fi/abis";
+import { ERC20Abi } from "@daemons-fi/contracts";
 import { ActionType } from "../action-types";
 import { WalletAction } from "../actions/wallet-actions";
-import { bigNumberToFloat } from "../../utils/big-number-to-float";
+import { bigNumberToFloat } from "@daemons-fi/contracts";
 
 const getDAEMContract = async (chainId: string): Promise<Contract> => {
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);

@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
 import { RootState } from "../../state";
-import { treasuryABI, UniswapV2PairABI } from "@daemons-fi/abis";
-import { bigNumberToFloat } from "../../utils/big-number-to-float";
+import { treasuryABI, UniswapV2PairABI } from "@daemons-fi/contracts";
+import { bigNumberToFloat } from "@daemons-fi/contracts";
 import { Cacher } from "../../data/cacher";
 import CountUp from "react-countup";
 

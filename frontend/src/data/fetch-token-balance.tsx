@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
-import { ERC20Abi } from "@daemons-fi/abis/build";
-import { bigNumberToFloat } from "../utils/big-number-to-float";
+import { ERC20Abi } from "@daemons-fi/contracts";
+import { bigNumberToFloat } from "@daemons-fi/contracts";
 
 export const fetchTokenBalance = async (
     walletAddress: string,

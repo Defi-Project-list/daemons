@@ -1,4 +1,4 @@
-import { kovanContracts } from "@daemons-fi/addresses/build";
+import { kovanContracts } from "@daemons-fi/contracts";
 import { IChainInfo } from "../interfaces";
 import {
     AaveMMAdvancedAction,

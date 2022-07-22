@@ -10,7 +10,7 @@ import { promiseToast } from "../../components/toaster";
 import { StorageProxy } from "../../data/storage-proxy";
 import { ScriptProxy } from "../../data/storage-proxy/scripts-proxy";
 import { GetCurrentChain } from "../../data/chain-info";
-import { bigNumberToFloat } from "../../utils/big-number-to-float";
+import { bigNumberToFloat } from "@daemons-fi/contracts";
 
 export const MyPageScript = ({ script }: { script: BaseScript }) => {
     const [verification, setVerification] = useState(script.getVerification());

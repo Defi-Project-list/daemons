@@ -1,11 +1,11 @@
-import { MoneyMarketABI } from "@daemons-fi/abis/build";
+import { MoneyMarketABI } from "@daemons-fi/contracts";
 import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { Form, Field } from "react-final-form";
 import { useSelector } from "react-redux";
 import { IHealthFactorConditionForm } from "../../../../data/chains-data/condition-form-interfaces";
 import { RootState } from "../../../../state";
-import { bigNumberToFloat } from "../../../../utils/big-number-to-float";
+import { bigNumberToFloat } from "@daemons-fi/contracts";
 
 const validateForm = (form: IHealthFactorConditionForm) => {
     const errors: any = {};

@@ -1,10 +1,10 @@
 import { Dispatch } from 'redux';
 import { ActionType } from '../action-types';
-import { treasuryABI } from "@daemons-fi/abis";
+import { treasuryABI } from "@daemons-fi/contracts";
 import { BigNumber, Contract } from 'ethers';
 import { StakingAction } from '../actions/staking-actions';
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
-import { bigNumberToFloat } from "../../utils/big-number-to-float";
+import { bigNumberToFloat } from "@daemons-fi/contracts";
 
 const getTreasuryContract = async (chainId: string): Promise<Contract> => {
     const ethers = require('ethers');

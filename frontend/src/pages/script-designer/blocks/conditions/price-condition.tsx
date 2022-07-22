@@ -7,8 +7,8 @@ import { DEX, Token } from "../../../../data/chains-data/interfaces";
 import { IPriceConditionForm } from "../../../../data/chains-data/condition-form-interfaces";
 import { GetCurrentChain } from "../../../../data/chain-info";
 import { ethers } from "ethers";
-import { UniswapV2RouterABI } from "@daemons-fi/abis/build";
-import { bigNumberToFloat } from "../../../../utils/big-number-to-float";
+import { UniswapV2RouterABI } from "@daemons-fi/contracts";
+import { bigNumberToFloat } from "@daemons-fi/contracts";
 
 const validateForm = (form: IPriceConditionForm) => {
     const errors: any = {};

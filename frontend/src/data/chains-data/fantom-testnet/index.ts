@@ -1,4 +1,4 @@
-import { fantomTestnetContracts } from "@daemons-fi/addresses/build";
+import { fantomTestnetContracts } from "@daemons-fi/contracts";
 import { IChainInfo } from "../interfaces";
 import {
     AaveMMAdvancedAction,

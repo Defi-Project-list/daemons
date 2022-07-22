@@ -11,7 +11,7 @@ import { ScriptProxy } from "../../data/storage-proxy/scripts-proxy";
 import { RootState } from "../../state";
 import { fetchGasTankClaimable } from "../../state/action-creators/gas-tank-action-creators";
 import { removeExecutableScript } from "../../state/action-creators/script-action-creators";
-import { bigNumberToFloat } from "../../utils/big-number-to-float";
+import { bigNumberToFloat } from "@daemons-fi/contracts";
 
 export const QueueScriptComponent = ({ script }: { script: BaseScript }) => {
     const dispatch = useDispatch();

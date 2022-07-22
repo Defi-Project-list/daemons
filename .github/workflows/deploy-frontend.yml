@@ -23,7 +23,7 @@ jobs:
       - name: test
         run: |
           cd frontend/
-          npm run test
+          npm run test:ci
 
       - name: Build
         run: |
