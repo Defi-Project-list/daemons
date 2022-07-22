@@ -1,11 +1,11 @@
-name: Deploy Addresses Package
+name: Deploy Contracts package
 
 on:
   push:
     branches:
       - master
     paths:
-      - "npm-packages/addresses/**"
+      - "npm-packages/contracts/**"
 
 jobs:
   publish:
@@ -20,7 +20,7 @@ jobs:
           node-version: 12
           registry-url: https://npm.pkg.github.com/
       - run: |
-          cd npm-packages/addresses/
+          cd npm-packages/contracts/
           npm install
           npm run build
           npm publish
