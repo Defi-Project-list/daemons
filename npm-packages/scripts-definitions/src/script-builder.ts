@@ -1,12 +1,17 @@
-import { BaseScript, PassScript } from "@daemons-fi/scripts-definitions";
-import { SwapScript } from "@daemons-fi/scripts-definitions";
-import { TransferScript } from "@daemons-fi/scripts-definitions";
-import { MmBaseScript } from "@daemons-fi/scripts-definitions";
-import { MmAdvancedScript } from "@daemons-fi/scripts-definitions";
-import { ZapInScript } from "@daemons-fi/scripts-definitions";
-import { ZapOutScript } from "@daemons-fi/scripts-definitions";
-import { BeefyScript } from "@daemons-fi/scripts-definitions";
+import { BaseScript } from "./script/base-script";
+import { PassScript } from "./script/pass-script";
+import { SwapScript } from "./script/swap-script";
+import { TransferScript } from "./script/transfer-script";
+import { MmBaseScript } from "./script/mm-base-script";
+import { MmAdvancedScript } from "./script/mm-adv-script";
+import { ZapInScript } from "./script/zap-in-script";
+import { ZapOutScript } from "./script/zap-out-script";
+import { BeefyScript } from "./script/beefy-script";
 
+/**
+ * Builds a script object from a db record
+ * @param script the database record representing the script
+ */
 export async function parseScript(script: any): Promise<BaseScript> {
     switch (script.__type) {
         case "SwapScript":

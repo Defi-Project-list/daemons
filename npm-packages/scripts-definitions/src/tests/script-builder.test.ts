@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import { parseScript } from "../script-builder";
 import chai from "chai";
-import { signedTransferActionFactory } from "@daemons-fi/db-schema";
 chai.use(require("chai-as-promised"));
 
 describe("Script builder", () => {
@@ -10,12 +9,5 @@ describe("Script builder", () => {
         const gonnaThrowPromise = () => parseScript(script);
 
         await expect(gonnaThrowPromise()).to.be.rejectedWith("Unsupported script type: YourMum");
-    });
-
-    it("returns a valid script", async () => {
-        const transferScript = signedTransferActionFactory({});
-        const parsedScript = await parseScript(transferScript);
-
-        expect(transferScript.__type).to.be.equal(parsedScript.ScriptType);
     });
 });

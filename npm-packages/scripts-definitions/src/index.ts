@@ -9,6 +9,9 @@ export * from "./script/zap-out-script";
 export * from "./script/beefy-script";
 export * from "./script/pass-script";
 
+// script builder
+export * from "./script-builder";
+
 // condition factories
 export * from "./condition-base-factories/balance-factory";
 export * from "./condition-base-factories/follow-factory";
