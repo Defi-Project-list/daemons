@@ -1,6 +1,6 @@
 import { BigNumber, ethers } from "ethers";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
-import { CreditDelegationTokenAbi, ERC20Abi } from "@daemons-fi/abis";
+import { CreditDelegationTokenAbi, ERC20Abi } from "@daemons-fi/contracts";
 
 export class AllowanceHelper {
   // ERC-20

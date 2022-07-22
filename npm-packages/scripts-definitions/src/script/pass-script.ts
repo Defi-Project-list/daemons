@@ -7,7 +7,7 @@ import { PriceFactory } from "../condition-base-factories/price-factory";
 import { RepetitionsFactory } from "../condition-base-factories/repetitions-factory";
 import { FollowFactory } from "../condition-base-factories/follow-factory";
 import { IPassAction } from "@daemons-fi/shared-definitions/build";
-import { passScriptABI } from "@daemons-fi/abis";
+import { passScriptABI } from "@daemons-fi/contracts";
 import { HealthFactorFactory } from "../condition-base-factories/health-factor-factory";
 
 export class PassScript extends BaseScript {

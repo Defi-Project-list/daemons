@@ -7,7 +7,7 @@ import { PriceFactory } from "../condition-base-factories/price-factory";
 import { RepetitionsFactory } from "../condition-base-factories/repetitions-factory";
 import { FollowFactory } from "../condition-base-factories/follow-factory";
 import { IZapOutAction } from "@daemons-fi/shared-definitions/build";
-import { UniswapV2FactoryABI, UniswapV2RouterABI, zapOutScriptABI } from "@daemons-fi/abis";
+import { UniswapV2FactoryABI, UniswapV2RouterABI, zapOutScriptABI } from "@daemons-fi/contracts";
 import { AllowanceHelper } from "../allowance-helper";
 
 export class ZapOutScript extends BaseScript {

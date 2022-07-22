@@ -12,7 +12,7 @@ import {
     IMMAdvancedAction
 } from "@daemons-fi/shared-definitions/build";
 import { AllowanceHelper } from "../allowance-helper";
-import { mmAdvancedScriptABI } from "@daemons-fi/abis";
+import { mmAdvancedScriptABI } from "@daemons-fi/contracts";
 
 export class MmAdvancedScript extends BaseScript {
     public constructor(

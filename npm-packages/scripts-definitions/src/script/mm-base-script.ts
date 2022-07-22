@@ -7,7 +7,7 @@ import { RepetitionsFactory } from "../condition-base-factories/repetitions-fact
 import { FollowFactory } from "../condition-base-factories/follow-factory";
 import { HealthFactorFactory } from "../condition-base-factories/health-factor-factory";
 import { BaseMoneyMarketActionType, IMMBaseAction } from "@daemons-fi/shared-definitions/build";
-import { mmBaseScriptABI } from "@daemons-fi/abis";
+import { mmBaseScriptABI } from "@daemons-fi/contracts";
 
 export class MmBaseScript extends BaseScript {
     public constructor(

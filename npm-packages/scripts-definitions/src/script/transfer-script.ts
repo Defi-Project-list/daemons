@@ -6,7 +6,7 @@ import { PriceFactory } from "../condition-base-factories/price-factory";
 import { RepetitionsFactory } from "../condition-base-factories/repetitions-factory";
 import { FollowFactory } from "../condition-base-factories/follow-factory";
 import { ITransferAction } from "@daemons-fi/shared-definitions/build";
-import { transferScriptABI } from "@daemons-fi/abis";
+import { transferScriptABI } from "@daemons-fi/contracts";
 
 export class TransferScript extends BaseScript {
     public constructor(

@@ -7,7 +7,7 @@ import { PriceFactory } from "../condition-base-factories/price-factory";
 import { RepetitionsFactory } from "../condition-base-factories/repetitions-factory";
 import { FollowFactory } from "../condition-base-factories/follow-factory";
 import { IZapInAction } from "@daemons-fi/shared-definitions/build";
-import { zapInScriptABI } from "@daemons-fi/abis";
+import { zapInScriptABI } from "@daemons-fi/contracts";
 import { AllowanceHelper } from "../allowance-helper";
 
 export class ZapInScript extends BaseScript {

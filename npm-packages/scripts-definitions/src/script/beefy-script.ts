@@ -6,7 +6,7 @@ import { PriceFactory } from "../condition-base-factories/price-factory";
 import { RepetitionsFactory } from "../condition-base-factories/repetitions-factory";
 import { FollowFactory } from "../condition-base-factories/follow-factory";
 import { BeefyActionType, IBeefyAction } from "@daemons-fi/shared-definitions/build";
-import { beefyScriptABI } from "@daemons-fi/abis";
+import { beefyScriptABI } from "@daemons-fi/contracts";
 
 export class BeefyScript extends BaseScript {
     public constructor(
