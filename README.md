@@ -1,6 +1,7 @@
 [![Deploy Frontend](https://github.com/daemons-fi/daemons/actions/workflows/deploy-frontend.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-frontend.yml)
 [![Deploy Storage](https://github.com/daemons-fi/daemons/actions/workflows/deploy-storage.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-storage.yml)
 [![Deploy Admin](https://github.com/daemons-fi/daemons/actions/workflows/deploy-admin.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-admin.yml)
+[![Deploy Daemonic-Bots](https://github.com/daemons-fi/daemons/actions/workflows/deploy-daemonic-bots.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-daemonic-bots.yml)
 
 [![Deploy ABIs package](https://github.com/daemons-fi/daemons/actions/workflows/deploy-abis.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-abis.yml)[![Deploy Addresses Package](https://github.com/daemons-fi/daemons/actions/workflows/deploy-addresses.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-addresses.yml)
 [![Deploy Scripts Definitions Package](https://github.com/daemons-fi/daemons/actions/workflows/deploy-scripts-definitions.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-scripts-definitions.yml)
