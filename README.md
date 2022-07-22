@@ -1,11 +1,14 @@
-[![Deploy Frontend](https://github.com/daemons-fi/daemons/actions/workflows/deploy-frontend.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-frontend.yml)
-[![Deploy Storage](https://github.com/daemons-fi/daemons/actions/workflows/deploy-storage.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-storage.yml)
-[![Deploy Admin](https://github.com/daemons-fi/daemons/actions/workflows/deploy-admin.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-admin.yml)
-[![Deploy Daemonic-Bots](https://github.com/daemons-fi/daemons/actions/workflows/deploy-daemonic-bots.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-daemonic-bots.yml)
+Microservices
+[![Frontend](https://github.com/daemons-fi/daemons/actions/workflows/deploy-frontend.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-frontend.yml)
+[![Storage](https://github.com/daemons-fi/daemons/actions/workflows/deploy-storage.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-storage.yml)
+[![Admin](https://github.com/daemons-fi/daemons/actions/workflows/deploy-admin.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-admin.yml)
+[![Daemonic-Bots](https://github.com/daemons-fi/daemons/actions/workflows/deploy-daemonic-bots.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-daemonic-bots.yml)
 
-[![Deploy ABIs package](https://github.com/daemons-fi/daemons/actions/workflows/deploy-abis.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-abis.yml)[![Deploy Addresses Package](https://github.com/daemons-fi/daemons/actions/workflows/deploy-addresses.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-addresses.yml)
-[![Deploy Scripts Definitions Package](https://github.com/daemons-fi/daemons/actions/workflows/deploy-scripts-definitions.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-scripts-definitions.yml)
-[![Deploy Shared Definitions Package](https://github.com/daemons-fi/daemons/actions/workflows/deploy-shared-definitions.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-shared-definitions.yml)
+Packages:
+[![Scripts-Definitions](https://github.com/daemons-fi/daemons/actions/workflows/deploy-scripts-definitions.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-scripts-definitions.yml)
+[![Shared-Definitions](https://github.com/daemons-fi/daemons/actions/workflows/deploy-shared-definitions.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-shared-definitions.yml)
+[![Db-Schema](https://github.com/daemons-fi/daemons/actions/workflows/deploy-db-schema.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-db-schema.yml)
+[![Contracts](https://github.com/daemons-fi/daemons/actions/workflows/deploy-contracts.yml/badge.svg)](https://github.com/daemons-fi/daemons/actions/workflows/deploy-contracts.yml)
 
 # Daemons Finance
 
