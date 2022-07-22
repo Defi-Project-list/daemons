@@ -40,7 +40,7 @@
   "dependencies": {
     "@daemons-fi/abis": "0.1.5",
     "@daemons-fi/addresses": "0.1.5",
-    "@daemons-fi/scripts-definitions": "0.1.25",
+    "@daemons-fi/scripts-definitions": "0.1.27",
     "@daemons-fi/shared-definitions": "2.1.9",
     "@metamask/detect-provider": "^1.2.0",
     "@types/react": "^17.0.37",
