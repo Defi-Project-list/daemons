@@ -73,7 +73,7 @@ export function ConnectWalletButton() {
 
 function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element | null {
     const dispatch = useDispatch();
-    const address = walletAddress!.substring(0, 16) + "...";
+    const address = walletAddress!.substring(0, 10) + "...";
     const authenticated: boolean = useSelector((state: RootState) => state.wallet.authenticated);
     const chainInfo = GetCurrentChain(chainId);
     const [displayChains, setDisplayChains] = useState<boolean>(false);
