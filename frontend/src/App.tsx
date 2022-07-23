@@ -100,11 +100,11 @@ export const App = ({ children }: { children: any }) => {
                     </div>
                 )}
 
-                <div className="menu__entry menu__entry--tip">
-                    <TipIndicator />
-                </div>
                 <div className="menu__entry menu__entry--gas">
                     <GasIndicator />
+                </div>
+                <div className="menu__entry menu__entry--tip">
+                    <TipIndicator />
                 </div>
                 <div className="wallet-control">
                     <MetaMaskProvider>

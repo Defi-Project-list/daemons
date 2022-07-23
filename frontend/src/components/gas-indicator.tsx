@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { GetCurrentChain } from "../data/chain-info";
 import { RootState } from "../state";
 
@@ -12,8 +13,9 @@ export function GasIndicator(): JSX.Element {
     const currencySymbol = GetCurrentChain(chainId!).coinSymbol;
 
     return (
-        <div className="header-indicator">
-            Gas Tank: {showBalance ? balance : "??"} {currencySymbol}
-        </div>
+        <Link className="header-indicator" to="/my-page">
+            <div className="header-indicator__gas-tank-icon" />
+            <div>{showBalance ? balance : "??"} {currencySymbol}</div>
+        </Link>
     );
 }
