@@ -80,24 +80,6 @@
     border-radius: 100%;
 }
 
-/* Pagination */
-
 .transactions-panel__pagination-container {
-    margin: auto;
-}
-
-.pagination {
-    display: grid;
-    grid-template-columns: 30px 60px 30px;
-    text-align: center;
-    user-select: none;
-}
-
-.pagination__arrow {
-    cursor: pointer;
-}
-
-.pagination__arrow--disabled {
-    opacity: 0.4;
-    cursor: unset;
+    padding-top: 10px;
 }

@@ -5,6 +5,7 @@ import { GetCurrentChain } from "../../data/chain-info";
 import { RootState } from "../../state";
 import { TransactionRecord } from "./transaction-record";
 import { IFetchedTxs } from "../../data/storage-proxy/transaction-proxy";
+import PaginationFooter from "../../components/pagination";
 
 interface ITransactionsPanelProps {
     isBeneficiary: boolean;
@@ -19,12 +20,14 @@ export function TransactionsPanel({
     const explorerTxUrl = GetCurrentChain(chainId!).explorerTxUrl;
     const [transactions, setTransactions] = useState<ITransaction[]>([]);
     const [page, setPage] = useState<number>(1);
-    const [nrPages, setNrPages] = useState<number>(1);
+    const [totalCount, setTotalCount] = useState<number>(0);
+    const [itemsPerPage, setItemsPerPage] = useState<number>(1);
 
     useEffect(() => {
         fetchTransactions(chainId, page).then((txs) => {
             setTransactions(txs.transactions);
-            setNrPages(txs.nrPages);
+            setTotalCount(txs.totalCount);
+            setItemsPerPage(txs.itemsPerPage);
         });
     }, [page]);
 
@@ -58,23 +61,12 @@ export function TransactionsPanel({
             </table>
 
             <div className="transactions-panel__pagination-container">
-                <div className="pagination">
-                    {page > 1 ? (
-                        <div className="pagination__arrow" onClick={() => setPage(page - 1)}>
-                            {"<"}
-                        </div>
-                    ) : (
-                        <div className="pagination__arrow pagination__arrow--disabled">{"<"}</div>
-                    )}
-                    <div>{page}/{nrPages}</div>
-                    {page < nrPages ? (
-                        <div className="pagination__arrow" onClick={() => setPage(page + 1)}>
-                            {">"}
-                        </div>
-                    ) : (
-                        <div className="pagination__arrow pagination__arrow--disabled">{">"}</div>
-                    )}
-                </div>
+                <PaginationFooter
+                    page={page}
+                    totalCount={totalCount}
+                    itemsPerPage={itemsPerPage}
+                    setPage={setPage}
+                />
             </div>
         </div>
     );

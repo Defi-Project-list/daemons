@@ -3,7 +3,8 @@ import { storageAddress } from ".";
 
 export interface IFetchedTxs {
     transactions: ITransaction[];
-    nrPages: number;
+    totalCount: number;
+    itemsPerPage: number;
 }
 
 export class TransactionProxy {
@@ -18,7 +19,7 @@ export class TransactionProxy {
     ): Promise<IFetchedTxs> {
         if (!chainId) {
             console.warn("Missing chain id. User transactions fetch aborted");
-            return { nrPages: 1, transactions: [] };
+            return { totalCount: 0, itemsPerPage: 20, transactions: [] };
         }
 
         console.log(`Fetching user transactions for chain ${chainId}`);
@@ -27,7 +28,7 @@ export class TransactionProxy {
 
         const requestOptions = { method: "GET", credentials: "include" };
         const response = await fetch(url, requestOptions as any);
-        if (response.status !== 200) return { nrPages: 1, transactions: [] };
+        if (response.status !== 200) return { totalCount: 0, itemsPerPage: 20, transactions: [] };
 
         const fetchedTxs: IFetchedTxs = await response.json();
         return fetchedTxs;
@@ -44,7 +45,7 @@ export class TransactionProxy {
     ): Promise<IFetchedTxs> {
         if (!chainId) {
             console.warn("Missing chain id. Executed transactions fetch aborted");
-            return { nrPages: 1, transactions: [] };
+            return { totalCount: 0, itemsPerPage: 20, transactions: [] };
         }
 
         console.log(`Fetching transactions executed on chain ${chainId}`);
@@ -53,7 +54,7 @@ export class TransactionProxy {
 
         const requestOptions = { method: "GET", credentials: "include" };
         const response = await fetch(url, requestOptions as any);
-        if (response.status !== 200) return { nrPages: 1, transactions: [] };
+        if (response.status !== 200) return { totalCount: 0, itemsPerPage: 20, transactions: [] };
 
         const fetchedTxs: IFetchedTxs = await response.json();
         return fetchedTxs;
