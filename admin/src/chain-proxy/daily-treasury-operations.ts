@@ -51,11 +51,12 @@ async function performDailyTreasuryOperationsForChain(chain: IChainWithContracts
         message: `Daily treasury operation report`,
         chain: chain.name,
         commissions,
-        polPool
+        polPool,
+        treasuryAddress: chain.contracts.Treasury
     });
 
     if (commissions > thresholds.minCommission) {
-        logger.debug({ message: "Claiming commission" });
+        logger.debug({ message: "Claiming commission", chain: chain.name });
         try {
             await treasuryContract.claimCommission();
         } catch (error) {
@@ -68,7 +69,7 @@ async function performDailyTreasuryOperationsForChain(chain: IChainWithContracts
     }
 
     if (polPool > thresholds.minPolPool) {
-        logger.debug({ message: "Funding LP" });
+        logger.debug({ message: "Funding LP", chain: chain.name });
         try {
             const quoteHalfETHtoDAEM = await treasuryContract.ethToDAEM(polPoolRaw.div(2));
             const minAmountDAEM = quoteHalfETHtoDAEM.mul(99).div(100);
