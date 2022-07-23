@@ -19,6 +19,7 @@ jobs:
         env:
           JWT_SECRET: jwt_secret_for_tests
           MONGO_DB_CONN_STRING: not_used_in_tests
+          OTP_KEY: just_testing
         run: |
           cd storage/
           npm install
