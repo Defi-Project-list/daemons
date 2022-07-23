@@ -22,6 +22,8 @@
 .wallet-connector__address {
     background-color: var(--secondary-background);
     display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
     height: 45px;
     padding: 0 10px;
@@ -34,6 +36,8 @@
 
 .wallet-connector__address--unauthenticated {
     cursor: pointer;
+    line-height: 17px;
+    padding: 0 20px;
 }
 
 .wallet-connector__address-notification {
