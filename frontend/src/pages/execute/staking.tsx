@@ -14,6 +14,8 @@ import { treasuryABI } from "@daemons-fi/contracts";
 import { errorToast, promiseToast } from "../../components/toaster";
 import "./staking.css";
 import { Card, HeadlessCard } from "../../components/card/card";
+import CountUp from "react-countup";
+import { fetchTreasuryStats } from "../../state/action-creators/treasury-action-creators";
 
 export function Staking() {
     const dispatch = useDispatch();
@@ -24,8 +26,13 @@ export function Staking() {
     const DAEMBalance = useSelector((state: RootState) => state.wallet.DAEMBalance);
     const [toggleDeposit, setToggleDeposit] = useState<boolean>(true);
     const [needsAllowance, setNeedsAllowance] = useState<boolean>(true);
+    const [apy, setApy] = useState<number>(0);
     const contracts = GetCurrentChain(chainId!).contracts;
     const currencySymbol = GetCurrentChain(chainId!).coinSymbol;
+    const currentDAEMPrice = useSelector((state: RootState) => state.prices.DAEMPriceInEth);
+    const distrInterval = useSelector((state: RootState) => state.treasury.distrInterval);
+    const redistributionPool = useSelector((state: RootState) => state.treasury.redistributionPool);
+    const stakedAmount = useSelector((state: RootState) => state.treasury.stakedAmount);
 
     // wallet signer and provider
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);
@@ -43,11 +50,25 @@ export function Staking() {
     };
 
     useEffect(() => {
+        dispatch(fetchTreasuryStats(chainId));
         dispatch(fetchStakingBalance(walletAddress, chainId));
         dispatch(fetchStakingClaimable(walletAddress, chainId));
         dispatch(fetchDaemBalance(walletAddress, chainId));
         checkForAllowance();
     }, []);
+
+    useEffect(() => {
+        if (!redistributionPool || !currentDAEMPrice || !stakedAmount || !distrInterval) return;
+        // 360 / distribution-in-days * treasury / staked-DAEM / ETH-worth-of-DAEM
+        const secondsInOneYear = 31104000;
+        const apr =
+            (((secondsInOneYear / distrInterval!) * redistributionPool!) /
+                stakedAmount! /
+                currentDAEMPrice!) *
+            100;
+        const apy = (Math.pow(1 + apr / 100 / 365, 365) - 1) * 100;
+        setApy(apy);
+    }, [redistributionPool, stakedAmount, distrInterval, currentDAEMPrice]);
 
     const exit = async () => {
         if (!claimable && !stakingBalance) {
@@ -305,6 +326,12 @@ export function Staking() {
                 iconClass="card__title-icon--stake"
                 actionComponent={depositWithdrawSwitch}
             >
+                <div className="staking__apy-info">
+                    <div>APY, paid in ETH:</div>
+                    <div className="staking__apy">
+                        <CountUp duration={0.5} decimals={2} suffix={`%`} end={apy ?? 0} />
+                    </div>
+                </div>
                 <div className="card__fake-input">
                     {stakingBalance !== undefined ? stakingBalance : "??"} DAEM
                 </div>

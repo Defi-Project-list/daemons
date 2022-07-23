@@ -1,28 +1,19 @@
 import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
+import { useDispatch, useSelector } from "react-redux";
+import { GetCurrentChain } from "../../data/chain-info";
 import { RootState } from "../../state";
-import { treasuryABI, UniswapV2PairABI } from "@daemons-fi/contracts";
+import { UniswapV2PairABI } from "@daemons-fi/contracts";
 import { bigNumberToFloat } from "@daemons-fi/contracts";
 import { Cacher } from "../../data/cacher";
 import CountUp from "react-countup";
-
-const getTreasuryContract = (chainId: string) => {
-    const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-
-    if (!IsChainSupported(chainId)) throw new Error(`Chain ${chainId} is not supported!`);
-    const treasuryAddress = GetCurrentChain(chainId).contracts.Treasury;
-    return new ethers.Contract(treasuryAddress, treasuryABI, provider);
-};
+import { fetchTreasuryStats } from "../../state/action-creators/treasury-action-creators";
 
 type reserves = { resETH: number; resDAEM: number };
 
 export function TreasuryData(): JSX.Element {
+    const dispatch = useDispatch();
     const chainId = useSelector((state: RootState) => state.wallet.chainId)!;
-    const [redistributionPool, setRedistributionPool] = useState<number | undefined>();
-    const [stakedAmount, setStakedAmount] = useState<number | undefined>();
-    const [distrInterval, setDistrInterval] = useState<number | undefined>();
     const [lpTreasuryBalance, setLpTreasuryBalance] = useState<number | undefined>();
     const [lpOwnedPercentage, setLpOwnedPercentage] = useState<number | undefined>();
     const [lpReserves, setLpReserves] = useState<reserves | undefined>();
@@ -30,6 +21,9 @@ export function TreasuryData(): JSX.Element {
     const [apy, setApy] = useState<number | undefined>();
     const currencySymbol = GetCurrentChain(chainId).coinSymbol;
     const currentDAEMPrice = useSelector((state: RootState) => state.prices.DAEMPriceInEth);
+    const distrInterval = useSelector((state: RootState) => state.treasury.distrInterval);
+    const redistributionPool = useSelector((state: RootState) => state.treasury.redistributionPool);
+    const stakedAmount = useSelector((state: RootState) => state.treasury.stakedAmount);
 
     const secondsInOneYear = 31104000;
     const calculateAPR = (): number =>
@@ -38,21 +32,6 @@ export function TreasuryData(): JSX.Element {
             stakedAmount! /
             currentDAEMPrice!) *
         100;
-
-    // Treasury Stats
-    const fetchAndSetTreasuryStats = async (): Promise<void> => {
-        const f = async () => {
-            const treasury = getTreasuryContract(chainId);
-            const redistributionAmount = bigNumberToFloat(await treasury.redistributionPool(), 6);
-            const stakedAmount = bigNumberToFloat(await treasury.stakedAmount(), 6);
-            const distrInterval = (await treasury.redistributionInterval()).toNumber();
-            return { redistributionAmount, stakedAmount, distrInterval };
-        };
-        const treasuryStats = await Cacher.fetchData(`B/treasury-stats/${chainId}`, f);
-        setRedistributionPool(treasuryStats.redistributionAmount);
-        setStakedAmount(treasuryStats.stakedAmount);
-        setDistrInterval(treasuryStats.distrInterval);
-    };
 
     // LP Balance
     const fetchAndSetLpBalance = async (): Promise<void> => {
@@ -88,7 +67,7 @@ export function TreasuryData(): JSX.Element {
     };
 
     useEffect(() => {
-        fetchAndSetTreasuryStats();
+        dispatch(fetchTreasuryStats(chainId));
         fetchAndSetLpBalance();
     }, [chainId]);
 
@@ -131,15 +110,11 @@ export function TreasuryData(): JSX.Element {
                     <CountUp duration={0.5} decimals={5} suffix={` DAEM`} end={stakedAmount ?? 0} />
                 </div>
             </div>
-            <br/>
+            <br />
             <div className="treasury-stats__group">
                 <div className="treasury-stats__title">Treasury owned LP</div>
                 <div className="treasury-stats__value">
-                    <CountUp
-                        duration={0.5}
-                        decimals={4}
-                        end={lpTreasuryBalance ?? 0}
-                    />
+                    <CountUp duration={0.5} decimals={4} end={lpTreasuryBalance ?? 0} />
                     <CountUp
                         duration={0.5}
                         decimals={2}

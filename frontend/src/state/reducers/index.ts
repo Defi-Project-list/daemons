@@ -5,6 +5,7 @@ import { pricesReducer } from "./prices-reducer";
 import { scriptReducer } from "./script-reducer";
 import { stakingReducer } from "./staking-reducer";
 import { tipJarReducer } from "./tip-jar-reducer";
+import { treasuryReducer } from "./treasury-reducer";
 import { walletReducer } from "./wallet-reducer";
 import { workbenchReducer } from "./workbench-reducer";
 
@@ -16,7 +17,8 @@ const reducers = combineReducers({
     staking: stakingReducer,
     workbench: workbenchReducer,
     gasPriceFeed: gasPriceFeedReducer,
-    prices: pricesReducer
+    prices: pricesReducer,
+    treasury: treasuryReducer
 });
 
 export default reducers;
