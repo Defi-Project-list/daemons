@@ -36,6 +36,13 @@ abstract contract ConditionsChecker is Ownable {
         chainId = id;
     }
 
+    /* ========== ABSTRACT FUNCTIONS ========== */
+
+    function GAS_LIMIT() external virtual returns (uint256) {
+        require(false, "GAS_LIMIT should have been overridden");
+        return 0;
+    }
+
     /* ========== RESTRICTED FUNCTIONS ========== */
 
     /// @notice Set the address of a new GasTank

@@ -6,7 +6,7 @@ import "./ConditionsCheckerForMoneyMarket.sol";
 import "./Messages.sol";
 
 contract PassScriptExecutor is ConditionsChecker, ConditionsCheckerForMoneyMarket {
-    uint256 public constant GAS_LIMIT = 150000; // 0.00015 GWEI
+    uint256 public override constant GAS_LIMIT = 150000; // 0.00015 GWEI
 
     /* ========== HASH FUNCTIONS ========== */
 

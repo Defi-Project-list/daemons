@@ -6,7 +6,7 @@ import "./Messages.sol";
 import "./interfaces/IBeefyVault.sol";
 
 contract BeefyScriptExecutor is ConditionsChecker {
-    uint256 public constant GAS_LIMIT = 380000; // 0.00038 GWEI
+    uint256 public override constant GAS_LIMIT = 380000; // 0.00038 GWEI
 
     /* ========== HASH FUNCTIONS ========== */
 
