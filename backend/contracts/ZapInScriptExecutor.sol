@@ -1,14 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "hardhat/console.sol";
 import "./ConditionsChecker.sol";
 import "./Messages.sol";
 import "./interfaces/IUniswapV2Router.sol";
 import "./interfaces/IUniswapV2Factory.sol";
+import "./interfaces/IUniswapV2Pair.sol";
+import "./utils/Babylonian.sol";
 
+/*
+ * @author Inspiration from the work of Zapper, Beefy and PancakeSwap.
+ * Implemented and modified by Daemons teams.
+ */
 contract ZapInScriptExecutor is ConditionsChecker {
-    uint256 public constant GAS_LIMIT = 320000; // 0.00032 GWEI
+    uint256 public constant override GAS_LIMIT = 500000; // 0.00050 GWEI
 
     /* ========== HASH FUNCTIONS ========== */
 
@@ -22,8 +27,7 @@ contract ZapInScriptExecutor is ConditionsChecker {
                 abi.encode(
                     ZAP_IN_TYPEHASH,
                     zapIn.scriptId,
-                    zapIn.tokenA,
-                    zapIn.tokenB,
+                    zapIn.pair,
                     zapIn.amountA,
                     zapIn.amountB,
                     zapIn.typeAmtA,
@@ -61,19 +65,9 @@ contract ZapInScriptExecutor is ConditionsChecker {
         verifyRevocation(message.user, message.scriptId);
         require(message.user == ecrecover(hash(message), v, r, s), "[SIGNATURE][FINAL]");
         require(!(message.amountA == 0 && message.amountB == 0), "[ZERO_AMOUNT][FINAL]");
-        require(
-            IUniswapV2Factory(IUniswapV2Router01(message.kontract).factory()).getPair(
-                message.tokenA,
-                message.tokenB
-            ) != address(0),
-            "[UNSUPPORTED_PAIR][FINAL]"
-        );
-        console.log("token A", message.tokenA);
-        console.log("token B", message.tokenB);
-        console.log("pair address", IUniswapV2Factory(IUniswapV2Router01(message.kontract).factory()).getPair(
-                message.tokenA,
-                message.tokenB
-            ));
+
+        address tokenA = IUniswapV2Pair(message.pair).token0();
+        address tokenB = IUniswapV2Pair(message.pair).token1();
         verifyRepetitions(message.repetitions, message.scriptId);
 
         verifyFollow(message.follow, message.scriptId);
@@ -82,19 +76,13 @@ contract ZapInScriptExecutor is ConditionsChecker {
 
         // the user balance of token A must be >= the specified amount
         uint256 minAmountA = message.typeAmtA == 0 ? message.amountA : 0;
-        verifyAllowance(message.user, message.tokenA, minAmountA);
-        require(
-            ERC20(message.tokenA).balanceOf(message.user) >= minAmountA,
-            "[SCRIPT_BALANCE][TMP]"
-        );
+        verifyAllowance(message.user, tokenA, minAmountA);
+        require(ERC20(tokenA).balanceOf(message.user) >= minAmountA, "[SCRIPT_BALANCE][TMP]");
 
         // the user balance of token B must be >= the specified amount
         uint256 minAmountB = message.typeAmtB == 0 ? message.amountB : 0;
-        verifyAllowance(message.user, message.tokenB, minAmountB);
-        require(
-            ERC20(message.tokenB).balanceOf(message.user) >= minAmountB,
-            "[SCRIPT_BALANCE][TMP]"
-        );
+        verifyAllowance(message.user, tokenB, minAmountB);
+        require(ERC20(tokenB).balanceOf(message.user) >= minAmountB, "[SCRIPT_BALANCE][TMP]");
 
         verifyFrequency(message.frequency, message.scriptId);
         verifyBalance(message.balance, message.user);
@@ -115,33 +103,36 @@ contract ZapInScriptExecutor is ConditionsChecker {
         lastExecutions[message.scriptId] = block.timestamp;
         repetitionsCount[message.scriptId] += 1;
 
+        address tokenA = IUniswapV2Pair(message.pair).token0();
+        address tokenB = IUniswapV2Pair(message.pair).token1();
+
         // define how much should be zapped in the LP
         // absolute type: just return the given amount
         // percentage type: the amount represents a percentage on 10000
         uint256 amountA = message.typeAmtA == 0
             ? message.amountA
-            : (IERC20(message.tokenA).balanceOf(message.user) * message.amountA) / 10000;
+            : (IERC20(tokenA).balanceOf(message.user) * message.amountA) / 10000;
         uint256 amountB = message.typeAmtB == 0
             ? message.amountB
-            : (IERC20(message.tokenB).balanceOf(message.user) * message.amountB) / 10000;
+            : (IERC20(tokenB).balanceOf(message.user) * message.amountB) / 10000;
 
-        approveTokenIfNeeded(message.tokenA, message.kontract, amountA);
-        approveTokenIfNeeded(message.tokenB, message.kontract, amountB);
+        approveTokenIfNeeded(tokenA, message.kontract, amountA);
+        approveTokenIfNeeded(tokenB, message.kontract, amountB);
 
         // get the tokens from the user
-        if (amountA > 0) IERC20(message.tokenA).transferFrom(message.user, address(this), amountA);
-        if (amountB > 0) IERC20(message.tokenB).transferFrom(message.user, address(this), amountB);
+        if (amountA > 0) IERC20(tokenA).transferFrom(message.user, address(this), amountA);
+        if (amountB > 0) IERC20(tokenB).transferFrom(message.user, address(this), amountB);
 
-        createLP(
-            message.tokenA,
+        zapAndAddLiquidity(
+            tokenA,
+            tokenB,
             amountA,
-            message.tokenB,
             amountB,
+            message.pair,
+            0,
             IUniswapV2Router01(message.kontract),
             message.user
         );
-
-        // what about the dust?
 
         // reward executor
         gasTank.addReward(
@@ -151,6 +142,58 @@ contract ZapInScriptExecutor is ConditionsChecker {
             message.user,
             _msgSender()
         );
+    }
+
+    function zapAndAddLiquidity(
+        address _token0,
+        address _token1,
+        uint256 _token0AmountIn,
+        uint256 _token1AmountIn,
+        address _pair,
+        uint256 _tokenAmountOutMin,
+        IUniswapV2Router01 _router,
+        address _user
+    ) private {
+        uint256 amtA;
+        uint256 amtB;
+
+        if (_token0AmountIn > 0 && _token1AmountIn > 0) {
+            // Zap with Rebalancing
+            (amtA, amtB) = _zapInRebalancing(
+                _token0,
+                _token1,
+                _token0AmountIn,
+                _token1AmountIn,
+                _pair,
+                _tokenAmountOutMin,
+                _router
+            );
+        } else if (_token0AmountIn > 0) {
+            // Zap A
+            (amtA, amtB) = _zapIn(
+                _token0,
+                _token1,
+                true,
+                _token0AmountIn,
+                _pair,
+                _tokenAmountOutMin,
+                _router
+            );
+        } else {
+            // Zap B
+            (amtB, amtA) = _zapIn(
+                _token0,
+                _token1,
+                false,
+                _token1AmountIn,
+                _pair,
+                _tokenAmountOutMin,
+                _router
+            );
+        }
+
+        // Add liquidity and send LP to the user
+        _router.addLiquidity(_token0, _token1, amtA, amtB, 1, 1, _user, block.timestamp);
     }
 
     function approveTokenIfNeeded(
@@ -163,72 +206,191 @@ contract ZapInScriptExecutor is ConditionsChecker {
         }
     }
 
-    function createLP(
-        address tokenA,
-        uint256 amountA,
-        address tokenB,
-        uint256 amountB,
-        IUniswapV2Router01 router,
-        address user
-    ) private {
-        address[] memory pathAB = new address[](2);
-        pathAB[0] = tokenA;
-        pathAB[1] = tokenB;
-        address[] memory pathBA = new address[](2);
-        pathBA[0] = tokenB;
-        pathBA[1] = tokenA;
+    /*
+     * @notice Zap a token in (e.g. token/other token)
+     * @param _tokenToZap: token to zap
+     * @param _tokenAmountIn: amount of token to swap
+     * @param _tokenAmountOutMin: minimum token to receive in the intermediary swap
+     */
+    function _zapIn(
+        address _token0,
+        address _token1,
+        bool _zapToken0,
+        uint256 _tokenAmountIn,
+        address _pair,
+        uint256 _tokenAmountOutMin,
+        IUniswapV2Router01 _router
+    ) internal returns (uint256, uint256) {
+        (uint256 _reserveA, uint256 _reserveB, ) = IUniswapV2Pair(_pair).getReserves();
+        // Retrieve the path
+        address[] memory path = new address[](2);
+        path[0] = _zapToken0 ? _token0 : _token1;
+        path[1] = _zapToken0 ? _token1 : _token0;
 
-        console.log("token A", tokenA);
-        console.log("amount A", amountA);
-        console.log("token B", tokenB);
-        console.log("amount B", amountB);
+        // Initiates an estimation to swap
+        uint256 swapAmountIn = _zapToken0
+            ? _calculateAmountToSwap(_tokenAmountIn, _reserveA, _reserveB, _router)
+            : _calculateAmountToSwap(_tokenAmountIn, _reserveB, _reserveA, _router);
 
-        // get value of tokenA if converted to tokenB
-        uint256 quotedAtoB = router.getAmountsOut(amountA, pathAB)[1];
-
-        console.log("quotedAtoB", quotedAtoB);
-
-        // sum the amounts and divide by 2
-        uint256 halved = (quotedAtoB + amountB) / 2;
-
-        console.log("halved", halved);
-
-        // subtract amountB
-        if (halved < amountB) {
-            console.log("CONDITION 1. swapping B to A for ", amountB - halved);
-            // if > 0 => swap that amount of B to A
-            uint256 expectedAmount = router.getAmountsOut(amountB - halved, pathBA)[1];
-            router.swapExactTokensForTokens(
-                amountB - halved,
-                expectedAmount * 99 / 100,
-                pathBA,
-                address(this),
-                block.timestamp
-            );
-        } else {
-            // if < 0 => swap that amount (converted in tokenA) from A to B
-            uint256 amountAtoSwap = router.getAmountsOut(halved - amountB, pathBA)[1];
-            console.log("CONDITION 2. swapping A to B for ", amountAtoSwap);
-            router.swapExactTokensForTokens(
-                amountAtoSwap,
-                (halved - amountB) * 99 / 100,
-                pathAB,
-                address(this),
-                block.timestamp
-            );
-        }
-
-        console.log("adding liquidity");
-        // add liquidity
-        router.addLiquidity(
-            tokenB,
-            tokenA,
-            halved,
-            IERC20(tokenA).balanceOf(address(this)),
-            0,
-            0,
-            user,
+        uint256[] memory swappedAmounts = _router.swapExactTokensForTokens(
+            swapAmountIn,
+            _tokenAmountOutMin,
+            path,
+            address(this),
             block.timestamp
         );
+
+        return (_tokenAmountIn - swappedAmounts[0], swappedAmounts[1]);
+    }
+
+    /*
+     * @notice Zap two tokens in, rebalance them to 50-50, before adding them to LP
+     * @param _token0ToZap: address of token0 to zap
+     * @param _token1ToZap: address of token1 to zap
+     * @param _token0AmountIn: amount of token0 to zap
+     * @param _token1AmountIn: amount of token1 to zap
+     * @param _lpToken: LP token address
+     * @param _tokenAmountInMax: maximum token amount to sell (in token to sell in the intermediary swap)
+     * @param _isToken0Sold: whether token0 is expected to be sold (if false, sell token1)
+     */
+    function _zapInRebalancing(
+        address _token0,
+        address _token1,
+        uint256 _token0AmountIn,
+        uint256 _token1AmountIn,
+        address _pair,
+        uint256 _tokenAmountOutMin,
+        IUniswapV2Router01 _router
+    ) internal returns (uint256, uint256) {
+        (uint256 _reserveA, uint256 _reserveB, ) = IUniswapV2Pair(_pair).getReserves();
+        bool zapToken0 = (_token0AmountIn * _reserveB > _token1AmountIn * _reserveA);
+        uint256 swapAmountIn = _calculateAmountToSwapForRebalancing(
+            _token0AmountIn,
+            _token1AmountIn,
+            _reserveA,
+            _reserveB,
+            zapToken0,
+            _router
+        );
+
+        address[] memory path = new address[](2);
+        path[0] = zapToken0 ? _token0 : _token1;
+        path[1] = zapToken0 ? _token1 : _token0;
+
+        // Execute the swap and retrieve quantity received
+        uint256[] memory swappedAmounts = _router.swapExactTokensForTokens(
+            swapAmountIn,
+            _tokenAmountOutMin,
+            path,
+            address(this),
+            block.timestamp
+        );
+
+        return (
+            (zapToken0 ? _token0AmountIn : _token1AmountIn) - swappedAmounts[0],
+            (zapToken0 ? _token1AmountIn : _token0AmountIn) + swappedAmounts[1]
+        );
+    }
+
+    /*
+     * @notice Calculate the swap amount to get the price at 50/50 split
+     * @param _token0AmountIn: amount of token 0
+     * @param _reserve0: amount in reserve for token0
+     * @param _reserve1: amount in reserve for token1
+     * @return amountToSwap: swapped amount (in token0)
+     */
+    function _calculateAmountToSwap(
+        uint256 _token0AmountIn,
+        uint256 _reserve0,
+        uint256 _reserve1,
+        IUniswapV2Router01 _router
+    ) private pure returns (uint256 amountToSwap) {
+        uint256 halfToken0Amount = _token0AmountIn / 2;
+        uint256 nominator = _router.getAmountOut(halfToken0Amount, _reserve0, _reserve1);
+        uint256 denominator = _router.quote(
+            halfToken0Amount,
+            _reserve0 + halfToken0Amount,
+            _reserve1 - nominator
+        );
+
+        // Adjustment for price impact
+        amountToSwap =
+            _token0AmountIn -
+            Babylonian.sqrt((halfToken0Amount * halfToken0Amount * nominator) / denominator);
+
+        return amountToSwap;
+    }
+
+    /*
+     * @notice Calculate the amount to swap to get the tokens at a 50/50 split
+     * @param _token0AmountIn: amount of token 0
+     * @param _token1AmountIn: amount of token 1
+     * @param _reserve0: amount in reserve for token0
+     * @param _reserve1: amount in reserve for token1
+     * @param _isToken0Sold: whether token0 is expected to be sold (if false, sell token1)
+     * @return amountToSwap: swapped amount in token0 (if _isToken0Sold is true) or token1 (if _isToken0Sold is false)
+     */
+    function _calculateAmountToSwapForRebalancing(
+        uint256 _token0AmountIn,
+        uint256 _token1AmountIn,
+        uint256 _reserve0,
+        uint256 _reserve1,
+        bool _isToken0Sold,
+        IUniswapV2Router01 _router
+    ) private pure returns (uint256 amountToSwap) {
+        if (_isToken0Sold) {
+            uint256 token0AmountToSell = (_token0AmountIn -
+                (_token1AmountIn * _reserve0) /
+                _reserve1) / 2;
+            uint256 nominator = _router.getAmountOut(token0AmountToSell, _reserve0, _reserve1);
+            uint256 denominator = _router.quote(
+                token0AmountToSell,
+                _reserve0 + token0AmountToSell,
+                _reserve1 - nominator
+            );
+
+            // Calculate the amount to sell (in token0)
+            token0AmountToSell =
+                (_token0AmountIn -
+                    (_token1AmountIn * (_reserve0 + token0AmountToSell)) /
+                    (_reserve1 - nominator)) /
+                2;
+
+            // Adjustment for price impact
+            amountToSwap =
+                2 *
+                token0AmountToSell -
+                Babylonian.sqrt(
+                    (token0AmountToSell * token0AmountToSell * nominator) / denominator
+                );
+        } else {
+            uint256 token1AmountToSell = (_token1AmountIn -
+                (_token0AmountIn * _reserve1) /
+                _reserve0) / 2;
+            uint256 nominator = _router.getAmountOut(token1AmountToSell, _reserve1, _reserve0);
+
+            uint256 denominator = _router.quote(
+                token1AmountToSell,
+                _reserve1 + token1AmountToSell,
+                _reserve0 - nominator
+            );
+
+            // Calculate the amount to sell (in token1)
+            token1AmountToSell =
+                (_token1AmountIn -
+                    ((_token0AmountIn * (_reserve1 + token1AmountToSell)) /
+                        (_reserve0 - nominator))) /
+                2;
+
+            // Adjustment for price impact
+            amountToSwap =
+                2 *
+                token1AmountToSell -
+                Babylonian.sqrt(
+                    (token1AmountToSell * token1AmountToSell * nominator) / denominator
+                );
+        }
+
+        return amountToSwap;
     }
 }

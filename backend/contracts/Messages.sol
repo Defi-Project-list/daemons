@@ -154,8 +154,7 @@ bytes32 constant MM_ADVANCED_TYPEHASH = keccak256(abi.encodePacked(MM_ADVANCED_T
 
 struct ZapIn {
     bytes32 scriptId;
-    address tokenA;
-    address tokenB;
+    address pair;
     uint256 amountA;
     uint256 amountB;
     bytes1 typeAmtA;
@@ -171,7 +170,7 @@ struct ZapIn {
     Repetitions repetitions;
     Follow follow;
 }
-string constant ZAP_IN_TYPE = "ZapIn(bytes32 scriptId,address tokenA,address tokenB,uint256 amountA,uint256 amountB,bytes1 typeAmtA,bytes1 typeAmtB,address user,address kontract,address executor,uint256 chainId,uint256 tip,Balance balance,Frequency frequency,Price price,Repetitions repetitions,Follow follow)Balance(bool enabled,address token,bytes1 comparison,uint256 amount)Follow(bool enabled,uint256 shift,bytes32 scriptId,address executor)Frequency(bool enabled,uint256 delay,uint256 start)Price(bool enabled,address tokenA,address tokenB,bytes1 comparison,uint256 value,address router)Repetitions(bool enabled,uint32 amount)";
+string constant ZAP_IN_TYPE = "ZapIn(bytes32 scriptId,address pair,uint256 amountA,uint256 amountB,bytes1 typeAmtA,bytes1 typeAmtB,address user,address kontract,address executor,uint256 chainId,uint256 tip,Balance balance,Frequency frequency,Price price,Repetitions repetitions,Follow follow)Balance(bool enabled,address token,bytes1 comparison,uint256 amount)Follow(bool enabled,uint256 shift,bytes32 scriptId,address executor)Frequency(bool enabled,uint256 delay,uint256 start)Price(bool enabled,address tokenA,address tokenB,bytes1 comparison,uint256 value,address router)Repetitions(bool enabled,uint32 amount)";
 bytes32 constant ZAP_IN_TYPEHASH = keccak256(abi.encodePacked(ZAP_IN_TYPE));
 
 struct ZapOut {
