@@ -13,8 +13,7 @@ export interface ISignedZapInAction extends IZapInAction {
 
 export interface IZapInAction {
   scriptId: string;
-  tokenA: string;
-  tokenB: string;
+  pair: string;
   amountA: BigNumber;
   amountB: BigNumber;
   typeAmtA: AmountType;
@@ -33,10 +32,9 @@ export interface IZapInAction {
 
 const ZapIn = [
   { name: "scriptId", type: "bytes32" },            // the script identifier
-  { name: "tokenA", type: "address" },              // the first token of the LP pair
-  { name: "tokenB", type: "address" },              // the second token of the LP pair
-  { name: "amountA", type: "uint256" },             // the amount of the first token
-  { name: "amountB", type: "uint256" },             // the amount of the second token
+  { name: "pair", type: "address" },                // the pair address
+  { name: "amountA", type: "uint256" },             // the amount of the first token (token0 in pair)
+  { name: "amountB", type: "uint256" },             // the amount of the second token (token1 in pair)
   { name: "typeAmtA", type: "bytes1" },             // indicated the first amount type [Absolute, Percentage]
   { name: "typeAmtB", type: "bytes1" },             // indicated the second amount type [Absolute, Percentage]
   { name: "user", type: "address" },                // the user that is signing the transaction
