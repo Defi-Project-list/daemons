@@ -7,7 +7,7 @@ import { PriceFactory } from "../condition-base-factories/price-factory";
 import { RepetitionsFactory } from "../condition-base-factories/repetitions-factory";
 import { FollowFactory } from "../condition-base-factories/follow-factory";
 import { IZapInAction } from "@daemons-fi/shared-definitions/build";
-import { zapInScriptABI } from "@daemons-fi/contracts";
+import { UniswapV2PairABI, zapInScriptABI } from "@daemons-fi/contracts";
 import { AllowanceHelper } from "../allowance-helper";
 
 export class ZapInScript extends BaseScript {
@@ -55,15 +55,18 @@ export class ZapInScript extends BaseScript {
     public async hasAllowance(
         signerOrProvider: ethers.providers.Provider | ethers.Signer
     ): Promise<boolean> {
+        const tokenA = await this.getTokenA(signerOrProvider);
+        const tokenB = await this.getTokenB(signerOrProvider);
+
         const allowanceTokenA = await this.checkAllowanceForSingleToken(
             signerOrProvider,
-            this.message.tokenA,
+            tokenA,
             this.message.amountA
         );
 
         const allowanceTokenB = await this.checkAllowanceForSingleToken(
             signerOrProvider,
-            this.message.tokenB,
+            tokenB,
             this.message.amountB
         );
 
@@ -86,32 +89,49 @@ export class ZapInScript extends BaseScript {
 
     // Override parent hasAllowance, as we need to grant it to two tokens
     public async requestAllowance(signer: ethers.Signer): Promise<TransactionResponse> {
+        const tokenA = await this.getTokenA(signer);
+        const tokenB = await this.getTokenB(signer);
+
         const allowanceTokenA = await this.checkAllowanceForSingleToken(
             signer,
-            this.message.tokenA,
+            tokenA,
             this.message.amountA
         );
         const allowanceTokenB = await this.checkAllowanceForSingleToken(
             signer,
-            this.message.tokenB,
+            tokenB,
             this.message.amountB
         );
 
         const txA = !allowanceTokenA
-            ? await AllowanceHelper.requestERC20Allowance(
-                  this.message.tokenA,
-                  this.getExecutorAddress(),
-                  signer
-              )
+            ? await AllowanceHelper.requestERC20Allowance(tokenA, this.getExecutorAddress(), signer)
             : undefined;
         const txB = !allowanceTokenB
-            ? await AllowanceHelper.requestERC20Allowance(
-                  this.message.tokenB,
-                  this.getExecutorAddress(),
-                  signer
-              )
+            ? await AllowanceHelper.requestERC20Allowance(tokenB, this.getExecutorAddress(), signer)
             : undefined;
 
         return txB ?? txA!;
+    }
+
+    private tokenA?: string;
+    private async getTokenA(
+        signerOrProvider: ethers.providers.Provider | ethers.Signer
+    ): Promise<string> {
+        if (!this.tokenA) {
+            const pair = new ethers.Contract(this.message.pair, UniswapV2PairABI, signerOrProvider);
+            this.tokenA = (await pair.token0()) as string;
+        }
+        return this.tokenA;
+    }
+
+    private tokenB?: string;
+    private async getTokenB(
+        signerOrProvider: ethers.providers.Provider | ethers.Signer
+    ): Promise<string> {
+        if (!this.tokenB) {
+            const pair = new ethers.Contract(this.message.pair, UniswapV2PairABI, signerOrProvider);
+            this.tokenB = (await pair.token1()) as string;
+        }
+        return this.tokenB;
     }
 }
