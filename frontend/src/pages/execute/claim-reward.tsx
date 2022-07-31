@@ -96,7 +96,9 @@ export function ClaimRewards() {
         <Card title="Claim Profits" iconClass="card__title-icon--profits">
             <div className="claim-reward">
                 <div className="claim-reward__claimable">
-                    {nothingToClaim ? `Nothing to claim` : `${claimable} DAEM to be claimed`}
+                    {nothingToClaim
+                        ? `No DAEM to claim. Run scripts to get some!`
+                        : `${claimable} DAEM to be claimed`}
                     <Confetti active={confetti} config={confettiConfig} />
                 </div>
                 <div className="claim-reward__buttons-container">

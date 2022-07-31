@@ -33,6 +33,7 @@ export function Staking() {
     const distrInterval = useSelector((state: RootState) => state.treasury.distrInterval);
     const redistributionPool = useSelector((state: RootState) => state.treasury.redistributionPool);
     const stakedAmount = useSelector((state: RootState) => state.treasury.stakedAmount);
+    const nothingToClaim = !claimable;
 
     // wallet signer and provider
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);
@@ -158,6 +159,28 @@ export function Staking() {
             tx.wait,
             `Claiming reward`,
             "Claim successful 🎉. Thanks for being a Daemons users! You make our day",
+            "Something bad happened. Contact us if the error persists"
+        );
+        await toastedTransaction;
+
+        dispatch(fetchStakingClaimable(walletAddress, chainId));
+    };
+
+    const compound = async () => {
+        if (!claimable) {
+            errorToast("Nothing to compound");
+            return;
+        }
+
+        const treasury = await getTreasuryContract();
+        const quote = await treasury.ethToDAEM(claimable);
+        const minAmountOut = quote.mul(99).div(100);
+
+        const tx = await treasury.compoundReward(minAmountOut);
+        const toastedTransaction = promiseToast(
+            tx.wait,
+            `Compounding reward`,
+            "Compounding successful 🎉. Your ETH has been sold for DAEM and staked",
             "Something bad happened. Contact us if the error persists"
         );
         await toastedTransaction;
@@ -345,19 +368,31 @@ export function Staking() {
             </Card>
 
             <HeadlessCard>
-                <div className=" staking__reward-info">
-                    <div className="staking__claimable">
-                        {claimable !== undefined
+                <div className="claim-reward">
+                    <div className="claim-reward__claimable">
+                        {claimable
                             ? `Claimable: ${claimable} ${currencySymbol}`
-                            : "??"}
+                            : stakingBalance && stakingBalance > 0
+                                ? `Be patient, you'll soon be able to claim some ${currencySymbol}...`
+                                : "No ETH to claim. Stake some DAEM to access the platform profits"
+                        }
                     </div>
-                    <input
-                        disabled={!claimable}
-                        className="staking__button staking__button--small"
-                        type="submit"
-                        onClick={claim}
-                        value="Claim"
-                    />
+                    <div className="claim-reward__buttons-container">
+                        <input
+                            disabled={nothingToClaim}
+                            className="claim-reward__button"
+                            type="submit"
+                            onClick={claim}
+                            value="Claim"
+                        />
+                        <input
+                            disabled={nothingToClaim}
+                            className="claim-reward__button"
+                            type="submit"
+                            onClick={compound}
+                            value="Compound"
+                        />
+                    </div>
                 </div>
             </HeadlessCard>
         </>
