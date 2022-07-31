@@ -6,6 +6,8 @@ import "./amount-input.css";
 interface IAmountInputProps {
     initialAmountType: AmountType;
     processNewValue: (amountType: AmountType, amount: number) => void;
+    inputName?: string;
+    buttonName?: string;
 }
 
 export const AmountInput = (props: IAmountInputProps) => {
@@ -13,7 +15,12 @@ export const AmountInput = (props: IAmountInputProps) => {
     const [currentAmount, setAmount] = useState<number>(0);
 
     const absoluteAmountType = () => (
-        <Field name="floatAmount" component="input" type="number" placeholder="1.00">
+        <Field
+            name={props.inputName ?? "floatAmount"}
+            component="input"
+            type="number"
+            placeholder="1.00"
+        >
             {({ input, meta }) => (
                 <input
                     {...input}
@@ -35,7 +42,7 @@ export const AmountInput = (props: IAmountInputProps) => {
 
     const percentageAmountType = () => (
         <div className="block-amount__slider-container">
-            <Field name="floatAmount" component="input" type="range">
+            <Field name={props.inputName ?? "floatAmount"} component="input" type="range">
                 {({ input, meta }) => (
                     <input
                         min="50"
@@ -63,7 +70,7 @@ export const AmountInput = (props: IAmountInputProps) => {
         <div className="block-amount">
             {amountType === AmountType.Absolute ? absoluteAmountType() : percentageAmountType()}
 
-            <Field name="amountType">
+            <Field name={props.buttonName ?? "amountType"}>
                 {({ input }) => (
                     <button
                         type="button"

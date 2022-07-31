@@ -118,6 +118,7 @@ export const ZapInAction: IAction = {
         valid: false,
         tokenA: "",
         tokenB: "",
+        pair: "",
         amountTypeA: AmountType.Absolute,
         amountTypeB: AmountType.Absolute,
         floatAmountA: 0,

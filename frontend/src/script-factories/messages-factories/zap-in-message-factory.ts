@@ -1,4 +1,4 @@
-import { BigNumber, utils } from "ethers";
+import { BigNumber, ethers, utils } from "ethers";
 import { AmountType, IZapInAction } from "@daemons-fi/shared-definitions";
 import { IChainInfo } from "../../data/chains-data/interfaces";
 import { ICurrentScript } from "../i-current-script";
@@ -8,6 +8,7 @@ import { BalanceConditionFactory } from "../conditions-factories/balance-conditi
 import { PriceConditionFactory } from "../conditions-factories/price-condition-factory";
 import { RepetitionsConditionFactory } from "../conditions-factories/repetitions-condition-factory";
 import { FollowConditionFactory } from "../conditions-factories/follow-condition-factory";
+import { UniswapV2PairABI } from "@daemons-fi/contracts/build";
 
 export class ZapInMessageFactory {
     public static async create(
@@ -18,9 +19,7 @@ export class ZapInMessageFactory {
         const zapInActionForm = bundle.action.form as IZapInActionForm;
         if (zapInActionForm.type !== ScriptAction.ZAP_IN)
             throw new Error(
-                `Cannot build ZapIn message with this form: ${JSON.stringify(
-                    zapInActionForm
-                )}`
+                `Cannot build ZapIn message with this form: ${JSON.stringify(zapInActionForm)}`
             );
 
         if (!zapInActionForm.valid)
@@ -34,12 +33,8 @@ export class ZapInMessageFactory {
         const maxRepetitions = RepetitionsConditionFactory.fromBundle(bundle);
         const followCondition = FollowConditionFactory.fromBundle(bundle);
 
-        const tokenA = tokens.filter(
-            (token) => token.address === zapInActionForm.tokenA
-        )[0];
-        const tokenB = tokens.filter(
-            (token) => token.address === zapInActionForm.tokenB
-        )[0];
+        const tokenA = tokens.filter((token) => token.address === zapInActionForm.tokenA)[0];
+        const tokenB = tokens.filter((token) => token.address === zapInActionForm.tokenB)[0];
 
         let amountA: BigNumber;
         if (zapInActionForm.amountTypeA === AmountType.Absolute) {
@@ -60,15 +55,23 @@ export class ZapInMessageFactory {
 
         const tip = utils.parseEther(zapInActionForm.floatTip.toString());
 
+        // make sure that the specified tokens belong to the pair
+        // and ***are in the right order*** (very important for the executor contract)
+        const keepCurrentOrder = await PairOrderChecker.shouldKeepCurrentOrder(
+            zapInActionForm.pair,
+            tokenA.address,
+            tokenB.address,
+            provider
+        );
+
         return {
-            scriptId:bundle.id,
-            typeAmtA: zapInActionForm.amountTypeA,
-            typeAmtB: zapInActionForm.amountTypeB,
-            amountA: amountA,
-            amountB: amountB,
+            scriptId: bundle.id,
+            typeAmtA: keepCurrentOrder ? zapInActionForm.amountTypeA : zapInActionForm.amountTypeB,
+            typeAmtB: keepCurrentOrder ? zapInActionForm.amountTypeB : zapInActionForm.amountTypeA,
+            amountA: keepCurrentOrder ? amountA : amountB,
+            amountB: keepCurrentOrder ? amountB : amountA,
             tip: tip,
-            tokenA: tokenA.address,
-            tokenB: tokenB.address,
+            pair: zapInActionForm.pair,
             kontract: zapInActionForm.dex.poolAddress,
             user: await provider.getSigner().getAddress(),
             frequency: frequencyCondition,
@@ -79,5 +82,26 @@ export class ZapInMessageFactory {
             executor: chain.contracts.ZapInScriptExecutor,
             chainId: BigNumber.from(chain.id)
         };
+    }
+}
+
+export class PairOrderChecker {
+    public static async shouldKeepCurrentOrder(
+        pairAddress: string,
+        tokenA: string,
+        tokenB: string,
+        provider: any
+    ): Promise<boolean> {
+        if (tokenA === tokenB) throw new Error("TokenA and TokenB are the same token");
+
+        const pair = new ethers.Contract(pairAddress, UniswapV2PairABI, provider);
+        const token0 = await pair.token0();
+        const token1 = await pair.token1();
+        tokenA = ethers.utils.getAddress(tokenA);
+        tokenB = ethers.utils.getAddress(tokenB);
+        if (token0 !== tokenA && token0 !== tokenB) throw new Error("Token0 of pair not found");
+        if (token1 !== tokenA && token1 !== tokenB) throw new Error("token1 of pair not found");
+
+        return token0 === tokenA;
     }
 }

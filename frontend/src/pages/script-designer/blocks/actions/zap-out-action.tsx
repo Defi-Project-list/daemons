@@ -5,13 +5,11 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../../state";
 import { TokensModal } from "../shared/tokens-modal";
 import { AmountType, ZapOutputChoice } from "@daemons-fi/shared-definitions/build";
-import { ToggleButtonField } from "../shared/toggle-button";
 import { Token } from "../../../../data/chains-data/interfaces";
 import { GetCurrentChain } from "../../../../data/chain-info";
 import { AmountInput } from "../shared/amount-input";
-import { ethers } from "ethers";
-import { UniswapV2FactoryABI, UniswapV2RouterABI } from "@daemons-fi/contracts";
 import { fetchTokenBalance } from "../../../../data/fetch-token-balance";
+import { retrieveLpAddress } from "../../../../data/retrieve-lp-address";
 
 const validateForm = (values: IZapOutActionForm) => {
     const errors: any = {};
@@ -28,25 +26,6 @@ const isFormValid = (values: IZapOutActionForm) => {
     const errors = validateForm(values);
     const isValid = Object.keys(errors).length === 0;
     return isValid;
-};
-
-const retrieveLpAddress = async (
-    tokenA?: string,
-    tokenB?: string,
-    dexRouter?: string
-): Promise<string | undefined> => {
-    if (!tokenA || !tokenB || !dexRouter) return;
-
-    // Get DEX router contract
-    const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-    const dex = new ethers.Contract(dexRouter, UniswapV2RouterABI, provider);
-
-    // Get DEX factory
-    const factoryAddress = await dex.factory();
-    const factory = new ethers.Contract(factoryAddress, UniswapV2FactoryABI, provider);
-
-    const pairAddress = await factory.getPair(tokenA, tokenB);
-    return pairAddress;
 };
 
 export const ZapOutAction = ({
@@ -80,14 +59,12 @@ export const ZapOutAction = ({
         if (!tokenA || !tokenB || !walletAddress) return;
 
         retrieveLpAddress(tokenA, tokenB, form.dex.poolAddress).then((lpAddress) => {
-            if (lpAddress) {
-                if (lpAddress === "0x0000000000000000000000000000000000000000") {
-                    setCurrentBalance(-1);
-                } else {
-                    fetchTokenBalance(walletAddress, lpAddress).then((balance) =>
-                        setCurrentBalance(balance)
-                    );
-                }
+            if (lpAddress === "0x0000000000000000000000000000000000000000") {
+                setCurrentBalance(-1);
+            } else {
+                fetchTokenBalance(walletAddress, lpAddress).then((balance) =>
+                    setCurrentBalance(balance)
+                );
             }
             const updatedForm = {
                 ...form,

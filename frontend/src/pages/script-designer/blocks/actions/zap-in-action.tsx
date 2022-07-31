@@ -1,19 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { IZapInActionForm } from "../../../../data/chains-data/action-form-interfaces";
-import { Form, Field } from "react-final-form";
+import { Form } from "react-final-form";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../state";
 import { TokensModal } from "../shared/tokens-modal";
 import { AmountType } from "@daemons-fi/shared-definitions/build";
-import { ToggleButtonField } from "../shared/toggle-button";
-import { Token } from "../../../../data/chains-data/interfaces";
+import { DEX, Token } from "../../../../data/chains-data/interfaces";
 import { GetCurrentChain } from "../../../../data/chain-info";
+import { AmountInput } from "../shared/amount-input";
+import { fetchTokenBalance } from "../../../../data/fetch-token-balance";
+import { retrieveLpAddress } from "../../../../data/retrieve-lp-address";
 
 const validateForm = (values: IZapInActionForm) => {
     const errors: any = {};
 
-    const amountAZero = !values.floatAmountA || (values.floatAmountA as any) === "" || (values.floatAmountA && Number(values.floatAmountA) <= 0);
-    const amountBZero = !values.floatAmountB || (values.floatAmountB as any) === "" || (values.floatAmountB && Number(values.floatAmountB) <= 0);
+    const amountAZero =
+        !values.floatAmountA ||
+        (values.floatAmountA as any) === "" ||
+        (values.floatAmountA && Number(values.floatAmountA) <= 0);
+    const amountBZero =
+        !values.floatAmountB ||
+        (values.floatAmountB as any) === "" ||
+        (values.floatAmountB && Number(values.floatAmountB) <= 0);
 
     if (amountAZero && amountBZero) {
         errors.floatAmountA = "required > 0";
@@ -36,21 +44,57 @@ export const ZapInAction = ({
     form: IZapInActionForm;
     update: (next: IZapInActionForm) => void;
 }) => {
+    const walletAddress = useSelector((state: RootState) => state.wallet.address);
     const chainId = useSelector((state: RootState) => state.wallet.chainId);
+    const [currentLP, setCurrentLP] = useState<string | undefined>();
+    const [loadingLP, setLoadingLP] = useState<boolean>(false);
+    const [dexes, setDexes] = useState<DEX[]>([]);
+    const [selectedDex, setSelectedDex] = useState<DEX | undefined>();
     const [tokens, setTokens] = useState<Token[]>([]);
+    const [tokenA, setTokenA] = useState<Token | undefined>();
+    const [tokenB, setTokenB] = useState<Token | undefined>();
+    const [currentBalanceA, setCurrentBalanceA] = useState<number | undefined>();
+    const [currentBalanceB, setCurrentBalanceB] = useState<number | undefined>();
 
     useEffect(() => {
-        if (!form.tokenA || !form.tokenB)
-            update({
-                ...form,
-                tokenA: tokens[0]?.address,
-                tokenB: tokens[1]?.address
-            });
-    }, [tokens]);
-
-    useEffect(() => {
-        if (chainId) setTokens(GetCurrentChain(chainId).tokens);
+        if (chainId) {
+            const currentChain = GetCurrentChain(chainId);
+            setTokens(currentChain.tokens);
+            setDexes(currentChain.dexes);
+        }
     }, [chainId]);
+
+    useEffect(() => {
+        if (!tokenA && tokens.length) setTokenA(tokens[0]);
+        if (!tokenB && tokens.length) setTokenB(tokens[1]);
+        if (!selectedDex && dexes.length) setSelectedDex(dexes[0]);
+    }, [tokens, dexes]);
+
+    useEffect(() => {
+        if (!tokenA || !tokenB || !selectedDex) return;
+        setLoadingLP(true);
+        retrieveLpAddress(tokenA.address, tokenB.address, selectedDex?.poolAddress).then(
+            (lpAddress) => {
+                setCurrentLP(lpAddress);
+                setLoadingLP(false);
+                const updatedForm = {
+                    ...form,
+                    tokenA: tokenA.address,
+                    tokenB: tokenB.address,
+                    pair: lpAddress,
+                    dex: selectedDex
+                };
+                const valid = isFormValid(updatedForm);
+                update({ ...updatedForm, valid });
+            }
+        );
+        fetchTokenBalance(walletAddress!, tokenA?.address).then((balance) =>
+            setCurrentBalanceA(balance)
+        );
+        fetchTokenBalance(walletAddress!, tokenB?.address).then((balance) =>
+            setCurrentBalanceB(balance)
+        );
+    }, [chainId, tokenA, tokenB, selectedDex]);
 
     return (
         <Form
@@ -62,182 +106,75 @@ export const ZapInAction = ({
             render={({ handleSubmit }) => (
                 <form onSubmit={handleSubmit}>
                     <div className="zap-in-block">
-                        <div style={{marginBottom: "5px"}} className="script-block__panel--two-columns">
-                            <TokensModal
-                                tokens={tokens.filter((t) => t.address !== form.tokenB)}
-                                selectedToken={tokens.filter((t) => t.address === form.tokenA)[0]}
-                                setSelectedToken={(token) =>
-                                    update({ ...form, tokenA: token.address })
-                                }
-                            />
+                        <TokensModal
+                            tokens={tokens.filter((t) => t.address !== form.tokenB)}
+                            selectedToken={tokens.filter((t) => t.address === form.tokenA)[0]}
+                            setSelectedToken={(token) => {
+                                setTokenA(token);
+                                setCurrentBalanceA(undefined);
+                            }}
+                        />
 
-                            <ToggleButtonField
-                                name="amountTypeA"
-                                valuesEnum={AmountType}
-                                updateFunction={(newValue: AmountType) => {
-                                    const updatedForm = {
-                                        ...form,
-                                        amountTypeA: newValue,
-                                        floatAmountA: newValue === AmountType.Percentage ? 50 : 0
-                                    };
-                                    const valid = isFormValid(updatedForm);
-                                    update({ ...updatedForm, valid });
-                                }}
-                                initial={form.amountTypeA}
-                            />
+                        <div style={{ height: "5px" }} />
+
+                        <AmountInput
+                            buttonName="amountTypeA"
+                            inputName="floatAmountA"
+                            initialAmountType={form.amountTypeA}
+                            processNewValue={(amountTypeA: AmountType, floatAmountA: number) => {
+                                const updatedForm = { ...form, amountTypeA, floatAmountA };
+                                const valid = isFormValid(updatedForm);
+                                update({ ...updatedForm, valid });
+                            }}
+                        />
+                        <div className="script-block__info">
+                            {currentBalanceA === undefined
+                                ? `..fetching balance..`
+                                : `Current ${tokenA?.symbol} balance: ${currentBalanceA}`}
                         </div>
 
-                        {form.amountTypeA === AmountType.Absolute ? (
-                            <Field
-                                name="floatAmountA"
-                                component="input"
-                                type="number"
-                                placeholder="1.00"
-                            >
-                                {({ input, meta }) => (
-                                    <input
-                                        {...input}
-                                        className={`script-block__input ${
-                                            meta.error ? "script-block__input--error" : ""
-                                        }`}
-                                        onChange={(e) => {
-                                            e.target.value =
-                                                Number(e.target.value) < 0 ? "0" : e.target.value;
-                                            input.onChange(e);
-                                            const updatedForm = {
-                                                ...form,
-                                                floatAmountA: Number(e.target.value)
-                                            };
-                                            const valid = isFormValid(updatedForm);
-                                            update({ ...updatedForm, valid });
-                                        }}
-                                    />
-                                )}
-                            </Field>
-                        ) : (
-                            <div className="slider-container">
-                                <Field name="floatAmountA" component="input" type="range">
-                                    {({ input, meta }) => (
-                                        <input
-                                            min="50"
-                                            max="10000"
-                                            step="50"
-                                            {...input}
-                                            className={`${
-                                                meta.error ? "script-block__input--error" : ""
-                                            }`}
-                                            onChange={(e) => {
-                                                input.onChange(e);
-                                                const updatedForm = {
-                                                    ...form,
-                                                    floatAmountA: Number(e.target.value)
-                                                };
-                                                const valid = isFormValid(updatedForm);
-                                                update({ ...updatedForm, valid });
-                                            }}
-                                        />
-                                    )}
-                                </Field>
-
-                                <div className="slider-container__slider-value">
-                                    {`${form.floatAmountA / 100}%`}
-                                </div>
-                            </div>
-                        )}
-
-                        <div
-                            style={{
-                                width: "100%",
-                                textAlign: "center",
-                                marginTop: "10px",
-                                marginBottom: "10px",
-                                fontSize: "1.4rem"
-                            }}
-                        >
+                        <div style={{ width: "100%", textAlign: "center", fontSize: "1.4rem" }}>
                             <span>+</span>
                         </div>
 
-                        <div style={{marginBottom: "5px"}} className="script-block__panel--two-columns">
-                            <TokensModal
-                                tokens={tokens.filter((t) => t.address !== form.tokenA)}
-                                selectedToken={tokens.filter((t) => t.address === form.tokenB)[0]}
-                                setSelectedToken={(token) =>
-                                    update({ ...form, tokenB: token.address })
-                                }
-                            />
+                        <TokensModal
+                            tokens={tokens.filter((t) => t.address !== form.tokenA)}
+                            selectedToken={tokens.filter((t) => t.address === form.tokenB)[0]}
+                            setSelectedToken={(token) => {
+                                setTokenB(token);
+                                setCurrentBalanceB(undefined);
+                            }}
+                        />
 
-                            <ToggleButtonField
-                                name="amountTypeB"
-                                valuesEnum={AmountType}
-                                updateFunction={(newValue: AmountType) => {
-                                    const updatedForm = {
-                                        ...form,
-                                        amountTypeB: newValue,
-                                        floatAmountB: newValue === AmountType.Percentage ? 50 : 0
-                                    };
-                                    const valid = isFormValid(updatedForm);
-                                    update({ ...updatedForm, valid });
-                                }}
-                                initial={form.amountTypeB}
-                            />
+                        <div style={{ height: "5px" }} />
+
+                        <AmountInput
+                            buttonName="amountTypeB"
+                            inputName="floatAmountB"
+                            initialAmountType={form.amountTypeB}
+                            processNewValue={(amountTypeB: AmountType, floatAmountB: number) => {
+                                const updatedForm = { ...form, amountTypeB, floatAmountB };
+                                const valid = isFormValid(updatedForm);
+                                update({ ...updatedForm, valid });
+                            }}
+                        />
+                        <div className="script-block__info">
+                            {currentBalanceB === undefined
+                                ? `..fetching balance..`
+                                : `Current ${tokenB?.symbol} balance: ${currentBalanceB}`}
                         </div>
-                        {form.amountTypeB === AmountType.Absolute ? (
-                            <Field
-                                name="floatAmountB"
-                                component="input"
-                                type="number"
-                                placeholder="1.00"
-                            >
-                                {({ input, meta }) => (
-                                    <input
-                                        {...input}
-                                        className={`script-block__input ${
-                                            meta.error ? "script-block__input--error" : ""
-                                        }`}
-                                        onChange={(e) => {
-                                            e.target.value =
-                                                Number(e.target.value) < 0 ? "0" : e.target.value;
-                                            input.onChange(e);
-                                            const updatedForm = {
-                                                ...form,
-                                                floatAmountB: Number(e.target.value)
-                                            };
-                                            const valid = isFormValid(updatedForm);
-                                            update({ ...updatedForm, valid });
-                                        }}
-                                    />
-                                )}
-                            </Field>
-                        ) : (
-                            <div className="slider-container">
-                                <Field name="floatAmountB" component="input" type="range">
-                                    {({ input, meta }) => (
-                                        <input
-                                            min="50"
-                                            max="10000"
-                                            step="50"
-                                            {...input}
-                                            className={`${
-                                                meta.error ? "script-block__input--error" : ""
-                                            }`}
-                                            onChange={(e) => {
-                                                input.onChange(e);
-                                                const updatedForm = {
-                                                    ...form,
-                                                    floatAmountB: Number(e.target.value)
-                                                };
-                                                const valid = isFormValid(updatedForm);
-                                                update({ ...updatedForm, valid });
-                                            }}
-                                        />
-                                    )}
-                                </Field>
 
-                                <div className="slider-container__slider-value">
-                                    {`${form.floatAmountB / 100}%`}
-                                </div>
+                        <div className="script-block__info" style={{ marginTop: "20px" }}>
+                            <div>LP Address:</div>
+                            <div style={{ wordBreak: "break-word" }}>
+                                {loadingLP
+                                    ? "Fetching LP address..."
+                                    : currentLP === "0x0000000000000000000000000000000000000000"
+                                    ? "This pair is not supported on this DEX"
+                                    : currentLP}
                             </div>
-                        )}
+                        </div>
+
                         {/* ENABLE WHEN DEBUGGING!  */}
                         {/* <p>{JSON.stringify(form, null, " ")}</p> */}
                     </div>

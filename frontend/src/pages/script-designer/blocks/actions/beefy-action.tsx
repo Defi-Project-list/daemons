@@ -7,10 +7,10 @@ import { TokensModal } from "../shared/tokens-modal";
 import { DEX, Token } from "../../../../data/chains-data/interfaces";
 import { GetCurrentChain } from "../../../../data/chain-info";
 import { ethers } from "ethers";
-import { UniswapV2FactoryABI, UniswapV2RouterABI } from "@daemons-fi/contracts";
 import { ToggleButtonField } from "../shared/toggle-button";
 import { AmountType, BeefyActionType } from "@daemons-fi/shared-definitions/build";
 import { AmountInput } from "../shared/amount-input";
+import { retrieveLpAddress } from "../../../../data/retrieve-lp-address";
 
 const validateForm = (form: IBeefyActionForm) => {
     const errors: any = {};
@@ -28,25 +28,6 @@ const isFormValid = (values: IBeefyActionForm) => {
     const errors = validateForm(values);
     const isValid = Object.keys(errors).length === 0;
     return isValid;
-};
-
-const retrieveLpAddress = async (
-    tokenA?: string,
-    tokenB?: string,
-    dexRouter?: string
-): Promise<string | undefined> => {
-    if (!tokenA || !tokenB || !dexRouter) return;
-
-    // Get DEX router contract
-    const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-    const dex = new ethers.Contract(dexRouter, UniswapV2RouterABI, provider);
-
-    // Get DEX factory
-    const factoryAddress = await dex.factory();
-    const factory = new ethers.Contract(factoryAddress, UniswapV2FactoryABI, provider);
-
-    const pairAddress = await factory.getPair(tokenA, tokenB);
-    return pairAddress;
 };
 
 export const BeefyAction = ({

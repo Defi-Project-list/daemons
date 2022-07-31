@@ -66,6 +66,7 @@ export interface IZapInActionForm extends IScriptActionForm {
     type: ScriptAction.ZAP_IN,
     tokenA: string;
     tokenB: string;
+    pair: string;
     floatAmountA: number;
     floatAmountB: number;
     amountTypeA: AmountType;

@@ -10,9 +10,14 @@ import { BalanceConditionFactory } from "../../conditions-factories/balance-cond
 import { PriceConditionFactory } from "../../conditions-factories/price-condition-factory";
 import { RepetitionsConditionFactory } from "../../conditions-factories/repetitions-condition-factory";
 import { FollowConditionFactory } from "../../conditions-factories/follow-condition-factory";
-import { ZapInMessageFactory } from "../zap-in-message-factory";
+import { PairOrderChecker, ZapInMessageFactory } from "../zap-in-message-factory";
+import Sinon from "sinon";
 
 describe("ZapIn Message Factory", () => {
+    afterEach(async () => {
+        Sinon.restore();
+    });
+
     const tokens: Token[] = [
         {
             name: "FooToken",
@@ -45,6 +50,7 @@ describe("ZapIn Message Factory", () => {
         floatTip: 1,
         tokenA: tokens[0].address,
         tokenB: tokens[1].address,
+        pair: "0x555",
         dex: fakeDEX
     };
 
@@ -116,6 +122,7 @@ describe("ZapIn Message Factory", () => {
     });
 
     it("successfully creates a zapIn script", async () => {
+        Sinon.stub(PairOrderChecker, "shouldKeepCurrentOrder").returns(Promise.resolve(true));
         const result = await ZapInMessageFactory.create(bundle, fakeChain, fakeProvider);
 
         const expectedResult = {
@@ -125,8 +132,33 @@ describe("ZapIn Message Factory", () => {
             amountA: BigNumber.from("5000"), // <- 50%
             amountB: ethers.utils.parseUnits("5.68", 18), // <- token has 18 decimals
             tip: ethers.utils.parseEther("1"),
-            tokenA: "0x123",
-            tokenB: "0x987",
+            pair: "0x555",
+            user: "0x1234567890",
+            kontract: "0xE0fBa4Fc209b4948668006B2bE61711b7f465bAe",
+            frequency: FrequencyConditionFactory.empty(),
+            balance: BalanceConditionFactory.empty(),
+            price: PriceConditionFactory.empty(),
+            repetitions: RepetitionsConditionFactory.empty(),
+            follow: FollowConditionFactory.empty(),
+            executor: "0x88884444",
+            chainId: BigNumber.from(fakeChain.id)
+        } as IZapInAction;
+
+        assert.deepEqual(result, expectedResult);
+    });
+
+    it("places tokenA and tokenB amounts and types at the right place if inverted", async () => {
+        Sinon.stub(PairOrderChecker, "shouldKeepCurrentOrder").returns(Promise.resolve(false));
+        const result = await ZapInMessageFactory.create(bundle, fakeChain, fakeProvider);
+
+        const expectedResult = {
+            scriptId: result.scriptId, // <- taken from real object as it is randomly generated
+            typeAmtA: form.amountTypeB,                                                 // <- NOTE: inverted
+            typeAmtB: form.amountTypeA,                                                 // <- NOTE: inverted
+            amountA: ethers.utils.parseUnits("5.68", 18), // <- token has 18 decimals   // <- NOTE: inverted
+            amountB: BigNumber.from("5000"), // <- 50%                                  // <- NOTE: inverted
+            tip: ethers.utils.parseEther("1"),
+            pair: "0x555",
             user: "0x1234567890",
             kontract: "0xE0fBa4Fc209b4948668006B2bE61711b7f465bAe",
             frequency: FrequencyConditionFactory.empty(),
