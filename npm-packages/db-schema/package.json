@@ -1,6 +1,6 @@
 {
   "name": "@daemons-fi/db-schema",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Daemons DB schema",
   "main": "./build/index.js",
   "types": "./build/index.d.js",
@@ -21,7 +21,7 @@
   "author": "Daemons Finance",
   "license": "ISC",
   "dependencies": {
-    "@daemons-fi/shared-definitions": "2.1.9",
+    "@daemons-fi/shared-definitions": "2.1.10",
     "@faker-js/faker": "^6.0.0-alpha.3",
     "ethers": "^5.5.3",
     "mongoose": "^6.1.6",

@@ -18,8 +18,7 @@ const zapInScriptSchema = new mongoose.Schema({
 
     // message signed by the user
     //scriptId: { type: String, required: true, unique:true, index: { unique: true } },
-    tokenA: { type: String, required: true, set: utils.getAddress },
-    tokenB: { type: String, required: true, set: utils.getAddress },
+    pair: { type: String, required: true, set: utils.getAddress },
     amountA: { type: String, required: true, set: stringifyBigNumber },
     amountB: { type: String, required: true, set: stringifyBigNumber },
     typeAmtA: { type: Number, required: true },
