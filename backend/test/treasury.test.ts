@@ -5,22 +5,45 @@ import chaiAlmost from "chai-almost";
 import { BigNumber, Contract, utils } from "ethers";
 import { ethers, network } from "hardhat";
 const chai = require("chai");
+import hre from "hardhat";
 
-describe("Treasury", function () {
-    let snapshotId: string;
-
+describe("Treasury [FORKED CHAIN]", function () {
     let provider: BaseProvider;
     let owner: SignerWithAddress;
     let user1: SignerWithAddress;
     let gasTank: SignerWithAddress;
     let treasury: Contract;
-    let fooToken: Contract;
+    let daemToken: Contract;
 
+    let snapshotId: string;
     this.beforeEach(async () => {
-        if (snapshotId) await network.provider.send("evm_revert", [snapshotId]);
-
-        // save snapshot (needed because we advance/reset time)
+        await hre.network.provider.send("evm_revert", [snapshotId]);
+        // [...] A snapshot can only be used once. After a successful evm_revert, the same snapshot id cannot be used again.
         snapshotId = await network.provider.send("evm_snapshot", []);
+    });
+
+    this.afterAll(async () => {
+        // Reset the fork
+        await hre.network.provider.request({
+            method: "hardhat_reset",
+            params: []
+        });
+    });
+
+    this.beforeAll(async () => {
+        console.log(`Forking Polygon network`);
+        await hre.network.provider.request({
+            method: "hardhat_reset",
+            params: [
+                {
+                    forking: {
+                        jsonRpcUrl:
+                            "https://polygon-mainnet.g.alchemy.com/v2/m7GrmEdT-Lu0h1k5DowWTKqplP6-ThTa",
+                        blockNumber: 29483920
+                    }
+                }
+            ]
+        });
 
         // get the default provider
         provider = ethers.provider;
@@ -30,28 +53,37 @@ describe("Treasury", function () {
 
         // Token contracts
         const FooTokenContract = await ethers.getContractFactory("MockToken");
-        fooToken = await FooTokenContract.deploy("Foo Token", "FOO");
+        daemToken = await FooTokenContract.deploy("Daemons Token", "DAEM");
 
-        // Mock router contract
-        const MockRouterContract = await ethers.getContractFactory("MockUniswapV2Router");
-        const mockRouter = await MockRouterContract.deploy();
+        // Get real router
+        const quickswapRouter = await ethers.getContractAt(
+            "IUniswapV2Router01",
+            "0x1b02da8cb0d097eb8d57a175b88c7d8b47997506"
+        );
 
         // Treasury contract
         const TreasuryContract = await ethers.getContractFactory("Treasury");
         treasury = await TreasuryContract.deploy(
-            fooToken.address,
+            daemToken.address,
             gasTank.address,
-            mockRouter.address
+            quickswapRouter.address
         );
 
         // add some tokens to treasury
-        fooToken.mint(treasury.address, ethers.utils.parseEther("10000"));
+        await daemToken.mint(treasury.address, ethers.utils.parseEther("2500"));
+
+        // allow treasury to access user's tokens
+        await daemToken.approve(treasury.address, ethers.utils.parseEther("500000"));
+
+        // get a snapshot of the current state so to speed up tests
+        snapshotId = await network.provider.send("evm_snapshot", []);
     });
 
-    this.afterEach(async () => {
-        // restore from snapshot
-        await network.provider.send("evm_revert", [snapshotId]);
-    });
+    const createLp = async () => {
+        const ETHAmount = utils.parseEther("2000");
+        const DAEMAmount = utils.parseEther("2000");
+        await treasury.connect(owner).createLP(DAEMAmount, { value: ETHAmount });
+    };
 
     describe("Owner controlled setters", function () {
         it("can change commission percentage", async () => {
@@ -126,10 +158,37 @@ describe("Treasury", function () {
                 "RI must be at least 30 days"
             );
         });
+
+        it("can change threshold to enable the buyback", async () => {
+            // initially POL percentage is set to 10%
+            expect(await treasury.PERCENTAGE_POL_TO_ENABLE_BUYBACK()).to.equal(1000);
+
+            // owner can change it
+            await treasury.setPercentageToEnableBuyback(3000);
+            expect(await treasury.PERCENTAGE_POL_TO_ENABLE_BUYBACK()).to.equal(3000);
+
+            // anyone else cannot
+            await expect(
+                treasury.connect(user1).setPercentageToEnableBuyback(2500)
+            ).to.be.revertedWith("Ownable: caller is not the owner");
+        });
+
+        it("throws an error if trying to buyback threshold percentage outside bounds", async () => {
+            // too high pol percentage
+            await expect(treasury.setPercentageToEnableBuyback(8000)).to.be.revertedWith(
+                "POL must be at most 60%"
+            );
+
+            // too low pol percentage
+            await expect(treasury.setPercentageToEnableBuyback(50)).to.be.revertedWith(
+                "POL must be at least 2.5%"
+            );
+        });
     });
 
     describe("Rewards payouts requests", function () {
         it("only gas tank can initialize payout requests", async () => {
+            await createLp();
             const amountEth = ethers.utils.parseEther("1.0");
             const amountTip = ethers.utils.parseEther("1.0");
 
@@ -139,6 +198,7 @@ describe("Treasury", function () {
         });
 
         it("payout causes tokens to be sent to the user", async () => {
+            await createLp();
             const amountEth = ethers.utils.parseEther("1.0");
             const amountTip = ethers.utils.parseEther("1.0");
 
@@ -150,11 +210,14 @@ describe("Treasury", function () {
             expect(await provider.getBalance(treasury.address)).to.equal(amountEth);
 
             // user got the token
-            const expectedAmount = ethers.utils.parseEther("1.8"); // 1.0 from reward, 0.8 from tip (20% tax)
-            expect(await fooToken.balanceOf(user1.address)).to.equal(expectedAmount);
+            const expectedAmountFromTip = ethers.utils.parseEther("0.8"); // 0.8 from tip (20% tax)
+            const expectedAmountFromExecution = await treasury.ethToDAEM(amountEth);
+            const expectedAmount = expectedAmountFromTip.add(expectedAmountFromExecution);
+            expect(await daemToken.balanceOf(user1.address)).to.equal(expectedAmount);
         });
 
         it("payout causes ETH to be distributed into pools accordingly", async () => {
+            await createLp();
             const amountEth = ethers.utils.parseEther("1.0");
             const amountTip = ethers.utils.parseEther("1.0");
 
@@ -171,6 +234,7 @@ describe("Treasury", function () {
 
     describe("Staking payouts requests", function () {
         it("only gas tank can initialize staking payout requests", async () => {
+            await createLp();
             const amountEth = ethers.utils.parseEther("1.0");
             const amountTip = ethers.utils.parseEther("1.0");
 
@@ -180,6 +244,7 @@ describe("Treasury", function () {
         });
 
         it("staking payout causes tokens to staked on behalf of the user", async () => {
+            await createLp();
             const amountEth = ethers.utils.parseEther("1.0");
             const amountTip = ethers.utils.parseEther("1.0");
 
@@ -191,11 +256,14 @@ describe("Treasury", function () {
             expect(await provider.getBalance(treasury.address)).to.equal(amountEth);
 
             // and user got the tokens staked into the treasury
-            const expectedAmount = ethers.utils.parseEther("1.8"); // 1.0 from reward, 0.8 from tip (20% tax)
+            const expectedAmountFromTip = ethers.utils.parseEther("0.8"); // 0.8 from tip (20% tax)
+            const expectedAmountFromExecution = await treasury.ethToDAEM(amountEth);
+            const expectedAmount = expectedAmountFromTip.add(expectedAmountFromExecution);
             expect(await treasury.balanceOf(user1.address)).to.equal(expectedAmount);
         });
 
         it("staking payout causes ETH to be distributed into pools accordingly", async () => {
+            await createLp();
             const amountEth = ethers.utils.parseEther("1.0");
             const amountTip = ethers.utils.parseEther("1.0");
 
@@ -210,7 +278,8 @@ describe("Treasury", function () {
         });
 
         it("staking payout doesn't change treasury balance", async () => {
-            const initialTreasuryBalance = await fooToken.balanceOf(treasury.address);
+            await createLp();
+            const initialTreasuryBalance = await daemToken.balanceOf(treasury.address);
             const initialAmountOfTokensToDistribute = await treasury.tokensForDistribution();
 
             const amountEth = ethers.utils.parseEther("1.0");
@@ -219,7 +288,7 @@ describe("Treasury", function () {
                 .connect(gasTank)
                 .stakePayout(user1.address, amountTip, { value: amountEth });
 
-            const finalTreasuryBalance = await fooToken.balanceOf(treasury.address);
+            const finalTreasuryBalance = await daemToken.balanceOf(treasury.address);
             const finalAmountOfTokensToDistribute = await treasury.tokensForDistribution();
 
             // balance will be the same
@@ -233,12 +302,15 @@ describe("Treasury", function () {
     });
 
     describe("Staking", function () {
-        const now = () => Math.floor(new Date().getTime() / 1000);
+        const now = async () => {
+            const blockNumBefore = await ethers.provider.getBlockNumber();
+            const blockBefore = await ethers.provider.getBlock(blockNumBefore);
+            return blockBefore.timestamp;
+        };
         const oneDay = 60 * 60 * 24;
 
         it("the user cannot stake funds they don't own", async () => {
-            // give allowance to treasury contract
-            await fooToken.approve(treasury.address, ethers.utils.parseEther("500"));
+            await createLp();
 
             const amount = ethers.utils.parseEther("1.0");
             await expect(treasury.stake(amount)).to.be.revertedWith(
@@ -249,6 +321,8 @@ describe("Treasury", function () {
         });
 
         it("the user cannot withdraw funds they don't own", async () => {
+            await createLp();
+
             const amount = ethers.utils.parseEther("1.0");
             await expect(treasury.withdraw(amount)).to.be.revertedWith("Insufficient staked funds");
 
@@ -256,44 +330,52 @@ describe("Treasury", function () {
         });
 
         it("is not possible to withdraw ALL funds from the treasury", async () => {
+            await createLp();
+
             // stake payout for user1 and wait some time
             const amountEth = ethers.utils.parseEther("1.0");
             const zero = ethers.utils.parseEther("0");
             await treasury.connect(gasTank).stakePayout(user1.address, zero, { value: amountEth });
 
-            await network.provider.send("evm_setNextBlockTimestamp", [now() + 60]);
+            await network.provider.send("evm_setNextBlockTimestamp", [(await now()) + 60]);
             await network.provider.send("evm_mine");
 
             // withdraw all
-            await expect(treasury.connect(user1).withdraw(amountEth)).to.be.revertedWith(
+            await expect(treasury.connect(user1).exit()).to.be.revertedWith(
                 "Cannot withdraw all funds"
             );
         });
 
         it("user balance is updated after staking and withdrawing", async () => {
-            // add 1 ETH that will stay in the treasury
+            await createLp();
+
+            // add some ETH dust that will stay in the treasury
             const zero = ethers.utils.parseEther("0");
-            await treasury.connect(gasTank).stakePayout(owner.address, zero, { value: 1 });
+            await treasury.connect(gasTank).stakePayout(owner.address, zero, { value: 100000 });
 
             // give some tokens to a user
             const amount = ethers.utils.parseEther("1.0");
-            fooToken.mint(user1.address, amount);
+            daemToken.mint(user1.address, amount);
 
             // give allowance to treasury contract
-            await fooToken.connect(user1).approve(treasury.address, ethers.utils.parseEther("500"));
+            await daemToken
+                .connect(user1)
+                .approve(treasury.address, ethers.utils.parseEther("500"));
 
             // verify balances are updated when user stakes DAEM
             await treasury.connect(user1).stake(amount);
             expect(await treasury.balanceOf(user1.address)).to.equal(amount);
-            expect(await fooToken.balanceOf(user1.address)).to.equal(zero);
+            expect(await daemToken.balanceOf(user1.address)).to.equal(zero);
 
             // verify balances are updated when user withdraws DAEM
             await treasury.connect(user1).withdraw(amount);
-            expect(await fooToken.balanceOf(user1.address)).to.equal(amount);
+            expect(await daemToken.balanceOf(user1.address)).to.equal(amount);
             expect(await treasury.balanceOf(user1.address)).to.equal(zero);
         });
 
         it("reward rate depends on the amount of ETH in the treasury and redistributionInterval", async () => {
+            await createLp();
+
             const amountEth = ethers.utils.parseEther("1.0");
             const zero = ethers.utils.parseEther("0");
             await treasury.connect(gasTank).stakePayout(user1.address, zero, { value: amountEth });
@@ -311,6 +393,8 @@ describe("Treasury", function () {
         });
 
         it("reward is accumulated over time", async () => {
+            await createLp();
+
             // stake payout for user1.
             const amountEth = ethers.utils.parseEther("1.0");
             const zero = ethers.utils.parseEther("0");
@@ -319,14 +403,14 @@ describe("Treasury", function () {
             // current state: 0.5ETH are in the redistribution pool and 1 DAEM staked for the user
             expect(await treasury.redistributionPool()).to.be.equal(ethers.utils.parseEther("0.5"));
             expect(await treasury.balanceOf(user1.address)).to.be.equal(
-                ethers.utils.parseEther("1")
+                ethers.utils.parseEther("0.996503243133298050")
             );
 
             // claimable amount at this time is 0
             expect(await treasury.earned(user1.address)).to.be.equal(ethers.utils.parseEther("0"));
 
             // but after some time...
-            await network.provider.send("evm_setNextBlockTimestamp", [now() + oneDay]);
+            await network.provider.send("evm_setNextBlockTimestamp", [(await now()) + oneDay]);
             await network.provider.send("evm_mine");
 
             // It should increase (by rewardRate * seconds elapsed)
@@ -339,12 +423,14 @@ describe("Treasury", function () {
         });
 
         it("reward zeroed after claiming", async () => {
+            await createLp();
+
             // stake payout for user1 and wait some time
             const amountEth = ethers.utils.parseEther("1.0");
             const zero = ethers.utils.parseEther("0");
             await treasury.connect(gasTank).stakePayout(user1.address, zero, { value: amountEth });
 
-            await network.provider.send("evm_setNextBlockTimestamp", [now() + oneDay]);
+            await network.provider.send("evm_setNextBlockTimestamp", [(await now()) + oneDay]);
             await network.provider.send("evm_mine");
 
             // from previous test, we know that after 1 day the reward is
@@ -368,17 +454,19 @@ describe("Treasury", function () {
         });
 
         it("rewards are accounted each time are claimed", async () => {
+            await createLp();
+
             // stake payout for user1 and wait some time
             const amountEth = ethers.utils.parseEther("1.0");
             const zero = ethers.utils.parseEther("0");
             await treasury.connect(gasTank).stakePayout(user1.address, zero, { value: amountEth });
 
-            await network.provider.send("evm_setNextBlockTimestamp", [now() + oneDay]);
+            await network.provider.send("evm_setNextBlockTimestamp", [(await now()) + oneDay]);
             await network.provider.send("evm_mine");
 
             // from previous test, we know that after 1 day the reward is
             // (almost) equal to 2777713477338878
-            chai.use(chaiAlmost(32150205761 * 2));
+            chai.use(chaiAlmost(32150205761 * 3));
             const earnedReward: BigNumber = await treasury.earned(user1.address);
             expect(earnedReward.sub("2777713477338878").abs().toNumber()).to.be.almost.equal(0);
 
@@ -391,13 +479,15 @@ describe("Treasury", function () {
         });
 
         it("exit function gets both reward and staked amount", async () => {
-            // add 1 DAEM that will stay in the treasury
-            await treasury.connect(gasTank).stakePayout(owner.address, 0, { value: 1 });
+            await createLp();
+
+            // add some ETH dust that will stay in the treasury
+            await treasury.connect(gasTank).stakePayout(owner.address, 0, { value: 10000 });
 
             // stake payout for user1 and wait some time
             const amount = ethers.utils.parseEther("1.0");
             await treasury.connect(gasTank).stakePayout(user1.address, 0, { value: amount });
-            await network.provider.send("evm_setNextBlockTimestamp", [now() + oneDay]);
+            await network.provider.send("evm_setNextBlockTimestamp", [(await now()) + oneDay]);
             await network.provider.send("evm_mine");
 
             // from previous test, we know that after 1 day the reward is
@@ -415,8 +505,9 @@ describe("Treasury", function () {
             expect(balanceAfter.sub(balanceBefore).gt(0)).to.be.true;
 
             // As well as the token
-            const userTokenBalance = await fooToken.balanceOf(user1.address);
-            expect(userTokenBalance).to.be.equal(ethers.utils.parseEther("1.0"));
+            const converted = await treasury.ethToDAEM(amount);
+            const userTokenBalance = await daemToken.balanceOf(user1.address);
+            expect(userTokenBalance).to.be.equal(converted);
 
             // and the balance of the user in the treasury has been zeroed
             const userStakedAmount: BigNumber = await treasury.balanceOf(user1.address);
@@ -424,46 +515,54 @@ describe("Treasury", function () {
         });
 
         it("user can stake and unstake", async () => {
-            await treasury.connect(gasTank).stakePayout(owner.address, 0, { value: 1 });
+            await createLp();
+
+            // add some ETH dust that will stay in the treasury
+            await treasury.connect(gasTank).stakePayout(owner.address, 0, { value: 10000 });
 
             // stake payout for user1 and wait some time
             const amount = ethers.utils.parseEther("1.0");
             await treasury.connect(gasTank).stakePayout(user1.address, 0, { value: amount });
-            await network.provider.send("evm_setNextBlockTimestamp", [now() + 60]);
+            await network.provider.send("evm_setNextBlockTimestamp", [(await now()) + 60]);
             await network.provider.send("evm_mine");
 
-            const half = ethers.utils.parseEther("0.5");
+            const converted = await treasury.ethToDAEM(amount);
             const zero = ethers.utils.parseEther("0");
 
             // withdraw all
-            await treasury.connect(user1).withdraw(amount);
-            expect(await fooToken.balanceOf(user1.address)).to.be.equal(amount);
+            await treasury.connect(user1).withdraw(converted);
+            expect(await daemToken.balanceOf(user1.address)).to.be.equal(converted);
             expect(await treasury.balanceOf(user1.address)).to.be.equal(zero);
 
             // re-stake again
-            await fooToken.connect(user1).approve(treasury.address, ethers.utils.parseEther("500"));
-            await treasury.connect(user1).stake(ethers.utils.parseEther("1.0"));
-            expect(await fooToken.balanceOf(user1.address)).to.be.equal(zero);
-            expect(await treasury.balanceOf(user1.address)).to.be.equal(amount);
+            await daemToken
+                .connect(user1)
+                .approve(treasury.address, ethers.utils.parseEther("500"));
+            await treasury.connect(user1).stake(converted);
+            expect(await daemToken.balanceOf(user1.address)).to.be.equal(zero);
+            expect(await treasury.balanceOf(user1.address)).to.be.equal(converted);
 
             // claim
             await treasury.connect(user1).getReward();
             expect(await treasury.earned(user1.address)).to.be.equal(zero);
 
             // withdraw half
+            const half = converted.div(2);
             await treasury.connect(user1).withdraw(half);
-            expect(await fooToken.balanceOf(user1.address)).to.be.equal(half);
+            expect(await daemToken.balanceOf(user1.address)).to.be.equal(half);
             expect(await treasury.balanceOf(user1.address)).to.be.equal(half);
 
             // withdraw the other half
-            await treasury.connect(user1).withdraw(half);
-            expect(await fooToken.balanceOf(user1.address)).to.be.equal(amount);
+            await treasury.connect(user1).exit();
+            expect(await daemToken.balanceOf(user1.address)).to.be.equal(converted);
             expect(await treasury.balanceOf(user1.address)).to.be.equal(zero);
         });
     });
 
     describe("Commissions", function () {
         it("owner can withdraw commission from the pool", async () => {
+            await createLp();
+
             const ownerInitialBalance = await provider.getBalance(owner.address);
 
             const amountEth = ethers.utils.parseEther("1.0");
@@ -491,6 +590,32 @@ describe("Treasury", function () {
         });
     });
 
+    describe("shouldFundLP", function () {
+        it("shouldFundLP is true while LP contains <N% DAEM", async () => {
+            const DAEMTotalSupply = await daemToken.totalSupply();
+            const threshold = await treasury.PERCENTAGE_POL_TO_ENABLE_BUYBACK();
+
+            // supply * 10% - ε
+            const amountBelowThreshold = DAEMTotalSupply.mul(threshold).div(10000).sub(100000);
+            await treasury.createLP(amountBelowThreshold, { value: amountBelowThreshold });
+
+            expect((await treasury.percentageDAEMTokensStoredInLP()).toNumber()).to.equal(999);
+            expect(await treasury.shouldFundLP()).to.be.true;
+        });
+
+        it("shouldFundLP is false while LP contains >N% DAEM", async () => {
+            const DAEMTotalSupply = await daemToken.totalSupply();
+            const threshold = await treasury.PERCENTAGE_POL_TO_ENABLE_BUYBACK();
+
+            // supply * 10% + ε
+            const amountAboveThreshold = DAEMTotalSupply.mul(threshold).div(10000).add(100000);
+            await treasury.createLP(amountAboveThreshold, { value: amountAboveThreshold });
+
+            expect((await treasury.percentageDAEMTokensStoredInLP()).toNumber()).to.equal(1000);
+            expect(await treasury.shouldFundLP()).to.be.false;
+        });
+    });
+
     describe("Protocol Owned Liquidity", function () {
         it("LP creation can only be executed by admin", async () => {
             const ETHAmount = utils.parseEther("1.0");
@@ -508,49 +633,176 @@ describe("Treasury", function () {
         });
 
         it("LP creation can only be executed once", async () => {
-            // send some ETH to the treasury for the LP
-            const ETHAmount = utils.parseEther("1.0");
-            const DAEMAmount = utils.parseEther("1500");
-
-            await treasury.connect(owner).createLP(DAEMAmount, { value: ETHAmount });
-            await expect(treasury.connect(owner).createLP(DAEMAmount, { value: ETHAmount })).to.be.revertedWith(
-                "PoL already initialized"
-            );
+            await createLp();
+            await expect(createLp()).to.be.revertedWith("PoL already initialized");
         });
 
         it("LP creation uses the passed ETH & DAEM", async () => {
             // send some ETH to the treasury for the LP
-            const ETHAmount = utils.parseEther("1.0");
+            const ETHAmount = utils.parseEther("1500");
             const DAEMAmount = utils.parseEther("1500");
 
             await treasury.connect(owner).createLP(DAEMAmount, { value: ETHAmount });
 
-            const ETHBalance = await provider.getBalance(treasury.address)
-            const DAEMBalance = await fooToken.balanceOf(treasury.address)
+            const ETHBalance = await provider.getBalance(treasury.address);
+            const DAEMBalance = await daemToken.balanceOf(treasury.address);
             expect(ETHBalance).to.equal(ethers.utils.parseEther("0"));
-            expect(DAEMBalance).to.equal(ethers.utils.parseEther("8500")); // 10K - 1.5K
+            expect(DAEMBalance).to.equal(ethers.utils.parseEther("1000")); // 2.5K - 1.5K
         });
 
-        it("LP funding cannot be used before of LP creation", async () => {
+        it("LP address is initially empty", async () => {
+            const polLp = await treasury.polLp();
+            expect(polLp).to.equal("0x0000000000000000000000000000000000000000");
+
+            await createLp();
+            await expect(createLp()).to.be.revertedWith("PoL already initialized");
+        });
+
+        it("LP address is set after creating LP", async () => {
+            await createLp();
+            const polLp = await treasury.polLp();
+            expect(polLp).to.not.equal("0x0000000000000000000000000000000000000000");
+        });
+
+        it("LP can be initialized manually as well", async () => {
+            await treasury.setPolLP("0x2e5b8db3de83d01fbc5caaa010a8ed45dee6bbdf");
+            const polLp = await treasury.polLp();
+            expect(polLp).to.not.equal("0x2e5b8db3de83d01fbc5caaa010a8ed45dee6bbdf");
+        });
+
+        it("LP can be not be initialized manually multiple times", async () => {
+            await treasury.setPolLP("0x2e5b8db3de83d01fbc5caaa010a8ed45dee6bbdf");
+            await expect(
+                treasury.setPolLP("0x2e5b8db3de83d01fbc5caaa010a8ed45dee6bbdf")
+            ).to.be.revertedWith("PoL already initialized");
+        });
+
+        it("LP funding cannot be performed before of LP creation", async () => {
             await expect(treasury.connect(owner).fundLP(0)).to.be.revertedWith(
                 "PoL not initialized yet"
             );
         });
 
-        it("LP funding uses all the ETH in the polPool", async () => {
-            const ETHAmount = utils.parseEther("1.0");
-            const DAEMAmount = utils.parseEther("1500");
+        it("LP funding cannot be performed if owned DAEM is > than threshold", async () => {
+            // create LP using ALL DAEM tokens
+            const DAEMTotalSupply = await daemToken.totalSupply();
+            await treasury.createLP(DAEMTotalSupply, { value: DAEMTotalSupply });
 
-            await treasury.connect(owner).createLP(DAEMAmount, { value: ETHAmount });
+            await expect(treasury.connect(owner).fundLP(0)).to.be.revertedWith(
+                "Funding forbidden. Should buyback"
+            );
+        });
+
+        it("LP funding fail if minAmountOut is too high", async () => {
+            await createLp();
 
             // add funds to the polPool by having the gasTank faking a payout
+            const ETHAmount = utils.parseEther("1.0");
             const zero = ethers.utils.parseEther("0");
             await treasury.connect(gasTank).stakePayout(user1.address, zero, { value: ETHAmount });
             expect(await treasury.polPool()).to.equal(ethers.utils.parseEther("0.49"));
 
+            // create a lot of DAEM to increase the totalSupply,
+            // so to *NOT* trigger buybacks
+            await daemToken.mint(user1.address, ethers.utils.parseEther("99999999"));
+
+            const quote = await treasury.ethToDAEM(ethers.utils.parseEther("0.245")); // 0.49 / 2
+            const amountTooHigh = quote.add(10000000000);
+            await expect(treasury.fundLP(amountTooHigh)).to.be.revertedWith(
+                "UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT"
+            );
+        });
+
+        it("LP funding uses all the ETH in the polPool", async () => {
+            await createLp();
+
+            // add funds to the polPool by having the gasTank faking a payout
+            const ETHAmount = utils.parseEther("1.0");
+            const zero = ethers.utils.parseEther("0");
+            await treasury.connect(gasTank).stakePayout(user1.address, zero, { value: ETHAmount });
+            expect(await treasury.polPool()).to.equal(ethers.utils.parseEther("0.49"));
+
+            // create a lot of DAEM to increase the totalSupply,
+            // so to *NOT* trigger buybacks
+            await daemToken.mint(user1.address, ethers.utils.parseEther("99999999"));
+
             // fund the LP and verify polPool has been emptied
             await treasury.connect(owner).fundLP(0);
             expect(await treasury.polPool()).to.equal(ethers.utils.parseEther("0"));
+        });
+    });
+
+    describe("Buybacks", function () {
+        it("Buybacks cannot be performed before of LP creation", async () => {
+            await expect(treasury.buybackDAEM(0)).to.be.revertedWith("PoL not initialized yet");
+        });
+
+        it("buybacks are disabled if DAEM in LP is < than threshold", async () => {
+            // create LP using a tiny part of DAEM tokens
+            const amount = BigNumber.from(10000);
+            await treasury.createLP(amount, { value: amount });
+
+            await expect(treasury.buybackDAEM(0)).to.be.revertedWith(
+                "Buyback forbidden. Should fund"
+            );
+        });
+
+        it("buybacks fail if minAmountOut is too high", async () => {
+            await createLp();
+
+            // add funds to the polPool by having the gasTank faking a payout
+            const ETHAmount = utils.parseEther("1.0");
+            const zero = ethers.utils.parseEther("0");
+            await treasury.connect(gasTank).stakePayout(user1.address, zero, { value: ETHAmount });
+            expect(await treasury.polPool()).to.equal(ethers.utils.parseEther("0.49"));
+
+            const quote = await treasury.ethToDAEM(ethers.utils.parseEther("0.49"));
+            const amountTooHigh = quote.add(10000000000);
+            await expect(treasury.buybackDAEM(amountTooHigh)).to.be.revertedWith(
+                "UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT"
+            );
+        });
+
+        it("buybacks purchases DAEM back using all the content of the PoLPool", async () => {
+            await createLp();
+
+            // add funds to the polPool by having the gasTank faking a payout
+            const ETHAmount = utils.parseEther("1.0");
+            const zero = ethers.utils.parseEther("0");
+            await treasury.connect(gasTank).stakePayout(user1.address, zero, { value: ETHAmount });
+            expect(await treasury.polPool()).to.equal(ethers.utils.parseEther("0.49"));
+            const initiallyOwnedDAEM = await daemToken.balanceOf(treasury.address);
+
+            // buyback
+            const amountMinusSlippage = (await treasury.ethToDAEM(ethers.utils.parseEther("0.49")))
+                .mul(99)
+                .div(100);
+            await treasury.buybackDAEM(amountMinusSlippage);
+
+            // PolPool should have been emptied
+            expect(await treasury.polPool()).to.equal(ethers.utils.parseEther("0"));
+
+            // DAEM tokens in treasury have increased (at least by "amountMinusSlippage")
+            const ownedDAEM = await daemToken.balanceOf(treasury.address);
+            const minimumExpectedAmount = initiallyOwnedDAEM.add(amountMinusSlippage);
+            expect(ownedDAEM.sub(minimumExpectedAmount).gte(0)).to.be.true;
+        });
+    });
+
+    describe("ethToDAEM", function () {
+        it("ethToDAEM requires PoL to be initialized", async () => {
+            const amount = ethers.utils.parseEther("15");
+            await expect(treasury.ethToDAEM(amount)).to.be.revertedWith("PoL not initialized");
+        });
+
+        it("ethToDAEM returns the right conversion from ETH to DAEM tokens", async () => {
+            await createLp();
+
+            const amount = ethers.utils.parseEther("1");
+            const expectedAmount = ethers.utils.parseEther("0.996503243133298050");
+
+            const conversion = await treasury.ethToDAEM(amount);
+            expect(conversion).to.equal(expectedAmount);
         });
     });
 });

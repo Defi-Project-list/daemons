@@ -406,8 +406,8 @@ describe("ScriptExecutor - ZapIn [FORKED CHAIN]", function () {
         expect((await lpToken.balanceOf(owner.address)).gte(0)).to.be.true;
 
         // executor got the right tokens
-        expect((await wBTC.balanceOf(owner.address)).sub(wBTCOriginalBalance.mul(3).div(4)).lt(2)).to.be.true; // check difference, as it might be 1 if value is odd
-        expect((await wETH.balanceOf(owner.address)).sub(wETHOriginalBalance.div(4)).lt(2)).to.be.true; // check difference, as it might be 1 if value is odd
+        expect((await wBTC.balanceOf(owner.address)).sub(wBTCOriginalBalance.div(4)).lt(2)).to.be.true; // check difference, as it might be 1 if value is odd
+        expect((await wETH.balanceOf(owner.address)).sub(wETHOriginalBalance.mul(3).div(4)).lt(2)).to.be.true; // check difference, as it might be 1 if value is odd
 
         // the dust in the executor should be minimal
         const wBTCLeftovers = (await wBTC.balanceOf(executor.address)).toNumber();

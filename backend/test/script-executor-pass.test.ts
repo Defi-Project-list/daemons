@@ -121,9 +121,18 @@ describe("ScriptExecutor - Pass", function () {
         await gasTank.addExecutor(executor.address);
         await gasTank.setDAEMToken(DAEMToken.address);
 
-        // Mock router contract
+        // Mock external contract
         const MockRouterContract = await ethers.getContractFactory("MockUniswapV2Router");
         mockRouter = await MockRouterContract.deploy();
+        const MockFactoryContract = await ethers.getContractFactory("MockUniswapV2Factory");
+        const mockFactory = await MockFactoryContract.deploy();
+        await mockRouter.setFactory(mockFactory.address);
+        const wETH = await mockRouter.WETH();
+        await mockFactory.setFakePair(
+            DAEMToken.address,
+            wETH,
+            "0x2e5b8db3de83d01fbc5caaa010a8ed45dee6bbdf" // totally random address. It won't be used due to the mocks
+        );
 
         // Treasury contract
         const TreasuryContract = await ethers.getContractFactory("Treasury");

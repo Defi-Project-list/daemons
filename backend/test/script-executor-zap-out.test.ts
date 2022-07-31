@@ -124,6 +124,12 @@ describe("ScriptExecutor - ZapOut", function () {
         const mockFactory = await MockFactoryContract.deploy();
         await mockRouter.setFactory(mockFactory.address);
         await mockFactory.setFakePair(fooToken.address, barToken.address, fooBarLP.address);
+        const wETH = await mockRouter.WETH();
+        await mockFactory.setFakePair(
+            DAEMToken.address,
+            wETH,
+            "0x2e5b8db3de83d01fbc5caaa010a8ed45dee6bbdf" // totally random address. It won't be used due to the mocks
+        );
 
         // Treasury contract
         const TreasuryContract = await ethers.getContractFactory("Treasury");

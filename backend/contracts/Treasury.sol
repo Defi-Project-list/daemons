@@ -3,6 +3,8 @@ pragma solidity ^0.8.9;
 
 import "./interfaces/ITreasury.sol";
 import "./interfaces/IUniswapV2Router.sol";
+import "./interfaces/IUniswapV2Factory.sol";
+import "./interfaces/IUniswapV2Pair.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -21,12 +23,14 @@ contract Treasury is ITreasury, Ownable {
     uint16 public PERCENTAGE_POL = 4900;
     // the remaining percentage will be redistributed
 
+    uint16 public PERCENTAGE_POL_TO_ENABLE_BUYBACK = 1000;
+
     uint16 public override TIPS_AFTER_TAXES_PERCENTAGE = 8000;
 
     uint256 public redistributionPool;
     uint256 public commissionsPool;
     uint256 public polPool;
-    bool private polIsInitialized;
+    address public polLp;
     address[] private ethToDAEMPath;
 
     // staking vars
@@ -94,7 +98,29 @@ contract Treasury is ITreasury, Ownable {
 
     /// @inheritdoc ITreasury
     function ethToDAEM(uint256 ethAmount) public view override returns (uint256) {
+        require(polLp != address(0), "PoL not initialized yet");
         return IUniswapV2Router01(lpRouter).getAmountsOut(ethAmount, ethToDAEMPath)[1];
+    }
+
+    /// @notice calculate the percentage of DAEM tokens (of the total supply on this chain)
+    /// that are locked forever in the treasury-owned LP token
+    function percentageDAEMTokensStoredInLP() public view returns(uint256) {
+        require(polLp != address(0), "PoL not initialized yet");
+        uint256 totalSupply = token.totalSupply();
+        IUniswapV2Pair lp = IUniswapV2Pair(polLp);
+        uint256 lpTotalSupply = lp.totalSupply();
+        uint256 ownedLp = lp.balanceOf(address(this));
+        (uint256 resA, uint256 resB, ) = lp.getReserves();
+        uint256 DAEMInLp = lp.token0() == address(token) ? resA : resB;
+        uint256 ownedDAEMInLp = (ownedLp * DAEMInLp) / lpTotalSupply;
+        return (ownedDAEMInLp * 10000) / totalSupply;
+    }
+
+    /// @notice defines whether the daily treasury operation should buy back DAEM or fund the LP
+    /// @dev returns true if the treasury-owned LP contains less than
+    /// PERCENTAGE_POL_TO_ENABLE_BUYBACK of the total supply of DAEM on this chain.
+    function shouldFundLP() public view returns (bool) {
+        return percentageDAEMTokensStoredInLP() < PERCENTAGE_POL_TO_ENABLE_BUYBACK;
     }
 
     /* ========== MUTATIVE FUNCTIONS ========== */
@@ -153,7 +179,7 @@ contract Treasury is ITreasury, Ownable {
     function preliminaryCheck() external view {
         require(address(gasTank) != address(0), "GasTank");
         require(token.balanceOf(address(this)) > 0, "Treasury is empty");
-        require(polIsInitialized, "POL not initialized");
+        require(polLp != address(0), "POL not initialized");
     }
 
     /// @notice Set the commission percentage value
@@ -182,21 +208,43 @@ contract Treasury is ITreasury, Ownable {
         redistributionInterval = newInterval;
     }
 
+    /// @notice Defines the threshold that will cause buybacks instead of LP funding
+    /// @dev this value must be between 2.5% and 60%
+    /// @param value the new percentage threshold
+    function setPercentageToEnableBuyback(uint16 value) external onlyOwner {
+        require(value >= 250, "POL must be at least 2.5%");
+        require(value <= 6000, "POL must be at most 60%");
+        PERCENTAGE_POL_TO_ENABLE_BUYBACK = value;
+    }
+
     /// @notice Creates the Protocol-owned-Liquidity LP
     /// @param DAEMAmount the amount of DAEM tokens to be deposited in the LP, together with 100% of owned ETH
     function createLP(uint256 DAEMAmount) external payable onlyOwner {
-        require(!polIsInitialized, "PoL already initialized");
+        require(polLp == address(0), "PoL already initialized");
 
         // during initialization, we specify both ETH and DAEM amounts
         addLiquidity(msg.value, DAEMAmount);
-        polIsInitialized = true;
+
+        // fetch DAEM-ETH-LP address
+        address lpAddress = IUniswapV2Factory(IUniswapV2Router01(lpRouter).factory()).getPair(
+            ethToDAEMPath[0],
+            ethToDAEMPath[1]
+        );
+        polLp = lpAddress;
+    }
+
+    /// @notice Sets the already existing DAEM-ETH-LP address
+    /// @param lpAddress the address of the DAEM-ETH-LP
+    function setPolLP(address lpAddress) external onlyOwner {
+        require(polLp == address(0), "PoL already initialized");
+        polLp = lpAddress;
     }
 
     /// @notice Adds funds to the Protocol-owned-Liquidity LP
     /// @dev Funds in the PoL pool will be used. 50% of it to buyback DAEM and then funding the LP.
     /// @param amountOutMin the minimum amount of DAEM tokens to receive during buyback
     function fundLP(uint256 amountOutMin) external onlyOwner {
-        require(polIsInitialized, "PoL not initialized yet");
+        require(shouldFundLP(), "Funding forbidden. Should buyback");
         // First we buy back some DAEM at market price using half of the polPool
         IUniswapV2Router01(lpRouter).swapExactETHForTokens{value: polPool / 2}(
             amountOutMin,
@@ -208,6 +256,22 @@ contract Treasury is ITreasury, Ownable {
         // we send all the polPool ETH to the LP.
         // The amount of DAEM will be automatically decided by the LP to keep the ratio.
         addLiquidity(polPool / 2, token.balanceOf(address(this)));
+        polPool = 0;
+    }
+
+    /// @notice Buybacks DAEM tokens using the PoL funds and keeps them in the treasury
+    /// @dev 100% of funds in the PoL pool will be used to buyback DAEM.
+    /// @param amountOutMin the minimum amount of DAEM tokens to receive during buyback
+    function buybackDAEM(uint256 amountOutMin) external onlyOwner {
+        require(!shouldFundLP(), "Buyback forbidden. Should fund");
+        // We buy back some DAEM at market price using all the polPool
+        IUniswapV2Router01(lpRouter).swapExactETHForTokens{value: polPool}(
+            amountOutMin,
+            ethToDAEMPath,
+            address(this),
+            block.timestamp
+        );
+
         polPool = 0;
     }
 

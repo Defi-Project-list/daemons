@@ -11,10 +11,6 @@ const config: HardhatUserConfig = {
     defaultNetwork: "hardhat",
     networks: {
         hardhat: {
-            /* Enable this when you want to test with a forked chain */
-            // forking: {
-            //     url: "https://polygon-mainnet.g.alchemy.com/v2/m7GrmEdT-Lu0h1k5DowWTKqplP6-ThTa"
-            // },
         },
         mainnet: {
             url: "https://rpc-mumbai.maticvigil.com",

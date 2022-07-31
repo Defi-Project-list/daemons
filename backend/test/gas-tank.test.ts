@@ -30,9 +30,18 @@ describe("GasTank", function () {
         const GasTankContract = await ethers.getContractFactory("GasTank");
         gasTank = await GasTankContract.deploy();
 
-        // Mock router contract
+        // Mock external contract
         const MockRouterContract = await ethers.getContractFactory("MockUniswapV2Router");
         const mockRouter = await MockRouterContract.deploy();
+        const MockFactoryContract = await ethers.getContractFactory("MockUniswapV2Factory");
+        const mockFactory = await MockFactoryContract.deploy();
+        await mockRouter.setFactory(mockFactory.address);
+        const wETH = await mockRouter.WETH();
+        await mockFactory.setFakePair(
+            fooToken.address,
+            wETH,
+            "0x2e5b8db3de83d01fbc5caaa010a8ed45dee6bbdf"
+        );
 
         // Treasury contract
         const TreasuryContract = await ethers.getContractFactory("Treasury");
@@ -50,7 +59,7 @@ describe("GasTank", function () {
         // create token LP
         const ethAmount = ethers.utils.parseEther("5");
         const daemAmount = ethers.utils.parseEther("10");
-        await treasury.createLP(daemAmount, {value: ethAmount});
+        await treasury.createLP(daemAmount, { value: ethAmount });
 
         // have the users give the allowance to the gasTank
         fooToken.connect(owner).approve(gasTank.address, ethers.utils.parseEther("500"));
