@@ -104,7 +104,7 @@ contract Treasury is ITreasury, Ownable {
 
     /// @notice calculate the percentage of DAEM tokens (of the total supply on this chain)
     /// that are locked forever in the treasury-owned LP token
-    function percentageDAEMTokensStoredInLP() public view returns(uint256) {
+    function percentageDAEMTokensStoredInLP() public view returns (uint256) {
         require(polLp != address(0), "PoL not initialized yet");
         uint256 totalSupply = token.totalSupply();
         IUniswapV2Pair lp = IUniswapV2Pair(polLp);
@@ -134,7 +134,7 @@ contract Treasury is ITreasury, Ownable {
         balances[msg.sender] += amount;
     }
 
-    function stakeFor(address user, uint256 amount) private updateReward(user) {
+    function stakeFor(address user, uint256 amount) private {
         require(amount > 0, "Cannot stake 0");
         // no need to move funds as the tokens are already in the treasury
         stakedAmount += amount;
@@ -152,7 +152,7 @@ contract Treasury is ITreasury, Ownable {
         token.transfer(msg.sender, amount);
     }
 
-    /// @notice Claims the earned DAEM tokens
+    /// @notice Claims the earned ETH
     function getReward() public updateReward(msg.sender) {
         require(rewards[msg.sender] > 0, "Nothing to claim");
         uint256 reward = rewards[msg.sender];
@@ -161,7 +161,24 @@ contract Treasury is ITreasury, Ownable {
         distributed = distributed + reward;
     }
 
-    /// @notice Withdraw all staked DAEM tokens and claim the due reward
+    /// @notice Claims the earned DAEM tokens
+    /// @param amountOutMin the minimum amount of DAEM token that should be received in the swap
+    function compoundReward(uint256 amountOutMin)
+        public
+        updateReward(msg.sender)
+    {
+        require(rewards[msg.sender] > 0, "Nothing to claim");
+        uint256 reward = rewards[msg.sender];
+        rewards[msg.sender] = 0;
+
+        uint256[] memory swappedAmounts = IUniswapV2Router01(lpRouter).swapExactETHForTokens{
+            value: reward
+        }(amountOutMin, ethToDAEMPath, address(this), block.timestamp);
+        stakeFor(msg.sender, swappedAmounts[1]);
+        distributed = distributed + reward;
+    }
+
+    /// @notice Withdraw all staked DAEM tokens and claim the due ETH reward
     function exit() external {
         getReward();
         withdraw(balances[msg.sender]);
@@ -293,7 +310,12 @@ contract Treasury is ITreasury, Ownable {
     }
 
     /// @inheritdoc ITreasury
-    function stakePayout(address user, uint256 dueFromTips) external payable override {
+    function stakePayout(address user, uint256 dueFromTips)
+        external
+        payable
+        override
+        updateReward(user)
+    {
         require(gasTank == _msgSender(), "Unauthorized. Only GasTank");
         uint256 payoutFromGas = calculatePayout();
         uint256 payoutFromTips = (dueFromTips * TIPS_AFTER_TAXES_PERCENTAGE) / 10000;

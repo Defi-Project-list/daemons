@@ -422,9 +422,7 @@ describe("Treasury [FORKED CHAIN]", function () {
             expect(earnedReward.sub(expectedReward).abs().toNumber()).to.be.almost.equal(0);
         });
 
-        it("reward zeroed after claiming", async () => {
-            await createLp();
-
+        const stakePayoutAndWaitForOneDay = async (): Promise<BigNumber> => {
             // stake payout for user1 and wait some time
             const amountEth = ethers.utils.parseEther("1.0");
             const zero = ethers.utils.parseEther("0");
@@ -435,9 +433,16 @@ describe("Treasury [FORKED CHAIN]", function () {
 
             // from previous test, we know that after 1 day the reward is
             // (almost) equal to 2777713477338878
-            chai.use(chaiAlmost(32150205761 * 2));
+            chai.use(chaiAlmost(32150205761 * 3));
             const earnedReward: BigNumber = await treasury.earned(user1.address);
             expect(earnedReward.sub("2777713477338878").abs().toNumber()).to.be.almost.equal(0);
+
+            return earnedReward;
+        };
+
+        it("reward zeroed after claiming", async () => {
+            await createLp();
+            await stakePayoutAndWaitForOneDay();
 
             // let's claim the reward
             const balanceBefore = await provider.getBalance(user1.address);
@@ -455,20 +460,7 @@ describe("Treasury [FORKED CHAIN]", function () {
 
         it("rewards are accounted each time are claimed", async () => {
             await createLp();
-
-            // stake payout for user1 and wait some time
-            const amountEth = ethers.utils.parseEther("1.0");
-            const zero = ethers.utils.parseEther("0");
-            await treasury.connect(gasTank).stakePayout(user1.address, zero, { value: amountEth });
-
-            await network.provider.send("evm_setNextBlockTimestamp", [(await now()) + oneDay]);
-            await network.provider.send("evm_mine");
-
-            // from previous test, we know that after 1 day the reward is
-            // (almost) equal to 2777713477338878
-            chai.use(chaiAlmost(32150205761 * 3));
-            const earnedReward: BigNumber = await treasury.earned(user1.address);
-            expect(earnedReward.sub("2777713477338878").abs().toNumber()).to.be.almost.equal(0);
+            await stakePayoutAndWaitForOneDay();
 
             // let's claim the reward
             await treasury.connect(user1).getReward();
@@ -484,17 +476,7 @@ describe("Treasury [FORKED CHAIN]", function () {
             // add some ETH dust that will stay in the treasury
             await treasury.connect(gasTank).stakePayout(owner.address, 0, { value: 10000 });
 
-            // stake payout for user1 and wait some time
-            const amount = ethers.utils.parseEther("1.0");
-            await treasury.connect(gasTank).stakePayout(user1.address, 0, { value: amount });
-            await network.provider.send("evm_setNextBlockTimestamp", [(await now()) + oneDay]);
-            await network.provider.send("evm_mine");
-
-            // from previous test, we know that after 1 day the reward is
-            // (almost) equal to 2777713477338878
-            chai.use(chaiAlmost(32150205761 * 3));
-            const earnedReward: BigNumber = await treasury.earned(user1.address);
-            expect(earnedReward.sub("2777713477338878").abs().toNumber()).to.be.almost.equal(0);
+            await stakePayoutAndWaitForOneDay();
 
             // let's exit
             const balanceBefore = await provider.getBalance(user1.address);
@@ -505,7 +487,7 @@ describe("Treasury [FORKED CHAIN]", function () {
             expect(balanceAfter.sub(balanceBefore).gt(0)).to.be.true;
 
             // As well as the token
-            const converted = await treasury.ethToDAEM(amount);
+            const converted = await treasury.ethToDAEM(utils.parseEther("1"));
             const userTokenBalance = await daemToken.balanceOf(user1.address);
             expect(userTokenBalance).to.be.equal(converted);
 
@@ -556,6 +538,38 @@ describe("Treasury [FORKED CHAIN]", function () {
             await treasury.connect(user1).exit();
             expect(await daemToken.balanceOf(user1.address)).to.be.equal(converted);
             expect(await treasury.balanceOf(user1.address)).to.be.equal(zero);
+        });
+
+        it("user can compound the reward", async () => {
+            await createLp();
+            const earnedReward = await stakePayoutAndWaitForOneDay();
+
+            const quoteRewardToDAEM = await treasury.ethToDAEM(earnedReward);
+            const minAmountOut = quoteRewardToDAEM.mul(99).div(100);
+
+            // let's compound the reward
+            const balanceBefore = await treasury.balanceOf(user1.address);
+            await treasury.connect(user1).compoundReward(minAmountOut);
+
+            // the amount of DAEM in the treasury have increased (at least by "minAmountOut")
+            const balanceAfter = await treasury.balanceOf(user1.address);
+            expect(balanceAfter.gte(balanceBefore.add(minAmountOut))).to.be.true;
+
+            // and the treasury counter should have been zeroed
+            const earnedRewardAfterClaim: BigNumber = await treasury.earned(user1.address);
+            expect(earnedRewardAfterClaim.toNumber()).to.be.almost.equal(0);
+        });
+
+        it("compound fails if minAmountOut is too high", async () => {
+            await createLp();
+            const earnedReward = await stakePayoutAndWaitForOneDay();
+
+            const quoteRewardToDAEM = await treasury.ethToDAEM(earnedReward);
+            const minAmountOut = quoteRewardToDAEM.mul(101).div(100);
+
+            await expect(treasury.connect(user1).compoundReward(minAmountOut)).to.be.revertedWith(
+                "UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT"
+            );
         });
     });
 
