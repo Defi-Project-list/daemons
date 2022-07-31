@@ -393,4 +393,14 @@ contract ZapInScriptExecutor is ConditionsChecker {
 
         return amountToSwap;
     }
+
+    /// @notice It allows the owner to withdraw dust left in the executor contract
+    /// @param _tokenAddress: the address of the token to withdraw
+    /// @dev This function is only callable by owner.
+    function recoverDust(address _tokenAddress) external onlyOwner {
+        IERC20 token = IERC20(_tokenAddress);
+        uint256 amount = token.balanceOf(address(this));
+        require(amount > 0, "Nothing to recover");
+        token.transfer(address(msg.sender), amount);
+    }
 }
