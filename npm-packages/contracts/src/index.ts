@@ -9,6 +9,7 @@ export * from "./ABIs/core/treasury";
 export * from "./ABIs/core/vesting";
 
 // executors ABIs
+export * from "./ABIs/script-executors/conditions-checker";
 export * from "./ABIs/script-executors/mm-base-script";
 export * from "./ABIs/script-executors/mm-advanced-script";
 export * from "./ABIs/script-executors/swap-script";
