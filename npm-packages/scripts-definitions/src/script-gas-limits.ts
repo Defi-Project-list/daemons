@@ -1,18 +1,17 @@
-import { BigNumber } from "ethers";
+import { conditionsCheckerABI } from "@daemons-fi/contracts/build";
+import { BigNumber, ethers } from "ethers";
 
-const gasLimits: { [scriptType: string]: number } = {
-    SwapScript: 300000,
-    TransferScript: 200000,
-    MmBaseScript: 300000,
-    MmAdvancedScript: 325000,
-    ZapInScript: 320000,
-    ZapOutScript: 400000,
-    BeefyScript: 410000,
-    PassScript: 150000,
-};
+export class GasLimitFetcher {
+    public static async getGasLimit(
+        executorAddress: string,
+        signerOrProvider: ethers.providers.Provider | ethers.Signer
+    ): Promise<BigNumber> {
+        const contract = new ethers.Contract(
+            executorAddress,
+            conditionsCheckerABI,
+            signerOrProvider
+        );
 
-export const getGasLimitForScript = (scriptType: string): BigNumber => {
-    const gasLimit = gasLimits[scriptType];
-    if (!gasLimit) throw new Error(`Unrecognized script type: ${scriptType}`);
-    return BigNumber.from(gasLimit);
-};
+        return await contract.GAS_LIMIT();
+    }
+}
