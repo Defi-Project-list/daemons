@@ -8,17 +8,17 @@ export const mmAdvancedScriptABI: ContractInterface = [
         indexed: false,
         internalType: "bytes32",
         name: "id",
-        type: "bytes32",
+        type: "bytes32"
       },
       {
         indexed: false,
         internalType: "uint256",
         name: "cost",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     name: "Executed",
-    type: "event",
+    type: "event"
   },
   {
     anonymous: false,
@@ -27,17 +27,17 @@ export const mmAdvancedScriptABI: ContractInterface = [
         indexed: true,
         internalType: "address",
         name: "previousOwner",
-        type: "address",
+        type: "address"
       },
       {
         indexed: true,
         internalType: "address",
         name: "newOwner",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "OwnershipTransferred",
-    type: "event",
+    type: "event"
   },
   {
     inputs: [],
@@ -46,11 +46,11 @@ export const mmAdvancedScriptABI: ContractInterface = [
       {
         internalType: "uint256",
         name: "",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
@@ -59,11 +59,11 @@ export const mmAdvancedScriptABI: ContractInterface = [
       {
         internalType: "uint256",
         name: "",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
@@ -72,264 +72,264 @@ export const mmAdvancedScriptABI: ContractInterface = [
           {
             internalType: "bytes32",
             name: "scriptId",
-            type: "bytes32",
+            type: "bytes32"
           },
           {
             internalType: "address",
             name: "token",
-            type: "address",
+            type: "address"
           },
           {
             internalType: "address",
             name: "debtToken",
-            type: "address",
+            type: "address"
           },
           {
             internalType: "bytes1",
             name: "action",
-            type: "bytes1",
+            type: "bytes1"
           },
           {
             internalType: "bytes1",
             name: "typeAmt",
-            type: "bytes1",
+            type: "bytes1"
           },
           {
             internalType: "bytes1",
             name: "rateMode",
-            type: "bytes1",
+            type: "bytes1"
           },
           {
             internalType: "uint256",
             name: "amount",
-            type: "uint256",
+            type: "uint256"
           },
           {
             internalType: "address",
             name: "user",
-            type: "address",
+            type: "address"
           },
           {
             internalType: "address",
             name: "kontract",
-            type: "address",
+            type: "address"
           },
           {
             internalType: "address",
             name: "executor",
-            type: "address",
+            type: "address"
           },
           {
             internalType: "uint256",
             name: "chainId",
-            type: "uint256",
+            type: "uint256"
           },
           {
             internalType: "uint256",
             name: "tip",
-            type: "uint256",
+            type: "uint256"
           },
           {
             components: [
               {
                 internalType: "bool",
                 name: "enabled",
-                type: "bool",
+                type: "bool"
               },
               {
                 internalType: "address",
                 name: "token",
-                type: "address",
+                type: "address"
               },
               {
                 internalType: "bytes1",
                 name: "comparison",
-                type: "bytes1",
+                type: "bytes1"
               },
               {
                 internalType: "uint256",
                 name: "amount",
-                type: "uint256",
-              },
+                type: "uint256"
+              }
             ],
             internalType: "struct Balance",
             name: "balance",
-            type: "tuple",
+            type: "tuple"
           },
           {
             components: [
               {
                 internalType: "bool",
                 name: "enabled",
-                type: "bool",
+                type: "bool"
               },
               {
                 internalType: "uint256",
                 name: "delay",
-                type: "uint256",
+                type: "uint256"
               },
               {
                 internalType: "uint256",
                 name: "start",
-                type: "uint256",
-              },
+                type: "uint256"
+              }
             ],
             internalType: "struct Frequency",
             name: "frequency",
-            type: "tuple",
+            type: "tuple"
           },
           {
             components: [
               {
                 internalType: "bool",
                 name: "enabled",
-                type: "bool",
+                type: "bool"
               },
               {
                 internalType: "address",
                 name: "tokenA",
-                type: "address",
+                type: "address"
               },
               {
                 internalType: "address",
                 name: "tokenB",
-                type: "address",
+                type: "address"
               },
               {
                 internalType: "bytes1",
                 name: "comparison",
-                type: "bytes1",
+                type: "bytes1"
               },
               {
                 internalType: "uint256",
                 name: "value",
-                type: "uint256",
+                type: "uint256"
               },
               {
                 internalType: "address",
                 name: "router",
-                type: "address",
-              },
+                type: "address"
+              }
             ],
             internalType: "struct Price",
             name: "price",
-            type: "tuple",
+            type: "tuple"
           },
           {
             components: [
               {
                 internalType: "bool",
                 name: "enabled",
-                type: "bool",
+                type: "bool"
               },
               {
                 internalType: "uint32",
                 name: "amount",
-                type: "uint32",
-              },
+                type: "uint32"
+              }
             ],
             internalType: "struct Repetitions",
             name: "repetitions",
-            type: "tuple",
+            type: "tuple"
           },
           {
             components: [
               {
                 internalType: "bool",
                 name: "enabled",
-                type: "bool",
+                type: "bool"
               },
               {
                 internalType: "uint256",
                 name: "shift",
-                type: "uint256",
+                type: "uint256"
               },
               {
                 internalType: "bytes32",
                 name: "scriptId",
-                type: "bytes32",
+                type: "bytes32"
               },
               {
                 internalType: "address",
                 name: "executor",
-                type: "address",
-              },
+                type: "address"
+              }
             ],
             internalType: "struct Follow",
             name: "follow",
-            type: "tuple",
+            type: "tuple"
           },
           {
             components: [
               {
                 internalType: "bool",
                 name: "enabled",
-                type: "bool",
+                type: "bool"
               },
               {
                 internalType: "address",
                 name: "kontract",
-                type: "address",
+                type: "address"
               },
               {
                 internalType: "bytes1",
                 name: "comparison",
-                type: "bytes1",
+                type: "bytes1"
               },
               {
                 internalType: "uint256",
                 name: "amount",
-                type: "uint256",
-              },
+                type: "uint256"
+              }
             ],
             internalType: "struct HealthFactor",
             name: "healthFactor",
-            type: "tuple",
-          },
+            type: "tuple"
+          }
         ],
         internalType: "struct MmAdvanced",
         name: "message",
-        type: "tuple",
+        type: "tuple"
       },
       {
         internalType: "bytes32",
         name: "r",
-        type: "bytes32",
+        type: "bytes32"
       },
       {
         internalType: "bytes32",
         name: "s",
-        type: "bytes32",
+        type: "bytes32"
       },
       {
         internalType: "uint8",
         name: "v",
-        type: "uint8",
-      },
+        type: "uint8"
+      }
     ],
     name: "execute",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "bytes32",
         name: "_id",
-        type: "bytes32",
-      },
+        type: "bytes32"
+      }
     ],
     name: "getRepetitions",
     outputs: [
       {
         internalType: "uint32",
         name: "",
-        type: "uint32",
-      },
+        type: "uint32"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
@@ -338,18 +338,18 @@ export const mmAdvancedScriptABI: ContractInterface = [
       {
         internalType: "address",
         name: "",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
     name: "preliminaryCheck",
     outputs: [],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
@@ -358,96 +358,96 @@ export const mmAdvancedScriptABI: ContractInterface = [
       {
         internalType: "contract IPriceOracleGetter",
         name: "",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
     name: "renounceOwnership",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "bytes32",
         name: "_id",
-        type: "bytes32",
-      },
+        type: "bytes32"
+      }
     ],
     name: "revoke",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "address",
         name: "_priceOracle",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "setAavePriceOracle",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "address",
         name: "_gasPriceFeed",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "setGasFeed",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "address",
         name: "_gasTank",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "setGasTank",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "uint256",
         name: "_amount",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     name: "setMinimumGas",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "address",
         name: "newOwner",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "transferOwnership",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
@@ -456,244 +456,244 @@ export const mmAdvancedScriptABI: ContractInterface = [
           {
             internalType: "bytes32",
             name: "scriptId",
-            type: "bytes32",
+            type: "bytes32"
           },
           {
             internalType: "address",
             name: "token",
-            type: "address",
+            type: "address"
           },
           {
             internalType: "address",
             name: "debtToken",
-            type: "address",
+            type: "address"
           },
           {
             internalType: "bytes1",
             name: "action",
-            type: "bytes1",
+            type: "bytes1"
           },
           {
             internalType: "bytes1",
             name: "typeAmt",
-            type: "bytes1",
+            type: "bytes1"
           },
           {
             internalType: "bytes1",
             name: "rateMode",
-            type: "bytes1",
+            type: "bytes1"
           },
           {
             internalType: "uint256",
             name: "amount",
-            type: "uint256",
+            type: "uint256"
           },
           {
             internalType: "address",
             name: "user",
-            type: "address",
+            type: "address"
           },
           {
             internalType: "address",
             name: "kontract",
-            type: "address",
+            type: "address"
           },
           {
             internalType: "address",
             name: "executor",
-            type: "address",
+            type: "address"
           },
           {
             internalType: "uint256",
             name: "chainId",
-            type: "uint256",
+            type: "uint256"
           },
           {
             internalType: "uint256",
             name: "tip",
-            type: "uint256",
+            type: "uint256"
           },
           {
             components: [
               {
                 internalType: "bool",
                 name: "enabled",
-                type: "bool",
+                type: "bool"
               },
               {
                 internalType: "address",
                 name: "token",
-                type: "address",
+                type: "address"
               },
               {
                 internalType: "bytes1",
                 name: "comparison",
-                type: "bytes1",
+                type: "bytes1"
               },
               {
                 internalType: "uint256",
                 name: "amount",
-                type: "uint256",
-              },
+                type: "uint256"
+              }
             ],
             internalType: "struct Balance",
             name: "balance",
-            type: "tuple",
+            type: "tuple"
           },
           {
             components: [
               {
                 internalType: "bool",
                 name: "enabled",
-                type: "bool",
+                type: "bool"
               },
               {
                 internalType: "uint256",
                 name: "delay",
-                type: "uint256",
+                type: "uint256"
               },
               {
                 internalType: "uint256",
                 name: "start",
-                type: "uint256",
-              },
+                type: "uint256"
+              }
             ],
             internalType: "struct Frequency",
             name: "frequency",
-            type: "tuple",
+            type: "tuple"
           },
           {
             components: [
               {
                 internalType: "bool",
                 name: "enabled",
-                type: "bool",
+                type: "bool"
               },
               {
                 internalType: "address",
                 name: "tokenA",
-                type: "address",
+                type: "address"
               },
               {
                 internalType: "address",
                 name: "tokenB",
-                type: "address",
+                type: "address"
               },
               {
                 internalType: "bytes1",
                 name: "comparison",
-                type: "bytes1",
+                type: "bytes1"
               },
               {
                 internalType: "uint256",
                 name: "value",
-                type: "uint256",
+                type: "uint256"
               },
               {
                 internalType: "address",
                 name: "router",
-                type: "address",
-              },
+                type: "address"
+              }
             ],
             internalType: "struct Price",
             name: "price",
-            type: "tuple",
+            type: "tuple"
           },
           {
             components: [
               {
                 internalType: "bool",
                 name: "enabled",
-                type: "bool",
+                type: "bool"
               },
               {
                 internalType: "uint32",
                 name: "amount",
-                type: "uint32",
-              },
+                type: "uint32"
+              }
             ],
             internalType: "struct Repetitions",
             name: "repetitions",
-            type: "tuple",
+            type: "tuple"
           },
           {
             components: [
               {
                 internalType: "bool",
                 name: "enabled",
-                type: "bool",
+                type: "bool"
               },
               {
                 internalType: "uint256",
                 name: "shift",
-                type: "uint256",
+                type: "uint256"
               },
               {
                 internalType: "bytes32",
                 name: "scriptId",
-                type: "bytes32",
+                type: "bytes32"
               },
               {
                 internalType: "address",
                 name: "executor",
-                type: "address",
-              },
+                type: "address"
+              }
             ],
             internalType: "struct Follow",
             name: "follow",
-            type: "tuple",
+            type: "tuple"
           },
           {
             components: [
               {
                 internalType: "bool",
                 name: "enabled",
-                type: "bool",
+                type: "bool"
               },
               {
                 internalType: "address",
                 name: "kontract",
-                type: "address",
+                type: "address"
               },
               {
                 internalType: "bytes1",
                 name: "comparison",
-                type: "bytes1",
+                type: "bytes1"
               },
               {
                 internalType: "uint256",
                 name: "amount",
-                type: "uint256",
-              },
+                type: "uint256"
+              }
             ],
             internalType: "struct HealthFactor",
             name: "healthFactor",
-            type: "tuple",
-          },
+            type: "tuple"
+          }
         ],
         internalType: "struct MmAdvanced",
         name: "message",
-        type: "tuple",
+        type: "tuple"
       },
       {
         internalType: "bytes32",
         name: "r",
-        type: "bytes32",
+        type: "bytes32"
       },
       {
         internalType: "bytes32",
         name: "s",
-        type: "bytes32",
+        type: "bytes32"
       },
       {
         internalType: "uint8",
         name: "v",
-        type: "uint8",
-      },
+        type: "uint8"
+      }
     ],
     name: "verify",
     outputs: [],
     stateMutability: "view",
-    type: "function",
-  },
+    type: "function"
+  }
 ];

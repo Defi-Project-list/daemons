@@ -95,7 +95,7 @@ async function deployDaemons() {
 
     // deploy transfer executor
     currentContracts = await deployTransferExecutor(currentContracts);
-    await verifyTransferExecutor(currentContracts);
+    await initializeTransferExecutor(currentContracts);
     await registerTransferExecutor(currentContracts);
 
     // deploy mmBase executor
@@ -130,7 +130,7 @@ async function deployDaemons() {
 
     // verify executors
     // await verifySwapperExecutor(currentContracts);
-    // await initializeTransferExecutor(currentContracts);
+    // await verifyTransferExecutor(currentContracts);
     // await verifyMmBaseExecutor(currentContracts);
     // await verifyMmAdvancedExecutor(currentContracts);
     // await verifyZapInExecutor(currentContracts);

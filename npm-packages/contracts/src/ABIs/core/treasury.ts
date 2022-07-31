@@ -6,21 +6,21 @@ export const treasuryABI: ContractInterface = [
       {
         internalType: "address",
         name: "_token",
-        type: "address",
+        type: "address"
       },
       {
         internalType: "address",
         name: "_gasTank",
-        type: "address",
+        type: "address"
       },
       {
         internalType: "address",
         name: "_lpRouter",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     stateMutability: "nonpayable",
-    type: "constructor",
+    type: "constructor"
   },
   {
     anonymous: false,
@@ -29,17 +29,17 @@ export const treasuryABI: ContractInterface = [
         indexed: true,
         internalType: "address",
         name: "previousOwner",
-        type: "address",
+        type: "address"
       },
       {
         indexed: true,
         internalType: "address",
         name: "newOwner",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "OwnershipTransferred",
-    type: "event",
+    type: "event"
   },
   {
     inputs: [],
@@ -48,11 +48,11 @@ export const treasuryABI: ContractInterface = [
       {
         internalType: "uint16",
         name: "",
-        type: "uint16",
-      },
+        type: "uint16"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
@@ -61,11 +61,24 @@ export const treasuryABI: ContractInterface = [
       {
         internalType: "uint16",
         name: "",
-        type: "uint16",
-      },
+        type: "uint16"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
+  },
+  {
+    inputs: [],
+    name: "PERCENTAGE_POL_TO_ENABLE_BUYBACK",
+    outputs: [
+      {
+        internalType: "uint16",
+        name: "",
+        type: "uint16"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
   },
   {
     inputs: [],
@@ -74,37 +87,50 @@ export const treasuryABI: ContractInterface = [
       {
         internalType: "uint16",
         name: "",
-        type: "uint16",
-      },
+        type: "uint16"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "address",
         name: "user",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "balanceOf",
     outputs: [
       {
         internalType: "uint256",
         name: "",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "amountOutMin",
+        type: "uint256"
+      }
+    ],
+    name: "buybackDAEM",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function"
   },
   {
     inputs: [],
     name: "claimCommission",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
@@ -113,24 +139,37 @@ export const treasuryABI: ContractInterface = [
       {
         internalType: "uint256",
         name: "",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "amountOutMin",
+        type: "uint256"
+      }
+    ],
+    name: "compoundReward",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "uint256",
         name: "DAEMAmount",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     name: "createLP",
     outputs: [],
     stateMutability: "payable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
@@ -139,76 +178,76 @@ export const treasuryABI: ContractInterface = [
       {
         internalType: "uint256",
         name: "",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "address",
         name: "user",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "earned",
     outputs: [
       {
         internalType: "uint256",
         name: "",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "uint256",
         name: "ethAmount",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     name: "ethToDAEM",
     outputs: [
       {
         internalType: "uint256",
         name: "",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
     name: "exit",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "uint256",
         name: "amountOutMin",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     name: "fundLP",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
     name: "getReward",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
@@ -217,11 +256,11 @@ export const treasuryABI: ContractInterface = [
       {
         internalType: "uint256",
         name: "",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
@@ -230,11 +269,37 @@ export const treasuryABI: ContractInterface = [
       {
         internalType: "address",
         name: "",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
+  },
+  {
+    inputs: [],
+    name: "percentageDAEMTokensStoredInLP",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [],
+    name: "polLp",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
   },
   {
     inputs: [],
@@ -243,18 +308,18 @@ export const treasuryABI: ContractInterface = [
       {
         internalType: "uint256",
         name: "",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
     name: "preliminaryCheck",
     outputs: [],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
@@ -263,11 +328,11 @@ export const treasuryABI: ContractInterface = [
       {
         internalType: "uint256",
         name: "",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
@@ -276,119 +341,158 @@ export const treasuryABI: ContractInterface = [
       {
         internalType: "uint256",
         name: "",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
     name: "renounceOwnership",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "address",
         name: "user",
-        type: "address",
+        type: "address"
       },
       {
         internalType: "uint256",
         name: "dueFromTips",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     name: "requestPayout",
     outputs: [],
     stateMutability: "payable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "uint16",
         name: "value",
-        type: "uint16",
-      },
+        type: "uint16"
+      }
     ],
     name: "setCommissionPercentage",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "address",
         name: "_gasTank",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "setGasTank",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "uint16",
         name: "value",
-        type: "uint16",
-      },
+        type: "uint16"
+      }
+    ],
+    name: "setPercentageToEnableBuyback",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "lpAddress",
+        type: "address"
+      }
+    ],
+    name: "setPolLP",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint16",
+        name: "value",
+        type: "uint16"
+      }
     ],
     name: "setPolPercentage",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "uint256",
         name: "newInterval",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     name: "setRedistributionInterval",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
+  },
+  {
+    inputs: [],
+    name: "shouldFundLP",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "uint256",
         name: "amount",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     name: "stake",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "address",
         name: "user",
-        type: "address",
+        type: "address"
       },
       {
         internalType: "uint256",
         name: "dueFromTips",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     name: "stakePayout",
     outputs: [],
     stateMutability: "payable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
@@ -397,11 +501,11 @@ export const treasuryABI: ContractInterface = [
       {
         internalType: "uint256",
         name: "",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
@@ -410,36 +514,36 @@ export const treasuryABI: ContractInterface = [
       {
         internalType: "uint256",
         name: "",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "address",
         name: "newOwner",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "transferOwnership",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "uint256",
         name: "amount",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     name: "withdraw",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
-  },
+    type: "function"
+  }
 ];

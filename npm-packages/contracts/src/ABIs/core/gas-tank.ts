@@ -8,17 +8,17 @@ export const gasTankABI: ContractInterface = [
         indexed: true,
         internalType: "address",
         name: "previousOwner",
-        type: "address",
+        type: "address"
       },
       {
         indexed: true,
         internalType: "address",
         name: "newOwner",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "OwnershipTransferred",
-    type: "event",
+    type: "event"
   },
   {
     anonymous: false,
@@ -27,141 +27,141 @@ export const gasTankABI: ContractInterface = [
         indexed: false,
         internalType: "bytes32",
         name: "scriptId",
-        type: "bytes32",
+        type: "bytes32"
       },
       {
         indexed: false,
         internalType: "address",
         name: "scriptOwner",
-        type: "address",
+        type: "address"
       },
       {
         indexed: false,
         internalType: "address",
         name: "executor",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "ScriptExecuted",
-    type: "event",
+    type: "event"
   },
   {
     inputs: [
       {
         internalType: "address",
         name: "executor",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "addExecutor",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "bytes32",
         name: "scriptId",
-        type: "bytes32",
+        type: "bytes32"
       },
       {
         internalType: "uint256",
         name: "ethAmount",
-        type: "uint256",
+        type: "uint256"
       },
       {
         internalType: "uint256",
         name: "tipAmount",
-        type: "uint256",
+        type: "uint256"
       },
       {
         internalType: "address",
         name: "user",
-        type: "address",
+        type: "address"
       },
       {
         internalType: "address",
         name: "executor",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "addReward",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
     name: "claimAndStakeReward",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
     name: "claimReward",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "address",
         name: "user",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "claimable",
     outputs: [
       {
         internalType: "uint256",
         name: "",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
     name: "depositGas",
     outputs: [],
     stateMutability: "payable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "uint256",
         name: "amount",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     name: "depositTip",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "address",
         name: "user",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "gasBalanceOf",
     outputs: [
       {
         internalType: "uint256",
         name: "",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
@@ -170,96 +170,96 @@ export const gasTankABI: ContractInterface = [
       {
         internalType: "address",
         name: "",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
     name: "preliminaryCheck",
     outputs: [],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "address",
         name: "executor",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "removeExecutor",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
     name: "renounceOwnership",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "address",
         name: "_token",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "setDAEMToken",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "address",
         name: "_treasury",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "setTreasury",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "address",
         name: "user",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "tipBalanceOf",
     outputs: [
       {
         internalType: "uint256",
         name: "",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "address",
         name: "newOwner",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     name: "transferOwnership",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
@@ -268,50 +268,50 @@ export const gasTankABI: ContractInterface = [
       {
         internalType: "contract ITreasury",
         name: "",
-        type: "address",
-      },
+        type: "address"
+      }
     ],
     stateMutability: "view",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
     name: "withdrawAllGas",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [],
     name: "withdrawAllTip",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "uint256",
         name: "amount",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     name: "withdrawGas",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
+    type: "function"
   },
   {
     inputs: [
       {
         internalType: "uint256",
         name: "amount",
-        type: "uint256",
-      },
+        type: "uint256"
+      }
     ],
     name: "withdrawTip",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
-  },
+    type: "function"
+  }
 ];
