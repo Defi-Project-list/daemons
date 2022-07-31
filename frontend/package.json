@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@daemons-fi/contracts": "0.0.2",
-    "@daemons-fi/scripts-definitions": "0.1.29",
+    "@daemons-fi/scripts-definitions": "0.1.31",
     "@daemons-fi/shared-definitions": "2.1.10",
     "@metamask/detect-provider": "^1.2.0",
     "@types/react": "^17.0.37",
