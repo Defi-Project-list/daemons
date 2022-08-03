@@ -1,6 +1,5 @@
 import { storageAddress } from ".";
 import fetch from "cross-fetch";
-import { Cacher } from "../cacher";
 
 export interface IUserStat {
     date: string;
@@ -29,17 +28,14 @@ export class StatsProxy {
     }
 
     public static async getUserStats(chainId: string): Promise<IUserStat[]> {
-        const endpoint = `/stats/users/${chainId}`;
-        return await Cacher.fetchData(endpoint, () => this.fetchStats(endpoint));
+        return await this.fetchStats(`/stats/users/${chainId}`);
     }
 
     public static async getScriptStats(chainId: string): Promise<IScriptStats[]> {
-        const endpoint = `/stats/scripts/${chainId}`;
-        return await Cacher.fetchData(endpoint, () => this.fetchStats(endpoint));
+        return await this.fetchStats(`/stats/scripts/${chainId}`);
     }
 
     public static async getTransactionsStats(chainId: string): Promise<ITransactionsStats[]> {
-        const endpoint = `/stats/transactions/${chainId}`;
-        return await Cacher.fetchData(endpoint, () => this.fetchStats(endpoint));
+        return await this.fetchStats(`/stats/transactions/${chainId}`);
     }
 }
