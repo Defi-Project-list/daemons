@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { BaseScript, getGasLimitForScript } from "@daemons-fi/scripts-definitions";
 import { VerificationFailedScript, VerificationState } from "@daemons-fi/scripts-definitions";
 import { RootState } from "../../state";
-import { fetchGasTankClaimable } from "../../state/action-creators/gas-tank-action-creators";
+import { fetchGasTankBalance, fetchGasTankClaimable } from "../../state/action-creators/gas-tank-action-creators";
 import { removeUserScript } from "../../state/action-creators/script-action-creators";
 import { BigNumber, ethers } from "ethers";
 import { promiseToast } from "../../components/toaster";
@@ -11,6 +11,7 @@ import { StorageProxy } from "../../data/storage-proxy";
 import { ScriptProxy } from "../../data/storage-proxy/scripts-proxy";
 import { GetCurrentChain } from "../../data/chain-info";
 import { bigNumberToFloat } from "@daemons-fi/contracts";
+import { fetchTipJarBalance } from "../../state/action-creators/tip-jar-action-creators";
 
 export const MyPageScript = ({ script }: { script: BaseScript }) => {
     const [verification, setVerification] = useState(script.getVerification());
@@ -58,8 +59,11 @@ export const MyPageScript = ({ script }: { script: BaseScript }) => {
     const executeScript = async () => {
         const tx = await script.execute(signer);
         setVerification(script.getVerification());
-        dispatch(fetchGasTankClaimable(walletAddress, chainId));
-        tx?.wait().then(() => verifyScript());
+        tx?.wait().then(() =>  {
+            verifyScript();
+            dispatch(fetchGasTankBalance(walletAddress, chainId));
+            dispatch(fetchTipJarBalance(walletAddress, chainId));
+        });
     };
 
     const requestAllowance = async () => {
