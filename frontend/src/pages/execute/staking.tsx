@@ -56,7 +56,7 @@ export function Staking() {
         dispatch(fetchStakingClaimable(walletAddress, chainId));
         dispatch(fetchDaemBalance(walletAddress, chainId));
         checkForAllowance();
-    }, []);
+    }, [chainId]);
 
     useEffect(() => {
         if (!redistributionPool || !currentDAEMPrice || !stakedAmount || !distrInterval) return;

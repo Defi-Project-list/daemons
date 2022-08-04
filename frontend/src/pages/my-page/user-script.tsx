@@ -61,6 +61,7 @@ export const MyPageScript = ({ script }: { script: BaseScript }) => {
         setVerification(script.getVerification());
         tx?.wait().then(() =>  {
             verifyScript();
+            dispatch(fetchGasTankClaimable(walletAddress, chainId));
             dispatch(fetchGasTankBalance(walletAddress, chainId));
             dispatch(fetchTipJarBalance(walletAddress, chainId));
         });

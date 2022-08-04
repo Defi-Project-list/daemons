@@ -57,7 +57,7 @@ export const fetchStakingClaimable = (address?: string, chainId?: string) => {
 
         const treasury = await getTreasuryContract(chainId);
         const rawBalance: BigNumber = await treasury.earned(address);
-        const balance = bigNumberToFloat(rawBalance);
+        const balance = bigNumberToFloat(rawBalance, 9);
 
         dispatch({
             type: ActionType.STAKING_CLAIMABLE,
