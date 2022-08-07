@@ -11,6 +11,7 @@ import { fetchDaemBalance } from "../../state/action-creators/wallet-action-crea
 import { AllowanceHelper } from "@daemons-fi/scripts-definitions/build";
 import { ethers } from "ethers";
 import { Card } from "../../components/card/card";
+import { Switch } from "../../components/switch";
 
 export function TipJar(): JSX.Element {
     const dispatch = useDispatch();
@@ -253,16 +254,9 @@ export function TipJar(): JSX.Element {
 
     const depositWithdrawSwitch = (
         <div className="tip-jar__switch">
-            Deposit
-            <label className="switch">
-                <input
-                    type="checkbox"
-                    value={String(toggleDeposit)}
-                    onChange={() => setToggleDeposit(!toggleDeposit)}
-                />
-                <span className="slider round"></span>
-            </label>
             Withdraw
+            <Switch value={toggleDeposit} setValue={setToggleDeposit} />
+            Deposit
         </div>
     );
 

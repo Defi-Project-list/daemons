@@ -36,9 +36,12 @@
     background-color: white;
     -webkit-transition: .4s;
     transition: .4s;
+    -webkit-transform: translateX(18px);
+    -ms-transform: translateX(18px);
+    transform: translateX(18px);
 }
 
-input:checked+.slider {
+input:not(:checked)+.slider {
     background-color: #ccc;
 }
 
@@ -46,10 +49,10 @@ input:focus+.slider {
     box-shadow: 0 0 1px var(--primary-colour);
 }
 
-input:checked+.slider:before {
-    -webkit-transform: translateX(18px);
-    -ms-transform: translateX(18px);
-    transform: translateX(18px);
+input:not(:checked)+.slider:before {
+    -webkit-transform: translateX(0px);
+    -ms-transform: translateX(0px);
+    transform: translateX(0px);
 }
 
 /* Select */

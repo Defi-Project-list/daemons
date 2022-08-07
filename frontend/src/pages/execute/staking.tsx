@@ -16,6 +16,7 @@ import "./staking.css";
 import { Card, HeadlessCard } from "../../components/card/card";
 import CountUp from "react-countup";
 import { fetchTreasuryStats } from "../../state/action-creators/treasury-action-creators";
+import { Switch } from "../../components/switch";
 
 export function Staking() {
     const dispatch = useDispatch();
@@ -329,16 +330,9 @@ export function Staking() {
 
     const depositWithdrawSwitch = (
         <div className="staking__switch">
-            Deposit
-            <label className="switch">
-                <input
-                    type="checkbox"
-                    value={String(toggleDeposit)}
-                    onChange={() => setToggleDeposit(!toggleDeposit)}
-                />
-                <span className="slider round"></span>
-            </label>
             Withdraw
+            <Switch value={toggleDeposit} setValue={setToggleDeposit} />
+            Deposit
         </div>
     );
 
@@ -373,9 +367,8 @@ export function Staking() {
                         {claimable
                             ? `Claimable: ${claimable} ${currencySymbol}`
                             : stakingBalance && stakingBalance > 0
-                                ? `Be patient, you'll soon be able to claim some ${currencySymbol}...`
-                                : "No ETH to claim. Stake some DAEM to access the platform profits"
-                        }
+                            ? `Be patient, you'll soon be able to claim some ${currencySymbol}...`
+                            : "No ETH to claim. Stake some DAEM to access the platform profits"}
                     </div>
                     <div className="claim-reward__buttons-container">
                         <input

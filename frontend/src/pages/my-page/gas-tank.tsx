@@ -8,6 +8,7 @@ import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
 import { promiseToast } from "../../components/toaster";
 import "./gas-tank.css";
 import { Card } from "../../components/card/card";
+import { Switch } from "../../components/switch";
 
 export function GasTank(): JSX.Element {
     const dispatch = useDispatch();
@@ -208,16 +209,9 @@ export function GasTank(): JSX.Element {
 
     const depositWithdrawSwitch = (
         <div className="gas-tank__switch">
-            Deposit
-            <label className="switch">
-                <input
-                    type="checkbox"
-                    value={String(toggleDeposit)}
-                    onChange={() => setToggleDeposit(!toggleDeposit)}
-                />
-                <span className="slider round"></span>
-            </label>
             Withdraw
+            <Switch value={toggleDeposit} setValue={setToggleDeposit} />
+            Deposit
         </div>
     );
 
