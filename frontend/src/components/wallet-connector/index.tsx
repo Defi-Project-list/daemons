@@ -6,32 +6,14 @@ import {
 } from "../../state/action-creators/wallet-action-creators";
 import { useDispatch, useSelector } from "react-redux";
 import { BigNumber } from "ethers";
-import Modal from "react-modal";
 import { RootState } from "../../state";
 import { StorageProxy } from "../../data/storage-proxy";
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
 import "./styles.css";
 import { INotification, NotificationProxy } from "../../data/storage-proxy/notification-proxy";
 import { notificationsPanel } from "./notification-panel";
-import { availableChainsDialog } from "./chains-dialog";
-
-const modalStyles: any = {
-    content: {
-        width: "400px",
-        borderRadius: "5px",
-        transform: "translateX(-50%)",
-        left: "50%",
-        height: "fit-content",
-        maxHeight: "80vh",
-        padding: "25px",
-        boxShadow: " 0 0 12px 0 rgba(0, 0, 0)",
-        background: "var(--body-background)",
-        border: "none"
-    },
-    overlay: {
-        backgroundColor: "#191919bb"
-    }
-};
+import { ChainsModal } from "../chains-modal";
+import { ProfileModal } from "../profile-modal";
 
 export function ConnectWalletButton() {
     const dispatch = useDispatch();
@@ -111,21 +93,13 @@ function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element 
                     src={chainInfo.iconPath}
                     onClick={() => setDisplayChains(!displayChains)}
                 />
-                {displayChains && (
-                    <Modal
-                        isOpen={displayChains}
-                        onRequestClose={() => setDisplayChains(false)}
-                        style={modalStyles}
-                        ariaHideApp={false}
-                    >
-                        {availableChainsDialog(() => setDisplayChains(false), chainInfo.id)}
-                    </Modal>
-                )}
             </div>
 
             {authenticated ? (
                 <>
-                    <div className="wallet-connector__address">
+                    <div className="wallet-connector__address"
+
+                    >
                         {address}
                         {notifications.length > 0 && (
                             <div
@@ -152,6 +126,15 @@ function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element 
                     <div>Authenticate</div>
                 </div>
             )}
+
+            {/* Modals */}
+            {displayChains && (
+                    <ChainsModal
+                        isOpen={displayChains}
+                        hideDialog={() => setDisplayChains(false)}
+                        selectedChainId={chainId}
+                    />
+                )}
         </div>
     );
 }
