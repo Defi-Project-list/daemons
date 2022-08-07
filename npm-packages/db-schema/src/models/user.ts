@@ -4,6 +4,7 @@ import mongooseUniqueValidator from "mongoose-unique-validator";
 export interface IUser {
     address: string;
     username: string;
+    showTutorial: boolean;
     banned: boolean;
     whitelisted: boolean;
     creationDate: Date;
@@ -13,6 +14,7 @@ export interface IUser {
 const userSchema = new mongoose.Schema({
     address: { type: String, required: true, index: { unique: true } },
     username: { type: String, required: true, index: { unique: true } },
+    showTutorial: { type: Boolean, required: false, default: true },
     banned: { type: Boolean, required: false, default: false },
     whitelisted: { type: Boolean, required: false, default: false },
     creationDate: { type: Date, required: false, default: () => new Date() },

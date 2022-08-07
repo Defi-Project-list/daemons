@@ -8,6 +8,7 @@ export function userFactory(args: any): IUser {
         username: args.username ?? faker.internet.userName(),
         creationDate: args.creationDate ?? new Date(),
         lastLogin: args.lastLogin ?? new Date(),
+        showTutorial: args.showTutorial ?? true,
         banned: args.banned ?? false,
         whitelisted: args.whitelisted ?? true,
     };
