@@ -11,17 +11,16 @@ import "./styles.css";
 import "../shared.css";
 import { TransactionProxy } from "../../data/storage-proxy/transaction-proxy";
 import { clearUnseenTransactions } from "../../state/action-creators/wallet-action-creators";
+import { IUser } from "../../data/storage-proxy/auth-proxy";
 
 export function TransactionsPage(): JSX.Element {
     const dispatch = useDispatch();
-    const authenticated: boolean = useSelector((state: RootState) => state.wallet.authenticated);
-    const banned: boolean = useSelector((state: RootState) => state.wallet.banned);
-    const whitelisted: boolean = useSelector((state: RootState) => state.wallet.whitelisted);
+    const user: IUser | undefined = useSelector((state: RootState) => state.wallet.user);
     const supportedChain: boolean = useSelector((state: RootState) => state.wallet.supportedChain);
 
-    if (banned) return <BannedPage />;
-    if (!whitelisted) return <NotWhitelistedPage />;
-    if (!authenticated) return <DisconnectedPage />;
+    if (!user) return <DisconnectedPage />;
+    if (user.banned) return <BannedPage />;
+    if (!user.whitelisted) return <NotWhitelistedPage />;
     if (!supportedChain) return <UnsupportedChainPage />;
 
     return (

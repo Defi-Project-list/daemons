@@ -10,16 +10,15 @@ import "../shared.css";
 import { TipJar } from "./tip-jar";
 import { BannedPage } from "../error-pages/banned-page";
 import { NotWhitelistedPage } from "../error-pages/not-whitelisted-page";
+import { IUser } from "../../data/storage-proxy/auth-proxy";
 
 export function MyPage(): JSX.Element {
-    const authenticated: boolean = useSelector((state: RootState) => state.wallet.authenticated);
-    const banned: boolean = useSelector((state: RootState) => state.wallet.banned);
-    const whitelisted: boolean = useSelector((state: RootState) => state.wallet.whitelisted);
+    const user: IUser | undefined = useSelector((state: RootState) => state.wallet.user);
     const supportedChain: boolean = useSelector((state: RootState) => state.wallet.supportedChain);
 
-    if (banned) return <BannedPage />;
-    if (!whitelisted) return <NotWhitelistedPage />;
-    if (!authenticated) return <DisconnectedPage />;
+    if (!user) return <DisconnectedPage />;
+    if (user.banned) return <BannedPage />;
+    if (!user.whitelisted) return <NotWhitelistedPage />;
     if (!supportedChain) return <UnsupportedChainPage />;
 
     return (

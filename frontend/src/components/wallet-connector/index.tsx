@@ -14,6 +14,7 @@ import { INotification, NotificationProxy } from "../../data/storage-proxy/notif
 import { notificationsPanel } from "./notification-panel";
 import { ChainsModal } from "../chains-modal";
 import { ProfileModal } from "../profile-modal";
+import { IUser } from "../../data/storage-proxy/auth-proxy";
 
 export function ConnectWalletButton() {
     const dispatch = useDispatch();
@@ -56,7 +57,7 @@ export function ConnectWalletButton() {
 function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element | null {
     const dispatch = useDispatch();
     const address = walletAddress!.substring(0, 10) + "...";
-    const authenticated: boolean = useSelector((state: RootState) => state.wallet.authenticated);
+    const user: IUser | undefined = useSelector((state: RootState) => state.wallet.user);
     const chainInfo = GetCurrentChain(chainId);
     const [displayChains, setDisplayChains] = useState<boolean>(false);
     const [notifications, setNotifications] = useState<INotification[]>([]);
@@ -95,11 +96,9 @@ function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element 
                 />
             </div>
 
-            {authenticated ? (
+            {user ? (
                 <>
-                    <div className="wallet-connector__address"
-
-                    >
+                    <div className="wallet-connector__address">
                         {address}
                         {notifications.length > 0 && (
                             <div
@@ -129,12 +128,12 @@ function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element 
 
             {/* Modals */}
             {displayChains && (
-                    <ChainsModal
-                        isOpen={displayChains}
-                        hideDialog={() => setDisplayChains(false)}
-                        selectedChainId={chainId}
-                    />
-                )}
+                <ChainsModal
+                    isOpen={displayChains}
+                    hideDialog={() => setDisplayChains(false)}
+                    selectedChainId={chainId}
+                />
+            )}
         </div>
     );
 }

@@ -11,16 +11,15 @@ import { TreasuryData } from "./treasury-data";
 import { BannedPage } from "../error-pages/banned-page";
 import { Card } from "../../components/card/card";
 import { NotWhitelistedPage } from "../error-pages/not-whitelisted-page";
+import { IUser } from "../../data/storage-proxy/auth-proxy";
 Chart.register(...registerables);
 
 export function DashboardPage() {
-    const banned: boolean = useSelector((state: RootState) => state.wallet.banned);
-    const authenticated: boolean = useSelector((state: RootState) => state.wallet.authenticated);
-    const whitelisted: boolean = useSelector((state: RootState) => state.wallet.whitelisted);
+    const user: IUser | undefined = useSelector((state: RootState) => state.wallet.user);
     const supportedChain: boolean = useSelector((state: RootState) => state.wallet.supportedChain);
 
-    if (banned) return <BannedPage />;
-    if (authenticated && !whitelisted) return <NotWhitelistedPage />;
+    if (user && !user.whitelisted) return <NotWhitelistedPage />;
+    if (user && user.banned) return <BannedPage />;
     if (!supportedChain) return <UnsupportedChainPage />;
 
     return (

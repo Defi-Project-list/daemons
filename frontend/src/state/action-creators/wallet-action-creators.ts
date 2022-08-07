@@ -35,37 +35,10 @@ export const updateWalletAddress = (
 
 export const authenticationCheck = (address?: string) => {
     return async (dispatch: Dispatch<WalletAction>) => {
-        if (!address) {
-            dispatch({
-                type: ActionType.AUTH_CHECK,
-                authenticated: false,
-                banned: false,
-                whitelisted: true,
-                unseenTransactions: 0
-            });
-            return;
-        }
-
-        const user = await StorageProxy.auth.checkAuthentication(address);
-        if (!user) {
-            // not authenticated
-            dispatch({
-                type: ActionType.AUTH_CHECK,
-                authenticated: false,
-                banned: false,
-                whitelisted: true,
-                unseenTransactions: 0
-            });
-            return;
-        }
-
-        // authenticated
+        const user = address ? await StorageProxy.auth.checkAuthentication(address) : undefined;
         dispatch({
-            type: ActionType.AUTH_CHECK,
-            authenticated: true,
-            banned: user.banned,
-            whitelisted: user.whitelisted,
-            unseenTransactions: user.unseenTransactions
+            type: ActionType.FETCH_USER,
+            user: user
         });
     };
 };

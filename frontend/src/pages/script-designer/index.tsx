@@ -14,13 +14,13 @@ import "./blocks.css";
 import { ethers } from "ethers";
 import { ScriptDescriptionFactory } from "../../script-factories/script-description-factory";
 import { addScriptToWorkbench } from "../../state/action-creators/workbench-action-creators";
+import { IUser } from "../../data/storage-proxy/auth-proxy";
 
 export function ScriptDesignerPage(): JSX.Element {
     // redux
     const dispatch = useDispatch();
     const chainId: string | undefined = useSelector((state: RootState) => state.wallet.chainId);
-    const banned: boolean = useSelector((state: RootState) => state.wallet.banned);
-    const authenticated: boolean = useSelector((state: RootState) => state.wallet.authenticated);
+    const user: IUser | undefined = useSelector((state: RootState) => state.wallet.user);
     const supportedChain: boolean = useSelector((state: RootState) => state.wallet.supportedChain);
     const workbenchScripts = useSelector((state: RootState) => state.workbench.scripts);
 
@@ -118,7 +118,7 @@ export function ScriptDesignerPage(): JSX.Element {
         dispatch(addScriptToWorkbench(script));
     };
 
-    if (!authenticated || !supportedChain || banned) return <Navigate to="/my-page" />;
+    if (!user || user.banned || !supportedChain) return <Navigate to="/my-page" />;
     if (redirectToReview) return <Navigate to="/review" />;
 
     return (

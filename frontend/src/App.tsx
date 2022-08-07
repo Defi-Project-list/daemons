@@ -21,6 +21,7 @@ import "./constants.css";
 import "./app.css";
 import "./switch.css";
 import "./components/tooltip.css";
+import { IUser } from "./data/storage-proxy/auth-proxy";
 
 export const App = ({ children }: { children: any }) => {
     // redux
@@ -29,13 +30,8 @@ export const App = ({ children }: { children: any }) => {
     const walletAddress: string | undefined = useSelector(
         (state: RootState) => state.wallet.address
     );
-    const authenticated: boolean = useSelector((state: RootState) => state.wallet.authenticated);
-    const whitelisted: boolean = useSelector((state: RootState) => state.wallet.whitelisted);
-    const banned: boolean = useSelector((state: RootState) => state.wallet.banned);
+    const user: IUser | undefined = useSelector((state: RootState) => state.wallet.user);
     const supportedChain: boolean = useSelector((state: RootState) => state.wallet.supportedChain);
-    const unseenTransactions: number = useSelector(
-        (state: RootState) => state.wallet.unseenTransactions
-    );
 
     // menu selection classes
     const dashboardLinkClassName = `menu__entry ${
@@ -58,7 +54,7 @@ export const App = ({ children }: { children: any }) => {
     }`;
 
     useEffect(() => {
-        if (authenticated && walletAddress && supportedChain) {
+        if (user && walletAddress && supportedChain) {
             dispatch(fetchUserScripts(chainId, walletAddress));
             dispatch(fetchGasTankBalance(walletAddress, chainId));
             dispatch(fetchGasTankClaimable(walletAddress, chainId));
@@ -72,7 +68,7 @@ export const App = ({ children }: { children: any }) => {
             dispatch(fetchDAEMPriceInEth(chainId));
             dispatch(fetchLatestGasPrice(chainId));
         }
-    }, [chainId, walletAddress, authenticated]);
+    }, [chainId, walletAddress, user]);
 
     return (
         <div>
@@ -80,7 +76,7 @@ export const App = ({ children }: { children: any }) => {
             <div className="header">
                 <img src={logo} alt="Daemons logo" className="page-logo" />
                 <div className="page-logo__beta-sign">BETA</div>
-                {authenticated && (
+                {user && (
                     <div className="menu">
                         <Link className={dashboardLinkClassName} to="/">
                             Dashboard
@@ -93,9 +89,9 @@ export const App = ({ children }: { children: any }) => {
                         </Link>
                         <Link className={transactionsLinkClassName} to="/transactions">
                             Transactions
-                            {unseenTransactions ? (
-                                <div className="menu__notification">{unseenTransactions}</div>
-                            ) : (null)}
+                            {user.unseenTransactions ? (
+                                <div className="menu__notification">{user.unseenTransactions}</div>
+                            ) : null}
                         </Link>
                     </div>
                 )}
@@ -115,7 +111,7 @@ export const App = ({ children }: { children: any }) => {
             </div>
 
             <div className="page">{children}</div>
-            {authenticated && whitelisted && !banned && (
+            {user && user.whitelisted && !user.banned && (
                 <a
                     className="beta-tester-button"
                     target="_blank"

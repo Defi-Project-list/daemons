@@ -1,3 +1,4 @@
+import { IUser } from "../../data/storage-proxy/auth-proxy";
 import { ActionType } from "../action-types/index";
 import { WalletAction } from "../actions/wallet-actions";
 
@@ -5,24 +6,17 @@ export type WalletState = {
     connected: boolean;
     address?: string;
     chainId?: string;
-    authenticated: boolean;
-    banned: boolean;
-    whitelisted: boolean;
+    user?: IUser;
     supportedChain: boolean;
     DAEMBalance: number;
     ETHBalance: number;
-    unseenTransactions: number;
 };
 
 const initialState: WalletState = {
     connected: false,
-    authenticated: false,
-    banned: false,
-    whitelisted: true,
     supportedChain: false,
     DAEMBalance: 0,
-    ETHBalance: 0,
-    unseenTransactions: 0
+    ETHBalance: 0
 };
 
 export const walletReducer = (
@@ -38,13 +32,10 @@ export const walletReducer = (
                 chainId: action.chainId,
                 supportedChain: action.supportedChain
             };
-        case ActionType.AUTH_CHECK:
+        case ActionType.FETCH_USER:
             return {
                 ...state,
-                authenticated: action.authenticated,
-                banned: action.banned,
-                whitelisted: action.whitelisted,
-                unseenTransactions: action.unseenTransactions
+                user: action.user
             };
         case ActionType.FETCH_DAEM_BALANCE:
             return {
@@ -57,9 +48,11 @@ export const walletReducer = (
                 ETHBalance: action.balance
             };
         case ActionType.SET_TX_AS_SEEN:
+            if (!state.user) return { ...state };
+            const userWithSeenTxs = { ...state.user, unseenTransactions: 0 };
             return {
                 ...state,
-                unseenTransactions: 0
+                user: userWithSeenTxs
             };
         default:
             return state;

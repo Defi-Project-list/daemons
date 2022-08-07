@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import { IUser } from "../../data/storage-proxy/auth-proxy";
 import { RootState } from "../../state";
 import { BannedPage } from "../error-pages/banned-page";
 import { DisconnectedPage } from "../error-pages/disconnected-page";
@@ -11,14 +12,12 @@ import { Staking } from "./staking";
 import "./styles.css";
 
 export function ExecutePage() {
-    const authenticated: boolean = useSelector((state: RootState) => state.wallet.authenticated);
-    const banned: boolean = useSelector((state: RootState) => state.wallet.banned);
-    const whitelisted: boolean = useSelector((state: RootState) => state.wallet.whitelisted);
+    const user: IUser | undefined = useSelector((state: RootState) => state.wallet.user);
     const supportedChain: boolean = useSelector((state: RootState) => state.wallet.supportedChain);
 
-    if (banned) return <BannedPage />;
-    if (!whitelisted) return <NotWhitelistedPage />;
-    if (!authenticated) return <DisconnectedPage />;
+    if (!user) return <DisconnectedPage />;
+    if (user.banned) return <BannedPage />;
+    if (!user.whitelisted) return <NotWhitelistedPage />;
     if (!supportedChain) return <UnsupportedChainPage />;
 
     return (

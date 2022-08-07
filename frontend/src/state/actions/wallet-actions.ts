@@ -1,3 +1,4 @@
+import { IUser } from "../../data/storage-proxy/auth-proxy";
 import { ActionType } from "../action-types/index";
 
 export interface IUpdateWalletAction {
@@ -9,11 +10,8 @@ export interface IUpdateWalletAction {
 }
 
 export interface IAuthCheck {
-    type: ActionType.AUTH_CHECK;
-    authenticated: boolean;
-    banned: boolean;
-    whitelisted: boolean;
-    unseenTransactions: number;
+    type: ActionType.FETCH_USER;
+    user?: IUser;
 }
 
 export interface IFetchDaemBalance {

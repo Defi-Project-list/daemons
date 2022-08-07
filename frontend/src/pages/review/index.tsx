@@ -18,13 +18,13 @@ import { getExecutorFromScriptAction } from "../../script-factories/messages-fac
 import { ConditionTitles } from "../../data/chains-data/interfaces";
 import { errorToast, successToast } from "../../components/toaster";
 import { ethers } from "ethers";
+import { IUser } from "../../data/storage-proxy/auth-proxy";
 
 export function ReviewPage(): JSX.Element {
     // redux
     const dispatch = useDispatch();
     const chainId: string | undefined = useSelector((state: RootState) => state.wallet.chainId);
-    const banned: boolean = useSelector((state: RootState) => state.wallet.banned);
-    const authenticated: boolean = useSelector((state: RootState) => state.wallet.authenticated);
+    const user: IUser | undefined = useSelector((state: RootState) => state.wallet.user);
     const supportedChain: boolean = useSelector((state: RootState) => state.wallet.supportedChain);
     const workbenchScripts = useSelector((state: RootState) => state.workbench.scripts);
 
@@ -134,7 +134,7 @@ export function ReviewPage(): JSX.Element {
         }
     };
 
-    const shouldRedirect = redirect || !authenticated || !supportedChain || banned;
+    const shouldRedirect = redirect || !user || !supportedChain || user.banned;
     if (shouldRedirect) return <Navigate to="/my-page" />;
 
     return (
