@@ -5,6 +5,7 @@ export interface IUser {
     address: string;
     username: string;
     banned: boolean;
+    showTutorial: boolean;
     whitelisted: boolean;
     unseenTransactions: number;
 }

@@ -9,12 +9,11 @@ import { BigNumber } from "ethers";
 import { RootState } from "../../state";
 import { StorageProxy } from "../../data/storage-proxy";
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
-import "./styles.css";
 import { INotification, NotificationProxy } from "../../data/storage-proxy/notification-proxy";
-import { notificationsPanel } from "./notification-panel";
 import { ChainsModal } from "../chains-modal";
 import { ProfileModal } from "../profile-modal";
 import { IUser } from "../../data/storage-proxy/auth-proxy";
+import "./styles.css";
 
 export function ConnectWalletButton() {
     const dispatch = useDispatch();
@@ -60,6 +59,7 @@ function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element 
     const user: IUser | undefined = useSelector((state: RootState) => state.wallet.user);
     const chainInfo = GetCurrentChain(chainId);
     const [displayChains, setDisplayChains] = useState<boolean>(false);
+    const [displayProfile, setDisplayProfile] = useState<boolean>(false);
     const [notifications, setNotifications] = useState<INotification[]>([]);
     const [displayNotifications, setDisplayNotifications] = useState<boolean>(false);
     const notificationsRef = useRef<HTMLInputElement>(null);
@@ -73,6 +73,12 @@ function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element 
         getNotifications();
         setInterval(getNotifications, 300000);
     }, []);
+
+    const acknowledgeNotifications = (ids: string[]) => {
+        NotificationProxy.acknowledgeNotifications(ids);
+        const newNotifications = notifications.filter((n) => !ids.includes(n._id));
+        setNotifications(newNotifications);
+    };
 
     const closeNotificationsOnClickOut = (e: any) => {
         if (
@@ -97,25 +103,14 @@ function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element 
             </div>
 
             {user ? (
-                <>
-                    <div className="wallet-connector__address">
-                        {address}
-                        {notifications.length > 0 && (
-                            <div
-                                className="wallet-connector__address-notification"
-                                onClick={() => setDisplayNotifications(!displayNotifications)}
-                            >
-                                {notifications.length}
-                            </div>
-                        )}
-                    </div>
-                    {displayNotifications &&
-                        notificationsPanel(
-                            () => setDisplayNotifications(false),
-                            notifications,
-                            getNotifications
-                        )}
-                </>
+                <div className="wallet-connector__address" onClick={() => setDisplayProfile(true)}>
+                    {address}
+                    {notifications.length > 0 && (
+                        <div className="wallet-connector__address-notification">
+                            {notifications.length}
+                        </div>
+                    )}
+                </div>
             ) : (
                 <div
                     className="wallet-connector__address wallet-connector__address--unauthenticated"
@@ -127,13 +122,17 @@ function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element 
             )}
 
             {/* Modals */}
-            {displayChains && (
-                <ChainsModal
-                    isOpen={displayChains}
-                    hideDialog={() => setDisplayChains(false)}
-                    selectedChainId={chainId}
-                />
-            )}
+            <ChainsModal
+                isOpen={displayChains}
+                hideDialog={() => setDisplayChains(false)}
+                selectedChainId={chainId}
+            />
+            <ProfileModal
+                isOpen={displayProfile}
+                hideDialog={() => setDisplayProfile(false)}
+                notifications={notifications}
+                acknowledgeNotifications={acknowledgeNotifications}
+            />
         </div>
     );
 }

@@ -5,6 +5,7 @@
     align-content: center;
     column-gap: 15px;
     position: relative;
+    user-select: none;
 }
 
 .wallet-connector__chain {
@@ -42,12 +43,13 @@
 
 .wallet-connector__address-notification {
     position: absolute;
-    top: -10px;
-    right: -10px;
+    top: -5px;
+    right: -5px;
     padding: 4px 9px;
-    border-radius: 100%;
-    background-color: var(--toastify-color-error);
+    border-radius: 5px;
     color: white;
-    font-size: 11px;
     user-select: none;
+    line-height: 10px;
+    font-size: 0.65rem;
+    background-color: #dd0143;
 }
