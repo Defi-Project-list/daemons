@@ -26,11 +26,22 @@ export function UserScriptsContainer(): JSX.Element {
         </Link>
     );
 
+    const tooltipContent = (
+        <div>
+            Here you can find your scripts and add new ones.
+            <br />
+            <br />
+            Each script reports its current stats and can be <strong>executed</strong> manually or{" "}
+            <strong>revoked</strong> at will.
+        </div>
+    );
+
     return (
         <Card
             title="My Scripts"
             iconClass="card__title-icon--script"
             actionComponent={addNewScriptAction}
+            tooltipContent={tooltipContent}
         >
             <div className="scripts-container">
                 {scripts.length > 0 ? scripts : <div>You don't have any script</div>}

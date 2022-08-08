@@ -1,13 +1,29 @@
 import React from "react";
 import "./styles.css";
 
-interface ITooltipProps {
-    children: any;
+export enum TooltipSize {
+    Small = 1,
+    Medium = 2,
+    Large = 3
 }
 
-export const Tooltip = ({children} : ITooltipProps): JSX.Element => (
+interface ITooltipProps {
+    children: any;
+    size?: TooltipSize;
+}
+
+export const Tooltip = ({ children, size }: ITooltipProps): JSX.Element => (
     <div className="tooltip">
         <div className="tooltip__text">?</div>
-        <div className="tooltip__content">{children}</div>
+        <div className={"tooltip__content " + sizeToClass(size)}>
+            {children}
+        </div>
     </div>
 );
+
+const sizeToClass = (size?: TooltipSize) =>
+    size === undefined || size === TooltipSize.Small
+        ? ""
+        : size === TooltipSize.Medium
+        ? "tooltip__content--medium "
+        : "tooltip__content--large ";

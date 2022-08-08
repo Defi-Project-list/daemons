@@ -16,6 +16,19 @@
     z-index: 1;
     top: -5px;
     left: 110%;
+    font-family: var(--regular);
+}
+
+.tooltip__content--medium {
+    width: 300px;
+}
+
+.tooltip__content--large {
+    width: 400px;
+}
+
+.tooltip__content--align-left {
+    text-align: left;
 }
 
 .tooltip__text {
@@ -30,7 +43,7 @@
 .tooltip__content::after {
     content: "";
     position: absolute;
-    top: 20%;
+    top: 15px;
     right: 100%;
     margin-top: -5px;
     border-width: 5px;
