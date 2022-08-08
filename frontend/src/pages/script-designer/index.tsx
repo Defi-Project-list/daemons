@@ -15,6 +15,7 @@ import { ethers } from "ethers";
 import { ScriptDescriptionFactory } from "../../script-factories/script-description-factory";
 import { addScriptToWorkbench } from "../../state/action-creators/workbench-action-creators";
 import { IUser } from "../../data/storage-proxy/auth-proxy";
+import { Tooltip } from "../../components/tooltip";
 
 export function ScriptDesignerPage(): JSX.Element {
     // redux
@@ -232,9 +233,6 @@ const createChoice = (
 ): JSX.Element => (
     <div key={title} className={`choice ${selected ? "choice--selected" : ""}`} onClick={onClick}>
         <div className="choice-name">{title}</div>
-        <div className="tooltip">
-            <div className="tooltip__text">?</div>
-            <div className="tooltip__content">{description}</div>
-        </div>
+        <Tooltip>{description}</Tooltip>
     </div>
 );

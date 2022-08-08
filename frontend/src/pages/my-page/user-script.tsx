@@ -3,7 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { BaseScript, getGasLimitForScript } from "@daemons-fi/scripts-definitions";
 import { VerificationFailedScript, VerificationState } from "@daemons-fi/scripts-definitions";
 import { RootState } from "../../state";
-import { fetchGasTankBalance, fetchGasTankClaimable } from "../../state/action-creators/gas-tank-action-creators";
+import {
+    fetchGasTankBalance,
+    fetchGasTankClaimable
+} from "../../state/action-creators/gas-tank-action-creators";
 import { removeUserScript } from "../../state/action-creators/script-action-creators";
 import { BigNumber, ethers } from "ethers";
 import { promiseToast } from "../../components/toaster";
@@ -12,6 +15,7 @@ import { ScriptProxy } from "../../data/storage-proxy/scripts-proxy";
 import { GetCurrentChain } from "../../data/chain-info";
 import { bigNumberToFloat } from "@daemons-fi/contracts";
 import { fetchTipJarBalance } from "../../state/action-creators/tip-jar-action-creators";
+import { Tooltip } from "../../components/tooltip";
 
 export const MyPageScript = ({ script }: { script: BaseScript }) => {
     const [verification, setVerification] = useState(script.getVerification());
@@ -59,7 +63,7 @@ export const MyPageScript = ({ script }: { script: BaseScript }) => {
     const executeScript = async () => {
         const tx = await script.execute(signer);
         setVerification(script.getVerification());
-        tx?.wait().then(() =>  {
+        tx?.wait().then(() => {
             verifyScript();
             dispatch(fetchGasTankClaimable(walletAddress, chainId));
             dispatch(fetchGasTankBalance(walletAddress, chainId));
@@ -118,10 +122,7 @@ export const MyPageScript = ({ script }: { script: BaseScript }) => {
                     <div className="script__verification-result">
                         <div className="script__verification-name">{verification.toString()}</div>
                         {verification.state === VerificationState.errorCode ? (
-                            <div className="tooltip">
-                                <div className="tooltip__text">?</div>
-                                <div className="tooltip__content">{verification.description}</div>
-                            </div>
+                            <Tooltip>{verification.description}</Tooltip>
                         ) : null}
                     </div>
                 )}

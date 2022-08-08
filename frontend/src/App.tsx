@@ -19,7 +19,6 @@ import "react-toastify/dist/ReactToastify.css";
 import "./fonts.css";
 import "./constants.css";
 import "./app.css";
-import "./components/tooltip.css";
 import { IUser } from "./data/storage-proxy/auth-proxy";
 
 export const App = ({ children }: { children: any }) => {
