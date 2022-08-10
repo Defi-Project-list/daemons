@@ -8,6 +8,7 @@ interface ICardProps {
     iconClass: string;
     children: any;
     tooltipContent?: JSX.Element;
+    tooltipSize?: TooltipSize;
     actionComponent?: JSX.Element;
 }
 
@@ -18,7 +19,7 @@ export function Card(props: ICardProps): JSX.Element {
                 <div className={`card__title-icon ${props.iconClass}`}></div>
                 <div className="card__title">{props.title}</div>
                 {props.tooltipContent && (
-                    <Tooltip size={TooltipSize.Medium}>
+                    <Tooltip size={props.tooltipSize ?? TooltipSize.Medium}>
                         {props.tooltipContent}
                     </Tooltip>
                 )}

@@ -7,6 +7,7 @@ import { toggleScriptsLoading } from "../../state/action-creators/script-action-
 import { QueueScriptComponent } from "./executable-script";
 import { Card } from "../../components/card/card";
 import "./styles.css";
+import { TooltipSize } from "../../components/tooltip";
 
 export function ExecutableScriptsContainer() {
     const dispatch = useDispatch();
@@ -43,11 +44,26 @@ export function ExecutableScriptsContainer() {
         </div>
     );
 
+    const tooltipContent = (
+        <div>
+            Here you will find the platform scripts that can be executed.
+            <br />
+            <br />
+            We will automatically check their state and the only thing you will have to do is to
+            press the "Execute" button and get the reward.
+            <br />
+            <br />
+            All these scripts will be executed safely by the Daemons smart contracts.
+        </div>
+    );
+
     return (
         <Card
             title="Executable Scripts"
             iconClass="card__title-icon--script"
             actionComponent={actionComponent}
+            tooltipContent={tooltipContent}
+            tooltipSize={TooltipSize.Large}
         >
             <div className="card__subtitle">Execute scripts and get rewarded in DAEM tokens</div>
             <div className="queue-container">{scripts}</div>

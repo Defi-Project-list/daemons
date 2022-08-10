@@ -17,6 +17,7 @@ import { Card, HeadlessCard } from "../../components/card/card";
 import CountUp from "react-countup";
 import { fetchTreasuryStats } from "../../state/action-creators/treasury-action-creators";
 import { Switch } from "../../components/switch";
+import { TooltipSize } from "../../components/tooltip";
 
 export function Staking() {
     const dispatch = useDispatch();
@@ -342,6 +343,13 @@ export function Staking() {
                 title="Stake"
                 iconClass="card__title-icon--stake"
                 actionComponent={depositWithdrawSwitch}
+                tooltipContent={
+                    <div>
+                        Stake here your DAEM tokens to have the platform's profits redistributed to
+                        you
+                    </div>
+                }
+                tooltipSize={TooltipSize.Small}
             >
                 <div className="staking__apy-info">
                     <div>APY, paid in ETH:</div>

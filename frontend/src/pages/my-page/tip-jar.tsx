@@ -260,11 +260,21 @@ export function TipJar(): JSX.Element {
         </div>
     );
 
+    const tooltipContent = (
+        <div>
+            The DAEM deposited in the Tip Jar will be used to pay the tips you set in your scripts.
+            <br />
+            <br />
+            You can deposit and withdraw anytime.
+        </div>
+    );
+
     return (
         <Card
             title="Tip Jar"
             iconClass="card__title-icon--tip-jar"
             actionComponent={depositWithdrawSwitch}
+            tooltipContent={tooltipContent}
         >
             <div className="card__fake-input">
                 {tipJarBalance !== undefined ? tipJarBalance : "??"} DAEM

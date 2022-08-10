@@ -32,11 +32,24 @@ export function TransactionsPage(): JSX.Element {
                     <Card
                         title="Transactions as beneficiary"
                         iconClass="card__title-icon--transactions"
+                        tooltipContent={
+                            <div>
+                                Each time someone will execute one of your scripts, the transaction
+                                will appear here.
+                                <br />
+                                <br />
+                                The "Cost" column shows how much was withdrawn from your GasTank to
+                                pay for the execution.
+                            </div>
+                        }
                     >
                         <TransactionsPanel
                             isBeneficiary={true}
                             fetchTransactions={async (chainId?: string, page?: number) => {
-                                const txs = await TransactionProxy.fetchUserTransactions(chainId, page);
+                                const txs = await TransactionProxy.fetchUserTransactions(
+                                    chainId,
+                                    page
+                                );
                                 dispatch(clearUnseenTransactions());
                                 return txs;
                             }}
@@ -47,6 +60,16 @@ export function TransactionsPage(): JSX.Element {
                     <Card
                         title="Transactions as executor"
                         iconClass="card__title-icon--transactions"
+                        tooltipContent={
+                            <div>
+                                Each time you will execute someone else's script, the transaction
+                                will appear here.
+                                <br />
+                                <br />
+                                The "Profit" column shows how much you were rewarded for the
+                                execution.
+                            </div>
+                        }
                     >
                         <TransactionsPanel
                             isBeneficiary={false}

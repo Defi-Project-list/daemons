@@ -215,11 +215,22 @@ export function GasTank(): JSX.Element {
         </div>
     );
 
+    const tooltipContent = (
+        <div>
+            The {currencySymbol} deposited in the Gas Tank will be used to pay for your script
+            executions.
+            <br />
+            <br />
+            You can deposit and withdraw anytime.
+        </div>
+    );
+
     return (
         <Card
             title="Gas Tank"
             iconClass="card__title-icon--gas-tank"
             actionComponent={depositWithdrawSwitch}
+            tooltipContent={tooltipContent}
         >
             <div className="card__fake-input">
                 {gasTankBalance !== undefined ? gasTankBalance : "??"} {currencySymbol}

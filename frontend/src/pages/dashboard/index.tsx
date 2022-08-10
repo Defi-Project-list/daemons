@@ -27,19 +27,41 @@ export function DashboardPage() {
             <div className="page-title">Dashboard</div>
 
             <div className="dashboard-page__layout">
-                <Card title="Treasury" iconClass="card__title-icon--bank">
+                <Card
+                    title="Treasury"
+                    iconClass="card__title-icon--bank"
+                    tooltipContent={
+                        <div>Statistics relative to staking interest rates and the treasury</div>
+                    }
+                >
                     <TreasuryData />
                 </Card>
 
-                <Card title="Active Scripts" iconClass="card__title-icon--script">
+                <Card
+                    title="Active Scripts"
+                    iconClass="card__title-icon--script"
+                    tooltipContent={
+                        <div>The number of scripts currently managed on this chain</div>
+                    }
+                >
                     <ScriptsChart />
                 </Card>
 
-                <Card title="Users with active scripts" iconClass="card__title-icon--users">
+                <Card
+                    title="Users with active scripts"
+                    iconClass="card__title-icon--users"
+                    tooltipContent={
+                        <div>The number of users that have active scripts on this chain</div>
+                    }
+                >
                     <UsersChart />
                 </Card>
 
-                <Card title="Transactions" iconClass="card__title-icon--transactions">
+                <Card
+                    title="Transactions"
+                    iconClass="card__title-icon--transactions"
+                    tooltipContent={<div>The number of daily script executions on this chain</div>}
+                >
                     <TransactionsChart />
                 </Card>
             </div>

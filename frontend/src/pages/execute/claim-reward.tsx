@@ -16,6 +16,7 @@ import "./claim-reward.css";
 import { promiseToast } from "../../components/toaster";
 import { gasTankABI } from "@daemons-fi/contracts";
 import { Card } from "../../components/card/card";
+import { TooltipSize } from "../../components/tooltip";
 
 const confettiConfig: any = {
     angle: "127",
@@ -93,7 +94,14 @@ export function ClaimRewards() {
     };
 
     return (
-        <Card title="Claim Profits" iconClass="card__title-icon--profits">
+        <Card
+            title="Claim Profits"
+            iconClass="card__title-icon--profits"
+            tooltipContent={
+                <div>Here you can claim the reward earned through the scripts execution</div>
+            }
+            tooltipSize={TooltipSize.Small}
+        >
             <div className="claim-reward">
                 <div className="claim-reward__claimable">
                     {nothingToClaim
