@@ -22,4 +22,4 @@ jobs:
           BRANCH: depl-backend
           FOLDER: backend/contracts
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MESSAGE: "Backend pushed to separate branch"
+          MESSAGE: "Push backend"
