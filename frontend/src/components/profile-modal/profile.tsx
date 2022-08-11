@@ -9,7 +9,6 @@ interface IProfilePanelProps {
 
 export const ProfilePanel = ({ user }: IProfilePanelProps): JSX.Element => {
     const username = user.username !== user.address ? user.username : undefined;
-    const shortenedAddress = user.address.slice(0, 25) + "...";
 
     return (
         <div className="profile">
@@ -27,7 +26,7 @@ export const ProfilePanel = ({ user }: IProfilePanelProps): JSX.Element => {
                     </div>
                 )}
             </div>
-            <div className="profile__address">{shortenedAddress}</div>
+            <div className="profile__address">{user.address}</div>
         </div>
     </div>
     );
