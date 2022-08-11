@@ -49,4 +49,14 @@ export class AuthProxy {
 
         await fetch(url, requestOptions as any);
     }
+
+    public static async logout(): Promise<void> {
+        const url = `${storageAddress}/auth/logout`;
+        const requestOptions = {
+            method: 'GET',
+            credentials: 'include',
+        };
+
+        await fetch(url, requestOptions as any);
+    }
 }

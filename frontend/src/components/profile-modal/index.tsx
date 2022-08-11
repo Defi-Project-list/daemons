@@ -54,7 +54,7 @@ export function ProfileModal({
             <div className="profile-dialog">
                 <div className="profile-dialog__close" onClick={hideDialog} />
 
-                <ProfilePanel user={user} />
+                <ProfilePanel user={user} closeModal={hideDialog} />
                 <SettingsPanel user={user} />
                 <NotificationsPanel
                     notifications={notifications}
