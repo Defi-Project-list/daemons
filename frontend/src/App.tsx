@@ -52,7 +52,9 @@ export const App = ({ children }: { children: any }) => {
     }`;
 
     useEffect(() => {
-        if (user && walletAddress && supportedChain) {
+        if (!supportedChain) return;
+
+        if (user && walletAddress) {
             dispatch(fetchUserScripts(chainId, walletAddress));
             dispatch(fetchGasTankBalance(walletAddress, chainId));
             dispatch(fetchGasTankClaimable(walletAddress, chainId));
@@ -62,10 +64,8 @@ export const App = ({ children }: { children: any }) => {
         }
 
         // these values do not depend on the user and can be fetched anyway
-        if (supportedChain) {
-            dispatch(fetchDAEMPriceInEth(chainId));
-            dispatch(fetchLatestGasPrice(chainId));
-        }
+        dispatch(fetchDAEMPriceInEth(chainId));
+        dispatch(fetchLatestGasPrice(chainId));
     }, [chainId, walletAddress, user]);
 
     return (

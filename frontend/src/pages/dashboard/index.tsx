@@ -12,14 +12,17 @@ import { BannedPage } from "../error-pages/banned-page";
 import { Card } from "../../components/card/card";
 import { NotWhitelistedPage } from "../error-pages/not-whitelisted-page";
 import { IUser } from "../../data/storage-proxy/auth-proxy";
+import { DisconnectedPage } from "../error-pages/disconnected-page";
 Chart.register(...registerables);
 
 export function DashboardPage() {
     const user: IUser | undefined = useSelector((state: RootState) => state.wallet.user);
+    const chainId: string | undefined = useSelector((state: RootState) => state.wallet.chainId);
     const supportedChain: boolean = useSelector((state: RootState) => state.wallet.supportedChain);
 
     if (user && !user.whitelisted) return <NotWhitelistedPage />;
     if (user && user.banned) return <BannedPage />;
+    if (!chainId) return <DisconnectedPage />
     if (!supportedChain) return <UnsupportedChainPage />;
 
     return (
