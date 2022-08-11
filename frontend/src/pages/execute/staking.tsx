@@ -175,7 +175,7 @@ export function Staking() {
         }
 
         const treasury = await getTreasuryContract();
-        const quote = await treasury.ethToDAEM(claimable);
+        const quote = await treasury.ethToDAEM(ethers.utils.parseEther(claimable.toString()));
         const minAmountOut = quote.mul(99).div(100);
 
         const tx = await treasury.compoundReward(minAmountOut);
