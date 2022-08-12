@@ -2,9 +2,7 @@ import { utils } from "ethers";
 import { ITransaction } from "@daemons-fi/shared-definitions";
 import { Transaction } from "../models/transaction";
 import faker from "@faker-js/faker";
-
-const randomScriptType = () =>
-    faker.helpers.arrayElement(["Swap", "Transaction", "MmBase", "MmAdvanced", "Bridge"]);
+import { randomScriptType } from "./utils";
 
 /** Returns a randomized transaction */
 export function transactionFactory(args: any): ITransaction {

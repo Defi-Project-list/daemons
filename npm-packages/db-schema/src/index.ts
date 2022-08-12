@@ -30,3 +30,4 @@ export * from "./test-factories/notification-factories";
 export * from "./test-factories/script-factories";
 export * from "./test-factories/transactions-factories";
 export * from "./test-factories/user-factories";
+export * from "./test-factories/stat-factories";
