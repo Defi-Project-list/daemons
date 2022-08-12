@@ -8,9 +8,9 @@ export const initializeMmAdvancedExecutor = async (contracts: DaemonsContracts):
     const aavePriceOracleAddress = getContractAddress(contracts, "AavePriceOracle");
 
     const executor = await getContract(contracts, "MmAdvancedScriptExecutor");
-    await executor.setGasTank(gasTankAddress);
-    await executor.setGasFeed(gasPriceFeedAddress);
-    await executor.setAavePriceOracle(aavePriceOracleAddress);
+    await (await executor.setGasTank(gasTankAddress)).wait();
+    await (await executor.setGasFeed(gasPriceFeedAddress)).wait();
+    await (await executor.setAavePriceOracle(aavePriceOracleAddress)).wait();
 
     // final checks
     await executor.preliminaryCheck();

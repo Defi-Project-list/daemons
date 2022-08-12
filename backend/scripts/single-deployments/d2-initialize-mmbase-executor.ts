@@ -7,8 +7,8 @@ export const initializeMmBaseExecutor = async (contracts: DaemonsContracts): Pro
     const gasPriceFeedAddress = getContractAddress(contracts, "GasPriceFeed");
 
     const executor = await getContract(contracts, "MmBaseScriptExecutor");
-    await executor.setGasTank(gasTankAddress);
-    await executor.setGasFeed(gasPriceFeedAddress);
+    await (await executor.setGasTank(gasTankAddress)).wait();
+    await (await executor.setGasFeed(gasPriceFeedAddress)).wait();
 
     // final checks
     await executor.preliminaryCheck();

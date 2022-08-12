@@ -7,8 +7,8 @@ export const initializeBeefyExecutor = async (contracts: DaemonsContracts): Prom
     const gasPriceFeedAddress = getContractAddress(contracts, "GasPriceFeed");
 
     const executor = await getContract(contracts, "BeefyScriptExecutor");
-    await executor.setGasTank(gasTankAddress);
-    await executor.setGasFeed(gasPriceFeedAddress);
+    await (await executor.setGasTank(gasTankAddress)).wait();
+    await (await executor.setGasFeed(gasPriceFeedAddress)).wait();
 
     // final checks
     await executor.preliminaryCheck();

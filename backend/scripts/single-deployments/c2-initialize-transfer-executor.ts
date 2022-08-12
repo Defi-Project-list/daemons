@@ -7,8 +7,8 @@ export const initializeTransferExecutor = async (contracts: DaemonsContracts): P
     const gasPriceFeedAddress = getContractAddress(contracts, "GasPriceFeed");
 
     const executor = await getContract(contracts, "TransferScriptExecutor");
-    await executor.setGasTank(gasTankAddress);
-    await executor.setGasFeed(gasPriceFeedAddress);
+    await (await executor.setGasTank(gasTankAddress)).wait();
+    await (await executor.setGasFeed(gasPriceFeedAddress)).wait();
 
     // final checks
     await executor.preliminaryCheck();

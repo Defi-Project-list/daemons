@@ -7,8 +7,8 @@ export const initializeZapOutExecutor = async (contracts: DaemonsContracts): Pro
     const gasPriceFeedAddress = getContractAddress(contracts, "GasPriceFeed");
 
     const executor = await getContract(contracts, "ZapOutScriptExecutor");
-    await executor.setGasTank(gasTankAddress);
-    await executor.setGasFeed(gasPriceFeedAddress);
+    await (await executor.setGasTank(gasTankAddress)).wait();
+    await (await executor.setGasFeed(gasPriceFeedAddress)).wait();
 
     // final checks
     await executor.preliminaryCheck();
