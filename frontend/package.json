@@ -7,9 +7,9 @@
     "test": "mocha ./**/*test.ts",
     "test:ci": "mocha ./**/*test.ts --exit",
     "start": "echo started?",
-    "dev": "webpack serve --config webpack.config.dev.js --port 3000 --progress",
+    "dev": "webpack serve --port 3000 --progress",
     "clean": "rimraf dist",
-    "build:webpack": "NODE_ENV=production webpack --config webpack.config.prod.js --mode=production",
+    "build:webpack": "NODE_ENV=production webpack --config webpack.config.js",
     "build": "npm run clean && npm run build:webpack"
   },
   "author": "Daemons Finance",
@@ -19,7 +19,6 @@
     "@types/chai-as-promised": "^7.1.5",
     "@types/mocha": "^9.0.0",
     "@types/sinon": "^10.0.11",
-    "brotli-webpack-plugin": "^1.1.0",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "copy-webpack-plugin": "^10.2.4",
@@ -38,7 +37,6 @@
     "typescript": "^4.5.3",
     "url-loader": "^4.1.1",
     "webpack": "^5.74.0",
-    "webpack-bundle-analyzer": "^4.5.0",
     "webpack-cli": "^4.9.1",
     "webpack-dev-server": "^4.6.0"
   },

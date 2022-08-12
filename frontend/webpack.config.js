@@ -1,11 +1,11 @@
+const prod = process.env.NODE_ENV === "production";
+
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const BrotliPlugin = require("brotli-webpack-plugin");
-//const WebpackBundleAnalyzer = require('webpack-bundle-analyzer');
 
 module.exports = {
-    mode: "production",
+    mode: prod ? "production" : "development",
     entry: "./src/index.tsx",
     output: {
         path: __dirname + "/dist/",
@@ -34,20 +34,13 @@ module.exports = {
             }
         ]
     },
-    devtool: false,
-    performance: {
-        hints: false
+    devServer: {
+        historyApiFallback: true
     },
+    devtool: prod ? undefined : "source-map",
     plugins: [
-        // new WebpackBundleAnalyzer.BundleAnalyzerPlugin(),
         new HtmlWebpackPlugin({ template: "index.html" }),
         new CopyWebpackPlugin({ patterns: [{ from: "public" }] }),
-        new MiniCssExtractPlugin(),
-        new BrotliPlugin({
-            asset: "[path].br[query]",
-            test: /\.(js|css|html|svg)$/,
-            threshold: 10240,
-            minRatio: 0.8
-        })
+        new MiniCssExtractPlugin()
     ]
 };
