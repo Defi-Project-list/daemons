@@ -51,9 +51,9 @@ function PaginationFooter({
             )}
 
             {/* Clickable pages */}
-            {paginationRange.map((pageNumber: number) =>
+            {paginationRange.map((pageNumber: number, i: number) =>
                 pageNumber === -1 ? (
-                    <div className="pagination__placeholder" />
+                    <div key={i + 100} className="pagination__placeholder" />
                 ) : (
                     <div
                         className={`pagination__item ${
