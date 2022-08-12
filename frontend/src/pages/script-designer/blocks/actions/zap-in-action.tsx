@@ -28,6 +28,10 @@ const validateForm = (values: IZapInActionForm) => {
         errors.floatAmountB = "required > 0";
     }
 
+    if (values.pair === "0x0000000000000000000000000000000000000000"){
+        errors.pair = "This pair is not supported on this DEX";
+    }
+
     return errors;
 };
 
