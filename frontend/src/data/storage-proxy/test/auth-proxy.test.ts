@@ -15,10 +15,10 @@ describe("Auth Proxy", () => {
     describe("checkAuthentication", () => {
         it("returns the user object if the address is correctly verified in the server", async () => {
             nock(`${storageAddress}`)
-                .get(`/auth/is-authenticated/${userAddress}`)
+                .get(`/auth/is-authenticated/${userAddress}/42`)
                 .reply(200, { address: userAddress, username: userAddress, banned: false });
 
-            const user = await StorageProxy.auth.checkAuthentication(userAddress);
+            const user = await StorageProxy.auth.checkAuthentication(userAddress, "42");
             expect(user).to.not.be.undefined;
             expect(user!.address).to.equal(userAddress);
             expect(user!.username).to.equal(userAddress);
@@ -27,10 +27,10 @@ describe("Auth Proxy", () => {
 
         it("returns undefined if the server does could not verify the address", async () => {
             nock(`${storageAddress}`)
-                .get(`/auth/is-authenticated/${userAddress}`)
+                .get(`/auth/is-authenticated/${userAddress}/42`)
                 .reply(500, undefined);
 
-            const user = await StorageProxy.auth.checkAuthentication(userAddress);
+            const user = await StorageProxy.auth.checkAuthentication(userAddress, "42");
             expect(user).to.be.undefined;
         });
     });

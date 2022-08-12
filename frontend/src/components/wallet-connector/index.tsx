@@ -27,7 +27,7 @@ export function ConnectWalletButton() {
     useEffect(() => {
         // update the state and check for authentication each time there is a change
         dispatch(updateWalletAddress(connected, supportedChain, walletAddress, walletChainId));
-        dispatch(authenticationCheck(walletAddress));
+        dispatch(authenticationCheck(walletAddress, walletChainId));
     }, [status, connected, walletAddress, walletChainId]);
 
     switch (status) {
@@ -114,7 +114,7 @@ function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element 
             ) : (
                 <div
                     className="wallet-connector__address wallet-connector__address--unauthenticated"
-                    onClick={() => triggerLogin(walletAddress, dispatch)}
+                    onClick={() => triggerLogin(walletAddress, dispatch, chainId)}
                 >
                     <div>{address}</div>
                     <div>Authenticate</div>
@@ -137,11 +137,15 @@ function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element 
     );
 }
 
-async function triggerLogin(walletAddress: string, dispatch: Dispatch<any>): Promise<void> {
+async function triggerLogin(
+    walletAddress: string,
+    dispatch: Dispatch<any>,
+    chainId: string
+): Promise<void> {
     const message = await StorageProxy.auth.getLoginMessage(walletAddress);
     const signedMessage = await getSignature(message);
     await StorageProxy.auth.login(walletAddress, signedMessage);
-    dispatch(authenticationCheck(walletAddress));
+    dispatch(authenticationCheck(walletAddress, chainId));
 }
 
 async function getSignature(message: string): Promise<any> {

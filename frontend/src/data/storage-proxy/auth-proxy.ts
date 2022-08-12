@@ -1,5 +1,5 @@
-import { storageAddress } from '.';
-import fetch from 'cross-fetch';
+import { storageAddress } from ".";
+import fetch from "cross-fetch";
 
 export interface IUser {
     address: string;
@@ -11,10 +11,12 @@ export interface IUser {
 }
 
 export class AuthProxy {
-
-    public static async checkAuthentication(userAddress: string): Promise<IUser|undefined> {
-        const url = `${storageAddress}/auth/is-authenticated/${userAddress}`;
-        const requestOptions = { method: 'GET', credentials: 'include' };
+    public static async checkAuthentication(
+        userAddress: string,
+        chainId: string
+    ): Promise<IUser | undefined> {
+        const url = `${storageAddress}/auth/is-authenticated/${userAddress}/${chainId}`;
+        const requestOptions = { method: "GET", credentials: "include" };
         const response = await fetch(url, requestOptions as any);
 
         try {
@@ -27,9 +29,10 @@ export class AuthProxy {
 
     public static async getLoginMessage(userAddress: string): Promise<string> {
         const url = `${storageAddress}/auth/message-to-sign/${userAddress}`;
-        const requestOptions = { method: 'GET', credentials: 'include' };
+        const requestOptions = { method: "GET", credentials: "include" };
         const response = await fetch(url, requestOptions as any);
-        if (response.status !== 200) throw new Error(`Something has gone wrong: ${response.status}`);
+        if (response.status !== 200)
+            throw new Error(`Something has gone wrong: ${response.status}`);
 
         const jsn = await response.json();
         return jsn.message;
@@ -38,13 +41,13 @@ export class AuthProxy {
     public static async login(userAddress: string, signedMessage: string): Promise<void> {
         const url = `${storageAddress}/auth/login`;
         const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            credentials: 'include',
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            credentials: "include",
             body: JSON.stringify({
                 userAddress,
-                signedMessage,
-            }),
+                signedMessage
+            })
         };
 
         await fetch(url, requestOptions as any);
@@ -53,8 +56,8 @@ export class AuthProxy {
     public static async logout(): Promise<void> {
         const url = `${storageAddress}/auth/logout`;
         const requestOptions = {
-            method: 'GET',
-            credentials: 'include',
+            method: "GET",
+            credentials: "include"
         };
 
         await fetch(url, requestOptions as any);

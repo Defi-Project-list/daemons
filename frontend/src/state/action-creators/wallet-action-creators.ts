@@ -33,9 +33,12 @@ export const updateWalletAddress = (
     };
 };
 
-export const authenticationCheck = (address?: string) => {
+export const authenticationCheck = (address?: string, chainId?: string) => {
     return async (dispatch: Dispatch<WalletAction>) => {
-        const user = address ? await StorageProxy.auth.checkAuthentication(address) : undefined;
+        const user =
+            address && chainId
+                ? await StorageProxy.auth.checkAuthentication(address, chainId)
+                : undefined;
         dispatch({
             type: ActionType.FETCH_USER,
             user: user
