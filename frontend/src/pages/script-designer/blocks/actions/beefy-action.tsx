@@ -141,13 +141,19 @@ export const BeefyAction = ({
                             <TokensModal
                                 tokens={tokens}
                                 selectedToken={tokens.find((t) => t.address === tokenA)}
-                                setSelectedToken={(token) => setTokenA(token.address)}
+                                setSelectedToken={(token) => {
+                                    if (tokenB === token.address) setTokenB(tokenA);
+                                    setTokenA(token.address);
+                                }}
                             />
 
                             <TokensModal
                                 tokens={tokens}
                                 selectedToken={tokens.find((t) => t.address === tokenB)}
-                                setSelectedToken={(token) => setTokenB(token.address)}
+                                setSelectedToken={(token) => {
+                                    if (tokenA === token.address) setTokenA(tokenB);
+                                    setTokenB(token.address);
+                                }}
                             />
                         </div>
 

@@ -76,14 +76,22 @@ export const SwapAction = ({
                     <div className="swap-block">
                         <div className="script-block__panel--three-columns">
                             <TokensModal
-                                tokens={tokens.filter((t) => t.address !== form.tokenToAddress)}
+                                tokens={tokens}
                                 selectedToken={
                                     tokens.filter((t) => t.address === form.tokenFromAddress)[0]
                                 }
                                 setSelectedToken={(token) => {
+                                    const tokenToAddress =
+                                        token.address === form.tokenToAddress
+                                            ? form.tokenFromAddress
+                                            : form.tokenToAddress;
                                     setSelectedFromToken(token);
                                     setCurrentBalance(undefined);
-                                    update({ ...form, tokenFromAddress: token.address });
+                                    update({
+                                        ...form,
+                                        tokenFromAddress: token.address,
+                                        tokenToAddress
+                                    });
                                 }}
                             />
 
@@ -99,13 +107,21 @@ export const SwapAction = ({
                             />
 
                             <TokensModal
-                                tokens={tokens.filter((t) => t.address !== form.tokenFromAddress)}
+                                tokens={tokens}
                                 selectedToken={
                                     tokens.filter((t) => t.address === form.tokenToAddress)[0]
                                 }
-                                setSelectedToken={(token) =>
-                                    update({ ...form, tokenToAddress: token.address })
-                                }
+                                setSelectedToken={(token) => {
+                                    const tokenFromAddress =
+                                        token.address === form.tokenFromAddress
+                                            ? form.tokenToAddress
+                                            : form.tokenFromAddress;
+                                    update({
+                                        ...form,
+                                        tokenToAddress: token.address,
+                                        tokenFromAddress
+                                    });
+                                }}
                             />
                         </div>
 

@@ -107,9 +107,10 @@ export const ZapInAction = ({
                 <form onSubmit={handleSubmit}>
                     <div className="zap-in-block">
                         <TokensModal
-                            tokens={tokens.filter((t) => t.address !== form.tokenB)}
+                            tokens={tokens}
                             selectedToken={tokens.filter((t) => t.address === form.tokenA)[0]}
                             setSelectedToken={(token) => {
+                                if (tokenB?.address === token.address) setTokenB(tokenA);
                                 setTokenA(token);
                                 setCurrentBalanceA(undefined);
                             }}
@@ -138,9 +139,10 @@ export const ZapInAction = ({
                         </div>
 
                         <TokensModal
-                            tokens={tokens.filter((t) => t.address !== form.tokenA)}
+                            tokens={tokens}
                             selectedToken={tokens.filter((t) => t.address === form.tokenB)[0]}
                             setSelectedToken={(token) => {
+                                if (tokenA?.address === token.address) setTokenA(tokenB);
                                 setTokenB(token);
                                 setCurrentBalanceB(undefined);
                             }}

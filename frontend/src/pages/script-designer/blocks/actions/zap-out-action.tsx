@@ -88,9 +88,12 @@ export const ZapOutAction = ({
                     <div className="zap-in-block">
                         <div className="script-block__panel--three-columns">
                             <TokensModal
-                                tokens={tokens.filter((t) => t.address !== form.tokenB)}
+                                tokens={tokens}
                                 selectedToken={tokens.find((t) => t.address === tokenA)}
-                                setSelectedToken={(token) => setTokenA(token.address)}
+                                setSelectedToken={(token) => {
+                                    if (tokenB === token.address) setTokenB(tokenA);
+                                    setTokenA(token.address);
+                                }}
                             />
 
                             <div
@@ -106,9 +109,12 @@ export const ZapOutAction = ({
                             </div>
 
                             <TokensModal
-                                tokens={tokens.filter((t) => t.address !== form.tokenA)}
+                                tokens={tokens}
                                 selectedToken={tokens.find((t) => t.address === tokenB)}
-                                setSelectedToken={(token) => setTokenB(token.address)}
+                                setSelectedToken={(token) => {
+                                    if (tokenA === token.address) setTokenA(tokenB);
+                                    setTokenB(token.address);
+                                }}
                             />
                         </div>
 

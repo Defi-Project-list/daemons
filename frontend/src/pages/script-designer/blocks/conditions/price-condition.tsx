@@ -139,7 +139,9 @@ export const PriceCondition = ({
                                 tokens={tokens}
                                 selectedToken={tokens.find((t) => t.address === form.tokenA)}
                                 setSelectedToken={(token) => {
-                                    const updatedForm = { ...form, tokenA: token.address };
+                                    const tokenB =
+                                        form.tokenB === token.address ? form.tokenA : form.tokenB;
+                                    const updatedForm = { ...form, tokenA: token.address, tokenB };
                                     const valid = isFormValid(updatedForm);
                                     update({ ...updatedForm, valid });
                                 }}
@@ -200,7 +202,9 @@ export const PriceCondition = ({
                                 tokens={tokens}
                                 selectedToken={tokens.find((t) => t.address === form.tokenB)}
                                 setSelectedToken={(token) => {
-                                    const updatedForm = { ...form, tokenB: token.address };
+                                    const tokenA =
+                                        form.tokenA === token.address ? form.tokenB : form.tokenA;
+                                    const updatedForm = { ...form, tokenB: token.address, tokenA };
                                     const valid = isFormValid(updatedForm);
                                     update({ ...updatedForm, valid });
                                 }}
