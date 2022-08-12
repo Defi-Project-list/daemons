@@ -17,7 +17,6 @@ export * from "./models/scripts/zap-out-script";
 // Stats
 export * from "./models/stats/script-stats";
 export * from "./models/stats/transaction-stats";
-export * from "./models/stats/treasury-stats";
 export * from "./models/stats/user-stats";
 
 // Other models

@@ -3,13 +3,13 @@ import mongoose from 'mongoose';
 const userStatsSchema = new mongoose.Schema({
     date: { type: String, required: true },
     amount: { type: Number, required: true },
-    chain: { type: String, required: true },
+    chainId: { type: String, required: true },
 });
 
 export interface IUserStats {
     date: string;
     amount: number;
-    chain: string;
+    chainId: string;
 }
 
 export interface IUserStatsDocument extends IUserStats, mongoose.Document { }

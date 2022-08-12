@@ -3,14 +3,14 @@ import mongoose from 'mongoose';
 const transactionStatsSchema = new mongoose.Schema({
     date: { type: String, required: true },
     amount: { type: Number, required: true },
-    chain: { type: String, required: true },
+    chainId: { type: String, required: true },
     kind: { type: String, required: true },
 });
 
 export interface ITransactionStats {
     date: string;
     amount: number;
-    chain: string;
+    chainId: string;
     kind: string;
 }
 
