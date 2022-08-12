@@ -21,7 +21,7 @@ export function TransactionsPanel({
     const [transactions, setTransactions] = useState<ITransaction[]>([]);
     const [page, setPage] = useState<number>(1);
     const [totalCount, setTotalCount] = useState<number>(0);
-    const [itemsPerPage, setItemsPerPage] = useState<number>(1);
+    const [itemsPerPage, setItemsPerPage] = useState<number>(20);
 
     useEffect(() => {
         fetchTransactions(chainId, page).then((txs) => {
