@@ -307,7 +307,7 @@ describe("ScriptExecutor - Money Market Base", function () {
 
     it("supplying is cheap - ABS", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000292630726051116 ETH.
+        // execute the script was 0.000288755247222930 ETH.
 
         let message: IMMBaseAction = JSON.parse(JSON.stringify(baseMessage));
         message.action = BaseMoneyMarketActionType.Deposit;
@@ -325,7 +325,7 @@ describe("ScriptExecutor - Money Market Base", function () {
 
     it("supplying is cheap - PRC", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000293926549250532 ETH.
+        // execute the script was 0.000290074093311712 ETH.
 
         let message: IMMBaseAction = JSON.parse(JSON.stringify(baseMessage));
         message.action = BaseMoneyMarketActionType.Deposit;
@@ -345,7 +345,7 @@ describe("ScriptExecutor - Money Market Base", function () {
 
     it("withdrawing is cheap - ABS", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000204180371483739 ETH.
+        // execute the script was 0.000200384595992448 ETH.
 
         let message: IMMBaseAction = JSON.parse(JSON.stringify(baseMessage));
         message.action = BaseMoneyMarketActionType.Withdraw;
@@ -363,7 +363,7 @@ describe("ScriptExecutor - Money Market Base", function () {
 
     it("withdrawing is cheap - PRC", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000205488212190177 ETH.
+        // execute the script was 0.000201691434650796 ETH.
 
         let message: IMMBaseAction = JSON.parse(JSON.stringify(baseMessage));
         message.action = BaseMoneyMarketActionType.Withdraw;

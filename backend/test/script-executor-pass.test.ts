@@ -234,7 +234,7 @@ describe("ScriptExecutor - Pass", function () {
 
     it("passing is cheap", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000140592419811919 ETH.
+        // execute the script was 0.000139761105781146 ETH.
 
         let message: IPassAction = JSON.parse(JSON.stringify(baseMessage));
         message = await initialize(message);

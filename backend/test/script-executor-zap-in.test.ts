@@ -435,7 +435,7 @@ describe("ScriptExecutor - ZapIn [FORKED CHAIN]", function () {
 
     it("zapping is cheap - Single Side - ABS 0", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000446321083462027 ETH.
+        // execute the script was 0.000429989080837932 ETH.
         let message: IZapInAction = JSON.parse(JSON.stringify(baseMessage));
         message.typeAmtA = AmountType.Absolute;
         message.amountA = await wBTC.balanceOf(owner.address);              // all wBTC
@@ -453,7 +453,7 @@ describe("ScriptExecutor - ZapIn [FORKED CHAIN]", function () {
 
     it("zapping is cheap - Single Side - PRC 0", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000453429084791223 ETH.
+        // execute the script was 0.000437096082174048 ETH.
         let message: IZapInAction = JSON.parse(JSON.stringify(baseMessage));
         message.typeAmtA = AmountType.Percentage;
         message.amountA = BigNumber.from(7500)                              // 75% of wBTC
@@ -471,7 +471,7 @@ describe("ScriptExecutor - ZapIn [FORKED CHAIN]", function () {
 
     it("zapping is cheap - Double Side - ABS ABS", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000459071085846277 ETH.
+        // execute the script was 0.000444223083513924 ETH.
         let message: IZapInAction = JSON.parse(JSON.stringify(baseMessage));
         message.typeAmtA = AmountType.Absolute;
         message.typeAmtB = AmountType.Absolute;
@@ -490,7 +490,7 @@ describe("ScriptExecutor - ZapIn [FORKED CHAIN]", function () {
 
     it("zapping is cheap - Double Side - PRC PRC", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000459071085846277 ETH.
+        // execute the script was 0.000444223083513924 ETH.
         let message: IZapInAction = JSON.parse(JSON.stringify(baseMessage));
         message.typeAmtA = AmountType.Absolute;
         message.typeAmtB = AmountType.Absolute;

@@ -245,7 +245,7 @@ describe("ScriptExecutor - Swapper", function () {
 
     it("swapping is cheap - ABS", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000305902960213608 ETH.
+        // execute the script was 0.000302223403165482 ETH.
         // NOTE: the swap contract is mocked, so this measures all the rest.
 
         let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
@@ -265,7 +265,7 @@ describe("ScriptExecutor - Swapper", function () {
 
     it("swapping is cheap - PRC", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000304585951774272 ETH.
+        // execute the script was 0.000300942401456628 ETH.
         // NOTE: the swap contract is mocked, so this measures all the rest.
 
         const message = await initialize(baseMessage);
