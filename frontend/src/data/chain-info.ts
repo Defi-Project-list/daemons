@@ -1,12 +1,14 @@
 import { fantomTestnetInfo } from "./chains-data/fantom-testnet";
 import { IChainInfo } from './chains-data/interfaces';
 import { kovanInfo } from './chains-data/kovan';
+import { mumbaiInfo } from "./chains-data/mumbai";
 import { unsupportedChain } from './chains-data/unsupported';
 
 
 export const ChainInfo: { [chainId: string]: IChainInfo; } = {
     "42": kovanInfo,
     "4002": fantomTestnetInfo,
+    "80001": mumbaiInfo,
 };
 
 export const GetCurrentChain = (chainId: string): IChainInfo =>

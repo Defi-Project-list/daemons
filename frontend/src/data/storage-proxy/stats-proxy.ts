@@ -24,6 +24,8 @@ export class StatsProxy {
         const requestOptions = { method: "GET", credentials: "include" };
 
         const response = await fetch(url, requestOptions as any);
+        if (response.status !== 200) throw new Error((await response.json()).error);
+
         return await response.json();
     }
 
