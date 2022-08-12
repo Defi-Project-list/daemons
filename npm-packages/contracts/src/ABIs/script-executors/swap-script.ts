@@ -2,6 +2,11 @@ import { ContractInterface } from "ethers";
 
 export const swapScriptABI: ContractInterface = [
   {
+    inputs: [],
+    stateMutability: "nonpayable",
+    type: "constructor"
+  },
+  {
     anonymous: false,
     inputs: [
       {
@@ -38,32 +43,6 @@ export const swapScriptABI: ContractInterface = [
     ],
     name: "OwnershipTransferred",
     type: "event"
-  },
-  {
-    inputs: [],
-    name: "GAS_LIMIT",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256"
-      }
-    ],
-    stateMutability: "view",
-    type: "function"
-  },
-  {
-    inputs: [],
-    name: "MINIMUM_GAS_FOR_SCRIPT_EXECUTION",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256"
-      }
-    ],
-    stateMutability: "view",
-    type: "function"
   },
   {
     inputs: [
@@ -356,19 +335,6 @@ export const swapScriptABI: ContractInterface = [
       }
     ],
     name: "setGasTank",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function"
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_amount",
-        type: "uint256"
-      }
-    ],
-    name: "setMinimumGas",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function"

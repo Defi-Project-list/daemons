@@ -40,32 +40,6 @@ export const conditionsCheckerABI: ContractInterface = [
     type: "event"
   },
   {
-    inputs: [],
-    name: "GAS_LIMIT",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256"
-      }
-    ],
-    stateMutability: "nonpayable",
-    type: "function"
-  },
-  {
-    inputs: [],
-    name: "MINIMUM_GAS_FOR_SCRIPT_EXECUTION",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256"
-      }
-    ],
-    stateMutability: "view",
-    type: "function"
-  },
-  {
     inputs: [
       {
         internalType: "bytes32",
@@ -146,19 +120,6 @@ export const conditionsCheckerABI: ContractInterface = [
       }
     ],
     name: "setGasTank",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function"
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_amount",
-        type: "uint256"
-      }
-    ],
-    name: "setMinimumGas",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function"
