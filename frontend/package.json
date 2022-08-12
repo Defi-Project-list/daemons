@@ -9,7 +9,7 @@
     "start": "echo started?",
     "dev": "webpack serve --config webpack.config.dev.js --port 3000 --progress",
     "clean": "rimraf dist",
-    "build:webpack": "NODE_ENV=production webpack --config webpack.config.prod.js -p --mode=production",
+    "build:webpack": "NODE_ENV=production webpack --config webpack.config.prod.js --mode=production",
     "build": "npm run clean && npm run build:webpack"
   },
   "author": "Daemons Finance",
