@@ -19,7 +19,7 @@ export const fetchLatestGasPrice = (chainId?: string) => {
 
     return async (dispatch: Dispatch<GasPriceAction>) => {
         if (!chainId) {
-            console.log('ChainId missing, retrieving latest gas price aborted');
+            console.debug('ChainId missing, retrieving latest gas price aborted');
             dispatch({
                 type: ActionType.FETCH_LATEST_GAS_PRICE,
                 price: undefined,
@@ -27,7 +27,7 @@ export const fetchLatestGasPrice = (chainId?: string) => {
             return;
         }
 
-        console.log('Retrieving latest gas price for chain', chainId);
+        console.debug('Retrieving latest gas price for chain', chainId);
         const gasPriceFeed = await getGasPriceFeedContract(chainId);
         const rawPrice: BigNumber = await gasPriceFeed.lastGasPrice();
         const price = rawPrice.toNumber();

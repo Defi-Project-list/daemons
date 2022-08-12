@@ -49,7 +49,7 @@ export const authenticationCheck = (address?: string, chainId?: string) => {
 export const fetchDaemBalance = (address?: string, chainId?: string) => {
     return async (dispatch: Dispatch<WalletAction>) => {
         if (!address || !chainId) {
-            console.log("Address or ChainId missing, DAEM balance check aborted");
+            console.debug("Address or ChainId missing, DAEM balance check aborted");
             dispatch({
                 type: ActionType.FETCH_DAEM_BALANCE,
                 balance: 0
@@ -57,7 +57,7 @@ export const fetchDaemBalance = (address?: string, chainId?: string) => {
             return;
         }
 
-        console.log("Checking DAEM balance for", address);
+        console.debug("Checking DAEM balance for", address);
 
         const DAEM = await getDAEMContract(chainId);
         const rawBalance: BigNumber = await DAEM.balanceOf(address);
@@ -73,7 +73,7 @@ export const fetchDaemBalance = (address?: string, chainId?: string) => {
 export const fetchEthBalance = (address?: string, chainId?: string) => {
     return async (dispatch: Dispatch<WalletAction>) => {
         if (!address || !chainId) {
-            console.log("Address or ChainId missing, ETH balance check aborted");
+            console.debug("Address or ChainId missing, ETH balance check aborted");
             dispatch({
                 type: ActionType.FETCH_ETH_BALANCE,
                 balance: 0
@@ -81,7 +81,7 @@ export const fetchEthBalance = (address?: string, chainId?: string) => {
             return;
         }
 
-        console.log("Checking ETH balance for", address);
+        console.debug("Checking ETH balance for", address);
 
         const provider = new ethers.providers.Web3Provider((window as any).ethereum);
         const rawBalance: BigNumber = await provider.getBalance(address);

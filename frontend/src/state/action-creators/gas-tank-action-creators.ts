@@ -19,7 +19,7 @@ const getGasTankContract = async (chainId: string): Promise<Contract> => {
 export const fetchGasTankBalance = (address?: string, chainId?: string) => {
     return async (dispatch: Dispatch<GasTankAction>) => {
         if (!address || !chainId) {
-            console.log("Address or chainId missing, balance check aborted");
+            console.debug("Address or chainId missing, balance check aborted");
             dispatch({
                 type: ActionType.GAS_TANK_BALANCE,
                 balance: undefined
@@ -27,7 +27,7 @@ export const fetchGasTankBalance = (address?: string, chainId?: string) => {
             return;
         }
 
-        console.log("Checking balance in gas tank for", address);
+        console.debug("Checking balance in gas tank for", address);
 
         const gasTank = await getGasTankContract(chainId);
         const rawBalance: BigNumber = await gasTank.gasBalanceOf(address);
@@ -43,7 +43,7 @@ export const fetchGasTankBalance = (address?: string, chainId?: string) => {
 export const fetchGasTankClaimable = (address?: string, chainId?: string) => {
     return async (dispatch: Dispatch<GasTankAction>) => {
         if (!address || !chainId) {
-            console.log("Address or chainId missing, balance check aborted");
+            console.debug("Address or chainId missing, balance check aborted");
             dispatch({
                 type: ActionType.GAS_TANK_CLAIMABLE,
                 balance: undefined
@@ -51,7 +51,7 @@ export const fetchGasTankClaimable = (address?: string, chainId?: string) => {
             return;
         }
 
-        console.log("Checking claimable DAEM for", address);
+        console.debug("Checking claimable DAEM for", address);
 
         const gasTank = await getGasTankContract(chainId);
         const rawBalance: BigNumber = await gasTank.claimable(address);

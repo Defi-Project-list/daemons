@@ -20,7 +20,7 @@ export const fetchStakingBalance = (address?: string, chainId?: string) => {
 
     return async (dispatch: Dispatch<StakingAction>) => {
         if (!address || !chainId) {
-            console.log('Address or ChainId missing, staking balance check aborted');
+            console.debug('Address or ChainId missing, staking balance check aborted');
             dispatch({
                 type: ActionType.STAKING_BALANCE,
                 balance: undefined,
@@ -28,7 +28,7 @@ export const fetchStakingBalance = (address?: string, chainId?: string) => {
             return;
         }
 
-        console.log('Checking staking balance for', address);
+        console.debug('Checking staking balance for', address);
 
         const treasury = await getTreasuryContract(chainId);
         const rawBalance: BigNumber = await treasury.balanceOf(address);
@@ -45,7 +45,7 @@ export const fetchStakingClaimable = (address?: string, chainId?: string) => {
 
     return async (dispatch: Dispatch<StakingAction>) => {
         if (!address || !chainId) {
-            console.log('Address or ChainId missing, staking claimable check aborted');
+            console.debug('Address or ChainId missing, staking claimable check aborted');
             dispatch({
                 type: ActionType.STAKING_CLAIMABLE,
                 balance: undefined,
@@ -53,7 +53,7 @@ export const fetchStakingClaimable = (address?: string, chainId?: string) => {
             return;
         }
 
-        console.log('Checking claimable staking reward for', address);
+        console.debug('Checking claimable staking reward for', address);
 
         const treasury = await getTreasuryContract(chainId);
         const rawBalance: BigNumber = await treasury.earned(address);

@@ -19,7 +19,7 @@ const getDEXRouterContract = async (chainId: string): Promise<Contract> => {
 export const fetchDAEMPriceInEth = (chainId?: string) => {
     return async (dispatch: Dispatch<PriceAction>) => {
         if (!chainId) {
-            console.log("ChainId missing, retrieving DAEM price aborted");
+            console.debug("ChainId missing, retrieving DAEM price aborted");
             dispatch({
                 type: ActionType.FETCH_DAEM_ETH_PRICE,
                 price: undefined
@@ -27,7 +27,7 @@ export const fetchDAEMPriceInEth = (chainId?: string) => {
             return;
         }
 
-        console.log("Retrieving DAEM price in ETH", chainId);
+        console.debug("Retrieving DAEM price in ETH", chainId);
         const router = await getDEXRouterContract(chainId);
         const weth = await router.WETH();
         const path = [GetCurrentChain(chainId).contracts.DaemonsToken, weth];

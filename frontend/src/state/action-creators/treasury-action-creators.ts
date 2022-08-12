@@ -30,14 +30,14 @@ const fetchTreasuryStatsHelper = async (chainId: string) => {
 export const fetchTreasuryStats = (chainId?: string) => {
     return async (dispatch: Dispatch<TreasuryAction>) => {
         if (!chainId) {
-            console.log("ChainId missing, retrieving Treasury stats aborted");
+            console.debug("ChainId missing, retrieving Treasury stats aborted");
             dispatch({
                 type: ActionType.FETCH_TREASURY_STATS
             });
             return;
         }
 
-        console.log("Fetching treasury stats", chainId);
+        console.debug("Fetching treasury stats", chainId);
         const stats = await fetchTreasuryStatsHelper(chainId);
 
         dispatch({

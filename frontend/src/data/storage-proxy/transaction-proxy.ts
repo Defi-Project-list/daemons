@@ -22,7 +22,7 @@ export class TransactionProxy {
             return { totalCount: 0, itemsPerPage: 20, transactions: [] };
         }
 
-        console.log(`Fetching user transactions for chain ${chainId}`);
+        console.debug(`Fetching user transactions for chain ${chainId}`);
         let url = `${storageAddress}/transactions/receiver/${chainId}`;
         if (page) url += `?page=${page}`;
 
@@ -48,7 +48,7 @@ export class TransactionProxy {
             return { totalCount: 0, itemsPerPage: 20, transactions: [] };
         }
 
-        console.log(`Fetching transactions executed on chain ${chainId}`);
+        console.debug(`Fetching transactions executed on chain ${chainId}`);
         let url = `${storageAddress}/transactions/executor/${chainId}`;
         if (page) url += `?page=${page}`;
 

@@ -40,7 +40,7 @@ export class ScriptProxy {
             return [];
         }
 
-        console.log(`Fetching user ${user} scripts for chain ${chainId}`);
+        console.debug(`Fetching user ${user} scripts for chain ${chainId}`);
         const url = `${storageAddress}/scripts/${chainId}/${user}`;
 
         const requestOptions = { method: "GET", credentials: "include" };

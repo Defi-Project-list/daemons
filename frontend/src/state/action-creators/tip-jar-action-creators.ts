@@ -20,7 +20,7 @@ export const fetchTipJarBalance = (address?: string, chainId?: string) => {
 
     return async (dispatch: Dispatch<TipJarAction>) => {
         if (!address || !chainId) {
-            console.log('Address or chainId missing, balance check aborted');
+            console.debug('Address or chainId missing, balance check aborted');
             dispatch({
                 type: ActionType.TIP_JAR_BALANCE,
                 balance: undefined,
@@ -28,7 +28,7 @@ export const fetchTipJarBalance = (address?: string, chainId?: string) => {
             return;
         }
 
-        console.log('Checking balance in tip jar for', address);
+        console.debug('Checking balance in tip jar for', address);
 
         const gasTank = await getGasTankContract(chainId);
         const rawBalance: BigNumber = await gasTank.tipBalanceOf(address);
