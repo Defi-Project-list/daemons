@@ -26,6 +26,7 @@ export * from "./ABIs/utils/money-market";
 export * from "./ABIs/utils/uniswap-V2-router";
 export * from "./ABIs/utils/uniswap-V2-factory";
 export * from "./ABIs/utils/uniswap-V2-pair";
+export * from "./ABIs/utils/info-fetcher";
 
 // utils
 export * from "./utils/big-number-to-float";
