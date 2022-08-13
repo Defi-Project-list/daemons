@@ -7,7 +7,7 @@ import "./styles.css";
 import { StorageProxy } from "../../data/storage-proxy";
 import { addNewUSerScript } from "../../state/action-creators/script-action-creators";
 import { BaseScript } from "@daemons-fi/scripts-definitions";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { cleanWorkbench } from "../../state/action-creators/workbench-action-creators";
 import { ICurrentScript } from "../../script-factories/i-current-script";
 import {
@@ -155,6 +155,14 @@ export function ReviewPage(): JSX.Element {
                     ? `Sign & deploy script`
                     : `Sign & Deploy ${workbenchScripts.length} scripts`}
             </button>
+
+            {/* A link to the workbench */}
+            <Link
+                className="designer__review-link"
+                to="/new-script"
+            >
+                Chain another script
+            </Link>
         </div>
     );
 }

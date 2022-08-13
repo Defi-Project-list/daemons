@@ -30,7 +30,7 @@ export function ScriptDesignerPage(): JSX.Element {
                 }`}
                 to={workbenchScripts.length > 0 ? "/review" : "#"}
             >
-                Review ({workbenchScripts.length})
+                Review page ({workbenchScripts.length})
             </Link>
         </div>
     );
