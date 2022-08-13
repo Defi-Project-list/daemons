@@ -11,6 +11,7 @@ const unsupportedContracts: IContractsList = {
     GasPriceFeed: "",
     Vesting: "",
     wethDaemLp: "",
+    InfoFetcher: "",
 
     SwapperScriptExecutor: "",
     TransferScriptExecutor: "",

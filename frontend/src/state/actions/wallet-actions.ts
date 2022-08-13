@@ -10,4 +10,9 @@ export interface IEthDaemBalance {
     balance: number;
 }
 
-export type WalletAction = IFetchDaemBalance | IEthDaemBalance;
+export interface IFetchTokenBalances {
+    type: ActionType.FETCH_TOKEN_BALANCES;
+    balances: {[address: string]: number};
+}
+
+export type WalletAction = IFetchDaemBalance | IEthDaemBalance | IFetchTokenBalances;

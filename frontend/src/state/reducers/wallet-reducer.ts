@@ -4,11 +4,13 @@ import { WalletAction } from "../actions/wallet-actions";
 export type WalletState = {
     DAEMBalance: number;
     ETHBalance: number;
+    balances: { [address: string]: number };
 };
 
 const initialState: WalletState = {
     DAEMBalance: 0,
-    ETHBalance: 0
+    ETHBalance: 0,
+    balances: {}
 };
 
 export const walletReducer = (
@@ -25,6 +27,11 @@ export const walletReducer = (
             return {
                 ...state,
                 ETHBalance: action.balance
+            };
+        case ActionType.FETCH_TOKEN_BALANCES:
+            return {
+                ...state,
+                balances: action.balances
             };
         default:
             return state;
