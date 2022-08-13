@@ -36,7 +36,7 @@ export function TransactionsPanel({
             <table className="transactions-panel__table">
                 <thead className="transactions-panel__table-head">
                     <tr>
-                        <th className="transactions-panel__header--left">Description</th>
+                        <th className="transactions-panel__header--left">{isBeneficiary ? "Description" : "Script Id"}</th>
                         <th>Type</th>
                         <th>Date</th>
                         <th>Link</th>
