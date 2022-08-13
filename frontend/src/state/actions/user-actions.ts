@@ -23,4 +23,14 @@ export interface IUpdateUsername {
     username: string;
 }
 
-export type UserAction = IUpdateWalletAction | IAuthCheck | ISetTxAsSeen | IUpdateUsername;
+export interface IUpdateTutorialTooltip {
+    type: ActionType.UPDATE_TUTORIAL_TOOLTIP;
+    value: boolean;
+}
+
+export type UserAction =
+    | IUpdateWalletAction
+    | IAuthCheck
+    | ISetTxAsSeen
+    | IUpdateUsername
+    | IUpdateTutorialTooltip;

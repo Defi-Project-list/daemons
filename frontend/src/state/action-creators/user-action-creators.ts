@@ -49,3 +49,12 @@ export const updateUsername = (newUsername: string) => {
         });
     };
 };
+
+export const updateTutorialTooltip = (value: boolean) => {
+    return async (dispatch: Dispatch<UserAction>) => {
+        dispatch({
+            type: ActionType.UPDATE_TUTORIAL_TOOLTIP,
+            value
+        });
+    };
+};

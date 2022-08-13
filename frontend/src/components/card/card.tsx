@@ -2,6 +2,8 @@ import React from "react";
 import "./card.css";
 import "./card-icons.css";
 import { Tooltip, TooltipSize } from "../tooltip";
+import { useSelector } from "react-redux";
+import { RootState } from "../../state";
 
 interface ICardProps {
     title: string;
@@ -13,12 +15,16 @@ interface ICardProps {
 }
 
 export function Card(props: ICardProps): JSX.Element {
+    const showTooltip = useSelector(
+        (state: RootState) => state.user.userProfile?.showTutorial ?? true
+    );
+
     return (
         <div className="card">
             <div className="card__header">
                 <div className={`card__title-icon ${props.iconClass}`}></div>
                 <div className="card__title">{props.title}</div>
-                {props.tooltipContent && (
+                {showTooltip && props.tooltipContent && (
                     <Tooltip size={props.tooltipSize ?? TooltipSize.Medium}>
                         {props.tooltipContent}
                     </Tooltip>

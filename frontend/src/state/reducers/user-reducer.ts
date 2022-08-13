@@ -36,17 +36,21 @@ export const userReducer = (state: UserState = initialState, action: UserAction)
             };
         case ActionType.SET_TX_AS_SEEN:
             if (!state.userProfile) return { ...state };
-            const userWithSeenTxs = { ...state.userProfile, unseenTransactions: 0 };
             return {
                 ...state,
-                userProfile: userWithSeenTxs
+                userProfile: { ...state.userProfile, unseenTransactions: 0 }
             };
         case ActionType.UPDATE_USERNAME:
             if (!state.userProfile) return { ...state };
-            const userWithNewUsername = { ...state.userProfile, username: action.username };
             return {
                 ...state,
-                userProfile: userWithNewUsername
+                userProfile: { ...state.userProfile, username: action.username }
+            };
+        case ActionType.UPDATE_TUTORIAL_TOOLTIP:
+            if (!state.userProfile) return { ...state };
+            return {
+                ...state,
+                userProfile: { ...state.userProfile, showTutorial: action.value }
             };
         default:
             return state;

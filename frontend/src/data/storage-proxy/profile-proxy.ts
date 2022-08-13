@@ -14,4 +14,17 @@ export class ProfileProxy {
         if (response.status !== 200) return response.text();
         return "";
     }
+
+    public static async updateTutorialTooltip(value: boolean): Promise<string> {
+        const url = `${storageAddress}/profile/show-tutorial-tooltip`;
+        const requestOptions = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ value })
+        };
+        const response = await fetch(url, requestOptions as any);
+        if (response.status !== 200) return response.text();
+        return "";
+    }
 }
