@@ -16,8 +16,8 @@ import { bigNumberToFloat } from "@daemons-fi/contracts";
 export const QueueScriptComponent = ({ script }: { script: BaseScript }) => {
     const dispatch = useDispatch();
     const [verification, setVerification] = useState(script.getVerification());
-    const walletAddress = useSelector((state: RootState) => state.wallet.address);
-    const chainId = useSelector((state: RootState) => state.wallet.chainId);
+    const walletAddress = useSelector((state: RootState) => state.user.address);
+    const chainId = useSelector((state: RootState) => state.user.chainId);
     const currentGasPrice = useSelector((state: RootState) => state.gasPriceFeed.price) ?? 0;
     const currentDAEMPrice = useSelector((state: RootState) => state.prices.DAEMPriceInEth) ?? 1;
 

@@ -1,7 +1,7 @@
 import { storageAddress } from ".";
 import fetch from "cross-fetch";
 
-export interface IUser {
+export interface IUserProfile {
     address: string;
     username: string;
     banned: boolean;
@@ -14,7 +14,7 @@ export class AuthProxy {
     public static async checkAuthentication(
         userAddress: string,
         chainId: string
-    ): Promise<IUser | undefined> {
+    ): Promise<IUserProfile | undefined> {
         const url = `${storageAddress}/auth/is-authenticated/${userAddress}/${chainId}`;
         const requestOptions = { method: "GET", credentials: "include" };
         const response = await fetch(url, requestOptions as any);

@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { IUser } from "../../data/storage-proxy/auth-proxy";
+import { IUserProfile } from "../../data/storage-proxy/auth-proxy";
 import { RootState } from "../../state";
 import { BannedPage } from "../error-pages/banned-page";
 import { DisconnectedPage } from "../error-pages/disconnected-page";
@@ -12,8 +12,8 @@ import { Staking } from "./staking";
 import "./styles.css";
 
 export function ExecutePage() {
-    const user: IUser | undefined = useSelector((state: RootState) => state.wallet.user);
-    const supportedChain: boolean = useSelector((state: RootState) => state.wallet.supportedChain);
+    const user: IUserProfile | undefined = useSelector((state: RootState) => state.user.userProfile);
+    const supportedChain: boolean = useSelector((state: RootState) => state.user.supportedChain);
 
     if (!user) return <DisconnectedPage />;
     if (user.banned) return <BannedPage />;

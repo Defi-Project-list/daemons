@@ -10,13 +10,13 @@ import { TransactionsPanel } from "./transactions-panel";
 import "./styles.css";
 import "../shared.css";
 import { TransactionProxy } from "../../data/storage-proxy/transaction-proxy";
-import { clearUnseenTransactions } from "../../state/action-creators/wallet-action-creators";
-import { IUser } from "../../data/storage-proxy/auth-proxy";
+import { clearUnseenTransactions } from "../../state/action-creators/user-action-creators";
+import { IUserProfile } from "../../data/storage-proxy/auth-proxy";
 
 export function TransactionsPage(): JSX.Element {
     const dispatch = useDispatch();
-    const user: IUser | undefined = useSelector((state: RootState) => state.wallet.user);
-    const supportedChain: boolean = useSelector((state: RootState) => state.wallet.supportedChain);
+    const user: IUserProfile | undefined = useSelector((state: RootState) => state.user.userProfile);
+    const supportedChain: boolean = useSelector((state: RootState) => state.user.supportedChain);
 
     if (!user) return <DisconnectedPage />;
     if (user.banned) return <BannedPage />;

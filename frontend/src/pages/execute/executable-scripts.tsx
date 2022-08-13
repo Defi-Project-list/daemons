@@ -11,7 +11,7 @@ import { TooltipSize } from "../../components/tooltip";
 
 export function ExecutableScriptsContainer() {
     const dispatch = useDispatch();
-    const chainId = useSelector((state: RootState) => state.wallet.chainId);
+    const chainId = useSelector((state: RootState) => state.user.chainId);
     const fetchedScripts = useSelector((state: RootState) => state.script.allScripts);
     const loading = useSelector((state: RootState) => state.script.loading);
     const [scriptsChain, setScriptsChain] = useState<string>("");

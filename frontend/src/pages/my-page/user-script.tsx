@@ -20,8 +20,8 @@ import { Tooltip } from "../../components/tooltip";
 export const MyPageScript = ({ script }: { script: BaseScript }) => {
     const [verification, setVerification] = useState(script.getVerification());
     const dispatch = useDispatch();
-    const walletAddress = useSelector((state: RootState) => state.wallet.address);
-    const chainId = useSelector((state: RootState) => state.wallet.chainId);
+    const walletAddress = useSelector((state: RootState) => state.user.address);
+    const chainId = useSelector((state: RootState) => state.user.chainId);
     const currencySymbol = GetCurrentChain(chainId!).coinSymbol;
     const currentGasPrice = useSelector((state: RootState) => state.gasPriceFeed.price) ?? 0;
 

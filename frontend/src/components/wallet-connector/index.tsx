@@ -3,7 +3,7 @@ import { useMetaMask } from "metamask-react";
 import {
     authenticationCheck,
     updateWalletAddress
-} from "../../state/action-creators/wallet-action-creators";
+} from "../../state/action-creators/user-action-creators";
 import { useDispatch, useSelector } from "react-redux";
 import { BigNumber } from "ethers";
 import { RootState } from "../../state";
@@ -12,7 +12,7 @@ import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
 import { INotification, NotificationProxy } from "../../data/storage-proxy/notification-proxy";
 import { ChainsModal } from "../chains-modal";
 import { ProfileModal } from "../profile-modal";
-import { IUser } from "../../data/storage-proxy/auth-proxy";
+import { IUserProfile } from "../../data/storage-proxy/auth-proxy";
 import "./styles.css";
 
 export function ConnectWalletButton() {
@@ -56,7 +56,7 @@ export function ConnectWalletButton() {
 function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element | null {
     const dispatch = useDispatch();
     const address = walletAddress!.substring(0, 10) + "...";
-    const user: IUser | undefined = useSelector((state: RootState) => state.wallet.user);
+    const user: IUserProfile | undefined = useSelector((state: RootState) => state.user.userProfile);
     const chainInfo = GetCurrentChain(chainId);
     const [displayChains, setDisplayChains] = useState<boolean>(false);
     const [displayProfile, setDisplayProfile] = useState<boolean>(false);

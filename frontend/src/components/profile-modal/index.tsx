@@ -1,6 +1,6 @@
 import React from "react";
 import Modal from "react-modal";
-import { IUser } from "../../data/storage-proxy/auth-proxy";
+import { IUserProfile } from "../../data/storage-proxy/auth-proxy";
 import { useSelector } from "react-redux";
 import { RootState } from "../../state";
 import { INotification } from "../../data/storage-proxy/notification-proxy";
@@ -41,7 +41,7 @@ export function ProfileModal({
     notifications,
     acknowledgeNotifications
 }: IProfileModalProps): JSX.Element | null {
-    const user: IUser | undefined = useSelector((state: RootState) => state.wallet.user);
+    const user: IUserProfile | undefined = useSelector((state: RootState) => state.user.userProfile);
     if (!user) return <></>;
 
     return (

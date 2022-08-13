@@ -35,8 +35,8 @@ const confettiConfig: any = {
 export function ClaimRewards() {
     const dispatch = useDispatch();
     const claimable = useSelector((state: RootState) => state.gasTank.claimable);
-    const walletAddress = useSelector((state: RootState) => state.wallet.address);
-    const chainId = useSelector((state: RootState) => state.wallet.chainId);
+    const walletAddress = useSelector((state: RootState) => state.user.address);
+    const chainId = useSelector((state: RootState) => state.user.chainId);
     const nothingToClaim = !claimable;
     const [confetti, setConfetti] = useState<boolean>(false);
     const [firstTime, setFirstTime] = useState<boolean>(true);

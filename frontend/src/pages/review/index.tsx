@@ -18,14 +18,14 @@ import { getExecutorFromScriptAction } from "../../script-factories/messages-fac
 import { ConditionTitles } from "../../data/chains-data/interfaces";
 import { errorToast, successToast } from "../../components/toaster";
 import { ethers } from "ethers";
-import { IUser } from "../../data/storage-proxy/auth-proxy";
+import { IUserProfile } from "../../data/storage-proxy/auth-proxy";
 
 export function ReviewPage(): JSX.Element {
     // redux
     const dispatch = useDispatch();
-    const chainId: string | undefined = useSelector((state: RootState) => state.wallet.chainId);
-    const user: IUser | undefined = useSelector((state: RootState) => state.wallet.user);
-    const supportedChain: boolean = useSelector((state: RootState) => state.wallet.supportedChain);
+    const chainId: string | undefined = useSelector((state: RootState) => state.user.chainId);
+    const user: IUserProfile | undefined = useSelector((state: RootState) => state.user.userProfile);
+    const supportedChain: boolean = useSelector((state: RootState) => state.user.supportedChain);
     const workbenchScripts = useSelector((state: RootState) => state.workbench.scripts);
 
     // states

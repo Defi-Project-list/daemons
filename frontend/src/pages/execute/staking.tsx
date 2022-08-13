@@ -23,8 +23,8 @@ export function Staking() {
     const dispatch = useDispatch();
     const stakingBalance = useSelector((state: RootState) => state.staking.balance);
     const claimable = useSelector((state: RootState) => state.staking.claimable);
-    const walletAddress = useSelector((state: RootState) => state.wallet.address);
-    const chainId = useSelector((state: RootState) => state.wallet.chainId);
+    const walletAddress = useSelector((state: RootState) => state.user.address);
+    const chainId = useSelector((state: RootState) => state.user.chainId);
     const DAEMBalance = useSelector((state: RootState) => state.wallet.DAEMBalance);
     const [toggleDeposit, setToggleDeposit] = useState<boolean>(true);
     const [needsAllowance, setNeedsAllowance] = useState<boolean>(true);

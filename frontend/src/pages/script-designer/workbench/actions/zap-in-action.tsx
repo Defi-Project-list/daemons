@@ -48,8 +48,8 @@ export const ZapInAction = ({
     form: IZapInActionForm;
     update: (next: IZapInActionForm) => void;
 }) => {
-    const walletAddress = useSelector((state: RootState) => state.wallet.address);
-    const chainId = useSelector((state: RootState) => state.wallet.chainId);
+    const walletAddress = useSelector((state: RootState) => state.user.address);
+    const chainId = useSelector((state: RootState) => state.user.chainId);
     const [currentLP, setCurrentLP] = useState<string | undefined>();
     const [loadingLP, setLoadingLP] = useState<boolean>(false);
     const [dexes, setDexes] = useState<DEX[]>([]);

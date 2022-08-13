@@ -32,7 +32,7 @@ const options = {
 };
 
 export function UsersChart(): JSX.Element {
-    const chainId = useSelector((state: RootState) => state.wallet.chainId)!;
+    const chainId = useSelector((state: RootState) => state.user.chainId)!;
     const [data, setData] = useState<IUserStat[]>([]);
 
     const fetchData = async () => {

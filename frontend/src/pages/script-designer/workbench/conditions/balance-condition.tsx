@@ -32,8 +32,8 @@ export const BalanceCondition = ({
     form: IBalanceConditionForm;
     update: (next: IBalanceConditionForm) => void;
 }) => {
-    const walletAddress = useSelector((state: RootState) => state.wallet.address);
-    const chainId = useSelector((state: RootState) => state.wallet.chainId);
+    const walletAddress = useSelector((state: RootState) => state.user.address);
+    const chainId = useSelector((state: RootState) => state.user.chainId);
     const [tokens, setTokens] = useState<Token[]>([]);
     const [selectedToken, setSelectedToken] = useState<Token | undefined>();
     const [currentBalance, setCurrentBalance] = useState<number | undefined>(undefined);

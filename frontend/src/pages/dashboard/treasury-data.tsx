@@ -13,7 +13,7 @@ type reserves = { resETH: number; resDAEM: number };
 
 export function TreasuryData(): JSX.Element {
     const dispatch = useDispatch();
-    const chainId = useSelector((state: RootState) => state.wallet.chainId)!;
+    const chainId = useSelector((state: RootState) => state.user.chainId)!;
     const [lpTreasuryBalance, setLpTreasuryBalance] = useState<number | undefined>();
     const [lpOwnedPercentage, setLpOwnedPercentage] = useState<number | undefined>();
     const [lpReserves, setLpReserves] = useState<reserves | undefined>();

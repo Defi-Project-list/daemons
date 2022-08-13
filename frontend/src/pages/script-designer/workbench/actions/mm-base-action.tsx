@@ -35,7 +35,7 @@ export const MmBaseAction = ({
     form: IBaseMMActionForm;
     update: (next: IBaseMMActionForm) => void;
 }) => {
-    const walletAddress = useSelector((state: RootState) => state.wallet.address);
+    const walletAddress = useSelector((state: RootState) => state.user.address);
     const [selectedToken, setSelectedToken] = useState<Token | undefined>();
     const [currentBalance, setCurrentBalance] = useState<number | undefined>(undefined);
     const tokens = form.moneyMarket.supportedTokens;

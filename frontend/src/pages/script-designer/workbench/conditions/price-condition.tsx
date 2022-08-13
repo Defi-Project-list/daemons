@@ -63,7 +63,7 @@ export const PriceCondition = ({
     form: IPriceConditionForm;
     update: (next: IPriceConditionForm) => void;
 }) => {
-    const chainId = useSelector((state: RootState) => state.wallet.chainId);
+    const chainId = useSelector((state: RootState) => state.user.chainId);
     const [tokens, setTokens] = useState<Token[]>([]);
     const [dexes, setDexes] = useState<DEX[]>([]);
     const [currentPrice, setCurrentPrice] = useState<number | undefined>();

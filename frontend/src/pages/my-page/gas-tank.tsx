@@ -13,8 +13,8 @@ import { Switch } from "../../components/switch";
 export function GasTank(): JSX.Element {
     const dispatch = useDispatch();
     const gasTankBalance = useSelector((state: RootState) => state.gasTank.balance);
-    const walletAddress = useSelector((state: RootState) => state.wallet.address);
-    const chainId = useSelector((state: RootState) => state.wallet.chainId);
+    const walletAddress = useSelector((state: RootState) => state.user.address);
+    const chainId = useSelector((state: RootState) => state.user.chainId);
     const ETHBalance = useSelector((state: RootState) => state.wallet.ETHBalance);
     const [toggleDeposit, setToggleDeposit] = useState<boolean>(true);
     const currencySymbol = GetCurrentChain(chainId!).coinSymbol;

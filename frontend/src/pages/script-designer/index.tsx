@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import { RootState } from "../../state";
 import { useSelector } from "react-redux";
 import { Link, Navigate } from "react-router-dom";
-import { IUser } from "../../data/storage-proxy/auth-proxy";
+import { IUserProfile } from "../../data/storage-proxy/auth-proxy";
 import { Workbench } from "./workbench/workbench";
 import "./styles.css";
 
 export function ScriptDesignerPage(): JSX.Element {
     // redux
-    const chainId: string | undefined = useSelector((state: RootState) => state.wallet.chainId);
-    const user: IUser | undefined = useSelector((state: RootState) => state.wallet.user);
-    const supportedChain: boolean = useSelector((state: RootState) => state.wallet.supportedChain);
+    const chainId: string | undefined = useSelector((state: RootState) => state.user.chainId);
+    const user: IUserProfile | undefined = useSelector((state: RootState) => state.user.userProfile);
+    const supportedChain: boolean = useSelector((state: RootState) => state.user.supportedChain);
     const workbenchScripts = useSelector((state: RootState) => state.workbench.scripts);
 
     // states

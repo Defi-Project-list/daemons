@@ -5,7 +5,7 @@ import { RootState } from "../state";
 
 export function TipIndicator(): JSX.Element {
     const balance = useSelector((state: RootState) => state.tipJar.balance);
-    const walletConnected = useSelector((state: RootState) => state.wallet.connected);
+    const walletConnected = useSelector((state: RootState) => state.user.connected);
     const showBalance = balance !== undefined && walletConnected;
 
     return (

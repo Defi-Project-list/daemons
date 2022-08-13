@@ -26,7 +26,7 @@ const options = {
 };
 
 export function ScriptsChart(): JSX.Element {
-    const chainId = useSelector((state: RootState) => state.wallet.chainId)!;
+    const chainId = useSelector((state: RootState) => state.user.chainId)!;
     const [data, setData] = useState<IScriptStats[]>([]);
 
     const fetchData = async () => {

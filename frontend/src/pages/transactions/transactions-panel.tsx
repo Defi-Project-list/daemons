@@ -16,7 +16,7 @@ export function TransactionsPanel({
     isBeneficiary,
     fetchTransactions
 }: ITransactionsPanelProps): JSX.Element {
-    const chainId = useSelector((state: RootState) => state.wallet.chainId);
+    const chainId = useSelector((state: RootState) => state.user.chainId);
     const explorerTxUrl = GetCurrentChain(chainId!).explorerTxUrl;
     const [transactions, setTransactions] = useState<ITransaction[]>([]);
     const [page, setPage] = useState<number>(1);

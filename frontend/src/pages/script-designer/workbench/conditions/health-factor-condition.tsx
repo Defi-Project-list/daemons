@@ -44,7 +44,7 @@ export const HealthFactorCondition = ({
     form: IHealthFactorConditionForm;
     update: (next: IHealthFactorConditionForm) => void;
 }) => {
-    const walletAddress = useSelector((state: RootState) => state.wallet.address);
+    const walletAddress = useSelector((state: RootState) => state.user.address);
     const [currentHealthFactor, setCurrentHealthFactor] = useState<number | undefined>(undefined);
 
     useEffect(() => {

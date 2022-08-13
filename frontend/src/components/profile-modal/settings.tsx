@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { IUser } from "../../data/storage-proxy/auth-proxy";
+import { IUserProfile } from "../../data/storage-proxy/auth-proxy";
 import { Switch } from "../switch";
 import "./settings.css";
 
 interface ISettingsPanelProps {
-    user: IUser;
+    user: IUserProfile;
 }
 
 export const SettingsPanel = ({ user }: ISettingsPanelProps): JSX.Element => {

@@ -19,17 +19,17 @@ import "react-toastify/dist/ReactToastify.css";
 import "./fonts.css";
 import "./constants.css";
 import "./app.css";
-import { IUser } from "./data/storage-proxy/auth-proxy";
+import { IUserProfile } from "./data/storage-proxy/auth-proxy";
 
 export const App = ({ children }: { children: any }) => {
     // redux
     const dispatch = useDispatch();
-    const chainId: string | undefined = useSelector((state: RootState) => state.wallet.chainId);
+    const chainId: string | undefined = useSelector((state: RootState) => state.user.chainId);
     const walletAddress: string | undefined = useSelector(
-        (state: RootState) => state.wallet.address
+        (state: RootState) => state.user.address
     );
-    const user: IUser | undefined = useSelector((state: RootState) => state.wallet.user);
-    const supportedChain: boolean = useSelector((state: RootState) => state.wallet.supportedChain);
+    const user: IUserProfile | undefined = useSelector((state: RootState) => state.user.userProfile);
+    const supportedChain: boolean = useSelector((state: RootState) => state.user.supportedChain);
 
     // menu selection classes
     const dashboardLinkClassName = `menu__entry ${

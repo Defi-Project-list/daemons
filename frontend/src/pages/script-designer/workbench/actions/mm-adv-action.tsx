@@ -35,7 +35,7 @@ export const MmAdvAction = ({
     form: IAdvancedMMActionForm;
     update: (next: IAdvancedMMActionForm) => void;
 }) => {
-    const walletAddress = useSelector((state: RootState) => state.wallet.address);
+    const walletAddress = useSelector((state: RootState) => state.user.address);
     const [selectedToken, setSelectedToken] = useState<Token | undefined>();
     const [currentBalance, setCurrentBalance] = useState<number | undefined>(undefined);
     const [currentLoan, setCurrentLoan] = useState<number | undefined>(undefined);

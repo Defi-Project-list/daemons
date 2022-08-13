@@ -37,7 +37,7 @@ export const BeefyAction = ({
     form: IBeefyActionForm;
     update: (next: IBeefyActionForm) => void;
 }) => {
-    const chainId = useSelector((state: RootState) => state.wallet.chainId);
+    const chainId = useSelector((state: RootState) => state.user.chainId);
     const [tokens, setTokens] = useState<Token[]>([]);
     const [currentLP, setCurrentLP] = useState<string | undefined>();
     const [loadingLP, setLoadingLP] = useState<boolean>(false);

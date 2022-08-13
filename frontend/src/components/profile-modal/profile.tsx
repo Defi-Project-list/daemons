@@ -1,15 +1,13 @@
 import React from "react";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { useDispatch } from "react-redux";
-import { AuthProxy, IUser } from "../../data/storage-proxy/auth-proxy";
-import {
-    authenticationCheck,
-    updateWalletAddress
-} from "../../state/action-creators/wallet-action-creators";
+import { AuthProxy, IUserProfile } from "../../data/storage-proxy/auth-proxy";
+import { authenticationCheck } from "../../state/action-creators/user-action-creators";
+import { Username } from "./username";
 import "./profile.css";
 
 interface IProfilePanelProps {
-    user: IUser;
+    user: IUserProfile;
     closeModal: () => void;
 }
 

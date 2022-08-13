@@ -16,9 +16,9 @@ import { Switch } from "../../components/switch";
 export function TipJar(): JSX.Element {
     const dispatch = useDispatch();
     const tipJarBalance = useSelector((state: RootState) => state.tipJar.balance);
-    const walletAddress = useSelector((state: RootState) => state.wallet.address);
+    const walletAddress = useSelector((state: RootState) => state.user.address);
     const DAEMBalance = useSelector((state: RootState) => state.wallet.DAEMBalance);
-    const chainId = useSelector((state: RootState) => state.wallet.chainId);
+    const chainId = useSelector((state: RootState) => state.user.chainId);
     const contracts = GetCurrentChain(chainId!).contracts;
     const [toggleDeposit, setToggleDeposit] = useState<boolean>(true);
     const [needsAllowance, setNeedsAllowance] = useState<boolean>(true);

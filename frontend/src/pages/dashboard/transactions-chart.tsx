@@ -26,7 +26,7 @@ const options = {
 };
 
 export function TransactionsChart(): JSX.Element {
-    const chainId = useSelector((state: RootState) => state.wallet.chainId)!;
+    const chainId = useSelector((state: RootState) => state.user.chainId)!;
     const [data, setData] = useState<ITransactionsStats[]>([]);
 
     const fetchData = async () => {

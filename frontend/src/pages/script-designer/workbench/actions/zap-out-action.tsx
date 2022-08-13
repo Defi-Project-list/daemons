@@ -35,8 +35,8 @@ export const ZapOutAction = ({
     form: IZapOutActionForm;
     update: (next: IZapOutActionForm) => void;
 }) => {
-    const walletAddress = useSelector((state: RootState) => state.wallet.address);
-    const chainId = useSelector((state: RootState) => state.wallet.chainId);
+    const walletAddress = useSelector((state: RootState) => state.user.address);
+    const chainId = useSelector((state: RootState) => state.user.chainId);
     const [tokens, setTokens] = useState<Token[]>([]);
     const [currentBalance, setCurrentBalance] = useState<number | undefined>(undefined);
     const [tokenA, setTokenA] = useState<string | undefined>();
