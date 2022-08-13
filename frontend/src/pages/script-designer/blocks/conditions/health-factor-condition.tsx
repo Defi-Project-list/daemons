@@ -92,8 +92,7 @@ export const HealthFactorCondition = ({
                                         meta.error ? "script-block__input--error" : ""
                                     }`}
                                     onChange={(e) => {
-                                        e.target.value =
-                                            Number(e.target.value) < 0 ? "0" : e.target.value;
+                                        if (Number(e.target.value) < 0) e.target.value = "0";
                                         input.onChange(e);
                                         const updatedForm = {
                                             ...form,
@@ -107,7 +106,7 @@ export const HealthFactorCondition = ({
                         </Field>
                     </div>
 
-                    <br/>
+                    <br />
                     <div>
                         {currentHealthFactor === undefined
                             ? `..fetching current health factor..`
