@@ -28,16 +28,7 @@ export const ProfilePanel = ({ user, closeModal: closePanel }: IProfilePanelProp
             </div>
             <div className="profile__info">
                 {/* Username */}
-                <div className="profile__username-row">
-                    <div className="profile__username-button" />
-                    {username ? (
-                        <div className="profile__username">{user.username}</div>
-                    ) : (
-                        <div className="profile__username profile__username--empty">
-                            No Username
-                        </div>
-                    )}
-                </div>
+                <Username username={username} />
 
                 {/* Address */}
                 <div className="profile__address">{user.address}</div>

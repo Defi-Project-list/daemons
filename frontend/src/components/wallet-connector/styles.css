@@ -35,8 +35,14 @@
     cursor: pointer;
 }
 
+.wallet-connector__address-text {
+    min-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .wallet-connector__address--unauthenticated {
-    cursor: pointer;
     line-height: 17px;
     padding: 0 20px;
 }

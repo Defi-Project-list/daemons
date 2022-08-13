@@ -40,3 +40,12 @@ export const clearUnseenTransactions = () => {
         });
     };
 };
+
+export const updateUsername = (newUsername: string) => {
+    return async (dispatch: Dispatch<UserAction>) => {
+        dispatch({
+            type: ActionType.UPDATE_USERNAME,
+            username: newUsername
+        });
+    };
+};

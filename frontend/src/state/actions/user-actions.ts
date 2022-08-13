@@ -18,4 +18,9 @@ export interface ISetTxAsSeen {
     type: ActionType.SET_TX_AS_SEEN;
 }
 
-export type UserAction = IUpdateWalletAction | IAuthCheck | ISetTxAsSeen;
+export interface IUpdateUsername {
+    type: ActionType.UPDATE_USERNAME;
+    username: string;
+}
+
+export type UserAction = IUpdateWalletAction | IAuthCheck | ISetTxAsSeen | IUpdateUsername;

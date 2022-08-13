@@ -1,4 +1,5 @@
 import { AuthProxy } from './auth-proxy';
+import { ProfileProxy } from "./profile-proxy";
 import { ScriptProxy } from './scripts-proxy';
 import { StatsProxy } from "./stats-proxy";
 import { TransactionProxy } from './transaction-proxy';
@@ -18,6 +19,7 @@ export const storageAddress = isTest || isDev
 export class StorageProxy {
 
     public static get auth() { return AuthProxy; }
+    public static get profile() { return ProfileProxy; }
     public static get script() { return ScriptProxy; }
     public static get txs() { return TransactionProxy; }
     public static get stats() { return StatsProxy; }

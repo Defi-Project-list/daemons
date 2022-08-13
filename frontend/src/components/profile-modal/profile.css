@@ -18,22 +18,55 @@
 .profile__username-row {
     display: flex;
     flex-direction: row;
+    font-family: var(--regular);
+}
+
+.profile__username {
+    margin-left: 5px;
 }
 
 .profile__username-button {
     cursor: pointer;
     height: 25px;
     width: 25px;
+}
+
+.profile__username-button--edit {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-pencil' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23ffffff' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath stroke='none' d='M0 0h24v24H0z' fill='none'/%3E%3Cpath d='M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4' /%3E%3Cline x1='13.5' y1='6.5' x2='17.5' y2='10.5' /%3E%3C/svg%3E");
 }
 
-.profile__username-button:hover {
+.profile__username-button--edit:hover {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-pencil' viewBox='0 0 24 24' stroke-width='1.5' stroke='%2300e5c7' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath stroke='none' d='M0 0h24v24H0z' fill='none'/%3E%3Cpath d='M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4' /%3E%3Cline x1='13.5' y1='6.5' x2='17.5' y2='10.5' /%3E%3C/svg%3E");
+}
+
+.profile__username-button--save {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-check' viewBox='0 0 24 24' stroke-width='2' stroke='%23fff' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath stroke='none' d='M0 0h24v24H0z' fill='none'/%3E%3Cpath d='M5 12l5 5l10 -10' /%3E%3C/svg%3E");
+}
+
+.profile__username-button--save:hover {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-check' viewBox='0 0 24 24' stroke-width='2' stroke='%2300e5c7' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath stroke='none' d='M0 0h24v24H0z' fill='none'/%3E%3Cpath d='M5 12l5 5l10 -10' /%3E%3C/svg%3E");
 }
 
 .profile__username--empty {
     font-style: italic;
     color: var(--grey-500);
+}
+
+.profile__username-input {
+    margin: 0;
+    border-radius: 5px;
+    background-color: transparent;
+    height: 25px;
+    box-sizing: border-box;
+    width: 100%;
+    color: var(--white);
+    font-family: var(--regular);
+    font-size: 1rem;
+    border: none;
+}
+
+.profile__username-input:focus {
+    outline: none;
 }
 
 .profile__address {

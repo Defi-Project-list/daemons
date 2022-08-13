@@ -41,6 +41,13 @@ export const userReducer = (state: UserState = initialState, action: UserAction)
                 ...state,
                 userProfile: userWithSeenTxs
             };
+        case ActionType.UPDATE_USERNAME:
+            if (!state.userProfile) return { ...state };
+            const userWithNewUsername = { ...state.userProfile, username: action.username };
+            return {
+                ...state,
+                userProfile: userWithNewUsername
+            };
         default:
             return state;
     }

@@ -55,8 +55,9 @@ export function ConnectWalletButton() {
 
 function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element | null {
     const dispatch = useDispatch();
-    const address = walletAddress!.substring(0, 10) + "...";
-    const user: IUserProfile | undefined = useSelector((state: RootState) => state.user.userProfile);
+    const user: IUserProfile | undefined = useSelector(
+        (state: RootState) => state.user.userProfile
+    );
     const chainInfo = GetCurrentChain(chainId);
     const [displayChains, setDisplayChains] = useState<boolean>(false);
     const [displayProfile, setDisplayProfile] = useState<boolean>(false);
@@ -104,7 +105,7 @@ function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element 
 
             {user ? (
                 <div className="wallet-connector__address" onClick={() => setDisplayProfile(true)}>
-                    {address}
+                    <div className="wallet-connector__address-text">{user.username}</div>
                     {notifications.length > 0 && (
                         <div className="wallet-connector__address-notification">
                             {notifications.length}
@@ -116,7 +117,7 @@ function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element 
                     className="wallet-connector__address wallet-connector__address--unauthenticated"
                     onClick={() => triggerLogin(walletAddress, dispatch, chainId)}
                 >
-                    <div>{address}</div>
+                    <div className="wallet-connector__address-text">{walletAddress}</div>
                     <div>Authenticate</div>
                 </div>
             )}
