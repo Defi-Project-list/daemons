@@ -65,8 +65,8 @@ export const MmBalances = ({ moneyMarket }: IMmBalancesProps): JSX.Element => {
             moneyMarket.poolAddress,
             moneyMarket.isV3,
             address,
-            [],
-            []
+            moneyMarket.supportedTokens.map((t) => t.address),
+            mmTokens
         );
 
         // set health factor
