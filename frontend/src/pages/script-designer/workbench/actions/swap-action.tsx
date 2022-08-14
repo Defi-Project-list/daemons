@@ -3,7 +3,7 @@ import { ISwapActionForm } from "../../../../data/chains-data/action-form-interf
 import { Form, Field } from "react-final-form";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../state";
-import { TokensModal } from "../shared/tokens-modal";
+import { TokensModal } from "../../../../components/tokens-modal";
 import { AmountType } from "@daemons-fi/shared-definitions/build";
 import { ToggleButtonField } from "../shared/toggle-button";
 import { Token } from "../../../../data/chains-data/interfaces";

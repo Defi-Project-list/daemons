@@ -3,7 +3,7 @@ import { IZapOutActionForm } from "../../../../data/chains-data/action-form-inte
 import { Form, Field } from "react-final-form";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../state";
-import { TokensModal } from "../shared/tokens-modal";
+import { TokensModal } from "../../../../components/tokens-modal";
 import { AmountType, ZapOutputChoice } from "@daemons-fi/shared-definitions/build";
 import { Token } from "../../../../data/chains-data/interfaces";
 import { GetCurrentChain } from "../../../../data/chain-info";

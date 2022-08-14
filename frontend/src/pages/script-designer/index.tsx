@@ -1,37 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { RootState } from "../../state";
 import { useSelector } from "react-redux";
-import { Link, Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { IUserProfile } from "../../data/storage-proxy/auth-proxy";
 import { Workbench } from "./workbench/workbench";
+import { TokenBalances } from "../../components/token-balances";
+import { HeadlessCard } from "../../components/card/card";
 import "./styles.css";
 
 export function ScriptDesignerPage(): JSX.Element {
     // redux
-    const chainId: string | undefined = useSelector((state: RootState) => state.user.chainId);
-    const user: IUserProfile | undefined = useSelector((state: RootState) => state.user.userProfile);
+    const navigate = useNavigate();
+    const chainId: string | undefined = useSelector((state: RootState) => state.user.chainId)!;
+    const user: IUserProfile | undefined = useSelector(
+        (state: RootState) => state.user.userProfile
+    );
     const supportedChain: boolean = useSelector((state: RootState) => state.user.supportedChain);
-    const workbenchScripts = useSelector((state: RootState) => state.workbench.scripts);
 
-    // states
-    const [redirectToReview, setRedirectToReview] = useState<boolean>(false);
-
-    if (!user || !chainId || user.banned || !supportedChain) return <Navigate to="/my-page" />;
-    if (redirectToReview) return <Navigate to="/review" />;
+    useEffect(() => {
+        if (!user || !chainId || user.banned || !supportedChain) navigate("/my-page");
+    }, [user, chainId, supportedChain]);
 
     return (
         <div className="designer">
-            <Workbench chainId={chainId} setRedirectToReview={setRedirectToReview} />
+            <Workbench chainId={chainId} />
 
-            {/* A link to the review page */}
-            <Link
-                className={`designer__review-link ${
-                    workbenchScripts.length === 0 ? "designer__review-link--disabled" : ""
-                }`}
-                to={workbenchScripts.length > 0 ? "/review" : "#"}
-            >
-                Review page ({workbenchScripts.length})
-            </Link>
+            {/* Wallet state */}
+            <HeadlessCard>
+                <div className="wallet-state">
+                    <div className="wallet-state__title">Wallet State</div>
+                    <TokenBalances />
+                </div>
+            </HeadlessCard>
         </div>
     );
 }

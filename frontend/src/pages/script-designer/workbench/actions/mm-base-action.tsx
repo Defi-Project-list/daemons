@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Form, Field } from "react-final-form";
-import { TokensModal } from "../shared/tokens-modal";
+import { TokensModal } from "../../../../components/tokens-modal";
 import { ToggleButtonField } from "../shared/toggle-button";
 import { BaseMoneyMarketActionType } from "@daemons-fi/shared-definitions";
 import { AmountType } from "@daemons-fi/shared-definitions/build";

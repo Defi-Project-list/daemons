@@ -3,7 +3,7 @@ import { IZapInActionForm } from "../../../../data/chains-data/action-form-inter
 import { Form } from "react-final-form";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../state";
-import { TokensModal } from "../shared/tokens-modal";
+import { TokensModal } from "../../../../components/tokens-modal";
 import { AmountType } from "@daemons-fi/shared-definitions/build";
 import { DEX, Token } from "../../../../data/chains-data/interfaces";
 import { GetCurrentChain } from "../../../../data/chain-info";

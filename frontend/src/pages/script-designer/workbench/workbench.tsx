@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { IAction, ICondition } from "../../../data/chains-data/interfaces";
 import { GetCurrentChain } from "../../../data/chain-info";
 import { ActionBlock } from "./actions/actions-block";
@@ -12,17 +12,21 @@ import { ScriptDescriptionFactory } from "../../../script-factories/script-descr
 import { addScriptToWorkbench } from "../../../state/action-creators/workbench-action-creators";
 import { Tooltip } from "../../../components/tooltip";
 import "./blocks.css";
+import { Link, useNavigate } from "react-router-dom";
+import { RootState } from "../../../state";
+import { HeadlessCard } from "../../../components/card/card";
 
 interface IWorkbenchProps {
     chainId: string;
-    setRedirectToReview: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function Workbench({ chainId, setRedirectToReview }: IWorkbenchProps): JSX.Element {
+export function Workbench({ chainId }: IWorkbenchProps): JSX.Element {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [actions, setActions] = useState<IAction[]>([]);
     const [conditions, setConditions] = useState<ICondition[]>([]);
     const [currentScript, _setCurrentScript] = useState<ICurrentScript | undefined>();
+    const workbenchScripts = useSelector((state: RootState) => state.workbench.scripts);
 
     useEffect(() => {
         setActions(GetCurrentChain(chainId).actions);
@@ -94,7 +98,7 @@ export function Workbench({ chainId, setRedirectToReview }: IWorkbenchProps): JS
 
     const storeScriptAndGoToReview = () => {
         sendScriptToReview();
-        setRedirectToReview(true);
+        navigate("/review");
     };
 
     const storeScriptAndAddAnother = () => {
@@ -115,46 +119,49 @@ export function Workbench({ chainId, setRedirectToReview }: IWorkbenchProps): JS
     return (
         <>
             {/* List of actions and conditions */}
-            <div className="designer__choices">
-                <div className="designer__choices-section">
-                    <div className="designer__choices-title">Actions</div>
-                    <div className="designer__choices-list">
-                        {actions.map((action) =>
-                            createChoice(
-                                action.title,
-                                action.info,
-                                currentScript?.action?.title === action.title,
-                                () => {
-                                    setCurrentScript(action);
-                                }
-                            )
+            <HeadlessCard>
+                <div className="designer__choices">
+                    <div className="designer__choices-section">
+                        <div className="designer__choices-title">Actions</div>
+                        <div className="designer__choices-list">
+                            {actions.map((action) =>
+                                createChoice(
+                                    action.title,
+                                    action.info,
+                                    currentScript?.action?.title === action.title,
+                                    () => {
+                                        setCurrentScript(action);
+                                    }
+                                )
+                            )}
+                        </div>
+
+                        {currentScript && (
+                            <>
+                                <div className="designer__choices-title">
+                                    {currentScript.action.title} Conditions
+                                </div>
+                                <div className="designer__choices-list">
+                                    {conditions.map((condition) => {
+                                        const selected =
+                                            !!currentScript.conditions[condition.title];
+                                        return createChoice(
+                                            condition.title,
+                                            condition.info,
+                                            selected,
+                                            () => {
+                                                selected
+                                                    ? removeCondition(condition.title)
+                                                    : addCondition(condition);
+                                            }
+                                        );
+                                    })}
+                                </div>
+                            </>
                         )}
                     </div>
-
-                    {currentScript && (
-                        <>
-                            <div className="designer__choices-title">
-                                {currentScript.action.title} Conditions
-                            </div>
-                            <div className="designer__choices-list">
-                                {conditions.map((condition) => {
-                                    const selected = !!currentScript.conditions[condition.title];
-                                    return createChoice(
-                                        condition.title,
-                                        condition.info,
-                                        selected,
-                                        () => {
-                                            selected
-                                                ? removeCondition(condition.title)
-                                                : addCondition(condition);
-                                        }
-                                    );
-                                })}
-                            </div>
-                        </>
-                    )}
                 </div>
-            </div>
+            </HeadlessCard>
 
             {/* The area where the user can create scripts */}
             <div className="designer__workbench">
@@ -197,6 +204,16 @@ export function Workbench({ chainId, setRedirectToReview }: IWorkbenchProps): JS
                         </div>
                     </>
                 )}
+
+                {/* A link to the review page */}
+                <Link
+                    className={`designer__review-link ${
+                        workbenchScripts.length === 0 ? "designer__review-link--disabled" : ""
+                    }`}
+                    to={workbenchScripts.length > 0 ? "/review" : "#"}
+                >
+                    Review page ({workbenchScripts.length})
+                </Link>
             </div>
 
             {/* ENABLE WHEN DEBUGGING */}

@@ -3,7 +3,7 @@ import { IBeefyActionForm } from "../../../../data/chains-data/action-form-inter
 import { Form, Field } from "react-final-form";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../state";
-import { TokensModal } from "../shared/tokens-modal";
+import { TokensModal } from "../../../../components/tokens-modal";
 import { DEX, Token } from "../../../../data/chains-data/interfaces";
 import { GetCurrentChain } from "../../../../data/chain-info";
 import { ethers } from "ethers";

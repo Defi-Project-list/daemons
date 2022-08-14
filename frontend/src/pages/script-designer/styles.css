@@ -1,6 +1,6 @@
 .designer {
     display: grid;
-    grid-template-columns: 250px auto;
+    grid-template-columns: 280px auto 280px;
     column-gap: 25px;
 }
 
@@ -28,8 +28,8 @@
 .choice {
     border-radius: 5px;
     padding: 10px 15px;
-    background: var(--secondary-background);
-    box-shadow: 0 1px 15px rgb(0 0 0 / 4%), 0 1px 6px rgb(0 0 0 / 4%);
+    background: var(--greyish-brown);
+    box-shadow: 5px 5px 15px 0 var(--grey-800);
     cursor: pointer;
     display: grid;
     grid-template-columns: auto 25px;
@@ -43,10 +43,10 @@
 /* Workbench */
 
 .designer__workbench {
+    position: relative;
     display: flex;
     flex-direction: column;
     row-gap: 30px;
-    padding-top: 35px;
 }
 
 .workbench__section {
@@ -86,7 +86,7 @@
 
 .designer__review-link {
     position: absolute;
-    right: 100px;
+    right: 0;
     box-shadow: 0 1px 15px rgb(0 0 0 / 4%), 0 1px 6px rgb(0 0 0 / 4%);
     text-align: center;
     line-height: 15px;
@@ -104,4 +104,12 @@
 .designer__review-link--disabled {
     opacity: 0;
     cursor: not-allowed;
+}
+
+/* Wallet State */
+
+.wallet-state {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
 }

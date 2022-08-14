@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Form, Field } from "react-final-form";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../state";
-import { TokensModal } from "../shared/tokens-modal";
+import { TokensModal } from "../../../../components/tokens-modal";
 import { Token } from "../../../../data/chains-data/interfaces";
 import { IBalanceConditionForm } from "../../../../data/chains-data/condition-form-interfaces";
 import { GetCurrentChain } from "../../../../data/chain-info";
