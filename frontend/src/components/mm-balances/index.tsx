@@ -65,8 +65,8 @@ export const MmBalances = ({ moneyMarket }: IMmBalancesProps): JSX.Element => {
             moneyMarket.poolAddress,
             moneyMarket.isV3,
             address,
-            moneyMarket.supportedTokens.map((t) => t.address),
-            mmTokens
+            [],
+            []
         );
 
         // set health factor
@@ -227,8 +227,6 @@ const RAY = BigNumber.from(10).pow(27);
 const SECONDS_PER_YEAR = 31536000;
 const calculateAPY = (rayValue: BigNumber): number => {
     const APR = rayValue.mul(10000).div(RAY).toNumber() / 10000;
-    console.log(APR);
-
     const APY = Math.pow(1 + APR / SECONDS_PER_YEAR, SECONDS_PER_YEAR) - 1;
     return Math.round(APY * 10000) / 100;
 };
