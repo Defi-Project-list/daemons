@@ -102,8 +102,6 @@ export const fetchTokenBalances = (address?: string, chainId?: string, force?: b
             balances[tokenAddress] = bigNumberToFloat(bn, 4, token.decimals);
         });
 
-        console.log(balances);
-
         dispatch({
             type: ActionType.FETCH_TOKEN_BALANCES,
             balances

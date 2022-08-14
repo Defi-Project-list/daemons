@@ -1,17 +1,23 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { GetCurrentChainTokensDictionary } from "../../data/chain-info";
 import { IToken } from "../../data/chains-data/interfaces";
 import { RootState } from "../../state";
+import { fetchTokenBalances } from "../../state/action-creators/wallet-action-creators";
+import { successToast } from "../toaster";
 import "./styles.css";
 
 export const TokenBalances = (): JSX.Element => {
+    const dispatch = useDispatch();
     const balances = useSelector((state: RootState) => state.wallet.balances);
     const chainId = useSelector((state: RootState) => state.user.chainId);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const address = useSelector((state: RootState) => state.user.address);
 
     const tokens = GetCurrentChainTokensDictionary(chainId!);
-    const triggerReload = async () => {};
+    const triggerReload = async () => {
+        dispatch(fetchTokenBalances(address, chainId));
+        successToast("Token balances updated!");
+    };
     const ownedTokens = Object.keys(balances)
         .filter((address) => tokens[address])
         .filter((address) => balances[address] > 0);
@@ -21,12 +27,7 @@ export const TokenBalances = (): JSX.Element => {
             {/* Header */}
             <div className="token-balances__header">
                 <div className="token-balances__title">Balances</div>
-                <div
-                    onClick={triggerReload}
-                    className={`token-balances__reload ${
-                        isLoading ? "token-balances__reload--loading" : ""
-                    }`}
-                />
+                <div onClick={triggerReload} className={`wallet-state__reload-bt`} />
             </div>
 
             {/* Tokens List */}

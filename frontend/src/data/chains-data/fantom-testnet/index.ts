@@ -9,7 +9,7 @@ import {
     ZapInAction,
     ZapOutAction
 } from "./action-forms";
-import { fantomTestnetDexes, fantomTestnetTokens } from "./tokens";
+import { fantomTestnetAaveMM, fantomTestnetDexes, fantomTestnetTokens } from "./tokens";
 
 export const fantomTestnetInfo: IChainInfo = {
     name: "FantomTestnet",
@@ -25,6 +25,7 @@ export const fantomTestnetInfo: IChainInfo = {
     explorerTxUrl: "https://testnet.ftmscan.com/tx/",
     tokens: fantomTestnetTokens,
     dexes: fantomTestnetDexes,
+    moneyMarkets: [fantomTestnetAaveMM],
     beefyMoos: {},
     contracts: fantomTestnetContracts,
     actions: [

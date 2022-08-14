@@ -129,6 +129,7 @@ export const fantomTestnetDexes: DEX[] = [fantomTestnetSpookyDEX];
 export const fantomTestnetAaveMM: MoneyMarket = {
     name: "AAVE",
     poolAddress: "0xE0fBa4Fc209b4948668006B2bE61711b7f465bAe",
+    isV3: true,
     supportedTokens: [aaveDAI, aaveUSDC, WFTM],
     mmTokens: {
         // DAI

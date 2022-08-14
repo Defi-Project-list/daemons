@@ -79,6 +79,7 @@ export const mumbaiDexes: DEX[] = [mumbaiQuickswapDEX, mumbaiSushiDEX];
 export const mumbaiAaveMM: MoneyMarket = {
     name: "AAVE",
     poolAddress: "0x6C9fB0D5bD9429eb9Cd96B85B81d872281771E6B",
+    isV3: true,
     supportedTokens: [DAI, USDT, USDC, WETH, wBTC, WMATIC],
     mmTokens: {
         // DAI

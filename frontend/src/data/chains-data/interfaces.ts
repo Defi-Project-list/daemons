@@ -15,6 +15,7 @@ export type Token = IToken;
 export type MoneyMarket = {
     name: string;
     poolAddress: string;
+    isV3: boolean;
     supportedTokens: Token[];
     mmTokens: {
         [tokenAddress: string]: { aToken: string; varDebtToken: string; fixDebtToken: string };
@@ -64,6 +65,7 @@ export interface IChainInfo {
     explorerTxUrl: string;
     tokens: Token[];
     dexes: DEX[];
+    moneyMarkets: MoneyMarket[];
     beefyMoos: BeefyMooForLP;
     contracts: IContractsList;
     actions: IAction[];

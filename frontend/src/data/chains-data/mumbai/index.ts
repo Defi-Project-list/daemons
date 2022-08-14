@@ -11,7 +11,7 @@ import {
     ZapInAction,
     ZapOutAction
 } from "./action-forms";
-import { mumbaiDexes, mumbaiTokens } from "./tokens";
+import { mumbaiAaveMM, mumbaiDexes, mumbaiTokens } from "./tokens";
 
 export const mumbaiInfo: IChainInfo = {
     name: "Mumbai",
@@ -27,6 +27,7 @@ export const mumbaiInfo: IChainInfo = {
     explorerTxUrl: "https://mumbai.polygonscan.com/tx/",
     tokens: mumbaiTokens,
     dexes: mumbaiDexes,
+    moneyMarkets: [mumbaiAaveMM],
     beefyMoos: {
         "0xc627AccC7843d5A18260F860567B5Ea15b88a330": "0xc627AccC7843d5A18260F860567B5Ea15b88a330"
     },

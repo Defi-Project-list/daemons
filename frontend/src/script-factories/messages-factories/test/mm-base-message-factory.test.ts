@@ -26,6 +26,7 @@ describe("MM Base Message Factory", () => {
     const fakeMM: MoneyMarket = {
         name: "AAVE",
         poolAddress: "0xE0fBa4Fc209b4948668006B2bE61711b7f465bAe",
+        isV3: true,
         supportedTokens: [FooToken],
         mmTokens: { "0x123": { aToken: "0x987", fixDebtToken: "0x876", varDebtToken: "0x765" } }
     };

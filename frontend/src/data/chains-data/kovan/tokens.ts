@@ -142,6 +142,7 @@ export const kovanDexes: DEX[] = [kovanSushiDEX];
 export const kovanAaveMM: MoneyMarket = {
     name: "AAVE",
     poolAddress: "0xE0fBa4Fc209b4948668006B2bE61711b7f465bAe",
+    isV3: false,
     supportedTokens: [aaveDAI, aaveBUSD, WETH],
     mmTokens: {
         // DAI

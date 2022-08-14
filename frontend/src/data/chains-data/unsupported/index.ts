@@ -37,6 +37,7 @@ export const unsupportedChain: IChainInfo = {
     explorerTxUrl: "https://kovan.etherscan.io/tx/",
     tokens: [],
     dexes: [],
+    moneyMarkets: [],
     beefyMoos: {},
     contracts: unsupportedContracts,
     actions: []
