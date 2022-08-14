@@ -14,21 +14,32 @@ import { ChainsModal } from "../chains-modal";
 import { ProfileModal } from "../profile-modal";
 import { IUserProfile } from "../../data/storage-proxy/auth-proxy";
 import "./styles.css";
+import { useNavigate } from "react-router-dom";
 
 export function ConnectWalletButton() {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { status, connect, account, chainId } = useMetaMask();
 
     const connected = status === "connected";
     const walletAddress = connected ? account! : undefined;
     const walletChainId = connected ? BigNumber.from(chainId!).toString() : undefined; // convert from hex to decimal string
     const supportedChain = !!walletChainId && IsChainSupported(walletChainId);
+    const [currentChainId, setCurrentChainId] = useState<string|undefined>();
 
     useEffect(() => {
         // update the state and check for authentication each time there is a change
         dispatch(updateWalletAddress(connected, supportedChain, walletAddress, walletChainId));
         dispatch(authenticationCheck(walletAddress, walletChainId));
     }, [status, connected, walletAddress, walletChainId]);
+
+    useEffect(() => {
+        if (currentChainId && currentChainId !== chainId) {
+            // chain id has changed, send to home to prevent errors
+            navigate("/")
+        }
+        setCurrentChainId(chainId ?? undefined);
+    }, [chainId])
 
     switch (status) {
         case "initializing":
