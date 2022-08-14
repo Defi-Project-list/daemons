@@ -12,12 +12,12 @@ const config: HardhatUserConfig = {
     networks: {
         hardhat: {},
         kovan_testnet: {
-            url: "https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+            url: process.env.KOVAN_RPC!,
             chainId: 42,
             accounts: [PRIVATE_KEY]
         },
         ftm_testnet: {
-            url: "https://rpc.testnet.fantom.network/",
+            url: process.env.FANTOM_TESTNET_RPC!,
             chainId: 4002,
             accounts: [PRIVATE_KEY]
         },

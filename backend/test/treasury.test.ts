@@ -37,8 +37,7 @@ describe("Treasury [FORKED CHAIN]", function () {
             params: [
                 {
                     forking: {
-                        jsonRpcUrl:
-                            "https://polygon-mainnet.g.alchemy.com/v2/m7GrmEdT-Lu0h1k5DowWTKqplP6-ThTa",
+                        jsonRpcUrl: process.env.POLYGON_RPC!,
                         blockNumber: 29483920
                     }
                 }
