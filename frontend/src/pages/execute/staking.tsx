@@ -352,7 +352,7 @@ export function Staking() {
                 tooltipSize={TooltipSize.Small}
             >
                 <div className="staking__apy-info">
-                    <div>APY, paid in ETH:</div>
+                    <div>APY, paid in {currencySymbol}:</div>
                     <div className="staking__apy">
                         <CountUp duration={0.5} decimals={2} suffix={`%`} end={apy ?? 0} />
                     </div>
