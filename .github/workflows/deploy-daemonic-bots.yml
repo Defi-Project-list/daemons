@@ -19,7 +19,6 @@ jobs:
         env:
           MONGO_DB_CONN_STRING: not_used_in_tests
           KOVAN_RPC: not_used_in_tests
-          FANTOM_TESTNET_RPC: not_used_in_tests
           MUMBAI_RPC: not_used_in_tests
         run: |
           cd daemonic-bots/
