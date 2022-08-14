@@ -23,26 +23,6 @@ export const contracts: { [chainId: number]: DaemonsContracts } = {
         BeefyScriptExecutor: "0x1E286f7D6B5ea61ab3531ef0EE91e4934e8158d5",
         PassScriptExecutor: "0xCF0dBE21805b7344Bb2E312AF2688538EbFbE1F5"
     },
-    // Fantom Testnet
-    4002: {
-        IUniswapV2Router01: "0xa6AD18C2aC47803E193F75c3677b14BF19B94883",
-        AavePriceOracle: "0xA840C768f7143495790eC8dc2D5f32B71B6Dc113",
-        DaemonsToken: "0x966f8Fead33e50762747F1E90C29709D4F4Ff0A5",
-        GasTank: "0x44954311524EC2a2bb2AA978BEc57c8aBaC6663d",
-        Treasury: "0x4a0bffeC8B433B31B858dC214ed074f613743df9",
-        Vesting: "0x2788553B577669fd4d5cc3AaB4F10054c9b803A2",
-        GasPriceFeed: "0x5773649d94Fd3895c194EA8eFe4CF420f2dC5278",
-        wethDaemLp: "0xeE262e0B56513E26aE961549Cf60D23404AF262A",
-        InfoFetcher: "0x42CB200cECDad84142A2cCbaC4D0FFA8492f7Fc6",
-        SwapperScriptExecutor: "0x63267ADD09A97f2ceC5669C85F020e48aA381002",
-        TransferScriptExecutor: "0x6381bDA2FF150FD0e0504c065301546f9cF7b034",
-        MmBaseScriptExecutor: "0x227Def9c9a44dD621Db7c7dCA8090E004cd69436",
-        MmAdvancedScriptExecutor: "0x3050EeC643E075ee62559b1D84aaeEBbC78A44E5",
-        ZapInScriptExecutor: "0xaf27157d4A68AE6bb20d05F8e64226BDB5249E9F",
-        ZapOutScriptExecutor: "0x1D1C531AF86CA26A11fE305CA9764628Fb7314d7",
-        BeefyScriptExecutor: "0x69ccf384DCB3639127Ab4bD21b8A6c89Ea389bDb",
-        PassScriptExecutor: "0x0e0dDdDA9089d0dc23935cD69B55ccf8B7A147a5"
-    },
     // Mumbai Testnet
     80001: {
         IUniswapV2Router01: "0x8954AfA98594b838bda56FE4C12a09D7739D179b",
