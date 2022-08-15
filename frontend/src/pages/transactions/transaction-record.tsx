@@ -27,7 +27,7 @@ const getCostOrProfit = (transaction: ITransaction, isBeneficiary: boolean): JSX
                 <>
                     <div>{transaction.costDAEM}</div>
                     {/* This will be replaced by the DAEM icon once we have it */}
-                    <div>DAEM</div>
+                    <img className="transaction-record__token-icon" src="/icons/DAEM.svg" />
                 </>
             ) : null}
         </div>
@@ -36,7 +36,7 @@ const getCostOrProfit = (transaction: ITransaction, isBeneficiary: boolean): JSX
             <div>+</div>
             <div>{transaction.profitDAEM}</div>
             {/* This will be replaced by the DAEM icon once we have it */}
-            <div>DAEM</div>
+            <img className="transaction-record__token-icon" src="/icons/DAEM.svg" />
         </div>
     );
 
