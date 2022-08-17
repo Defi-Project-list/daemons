@@ -5,6 +5,42 @@ export const InfoFetcherABI: ContractInterface = [
     inputs: [
       {
         internalType: "address",
+        name: "user",
+        type: "address"
+      },
+      {
+        internalType: "address[]",
+        name: "tokens",
+        type: "address[]"
+      }
+    ],
+    name: "fetchBalances",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "coin",
+            type: "uint256"
+          },
+          {
+            internalType: "uint256[]",
+            name: "tokens",
+            type: "uint256[]"
+          }
+        ],
+        internalType: "struct Balances",
+        name: "",
+        type: "tuple"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
         name: "mmPool",
         type: "address"
       },
@@ -76,38 +112,26 @@ export const InfoFetcherABI: ContractInterface = [
             type: "uint128[]"
           },
           {
-            internalType: "uint256[]",
+            components: [
+              {
+                internalType: "uint256",
+                name: "coin",
+                type: "uint256"
+              },
+              {
+                internalType: "uint256[]",
+                name: "tokens",
+                type: "uint256[]"
+              }
+            ],
+            internalType: "struct Balances",
             name: "balances",
-            type: "uint256[]"
+            type: "tuple"
           }
         ],
         internalType: "struct MmInfo",
         name: "",
         type: "tuple"
-      }
-    ],
-    stateMutability: "view",
-    type: "function"
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "user",
-        type: "address"
-      },
-      {
-        internalType: "address[]",
-        name: "tokens",
-        type: "address[]"
-      }
-    ],
-    name: "fetchTokenBalances",
-    outputs: [
-      {
-        internalType: "uint256[]",
-        name: "",
-        type: "uint256[]"
       }
     ],
     stateMutability: "view",
