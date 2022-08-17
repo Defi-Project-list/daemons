@@ -70,10 +70,9 @@ export const MmBalances = ({ moneyMarket }: IMmBalancesProps): JSX.Element => {
         );
 
         // set health factor
-
         setHealthFactor(
-            result.accountData.healthFactor.lt(100000)
-                ? result.accountData.healthFactor.toString()
+            result.accountData.healthFactor.lt("100000000000000000000000000")
+                ? bigNumberToFloat(result.accountData.healthFactor).toString()
                 : "∞"
         );
 
