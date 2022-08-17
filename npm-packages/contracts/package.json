@@ -1,6 +1,6 @@
 {
   "name": "@daemons-fi/contracts",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "ABI + addresses + utils for daemons dApp",
   "main": "./build/index.js",
   "types": "./build/index.d.js",
