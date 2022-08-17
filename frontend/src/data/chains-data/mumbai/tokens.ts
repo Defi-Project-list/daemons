@@ -1,4 +1,14 @@
+import { mumbaiTestnetContracts } from "@daemons-fi/contracts/build";
 import { DEX, MoneyMarket, Token } from "../interfaces";
+
+const DAEM = {
+    name: "Daemons",
+    symbol: "DAEM",
+    address: mumbaiTestnetContracts.DaemonsToken,
+    decimals: 18,
+    logoURI: "/icons/DAEM.svg",
+    chainId: "42"
+}
 
 const WMATIC = {
     name: "Wrapped MATIC",
@@ -59,6 +69,7 @@ export const mumbaiTokens: Token[] = [
     WMATIC,
     WETH,
     wBTC,
+    DAEM,
     USDC,
     USDT,
     DAI

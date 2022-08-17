@@ -1,4 +1,14 @@
+import { kovanContracts } from "@daemons-fi/contracts/build";
 import { DEX, MoneyMarket, Token } from "../interfaces";
+
+const DAEM = {
+    name: "Daemons",
+    symbol: "DAEM",
+    address: kovanContracts.DaemonsToken,
+    decimals: 18,
+    logoURI: "/icons/DAEM.svg",
+    chainId: "42"
+}
 
 const WETH = {
     name: "Wrapped Ether",
@@ -120,6 +130,7 @@ const aaveBUSD = {
 export const kovanTokens: Token[] = [
     WETH,
     wBTC,
+    DAEM,
     USDC,
     USDT,
     DAI,
