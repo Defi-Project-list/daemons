@@ -78,8 +78,9 @@ export const fetchTokenBalances = (address?: string, chainId?: string, force?: b
         if (!address || !chainId) {
             console.debug("Address or ChainId missing, token balances check aborted");
             dispatch({
-                type: ActionType.FETCH_TOKEN_BALANCES,
-                balances: {}
+                type: ActionType.FETCH_BALANCES,
+                coinBalance: 0,
+                tokenBalances: {}
             });
             return;
         }
@@ -91,20 +92,20 @@ export const fetchTokenBalances = (address?: string, chainId?: string, force?: b
         GetCurrentChain(chainId).tokens.forEach((t) => (tokensDict[t.address] = t));
         const tokenAddresses = Object.keys(tokensDict);
 
-        const rawBalances: BigNumber[] = await InfoFetcher.fetchTokenBalances(
-            address,
-            tokenAddresses
-        );
-        const balances: { [tokenAddress: string]: number } = {};
-        rawBalances.forEach((bn, i) => {
+        const rawBalances = await InfoFetcher.fetchBalances(address, tokenAddresses);
+
+        const coinBalance = bigNumberToFloat(rawBalances.coin, 5);
+        const tokenBalances: { [tokenAddress: string]: number } = {};
+        rawBalances.tokens.forEach((bn: BigNumber, i: number) => {
             const tokenAddress = tokenAddresses[i];
             const token = tokensDict[tokenAddress];
-            balances[tokenAddress] = bigNumberToFloat(bn, 4, token.decimals);
+            tokenBalances[tokenAddress] = bigNumberToFloat(bn, 4, token.decimals);
         });
 
         dispatch({
-            type: ActionType.FETCH_TOKEN_BALANCES,
-            balances
+            type: ActionType.FETCH_BALANCES,
+            coinBalance,
+            tokenBalances
         });
     };
 };

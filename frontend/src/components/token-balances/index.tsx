@@ -9,7 +9,7 @@ import "./styles.css";
 
 export const TokenBalances = (): JSX.Element => {
     const dispatch = useDispatch();
-    const balances = useSelector((state: RootState) => state.wallet.balances);
+    const balances = useSelector((state: RootState) => state.wallet.tokenBalances);
     const chainId = useSelector((state: RootState) => state.user.chainId);
     const address = useSelector((state: RootState) => state.user.address);
 

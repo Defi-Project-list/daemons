@@ -59,8 +59,6 @@ export const App = ({ children }: { children: any }) => {
             dispatch(fetchGasTankBalance(walletAddress, chainId));
             dispatch(fetchGasTankClaimable(walletAddress, chainId));
             dispatch(fetchTipJarBalance(walletAddress, chainId));
-            dispatch(fetchDaemBalance(walletAddress, chainId));
-            dispatch(fetchEthBalance(walletAddress, chainId));
             dispatch(fetchTokenBalances(walletAddress, chainId));
         }
 

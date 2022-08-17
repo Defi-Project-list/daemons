@@ -11,8 +11,9 @@ export interface IEthDaemBalance {
 }
 
 export interface IFetchTokenBalances {
-    type: ActionType.FETCH_TOKEN_BALANCES;
-    balances: {[address: string]: number};
+    type: ActionType.FETCH_BALANCES;
+    coinBalance: number;
+    tokenBalances: {[address: string]: number};
 }
 
 export type WalletAction = IFetchDaemBalance | IEthDaemBalance | IFetchTokenBalances;

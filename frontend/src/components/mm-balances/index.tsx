@@ -91,7 +91,7 @@ export const MmBalances = ({ moneyMarket }: IMmBalancesProps): JSX.Element => {
         });
 
         // build balances dictionary
-        const balances: BigNumber[] = result.balances;
+        const balances: BigNumber[] = result.balances.tokens;
         const balanceForMmToken: { [tokenAddress: string]: BigNumber } = {};
         mmTokens.forEach((t, i) => (balanceForMmToken[t] = balances[i]));
 
