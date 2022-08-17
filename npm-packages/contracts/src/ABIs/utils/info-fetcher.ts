@@ -41,6 +41,72 @@ export const InfoFetcherABI: ContractInterface = [
     inputs: [
       {
         internalType: "address",
+        name: "tokenA",
+        type: "address"
+      },
+      {
+        internalType: "address",
+        name: "tokenB",
+        type: "address"
+      },
+      {
+        internalType: "address",
+        name: "router",
+        type: "address"
+      },
+      {
+        internalType: "address",
+        name: "user",
+        type: "address"
+      }
+    ],
+    name: "fetchLpInfo",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "address",
+            name: "pairAddress",
+            type: "address"
+          },
+          {
+            internalType: "uint256",
+            name: "balance",
+            type: "uint256"
+          },
+          {
+            internalType: "address",
+            name: "token0",
+            type: "address"
+          },
+          {
+            internalType: "address",
+            name: "token1",
+            type: "address"
+          },
+          {
+            internalType: "uint112",
+            name: "reserve0",
+            type: "uint112"
+          },
+          {
+            internalType: "uint112",
+            name: "reserve1",
+            type: "uint112"
+          }
+        ],
+        internalType: "struct LPInfo",
+        name: "",
+        type: "tuple"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
         name: "mmPool",
         type: "address"
       },

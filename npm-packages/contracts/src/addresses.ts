@@ -33,7 +33,7 @@ export const kovanContracts: IContractsList = {
   Vesting: "0x7B84b2B56eF772B73cF8750F2fb9947Bc2feD428",
   GasPriceFeed: "0x17cc88BF8B7CEf37Fc8F3A9d7d3C57E97f862Af3",
   wethDaemLp: "0xFF082872eaaDbA1006B9C428fcfE9cA3246c762d",
-  InfoFetcher: "0x84828A52aa22aEe80D86bF984c1e8BeB0dDbBA5B",
+  InfoFetcher: "0x17a6FaA6b2ea29294c255a5b122C1808Ff582fba",
 
   SwapperScriptExecutor: "0x0f1D5120B765F0c99EF85bb4B6F90E90a9F0A3Dc",
   TransferScriptExecutor: "0x5913B9cBEBb41b295ecDDc31458c5a764E693eA2",
@@ -55,7 +55,7 @@ export const mumbaiTestnetContracts: IContractsList = {
   Vesting: "0x6A60c533AF6A8250E59745dc416f794c9a28cE29",
   GasPriceFeed: "0x9d9c77B481003Edf8Db7AE82403d51cF113fe253",
   wethDaemLp: "0x8014d17F759553aE57648177a511feF5A9203a0C",
-  InfoFetcher: "0xd6cB9F771861D7790292D80F1f2ba4Ca4d255c91",
+  InfoFetcher: "0x460ecd537e357890D3F888e92c5d5bF1452684bd",
 
   SwapperScriptExecutor: "0xEd1e3b9d6D66eA7c08778D52B684684a306A3B21",
   TransferScriptExecutor: "0x570c1a344BBEEB685b8C14D3B0a59Da3D967931E",
