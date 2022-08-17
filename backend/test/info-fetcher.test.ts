@@ -108,6 +108,22 @@ describe("InfoFetcher [FORKED CHAIN]", function () {
             expect(lpInfo.reserve0.toString()).to.equal("3001867188");
             expect(lpInfo.reserve1.toString()).to.equal("552501846760226584427");
         });
+
+        it("Gracefully deals with unsupported pairs", async () => {
+            const lpInfo = await infoFetcher.fetchLpInfo(
+                wETHAddress,
+                wETHAddress,
+                routerAddress,
+                owner.address
+            );
+
+            expect(lpInfo.balance).to.equal(BigNumber.from(0));
+            expect(lpInfo.pairAddress).to.equal("0x0000000000000000000000000000000000000000");
+            expect(lpInfo.token0).to.equal("0x0000000000000000000000000000000000000000");
+            expect(lpInfo.token1).to.equal("0x0000000000000000000000000000000000000000");
+            expect(lpInfo.reserve0.toString()).to.equal("0");
+            expect(lpInfo.reserve1.toString()).to.equal("0");
+        });
     });
 
     describe("fetchMmInfo", () => {
