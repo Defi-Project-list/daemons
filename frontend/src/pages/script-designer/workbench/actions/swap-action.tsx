@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { ISwapActionForm } from "../../../../data/chains-data/action-form-interfaces";
-import { Form, Field } from "react-final-form";
+import { Form } from "react-final-form";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../state";
 import { TokensModal } from "../../../../components/tokens-modal";
 import { AmountType } from "@daemons-fi/shared-definitions/build";
-import { ToggleButtonField } from "../shared/toggle-button";
 import { Token } from "../../../../data/chains-data/interfaces";
 import { GetCurrentChain } from "../../../../data/chain-info";
 import { AmountInput } from "../shared/amount-input";
-import { fetchTokenBalance } from "../../../../data/fetch-token-balance";
 
 const validateForm = (values: ISwapActionForm) => {
     const errors: any = {};
@@ -35,11 +33,10 @@ export const SwapAction = ({
     form: ISwapActionForm;
     update: (next: ISwapActionForm) => void;
 }) => {
-    const walletAddress = useSelector((state: RootState) => state.user.address);
     const chainId = useSelector((state: RootState) => state.user.chainId);
+    const tokenBalances = useSelector((state: RootState) => state.wallet.tokenBalances);
     const [tokens, setTokens] = useState<Token[]>([]);
     const [selectedFromToken, setSelectedFromToken] = useState<Token | undefined>();
-    const [currentBalance, setCurrentBalance] = useState<number | undefined>(undefined);
 
     useEffect(() => {
         if (!form.tokenFromAddress || !form.tokenToAddress) {
@@ -56,13 +53,6 @@ export const SwapAction = ({
     useEffect(() => {
         if (chainId) setTokens(GetCurrentChain(chainId).tokens);
     }, [chainId]);
-
-    useEffect(() => {
-        if (!selectedFromToken) return;
-        fetchTokenBalance(walletAddress!, selectedFromToken?.address).then((balance) =>
-            setCurrentBalance(balance)
-        );
-    }, [selectedFromToken]);
 
     return (
         <Form
@@ -86,7 +76,6 @@ export const SwapAction = ({
                                             ? form.tokenFromAddress
                                             : form.tokenToAddress;
                                     setSelectedFromToken(token);
-                                    setCurrentBalance(undefined);
                                     update({
                                         ...form,
                                         tokenFromAddress: token.address,
@@ -135,9 +124,10 @@ export const SwapAction = ({
                         />
 
                         <div className="script-block__info">
-                            {currentBalance === undefined
-                                ? `..fetching balance..`
-                                : `Current ${selectedFromToken?.symbol} balance: ${currentBalance}`}
+                            {selectedFromToken &&
+                                `Current ${selectedFromToken?.symbol} balance: ${
+                                    tokenBalances[selectedFromToken.address]
+                                }`}
                         </div>
                     </div>
                 </form>

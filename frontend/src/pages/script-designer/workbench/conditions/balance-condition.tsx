@@ -6,7 +6,6 @@ import { TokensModal } from "../../../../components/tokens-modal";
 import { Token } from "../../../../data/chains-data/interfaces";
 import { IBalanceConditionForm } from "../../../../data/chains-data/condition-form-interfaces";
 import { GetCurrentChain } from "../../../../data/chain-info";
-import { fetchTokenBalance } from "../../../../data/fetch-token-balance";
 
 const validateForm = (form: IBalanceConditionForm) => {
     const errors: any = {};
@@ -32,11 +31,10 @@ export const BalanceCondition = ({
     form: IBalanceConditionForm;
     update: (next: IBalanceConditionForm) => void;
 }) => {
-    const walletAddress = useSelector((state: RootState) => state.user.address);
     const chainId = useSelector((state: RootState) => state.user.chainId);
+    const tokenBalances = useSelector((state: RootState) => state.wallet.tokenBalances);
     const [tokens, setTokens] = useState<Token[]>([]);
     const [selectedToken, setSelectedToken] = useState<Token | undefined>();
-    const [currentBalance, setCurrentBalance] = useState<number | undefined>(undefined);
 
     useEffect(() => {
         if (!form.tokenAddress && tokens.length > 0) {
@@ -49,13 +47,6 @@ export const BalanceCondition = ({
     useEffect(() => {
         if (chainId) setTokens(GetCurrentChain(chainId).tokens);
     }, [chainId]);
-
-    useEffect(() => {
-        if (!selectedToken) return;
-        fetchTokenBalance(walletAddress!, selectedToken?.address).then((balance) =>
-            setCurrentBalance(balance)
-        );
-    }, [selectedToken]);
 
     return (
         <Form
@@ -72,7 +63,6 @@ export const BalanceCondition = ({
                             selectedToken={tokens.find((t) => t.address === form.tokenAddress)}
                             setSelectedToken={(token) => {
                                 setSelectedToken(token);
-                                setCurrentBalance(undefined);
                                 update({ ...form, tokenAddress: token.address });
                             }}
                         />
@@ -121,10 +111,11 @@ export const BalanceCondition = ({
                         </Field>
                     </div>
 
-                    <div className="script-block__info" style={{marginTop: "10px"}}>
-                        {currentBalance === undefined
-                            ? `..fetching balance..`
-                            : `Current ${selectedToken?.symbol} balance: ${currentBalance}`}
+                    <div className="script-block__info">
+                        {selectedToken &&
+                            `Current ${selectedToken?.symbol} balance: ${
+                                tokenBalances[selectedToken.address]
+                            }`}
                     </div>
 
                     {/* ENABLE WHEN DEBUGGING!  */}

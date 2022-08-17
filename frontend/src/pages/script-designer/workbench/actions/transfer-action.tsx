@@ -9,7 +9,6 @@ import { AmountType } from "@daemons-fi/shared-definitions/build";
 import { Token } from "../../../../data/chains-data/interfaces";
 import { GetCurrentChain } from "../../../../data/chain-info";
 import { AmountInput } from "../shared/amount-input";
-import { fetchTokenBalance } from "../../../../data/fetch-token-balance";
 
 const validateForm = (values: ITransferActionForm) => {
     const errors: any = {};
@@ -41,11 +40,10 @@ export const TransferAction = ({
     form: ITransferActionForm;
     update: (next: ITransferActionForm) => void;
 }) => {
-    const walletAddress = useSelector((state: RootState) => state.user.address);
     const chainId = useSelector((state: RootState) => state.user.chainId);
+    const tokenBalances = useSelector((state: RootState) => state.wallet.tokenBalances);
     const [tokens, setTokens] = useState<Token[]>([]);
     const [selectedToken, setSelectedToken] = useState<Token | undefined>();
-    const [currentBalance, setCurrentBalance] = useState<number | undefined>(undefined);
 
     useEffect(() => {
         if (!form.tokenAddress && tokens.length > 0) {
@@ -58,13 +56,6 @@ export const TransferAction = ({
     useEffect(() => {
         if (chainId) setTokens(GetCurrentChain(chainId).tokens);
     }, [chainId]);
-
-    useEffect(() => {
-        if (!selectedToken) return;
-        fetchTokenBalance(walletAddress!, selectedToken?.address).then((balance) =>
-            setCurrentBalance(balance)
-        );
-    }, [selectedToken]);
 
     return (
         <Form
@@ -82,7 +73,6 @@ export const TransferAction = ({
                                 selectedToken={tokens.find((t) => t.address === form.tokenAddress)}
                                 setSelectedToken={(token) => {
                                     setSelectedToken(token);
-                                    setCurrentBalance(undefined);
                                     update({ ...form, tokenAddress: token.address });
                                 }}
                             />
@@ -119,9 +109,10 @@ export const TransferAction = ({
                         </Field>
 
                         <div className="script-block__info">
-                            {currentBalance === undefined
-                                ? `..fetching balance..`
-                                : `Current ${selectedToken?.symbol} balance: ${currentBalance}`}
+                            {selectedToken &&
+                                `Current ${selectedToken?.symbol} balance: ${
+                                    tokenBalances[selectedToken.address]
+                                }`}
                         </div>
 
                         {/* ENABLE WHEN DEBUGGING!  */}

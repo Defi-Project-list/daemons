@@ -8,7 +8,6 @@ import { AmountType } from "@daemons-fi/shared-definitions/build";
 import { DEX, Token } from "../../../../data/chains-data/interfaces";
 import { GetCurrentChain } from "../../../../data/chain-info";
 import { AmountInput } from "../shared/amount-input";
-import { fetchTokenBalance } from "../../../../data/fetch-token-balance";
 import { retrieveLpAddress } from "../../../../data/retrieve-lp-address";
 
 const validateForm = (values: IZapInActionForm) => {
@@ -50,6 +49,7 @@ export const ZapInAction = ({
 }) => {
     const walletAddress = useSelector((state: RootState) => state.user.address);
     const chainId = useSelector((state: RootState) => state.user.chainId);
+    const tokenBalances = useSelector((state: RootState) => state.wallet.tokenBalances);
     const [currentLP, setCurrentLP] = useState<string | undefined>();
     const [loadingLP, setLoadingLP] = useState<boolean>(false);
     const [dexes, setDexes] = useState<DEX[]>([]);
@@ -57,8 +57,6 @@ export const ZapInAction = ({
     const [tokens, setTokens] = useState<Token[]>([]);
     const [tokenA, setTokenA] = useState<Token | undefined>();
     const [tokenB, setTokenB] = useState<Token | undefined>();
-    const [currentBalanceA, setCurrentBalanceA] = useState<number | undefined>();
-    const [currentBalanceB, setCurrentBalanceB] = useState<number | undefined>();
 
     useEffect(() => {
         if (chainId) {
@@ -92,12 +90,6 @@ export const ZapInAction = ({
                 update({ ...updatedForm, valid });
             }
         );
-        fetchTokenBalance(walletAddress!, tokenA?.address).then((balance) =>
-            setCurrentBalanceA(balance)
-        );
-        fetchTokenBalance(walletAddress!, tokenB?.address).then((balance) =>
-            setCurrentBalanceB(balance)
-        );
     }, [chainId, tokenA, tokenB, selectedDex]);
 
     return (
@@ -116,7 +108,6 @@ export const ZapInAction = ({
                             setSelectedToken={(token) => {
                                 if (tokenB?.address === token.address) setTokenB(tokenA);
                                 setTokenA(token);
-                                setCurrentBalanceA(undefined);
                             }}
                         />
 
@@ -133,9 +124,10 @@ export const ZapInAction = ({
                             }}
                         />
                         <div className="script-block__info">
-                            {currentBalanceA === undefined
-                                ? `..fetching balance..`
-                                : `Current ${tokenA?.symbol} balance: ${currentBalanceA}`}
+                            {tokenA &&
+                                `Current ${tokenA?.symbol} balance: ${
+                                    tokenBalances[tokenA.address]
+                                }`}
                         </div>
 
                         <div style={{ width: "100%", textAlign: "center", fontSize: "1.4rem" }}>
@@ -148,7 +140,6 @@ export const ZapInAction = ({
                             setSelectedToken={(token) => {
                                 if (tokenA?.address === token.address) setTokenA(tokenB);
                                 setTokenB(token);
-                                setCurrentBalanceB(undefined);
                             }}
                         />
 
@@ -165,9 +156,10 @@ export const ZapInAction = ({
                             }}
                         />
                         <div className="script-block__info">
-                            {currentBalanceB === undefined
-                                ? `..fetching balance..`
-                                : `Current ${tokenB?.symbol} balance: ${currentBalanceB}`}
+                            {tokenB &&
+                                `Current ${tokenB?.symbol} balance: ${
+                                    tokenBalances[tokenB.address]
+                                }`}
                         </div>
 
                         <div className="script-block__info" style={{ marginTop: "20px" }}>
