@@ -38,16 +38,20 @@ describe("InfoFetcher", function () {
     });
 
     it("Gets the right balances", async () => {
-        const result = await infoFetcher.fetchTokenBalances(owner.address, [
+        const balances = await infoFetcher.fetchBalances(owner.address, [
             DAEMToken.address,
             fooToken.address,
             barToken.address
         ]);
 
-        expect(result.length).to.equal(3);
-        expect(result[0].toNumber()).to.equal(125000);
-        expect(result[1].toNumber()).to.equal(758500);
-        expect(result[2].toNumber()).to.equal(0);
+        const coinBalance = balances.coin;
+        expect(coinBalance).to.equal(await ethers.provider.getBalance(owner.address));
+
+        const tokenBalances = balances.tokens;
+        expect(tokenBalances.length).to.equal(3);
+        expect(tokenBalances[0].toNumber()).to.equal(125000);
+        expect(tokenBalances[1].toNumber()).to.equal(758500);
+        expect(tokenBalances[2].toNumber()).to.equal(0);
     });
 
     it("Gets the MM information for V2", async () => {
@@ -74,8 +78,12 @@ describe("InfoFetcher", function () {
         expect(accountData.ltv).to.equal(BigNumber.from("125"));
         expect(accountData.healthFactor).to.equal(BigNumber.from("2000000000000000000"));
 
-        // "balances" simply contains the 3 tokens balances
-        const balances = result.balances;
+        // "balances.coin" contains the user balance
+        const coinBalance = result.balances.coin;
+        expect(coinBalance).to.equal(await ethers.provider.getBalance(owner.address));
+
+        // "balances.tokens" contains the 3 tokens balances
+        const balances = result.balances.tokens;
         expect(balances.length).to.equal(3);
         expect(balances[0].toNumber()).to.equal(125000);
         expect(balances[1].toNumber()).to.equal(758500);
@@ -119,8 +127,12 @@ describe("InfoFetcher", function () {
         expect(accountData.ltv).to.equal(BigNumber.from("125"));
         expect(accountData.healthFactor).to.equal(BigNumber.from("2000000000000000000"));
 
-        // "balances" simply contains the 3 tokens balances
-        const balances = result.balances;
+        // "balances.coin" contains the user balance
+        const coinBalance = result.balances.coin;
+        expect(coinBalance).to.equal(await ethers.provider.getBalance(owner.address));
+
+        // "balances.tokens" contains the 3 tokens balances
+        const balances = result.balances.tokens;
         expect(balances.length).to.equal(3);
         expect(balances[0].toNumber()).to.equal(125000);
         expect(balances[1].toNumber()).to.equal(758500);
