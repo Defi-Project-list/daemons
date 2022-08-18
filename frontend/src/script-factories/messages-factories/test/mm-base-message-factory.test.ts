@@ -20,7 +20,8 @@ describe("MM Base Message Factory", () => {
         symbol: "FOO",
         address: "0x123",
         logoURI: "",
-        decimals: 18
+        decimals: 18,
+        minInLpToBeLiquid: 0,
     };
 
     const fakeMM: MoneyMarket = {

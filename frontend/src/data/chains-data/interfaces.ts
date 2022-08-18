@@ -8,6 +8,7 @@ export interface IToken {
     address: string;
     logoURI: string;
     decimals: number;
+    minInLpToBeLiquid?: number;
 }
 
 export type Token = IToken;

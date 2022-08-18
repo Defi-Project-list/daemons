@@ -19,14 +19,16 @@ describe("Price Condition Factory", () => {
             symbol: "FOO",
             address: "0x123",
             logoURI: "",
-            decimals: 18
+            decimals: 18,
+            minInLpToBeLiquid: 0,
         },
         {
             name: "BarToken",
             symbol: "BAR",
             address: "0x456",
             logoURI: "",
-            decimals: 18
+            decimals: 18,
+            minInLpToBeLiquid: 0,
         }
     ];
 
@@ -116,14 +118,16 @@ describe("Price Condition Factory", () => {
                         symbol: "FOO",
                         address: "0x123",
                         logoURI: "",
-                        decimals: 18
+                        decimals: 18,
+                        minInLpToBeLiquid: 0,
                     },
                     {
                         name: "BarToken",
                         symbol: "BAR",
                         address: "0x456",
                         logoURI: "",
-                        decimals: decimals
+                        decimals: decimals,
+                        minInLpToBeLiquid: 0,
                     }
                 ];
 

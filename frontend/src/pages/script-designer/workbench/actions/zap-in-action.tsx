@@ -5,10 +5,10 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../../state";
 import { TokensModal } from "../../../../components/tokens-modal";
 import { AmountType } from "@daemons-fi/shared-definitions/build";
-import { DEX, Token } from "../../../../data/chains-data/interfaces";
-import { GetCurrentChain } from "../../../../data/chain-info";
+import { Token } from "../../../../data/chains-data/interfaces";
+import { GetCurrentChain, ZeroAddress } from "../../../../data/chain-info";
 import { AmountInput } from "../shared/amount-input";
-import { retrieveLpAddress } from "../../../../data/retrieve-lp-address";
+import { LpInfoBox } from "../../../../components/lp-info";
 
 const validateForm = (values: IZapInActionForm) => {
     const errors: any = {};
@@ -27,7 +27,7 @@ const validateForm = (values: IZapInActionForm) => {
         errors.floatAmountB = "required > 0";
     }
 
-    if (values.pair === "0x0000000000000000000000000000000000000000"){
+    if (values.pair === "0x0000000000000000000000000000000000000000") {
         errors.pair = "This pair is not supported on this DEX";
     }
 
@@ -47,50 +47,27 @@ export const ZapInAction = ({
     form: IZapInActionForm;
     update: (next: IZapInActionForm) => void;
 }) => {
-    const walletAddress = useSelector((state: RootState) => state.user.address);
     const chainId = useSelector((state: RootState) => state.user.chainId);
     const tokenBalances = useSelector((state: RootState) => state.wallet.tokenBalances);
-    const [currentLP, setCurrentLP] = useState<string | undefined>();
-    const [loadingLP, setLoadingLP] = useState<boolean>(false);
-    const [dexes, setDexes] = useState<DEX[]>([]);
-    const [selectedDex, setSelectedDex] = useState<DEX | undefined>();
-    const [tokens, setTokens] = useState<Token[]>([]);
-    const [tokenA, setTokenA] = useState<Token | undefined>();
-    const [tokenB, setTokenB] = useState<Token | undefined>();
+    const tokens = GetCurrentChain(chainId!).tokens;
+    const dexes = GetCurrentChain(chainId!).dexes;
+    const selectedDex = dexes[0];
+    const [tokenA, setTokenA] = useState<Token>(tokens[0]);
+    const [tokenB, setTokenB] = useState<Token>(tokens[1]);
+    const [pairAddress, setPairAddress] = useState<string>(ZeroAddress);
 
     useEffect(() => {
-        if (chainId) {
-            const currentChain = GetCurrentChain(chainId);
-            setTokens(currentChain.tokens);
-            setDexes(currentChain.dexes);
-        }
-    }, [chainId]);
-
-    useEffect(() => {
-        if (!tokenA && tokens.length) setTokenA(tokens[0]);
-        if (!tokenB && tokens.length) setTokenB(tokens[1]);
-        if (!selectedDex && dexes.length) setSelectedDex(dexes[0]);
-    }, [tokens, dexes]);
-
-    useEffect(() => {
-        if (!tokenA || !tokenB || !selectedDex) return;
-        setLoadingLP(true);
-        retrieveLpAddress(tokenA.address, tokenB.address, selectedDex?.poolAddress).then(
-            (lpAddress) => {
-                setCurrentLP(lpAddress);
-                setLoadingLP(false);
-                const updatedForm = {
-                    ...form,
-                    tokenA: tokenA.address,
-                    tokenB: tokenB.address,
-                    pair: lpAddress,
-                    dex: selectedDex
-                };
-                const valid = isFormValid(updatedForm);
-                update({ ...updatedForm, valid });
-            }
-        );
-    }, [chainId, tokenA, tokenB, selectedDex]);
+        if (!tokenA || !tokenB) return;
+        const updatedForm = {
+            ...form,
+            tokenA: tokenA.address,
+            tokenB: tokenB.address,
+            pair: pairAddress,
+            dex: selectedDex
+        };
+        const valid = isFormValid(updatedForm);
+        update({ ...updatedForm, valid });
+    }, [tokenA, tokenB, pairAddress]);
 
     return (
         <Form
@@ -104,9 +81,9 @@ export const ZapInAction = ({
                     <div className="zap-in-block">
                         <TokensModal
                             tokens={tokens}
-                            selectedToken={tokens.filter((t) => t.address === form.tokenA)[0]}
+                            selectedToken={tokenA}
                             setSelectedToken={(token) => {
-                                if (tokenB?.address === token.address) setTokenB(tokenA);
+                                if (tokenB.address === token.address) setTokenB(tokenA);
                                 setTokenA(token);
                             }}
                         />
@@ -125,7 +102,7 @@ export const ZapInAction = ({
                         />
                         <div className="script-block__info">
                             {tokenA &&
-                                `Current ${tokenA?.symbol} balance: ${
+                                `Current ${tokenA.symbol} balance: ${
                                     tokenBalances[tokenA.address]
                                 }`}
                         </div>
@@ -136,9 +113,9 @@ export const ZapInAction = ({
 
                         <TokensModal
                             tokens={tokens}
-                            selectedToken={tokens.filter((t) => t.address === form.tokenB)[0]}
+                            selectedToken={tokenB}
                             setSelectedToken={(token) => {
-                                if (tokenA?.address === token.address) setTokenA(tokenB);
+                                if (tokenA.address === token.address) setTokenA(tokenB);
                                 setTokenB(token);
                             }}
                         />
@@ -162,16 +139,13 @@ export const ZapInAction = ({
                                 }`}
                         </div>
 
-                        <div className="script-block__info" style={{ marginTop: "20px" }}>
-                            <div>LP Address:</div>
-                            <div style={{ wordBreak: "break-word" }}>
-                                {loadingLP
-                                    ? "Fetching LP address..."
-                                    : currentLP === "0x0000000000000000000000000000000000000000"
-                                    ? "This pair is not supported on this DEX"
-                                    : currentLP}
-                            </div>
-                        </div>
+                        <LpInfoBox
+                            showOwned={true}
+                            dexRouter={form.dex.poolAddress}
+                            tokenA={tokenA}
+                            tokenB={tokenB}
+                            setLpAddress={setPairAddress}
+                        />
 
                         {/* ENABLE WHEN DEBUGGING!  */}
                         {/* <p>{JSON.stringify(form, null, " ")}</p> */}

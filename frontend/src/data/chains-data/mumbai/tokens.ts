@@ -1,67 +1,67 @@
 import { mumbaiTestnetContracts } from "@daemons-fi/contracts/build";
-import { DEX, MoneyMarket, Token } from "../interfaces";
+import { DEX, IToken, MoneyMarket, Token } from "../interfaces";
 
-const DAEM = {
+const DAEM: IToken = {
     name: "Daemons",
     symbol: "DAEM",
     address: mumbaiTestnetContracts.DaemonsToken,
     decimals: 18,
     logoURI: "/icons/DAEM.svg",
-    chainId: "42"
+    minInLpToBeLiquid: 10
 }
 
-const WMATIC = {
+const WMATIC: IToken = {
     name: "Wrapped MATIC",
     symbol: "WMATIC",
     address: "0xb685400156cF3CBE8725958DeAA61436727A30c3",
     decimals: 18,
     logoURI: "https://tokens.1inch.io/0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0.png",
-    chainId: "42"
+    minInLpToBeLiquid: 1000
 };
 
-const WETH = {
+const WETH: IToken = {
     name: "Wrapped Ether",
     symbol: "WETH",
     address: "0xd575d4047f8c667E064a4ad433D04E25187F40BB",
     decimals: 18,
     logoURI: "https://tokens.1inch.io/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
-    chainId: "42"
+    minInLpToBeLiquid: 10
 };
 
-const USDC = {
+const USDC: IToken = {
     name: "Circle USD",
     symbol: "USDC",
     address: "0x9aa7fEc87CA69695Dd1f879567CcF49F3ba417E2",
     decimals: 6,
     logoURI: "https://tokens.1inch.io/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
-    chainId: "42"
+    minInLpToBeLiquid: 1000
 };
 
-const DAI = {
+const DAI: IToken = {
     name: "DAI Stablecoin",
     symbol: "DAI",
     address: "0x9A753f0F7886C9fbF63cF59D0D4423C5eFaCE95B",
     decimals: 18,
     logoURI: "https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png",
-    chainId: "42"
+    minInLpToBeLiquid: 1000
 };
 
-const USDT = {
+const USDT: IToken = {
     name: "Tether USD",
     symbol: "USDT",
     address: "0x21C561e551638401b937b03fE5a0a0652B99B7DD",
     decimals: 6,
     logoURI: "https://tokens.1inch.io/0xdac17f958d2ee523a2206206994597c13d831ec7.png",
-    chainId: "42"
+    minInLpToBeLiquid: 1000
 };
 
-const wBTC = {
+const wBTC: IToken = {
     name: "Wrapped Bitcoin",
     symbol: "wBTC",
     address: "0x85E44420b6137bbc75a85CAB5c9A3371af976FdE",
     decimals: 8,
     logoURI: "https://tokens.1inch.io/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.png",
-    chainId: "42"
+    minInLpToBeLiquid: 5
 };
 
 

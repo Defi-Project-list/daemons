@@ -5,11 +5,10 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../../state";
 import { TokensModal } from "../../../../components/tokens-modal";
 import { AmountType, ZapOutputChoice } from "@daemons-fi/shared-definitions/build";
-import { Token } from "../../../../data/chains-data/interfaces";
+import { IToken } from "../../../../data/chains-data/interfaces";
 import { GetCurrentChain } from "../../../../data/chain-info";
 import { AmountInput } from "../shared/amount-input";
-import { fetchTokenBalance } from "../../../../data/fetch-token-balance";
-import { retrieveLpAddress } from "../../../../data/retrieve-lp-address";
+import { LpInfoBox } from "../../../../components/lp-info";
 
 const validateForm = (values: IZapOutActionForm) => {
     const errors: any = {};
@@ -35,46 +34,20 @@ export const ZapOutAction = ({
     form: IZapOutActionForm;
     update: (next: IZapOutActionForm) => void;
 }) => {
-    const walletAddress = useSelector((state: RootState) => state.user.address);
     const chainId = useSelector((state: RootState) => state.user.chainId);
-    const [tokens, setTokens] = useState<Token[]>([]);
-    const [currentBalance, setCurrentBalance] = useState<number | undefined>(undefined);
-    const [tokenA, setTokenA] = useState<string | undefined>();
-    const [tokenB, setTokenB] = useState<string | undefined>();
-
-    const getTokenName = (address: string) =>
-        tokens.find((t) => t.address === address)?.symbol ?? address;
+    const tokens = GetCurrentChain(chainId!).tokens;
+    const [tokenA, setTokenA] = useState<IToken>(tokens[0]);
+    const [tokenB, setTokenB] = useState<IToken>(tokens[1]);
 
     useEffect(() => {
-        if (!tokenA && tokens.length) setTokenA(tokens[0].address);
-        if (!tokenB && tokens.length) setTokenB(tokens[1].address);
-    }, [tokens]);
-
-    useEffect(() => {
-        if (chainId) setTokens(GetCurrentChain(chainId).tokens);
-    }, [chainId]);
-
-    useEffect(() => {
-        setCurrentBalance(undefined);
-        if (!tokenA || !tokenB || !walletAddress) return;
-
-        retrieveLpAddress(tokenA, tokenB, form.dex.poolAddress).then((lpAddress) => {
-            if (lpAddress === "0x0000000000000000000000000000000000000000") {
-                setCurrentBalance(-1);
-            } else {
-                fetchTokenBalance(walletAddress, lpAddress).then((balance) =>
-                    setCurrentBalance(balance)
-                );
-            }
-            const updatedForm = {
-                ...form,
-                tokenA,
-                tokenB
-            };
-            const valid = isFormValid(updatedForm);
-            update({ ...updatedForm, valid });
-        });
-    }, [chainId, tokenA, tokenB]);
+        const updatedForm = {
+            ...form,
+            tokenA: tokenA.address,
+            tokenB: tokenA.address
+        };
+        const valid = isFormValid(updatedForm);
+        update({ ...updatedForm, valid });
+    }, [tokenA, tokenB]);
 
     return (
         <Form
@@ -89,10 +62,10 @@ export const ZapOutAction = ({
                         <div className="script-block__panel--three-columns">
                             <TokensModal
                                 tokens={tokens}
-                                selectedToken={tokens.find((t) => t.address === tokenA)}
+                                selectedToken={tokens.find((t) => t.address === tokenA?.address)}
                                 setSelectedToken={(token) => {
-                                    if (tokenB === token.address) setTokenB(tokenA);
-                                    setTokenA(token.address);
+                                    if (tokenB.address === token.address) setTokenB(tokenA);
+                                    setTokenA(token);
                                 }}
                             />
 
@@ -110,10 +83,10 @@ export const ZapOutAction = ({
 
                             <TokensModal
                                 tokens={tokens}
-                                selectedToken={tokens.find((t) => t.address === tokenB)}
+                                selectedToken={tokens.find((t) => t.address === tokenB?.address)}
                                 setSelectedToken={(token) => {
-                                    if (tokenA === token.address) setTokenA(tokenB);
-                                    setTokenB(token.address);
+                                    if (tokenA.address === token.address) setTokenA(tokenB);
+                                    setTokenB(token);
                                 }}
                             />
                         </div>
@@ -151,7 +124,7 @@ export const ZapOutAction = ({
                                 )}
                             </Field>
                             <label htmlFor="id-radio-outcome-both">
-                                {getTokenName(form.tokenA)} + {getTokenName(form.tokenB)}
+                                {tokenA?.symbol} + {tokenB?.symbol}
                             </label>
                             <Field
                                 name="outputChoice"
@@ -174,9 +147,7 @@ export const ZapOutAction = ({
                                     />
                                 )}
                             </Field>
-                            <label htmlFor="id-radio-outcome-token-1">
-                                {getTokenName(form.tokenA)}
-                            </label>
+                            <label htmlFor="id-radio-outcome-token-1">{tokenA?.symbol}</label>
                             <Field
                                 name="outputChoice"
                                 component="input"
@@ -198,18 +169,15 @@ export const ZapOutAction = ({
                                     />
                                 )}
                             </Field>
-                            <label htmlFor="id-radio-outcome-token-2">
-                                {getTokenName(form.tokenB)}
-                            </label>
+                            <label htmlFor="id-radio-outcome-token-2">{tokenB?.symbol}</label>
                         </div>
 
-                        <div className="script-block__info">
-                            {currentBalance === undefined
-                                ? `..fetching balance..`
-                                : currentBalance === -1
-                                ? "LP not supported by this DEX"
-                                : `Current LP balance: ${currentBalance}`}
-                        </div>
+                        <LpInfoBox
+                            tokenA={tokenA}
+                            tokenB={tokenB}
+                            dexRouter={form.dex.poolAddress}
+                            showOwned={true}
+                        />
 
                         {/* ENABLE WHEN DEBUGGING!  */}
                         {/* <p>{JSON.stringify(form, null, " ")}</p> */}

@@ -19,14 +19,16 @@ describe("Swap Message Factory", () => {
             symbol: "FOO",
             address: "0x123",
             logoURI: "",
-            decimals: 18
+            decimals: 18,
+            minInLpToBeLiquid: 0,
         },
         {
             name: "BarToken",
             symbol: "BAR",
             address: "0x987",
             logoURI: "",
-            decimals: 18
+            decimals: 18,
+            minInLpToBeLiquid: 0,
         }
     ];
 

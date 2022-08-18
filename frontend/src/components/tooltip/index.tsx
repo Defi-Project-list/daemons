@@ -7,17 +7,22 @@ export enum TooltipSize {
     Large = 3
 }
 
+export enum TooltipIcon {
+    Info = 1,
+    Alert = 2,
+    Success = 3
+}
+
 interface ITooltipProps {
     children: any;
     size?: TooltipSize;
+    icon?: TooltipIcon;
 }
 
-export const Tooltip = ({ children, size }: ITooltipProps): JSX.Element => (
+export const Tooltip = ({ children, size, icon }: ITooltipProps): JSX.Element => (
     <div className="tooltip">
-        <div className="tooltip__text">?</div>
-        <div className={"tooltip__content " + sizeToClass(size)}>
-            {children}
-        </div>
+        <div className={"tooltip__icon " + iconToClass(icon)} />
+        <div className={"tooltip__content " + sizeToClass(size)}>{children}</div>
     </div>
 );
 
@@ -27,3 +32,10 @@ const sizeToClass = (size?: TooltipSize) =>
         : size === TooltipSize.Medium
         ? "tooltip__content--medium "
         : "tooltip__content--large ";
+
+const iconToClass = (icon?: TooltipIcon) =>
+    icon === undefined || icon === TooltipIcon.Info
+        ? ""
+        : icon === TooltipIcon.Alert
+        ? "tooltip__icon--alert "
+        : "tooltip__icon--success ";

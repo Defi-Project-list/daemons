@@ -5,9 +5,10 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../../state";
 import { TokensModal } from "../../../../components/tokens-modal";
 import { AmountType } from "@daemons-fi/shared-definitions/build";
-import { Token } from "../../../../data/chains-data/interfaces";
+import { IToken, Token } from "../../../../data/chains-data/interfaces";
 import { GetCurrentChain } from "../../../../data/chain-info";
 import { AmountInput } from "../shared/amount-input";
+import { LpInfoBox } from "../../../../components/lp-info";
 
 const validateForm = (values: ISwapActionForm) => {
     const errors: any = {};
@@ -35,24 +36,19 @@ export const SwapAction = ({
 }) => {
     const chainId = useSelector((state: RootState) => state.user.chainId);
     const tokenBalances = useSelector((state: RootState) => state.wallet.tokenBalances);
-    const [tokens, setTokens] = useState<Token[]>([]);
-    const [selectedFromToken, setSelectedFromToken] = useState<Token | undefined>();
+    const tokens = GetCurrentChain(chainId!).tokens;
+    const [tokenA, setTokenA] = useState<IToken>(tokens[0]);
+    const [tokenB, setTokenB] = useState<IToken>(tokens[1]);
 
     useEffect(() => {
-        if (!form.tokenFromAddress || !form.tokenToAddress) {
-            const selectedFromToken = tokens[0];
-            setSelectedFromToken(selectedFromToken);
-            update({
-                ...form,
-                tokenFromAddress: tokens[0]?.address,
-                tokenToAddress: tokens[1]?.address
-            });
-        }
-    }, [tokens]);
-
-    useEffect(() => {
-        if (chainId) setTokens(GetCurrentChain(chainId).tokens);
-    }, [chainId]);
+        const updatedForm = {
+            ...form,
+            tokenA: tokenA.address,
+            tokenB: tokenA.address
+        };
+        const valid = isFormValid(updatedForm);
+        update({ ...updatedForm, valid });
+    }, [tokenA, tokenB]);
 
     return (
         <Form
@@ -67,49 +63,27 @@ export const SwapAction = ({
                         <div className="script-block__panel--three-columns">
                             <TokensModal
                                 tokens={tokens}
-                                selectedToken={
-                                    tokens.filter((t) => t.address === form.tokenFromAddress)[0]
-                                }
+                                selectedToken={tokenA}
                                 setSelectedToken={(token) => {
-                                    const tokenToAddress =
-                                        token.address === form.tokenToAddress
-                                            ? form.tokenFromAddress
-                                            : form.tokenToAddress;
-                                    setSelectedFromToken(token);
-                                    update({
-                                        ...form,
-                                        tokenFromAddress: token.address,
-                                        tokenToAddress
-                                    });
+                                    if (tokenB.address === token.address) setTokenB(tokenA);
+                                    setTokenA(token);
                                 }}
                             />
 
                             <div
                                 className="script-block__icon script-block__icon--right script-block__icon--clickable"
                                 onClick={() => {
-                                    update({
-                                        ...form,
-                                        tokenFromAddress: form.tokenToAddress,
-                                        tokenToAddress: form.tokenFromAddress
-                                    });
+                                    setTokenA(tokenB);
+                                    setTokenB(tokenA);
                                 }}
                             />
 
                             <TokensModal
                                 tokens={tokens}
-                                selectedToken={
-                                    tokens.filter((t) => t.address === form.tokenToAddress)[0]
-                                }
+                                selectedToken={tokenB}
                                 setSelectedToken={(token) => {
-                                    const tokenFromAddress =
-                                        token.address === form.tokenFromAddress
-                                            ? form.tokenToAddress
-                                            : form.tokenFromAddress;
-                                    update({
-                                        ...form,
-                                        tokenToAddress: token.address,
-                                        tokenFromAddress
-                                    });
+                                    if (tokenA.address === token.address) setTokenA(tokenB);
+                                    setTokenB(token);
                                 }}
                             />
                         </div>
@@ -124,11 +98,15 @@ export const SwapAction = ({
                         />
 
                         <div className="script-block__info">
-                            {selectedFromToken &&
-                                `Current ${selectedFromToken?.symbol} balance: ${
-                                    tokenBalances[selectedFromToken.address]
-                                }`}
+                            {`Current ${tokenA?.symbol} balance: ${tokenBalances[tokenA.address]}`}
                         </div>
+
+                        <LpInfoBox
+                            showOwned={false}
+                            dexRouter={form.dex.poolAddress}
+                            tokenA={tokenA}
+                            tokenB={tokenB}
+                        />
                     </div>
                 </form>
             )}

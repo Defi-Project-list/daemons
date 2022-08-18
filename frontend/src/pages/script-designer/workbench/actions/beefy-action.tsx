@@ -5,21 +5,20 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../../state";
 import { TokensModal } from "../../../../components/tokens-modal";
 import { DEX, Token } from "../../../../data/chains-data/interfaces";
-import { GetCurrentChain } from "../../../../data/chain-info";
+import { GetCurrentChain, ZeroAddress } from "../../../../data/chain-info";
 import { ethers } from "ethers";
 import { ToggleButtonField } from "../shared/toggle-button";
 import { AmountType, BeefyActionType } from "@daemons-fi/shared-definitions/build";
 import { AmountInput } from "../shared/amount-input";
-import { retrieveLpAddress } from "../../../../data/retrieve-lp-address";
+import { LpInfoBox } from "../../../../components/lp-info";
 
 const validateForm = (form: IBeefyActionForm) => {
     const errors: any = {};
     if (!form.floatAmount || (form.floatAmount as any) === "") errors.floatAmount = "required";
     if (form.floatAmount && Number(form.floatAmount) <= 0) errors.floatAmount = "required > 0";
     if (!form.lpAddress) errors.lpAddress = "required";
-    if (form.lpAddress === "0x0000000000000000000000000000000000000000")
-        errors.lpAddress = "invalid";
-    if (!form.mooAddress) errors.mooAddress = "required";
+    if (form.lpAddress === ZeroAddress) errors.lpAddress = "invalid";
+    if (!form.mooAddress || form.mooAddress === ZeroAddress) errors.mooAddress = "required";
     if (form.mooAddress && !ethers.utils.isAddress(form.mooAddress)) errors.mooAddress = "invalid";
     return errors;
 };
@@ -37,55 +36,34 @@ export const BeefyAction = ({
     form: IBeefyActionForm;
     update: (next: IBeefyActionForm) => void;
 }) => {
-    const chainId = useSelector((state: RootState) => state.user.chainId);
-    const [tokens, setTokens] = useState<Token[]>([]);
-    const [currentLP, setCurrentLP] = useState<string | undefined>();
-    const [loadingLP, setLoadingLP] = useState<boolean>(false);
-    const [dexes, setDexes] = useState<DEX[]>([]);
-    const [selectedDex, setSelectedDex] = useState<DEX | undefined>();
-    const [tokenA, setTokenA] = useState<string | undefined>();
-    const [tokenB, setTokenB] = useState<string | undefined>();
+    const chainId = useSelector((state: RootState) => state.user.chainId)!;
+    const tokens = GetCurrentChain(chainId!).tokens;
+    const dexes = GetCurrentChain(chainId!).dexes;
+    const [selectedDex, setSelectedDex] = useState<DEX>(dexes[0]);
+    const [tokenA, setTokenA] = useState<Token>(tokens[0]);
+    const [tokenB, setTokenB] = useState<Token>(tokens[1]);
+    const [lpAddress, setLpAddress] = useState<string>(ZeroAddress);
+    const [mooAddress, setMooAddress] = useState<string>(ZeroAddress);
 
     useEffect(() => {
-        if (!tokenA && tokens.length) setTokenA(tokens[0].address);
-        if (!tokenB && tokens.length) setTokenB(tokens[1].address);
-        if (!selectedDex && dexes.length) setSelectedDex(dexes[0]);
-    }, [tokens, dexes]);
+        const lpName = `${tokenA.symbol}-${tokenB.symbol}-LP`;
+        const updatedForm = {
+            ...form,
+            tokenA: tokenA.address,
+            tokenB: tokenB.address,
+            lpAddress,
+            mooAddress,
+            lpName
+        };
+        const valid = isFormValid(updatedForm);
+        update({ ...updatedForm, valid });
+    }, [tokenA, tokenB, lpAddress, mooAddress]);
 
-    useEffect(() => {
-        if (chainId) {
-            const currentChain = GetCurrentChain(chainId);
-            setTokens(currentChain.tokens);
-            setDexes(currentChain.dexes);
-        }
-    }, [chainId]);
-
-    useEffect(() => {
-        setLoadingLP(true);
-        retrieveLpAddress(tokenA, tokenB, selectedDex?.poolAddress).then((lpAddress) => {
-            setCurrentLP(lpAddress);
-            setLoadingLP(false);
-            const lpName = getLPName(tokenA, tokenB, selectedDex?.poolAddress);
-            const mooAddress = GetCurrentChain(chainId!).beefyMoos[lpAddress ?? ""];
-            const updatedForm = {
-                ...form,
-                lpAddress,
-                mooAddress,
-                lpName
-            };
-            const valid = isFormValid(updatedForm);
-            update({ ...updatedForm, valid });
-        });
-    }, [chainId, tokenA, tokenB, selectedDex]);
-
-    const getLPName = (addrA?: string, addrB?: string, router?: string): string => {
-        if (!addrA || !addrB || !router) return "";
-        const tokenA = tokens.find((t) => t.address === addrA);
-        const tokenB = tokens.find((t) => t.address === addrB);
-        const dex = dexes.find((d) => d.poolAddress === router);
-        if (!tokenA || !tokenB || !dex) return "";
-        return `${tokenA.symbol}-${tokenB.symbol}-LP`;
-    };
+    const linkToExplorer = (address: string) => (
+        <div className="script-block__lp-address">
+            <a href={`${GetCurrentChain(chainId).explorerUrl}token/${address}#code`}>{address}</a>
+        </div>
+    );
 
     return (
         <Form
@@ -125,7 +103,7 @@ export const BeefyAction = ({
                                             const dex = dexes.find(
                                                 (d) => d.poolAddress === e.target.value
                                             );
-                                            setSelectedDex(dex);
+                                            setSelectedDex(dex!);
                                         }}
                                         className="beefy-block__dex"
                                     >
@@ -140,45 +118,56 @@ export const BeefyAction = ({
 
                             <TokensModal
                                 tokens={tokens}
-                                selectedToken={tokens.find((t) => t.address === tokenA)}
+                                selectedToken={tokenA}
                                 setSelectedToken={(token) => {
-                                    if (tokenB === token.address) setTokenB(tokenA);
-                                    setTokenA(token.address);
+                                    if (tokenB.address === token.address) setTokenB(tokenA);
+                                    setTokenA(token);
                                 }}
                             />
 
                             <TokensModal
                                 tokens={tokens}
-                                selectedToken={tokens.find((t) => t.address === tokenB)}
+                                selectedToken={tokenB}
                                 setSelectedToken={(token) => {
-                                    if (tokenA === token.address) setTokenA(tokenB);
-                                    setTokenB(token.address);
+                                    if (tokenA.address === token.address) setTokenA(tokenB);
+                                    setTokenB(token);
                                 }}
                             />
                         </div>
 
-                        <div>
-                            <div>LP Address:</div>
-                            <div style={{ wordBreak: "break-word" }}>
-                                {loadingLP
-                                    ? "Fetching LP address..."
-                                    : currentLP === "0x0000000000000000000000000000000000000000"
-                                    ? "This pair is not supported on this DEX"
-                                    : currentLP}
-                            </div>
-                        </div>
+                        <LpInfoBox
+                            showOwned={true}
+                            dexRouter={selectedDex.poolAddress}
+                            tokenA={tokenA}
+                            tokenB={tokenB}
+                            setLpAddress={setLpAddress}
+                        />
 
                         <div>
                             <div>Beefy Vault:</div>
                             <div style={{ wordBreak: "break-word" }}>
-                                {!currentLP ||
-                                currentLP === "0x0000000000000000000000000000000000000000" ? (
-                                    "Please select a valid LP"
-                                ) : GetCurrentChain(chainId!).beefyMoos[currentLP] ? (
-                                    GetCurrentChain(chainId!).beefyMoos[currentLP]
+                                {lpAddress === ZeroAddress ? (
+                                    <div
+                                        style={{
+                                            fontSize: "0.9rem",
+                                            fontStyle: "italic",
+                                            marginTop: "10px"
+                                        }}
+                                    >
+                                        Please select a valid LP
+                                    </div>
+                                ) : GetCurrentChain(chainId!).beefyMoos[lpAddress] ? (
+                                    linkToExplorer(GetCurrentChain(chainId!).beefyMoos[lpAddress])
                                 ) : (
                                     <>
-                                        <div>
+                                        <div
+                                            style={{
+                                                fontSize: "0.9rem",
+                                                fontStyle: "italic",
+                                                marginTop: "10px",
+                                                marginBottom: "10px"
+                                            }}
+                                        >
                                             We could not find the address of the Beefy vault
                                             associated to this LP, so you'll have to add it manually
                                         </div>
