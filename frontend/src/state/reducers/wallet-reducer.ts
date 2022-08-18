@@ -20,7 +20,6 @@ export const walletReducer = (
     state: WalletState = initialState,
     action: WalletAction
 ): WalletState => {
-    console.debug("walletReducer triggered");
     switch (action.type) {
         case ActionType.FETCH_DAEM_BALANCE:
             return {

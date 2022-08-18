@@ -87,19 +87,16 @@ export const retrieveMmInfo = async (
     // set tokens information
     const deposits: { [aTokenAddress: string]: IMmTokenInfo } = {};
     aTks.filter((t) => t !== "0x0000000000000000000000000000000000000000")
-        .filter((t) => balanceForMmToken[t].gt(0))
         .forEach((t) => (deposits[t] = getTokenInfoFromMmToken(t)));
 
     const varDebts: { [varDebtTokenAddress: string]: IMmTokenInfo } = {};
     varDebtTks
         .filter((t) => t !== "0x0000000000000000000000000000000000000000")
-        .filter((t) => balanceForMmToken[t].gt(0))
         .forEach((t) => (varDebts[t] = getTokenInfoFromMmToken(t)));
 
     const fixDebts: { [fixDebtTokenAddress: string]: IMmTokenInfo } = {};
     fixDebtTks
         .filter((t) => t !== "0x0000000000000000000000000000000000000000")
-        .filter((t) => balanceForMmToken[t].gt(0))
         .forEach((t) => (fixDebts[t] = getTokenInfoFromMmToken(t)));
 
     return {

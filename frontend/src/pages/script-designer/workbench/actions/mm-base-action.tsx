@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form, Field } from "react-final-form";
+import { Form } from "react-final-form";
 import { TokensModal } from "../../../../components/tokens-modal";
 import { ToggleButtonField } from "../shared/toggle-button";
 import { BaseMoneyMarketActionType } from "@daemons-fi/shared-definitions";
@@ -9,7 +9,7 @@ import { IToken, Token } from "../../../../data/chains-data/interfaces";
 import { AmountInput } from "../shared/amount-input";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../state";
-import { fetchTokenBalance } from "../../../../data/fetch-token-balance";
+import "./mm-base-action.css";
 
 const validateForm = (values: IBaseMMActionForm) => {
     const errors: any = {};
@@ -35,30 +35,16 @@ export const MmBaseAction = ({
     form: IBaseMMActionForm;
     update: (next: IBaseMMActionForm) => void;
 }) => {
-    const walletAddress = useSelector((state: RootState) => state.user.address);
-    const [selectedToken, setSelectedToken] = useState<Token | undefined>();
-    const [currentBalance, setCurrentBalance] = useState<number | undefined>(undefined);
+    const tokenBalances = useSelector((state: RootState) => state.wallet.tokenBalances);
+    const mmInfo = useSelector((state: RootState) => state.wallet.moneyMarketsInfo);
+    const thisMM = mmInfo[form.moneyMarket.poolAddress];
+
     const tokens = form.moneyMarket.supportedTokens;
+    const [selectedToken, setSelectedToken] = useState<Token>(tokens[0]);
 
     useEffect(() => {
-        if (!form.tokenAddress && tokens.length > 0) {
-            const selectedToken = tokens[0];
-            setSelectedToken(selectedToken);
-            update({ ...form, tokenAddress: selectedToken.address });
-        }
+        update({ ...form, tokenAddress: selectedToken.address });
     }, []);
-
-    useEffect(() => {
-        if (!selectedToken) return;
-
-        const tokenAddress =
-            form.actionType === BaseMoneyMarketActionType.Deposit
-                ? selectedToken.address
-                : form.moneyMarket.mmTokens[selectedToken.address].aToken;
-        fetchTokenBalance(walletAddress!, tokenAddress).then((balance) =>
-            setCurrentBalance(balance)
-        );
-    }, [selectedToken, form.actionType]);
 
     return (
         <Form
@@ -75,7 +61,6 @@ export const MmBaseAction = ({
                                 name="actionType"
                                 valuesEnum={BaseMoneyMarketActionType}
                                 updateFunction={(newValue) => {
-                                    setCurrentBalance(undefined);
                                     update({ ...form, actionType: newValue });
                                 }}
                                 initial={form.actionType}
@@ -87,7 +72,6 @@ export const MmBaseAction = ({
                                 )}
                                 setSelectedToken={(token) => {
                                     setSelectedToken(token);
-                                    setCurrentBalance(undefined);
                                     update({ ...form, tokenAddress: token.address });
                                 }}
                             />
@@ -102,12 +86,42 @@ export const MmBaseAction = ({
                             }}
                         />
 
-                        <div className="script-block__info">
-                            {currentBalance === undefined
-                                ? `..fetching balance..`
-                                : form.actionType === BaseMoneyMarketActionType.Deposit
-                                ? `${selectedToken?.symbol} balance: ${currentBalance}`
-                                : `${currentBalance} ${selectedToken?.symbol} deposited in ${form.moneyMarket.name}`}
+                        {/* Control displaying wallet and deposited balances (+ APY) */}
+                        <div className="mm-base-info">
+                            <div className="mm-base-info__text">{selectedToken.symbol} in wallet</div>
+                            <div className="mm-base-info__token">
+                                <img
+                                    className="mm-base-info__token-img"
+                                    src={selectedToken.logoURI}
+                                />
+                                <div className="mm-base-info__token-balance">
+                                    {tokenBalances[selectedToken.address]}
+                                </div>
+                            </div>
+                            <div className="mm-base-info__separator" />
+                            <div className="mm-base-info__text">{selectedToken.symbol} deposited in {form.moneyMarket.name}</div>
+                            <div className="mm-base-info__token">
+                                <img
+                                    className="mm-base-info__token-img"
+                                    src={selectedToken.logoURI}
+                                />
+                                <div className="mm-base-info__token-balance">
+                                    {
+                                        thisMM?.deposits[
+                                            form.moneyMarket.mmTokens[selectedToken.address].aToken
+                                        ]?.balance
+                                    }
+                                </div>
+                                <div className="mm-base-info__token-apy">
+                                    APY:{" "}
+                                    {
+                                        thisMM?.deposits[
+                                            form.moneyMarket.mmTokens[selectedToken.address].aToken
+                                        ]?.APY
+                                    }
+                                    %
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>

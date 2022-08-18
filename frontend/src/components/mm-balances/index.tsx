@@ -16,8 +16,6 @@ export const MmBalances = ({ moneyMarket }: IMmBalancesProps): JSX.Element => {
     const address = useSelector((state: RootState) => state.user.address)!;
     const mmInfo = useSelector((state: RootState) => state.wallet.moneyMarketsInfo);
 
-    console.log(mmInfo);
-
     const thisMM = mmInfo[moneyMarket.poolAddress];
     const healthFactor = thisMM?.healthFactor;
     const depositedTokensInfo = thisMM ? Object.values(thisMM.deposits) : [];
@@ -41,22 +39,22 @@ export const MmBalances = ({ moneyMarket }: IMmBalancesProps): JSX.Element => {
                     className="wallet-state__reload-bt"
                 />
             </div>
-            <div className="mm-balances__health-factor">
-                Health Factor: {healthFactor ?? "?"}
-            </div>
+            <div className="mm-balances__health-factor">Health Factor: {healthFactor ?? "?"}</div>
 
             {/* Deposits */}
             <div className="mm-balances__subsection">Deposits</div>
             <div className="mm-balances__tokens-list">
                 {depositedTokensInfo.length > 0 ? (
-                    depositedTokensInfo.map((t) => (
-                        <TokenWithBalanceAndApy
-                            key={t.token.address}
-                            token={t.token}
-                            balance={t.balance}
-                            apy={t.APY}
-                        />
-                    ))
+                    depositedTokensInfo
+                        .filter((t) => t.balance > 0)
+                        .map((t) => (
+                            <TokenWithBalanceAndApy
+                                key={t.token.address}
+                                token={t.token}
+                                balance={t.balance}
+                                apy={t.APY}
+                            />
+                        ))
                 ) : (
                     <div className="mm-balances__empty">No deposits...</div>
                 )}
@@ -66,14 +64,16 @@ export const MmBalances = ({ moneyMarket }: IMmBalancesProps): JSX.Element => {
             <div className="mm-balances__subsection">Variable Rate Loans</div>
             <div className="mm-balances__tokens-list">
                 {varLoansInfo.length > 0 ? (
-                    varLoansInfo.map((t) => (
-                        <TokenWithBalanceAndApy
-                            key={t.token.address}
-                            token={t.token}
-                            balance={t.balance}
-                            apy={t.APY}
-                        />
-                    ))
+                    varLoansInfo
+                        .filter((t) => t.balance > 0)
+                        .map((t) => (
+                            <TokenWithBalanceAndApy
+                                key={t.token.address}
+                                token={t.token}
+                                balance={t.balance}
+                                apy={t.APY}
+                            />
+                        ))
                 ) : (
                     <div className="mm-balances__empty">No variable rate loans...</div>
                 )}
@@ -83,14 +83,16 @@ export const MmBalances = ({ moneyMarket }: IMmBalancesProps): JSX.Element => {
             <div className="mm-balances__subsection">Stable Rate Loans</div>
             <div className="mm-balances__tokens-list">
                 {fixLoansInfo.length > 0 ? (
-                    fixLoansInfo.map((t) => (
-                        <TokenWithBalanceAndApy
-                            key={t.token.address}
-                            token={t.token}
-                            balance={t.balance}
-                            apy={t.APY}
-                        />
-                    ))
+                    fixLoansInfo
+                        .filter((t) => t.balance > 0)
+                        .map((t) => (
+                            <TokenWithBalanceAndApy
+                                key={t.token.address}
+                                token={t.token}
+                                balance={t.balance}
+                                apy={t.APY}
+                            />
+                        ))
                 ) : (
                     <div className="mm-balances__empty">No fixed rate loans...</div>
                 )}
