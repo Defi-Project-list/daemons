@@ -1,11 +1,12 @@
 import { BigNumber, Contract, ethers } from "ethers";
 import { Dispatch } from "redux";
-import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
+import { GetCurrentChain, IsChainSupported, ZeroAddress } from "../../data/chain-info";
 import { ERC20Abi, InfoFetcherABI } from "@daemons-fi/contracts";
 import { ActionType } from "../action-types";
 import { WalletAction } from "../actions/wallet-actions";
 import { bigNumberToFloat } from "@daemons-fi/contracts";
-import { IToken } from "../../data/chains-data/interfaces";
+import { IToken, MoneyMarket } from "../../data/chains-data/interfaces";
+import { IMMInfo, retrieveMmInfo } from "../../data/retrieve-mm-info";
 
 const getDAEMContract = async (chainId: string): Promise<Contract> => {
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);
@@ -106,6 +107,35 @@ export const fetchTokenBalances = (address?: string, chainId?: string, force?: b
             type: ActionType.FETCH_BALANCES,
             coinBalance,
             tokenBalances
+        });
+    };
+};
+
+export const fetchMmInfo = (moneyMarket: MoneyMarket, address?: string, chainId?: string) => {
+    return async (dispatch: Dispatch<WalletAction>) => {
+        if (!address || !chainId) {
+            console.debug("Address or ChainId missing, MoneyMarket Info check aborted");
+            dispatch({
+                type: ActionType.FETCH_MM_INFO
+            });
+            return;
+        }
+
+        console.debug(`Checking MoneyMarket ${moneyMarket.name} for user ${address}`);
+        const mmInfo = await retrieveMmInfo(chainId, address, moneyMarket);
+
+        dispatch({
+            type: ActionType.FETCH_MM_INFO,
+            moneyMarketPool: moneyMarket.poolAddress,
+            mmInfo: mmInfo
+        });
+    };
+};
+
+export const cleanMmInfo = () => {
+    return async (dispatch: Dispatch<WalletAction>) => {
+        dispatch({
+            type: ActionType.CLEAN_MM_INFO
         });
     };
 };
