@@ -5,6 +5,9 @@ import { IToken, MoneyMarket } from "./chains-data/interfaces";
 
 export interface IMMInfo {
     healthFactor: string;
+    borrowableEth: number;
+    collateralEth: number;
+    debtEth: number;
     deposits: { [aTokenAddress: string]: IMmTokenInfo };
     varDebts: { [varDebtTokenAddress: string]: IMmTokenInfo };
     fixDebts: { [fixDebtTokenAddress: string]: IMmTokenInfo };
@@ -86,8 +89,9 @@ export const retrieveMmInfo = async (
 
     // set tokens information
     const deposits: { [aTokenAddress: string]: IMmTokenInfo } = {};
-    aTks.filter((t) => t !== "0x0000000000000000000000000000000000000000")
-        .forEach((t) => (deposits[t] = getTokenInfoFromMmToken(t)));
+    aTks.filter((t) => t !== "0x0000000000000000000000000000000000000000").forEach(
+        (t) => (deposits[t] = getTokenInfoFromMmToken(t))
+    );
 
     const varDebts: { [varDebtTokenAddress: string]: IMmTokenInfo } = {};
     varDebtTks
@@ -99,8 +103,12 @@ export const retrieveMmInfo = async (
         .filter((t) => t !== "0x0000000000000000000000000000000000000000")
         .forEach((t) => (fixDebts[t] = getTokenInfoFromMmToken(t)));
 
+    console.log(result.accountData);
     return {
         healthFactor: getHealthFactor(result.accountData.healthFactor),
+        borrowableEth: bigNumberToFloat(result.accountData.availableBorrowsETH),
+        collateralEth: bigNumberToFloat(result.accountData.totalCollateralETH),
+        debtEth: bigNumberToFloat(result.accountData.totalDebtETH),
         deposits,
         varDebts,
         fixDebts

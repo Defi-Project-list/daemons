@@ -17,7 +17,6 @@ export const MmBalances = ({ moneyMarket }: IMmBalancesProps): JSX.Element => {
     const mmInfo = useSelector((state: RootState) => state.wallet.moneyMarketsInfo);
 
     const thisMM = mmInfo[moneyMarket.poolAddress];
-    const healthFactor = thisMM?.healthFactor;
     const depositedTokensInfo = thisMM ? Object.values(thisMM.deposits) : [];
     const varLoansInfo = thisMM ? Object.values(thisMM.varDebts) : [];
     const fixLoansInfo = thisMM ? Object.values(thisMM.fixDebts) : [];
@@ -39,7 +38,14 @@ export const MmBalances = ({ moneyMarket }: IMmBalancesProps): JSX.Element => {
                     className="wallet-state__reload-bt"
                 />
             </div>
-            <div className="mm-balances__health-factor">Health Factor: {healthFactor ?? "?"}</div>
+            {!!thisMM && (
+                <div className="mm-balances__account-info">
+                    <div>Health Factor: {thisMM.healthFactor}</div>
+                    <div>Collateral value in ETH: {thisMM.collateralEth}</div>
+                    <div>Debts value in ETH: {thisMM.debtEth}</div>
+                    <div>Borrowable in ETH: {thisMM.borrowableEth}</div>
+                </div>
+            )}
 
             {/* Deposits */}
             <div className="mm-balances__subsection">Deposits</div>
