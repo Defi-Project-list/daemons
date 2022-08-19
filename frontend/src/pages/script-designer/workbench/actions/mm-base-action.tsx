@@ -9,7 +9,7 @@ import { IToken, Token } from "../../../../data/chains-data/interfaces";
 import { AmountInput } from "../shared/amount-input";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../state";
-import "./mm-base-action.css";
+import "./mm-action.css";
 
 const validateForm = (values: IBaseMMActionForm) => {
     const errors: any = {};

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form, Field } from "react-final-form";
+import { Form } from "react-final-form";
 import { TokensModal } from "../../../../components/tokens-modal";
 import { ToggleButtonField } from "../shared/toggle-button";
 import { AdvancedMoneyMarketActionType, InterestRateMode } from "@daemons-fi/shared-definitions";
@@ -9,7 +9,7 @@ import { IToken, Token } from "../../../../data/chains-data/interfaces";
 import { AmountInput } from "../shared/amount-input";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../state";
-import { fetchTokenBalance } from "../../../../data/fetch-token-balance";
+import "./mm-action.css";
 
 const validateForm = (values: IAdvancedMMActionForm) => {
     const errors: any = {};
@@ -35,39 +35,16 @@ export const MmAdvAction = ({
     form: IAdvancedMMActionForm;
     update: (next: IAdvancedMMActionForm) => void;
 }) => {
-    const walletAddress = useSelector((state: RootState) => state.user.address);
-    const [selectedToken, setSelectedToken] = useState<Token | undefined>();
-    const [currentBalance, setCurrentBalance] = useState<number | undefined>(undefined);
-    const [currentLoan, setCurrentLoan] = useState<number | undefined>(undefined);
+    const tokenBalances = useSelector((state: RootState) => state.wallet.tokenBalances);
+    const mmInfo = useSelector((state: RootState) => state.wallet.moneyMarketsInfo);
+    const thisMM = mmInfo[form.moneyMarket.poolAddress];
+
     const tokens = form.moneyMarket.supportedTokens;
+    const [selectedToken, setSelectedToken] = useState<Token>(tokens[0]);
 
     useEffect(() => {
-        if (!form.tokenAddress && tokens.length > 0) {
-            const selectedToken = tokens[0];
-            setSelectedToken(selectedToken);
-            update({ ...form, tokenAddress: selectedToken.address });
-        }
+        update({ ...form, tokenAddress: selectedToken.address });
     }, []);
-
-    useEffect(() => {
-        if (!selectedToken) return;
-        if (form.actionType === AdvancedMoneyMarketActionType.Borrow) return;
-
-        fetchTokenBalance(walletAddress!, selectedToken.address).then((balance) =>
-            setCurrentBalance(balance)
-        );
-    }, [selectedToken, form.actionType, form.interestType]);
-
-    useEffect(() => {
-        if (!selectedToken) return;
-        if (form.actionType === AdvancedMoneyMarketActionType.Borrow) return;
-
-        const tokenAddress =
-            form.interestType === InterestRateMode.Fixed
-                ? form.moneyMarket.mmTokens[selectedToken.address].fixDebtToken
-                : form.moneyMarket.mmTokens[selectedToken.address].varDebtToken;
-        fetchTokenBalance(walletAddress!, tokenAddress).then((balance) => setCurrentLoan(balance));
-    }, [selectedToken, form.actionType, form.interestType]);
 
     return (
         <Form
@@ -84,8 +61,6 @@ export const MmAdvAction = ({
                                 name="actionType"
                                 valuesEnum={AdvancedMoneyMarketActionType}
                                 updateFunction={(newValue) => {
-                                    setCurrentBalance(undefined);
-                                    setCurrentLoan(undefined);
                                     update({
                                         ...form,
                                         actionType: newValue,
@@ -102,7 +77,6 @@ export const MmAdvAction = ({
                                 name="interestType"
                                 valuesEnum={InterestRateMode}
                                 updateFunction={(newValue) => {
-                                    setCurrentLoan(undefined);
                                     update({ ...form, interestType: newValue });
                                 }}
                                 initial={form.interestType}
@@ -115,8 +89,6 @@ export const MmAdvAction = ({
                                 (t: IToken) => t.address === form.tokenAddress
                             )}
                             setSelectedToken={(token) => {
-                                setCurrentBalance(undefined);
-                                setCurrentLoan(undefined);
                                 setSelectedToken(token);
                                 update({ ...form, tokenAddress: token.address });
                             }}
@@ -131,22 +103,72 @@ export const MmAdvAction = ({
                             }}
                         />
 
-                        <div className="script-block__info">
-                            {form.actionType === AdvancedMoneyMarketActionType.Borrow
-                                ? ""
-                                : currentBalance === undefined
-                                ? `..fetching balance..`
-                                : `${selectedToken?.symbol} balance: ${currentBalance}`}
-                        </div>
-
-                        <div className="script-block__info">
-                            {form.actionType === AdvancedMoneyMarketActionType.Borrow
-                                ? ""
-                                : currentBalance === undefined
-                                ? `..fetching loan info..`
-                                : form.interestType === InterestRateMode.Fixed
-                                ? `${currentLoan} ${selectedToken?.symbol} borrowed at FIXED rate`
-                                : `${currentLoan} ${selectedToken?.symbol} borrowed at VARIABLE rate`}
+                        {/* Control displaying wallet and deposited balances (+ APY) */}
+                        <div className="mm-base-info">
+                            <div className="mm-base-info__text">
+                                {selectedToken.symbol} in wallet
+                            </div>
+                            <div className="mm-base-info__token">
+                                <img
+                                    className="mm-base-info__token-img"
+                                    src={selectedToken.logoURI}
+                                />
+                                <div className="mm-base-info__token-balance">
+                                    {tokenBalances[selectedToken.address]}
+                                </div>
+                            </div>
+                            <div className="mm-base-info__separator" />
+                            <div className="mm-base-info__text">
+                                {selectedToken.symbol} borrowed with variable rate from {form.moneyMarket.name}
+                            </div>
+                            <div className="mm-base-info__token">
+                                <img
+                                    className="mm-base-info__token-img"
+                                    src={selectedToken.logoURI}
+                                />
+                                <div className="mm-base-info__token-balance">
+                                    {
+                                        thisMM?.varDebts[
+                                            form.moneyMarket.mmTokens[selectedToken.address].varDebtToken
+                                        ]?.balance
+                                    }
+                                </div>
+                                <div className="mm-base-info__token-apy">
+                                    APY:{" "}
+                                    {
+                                        thisMM?.varDebts[
+                                            form.moneyMarket.mmTokens[selectedToken.address].varDebtToken
+                                        ]?.APY
+                                    }
+                                    %
+                                </div>
+                            </div>
+                            <div className="mm-base-info__separator" />
+                            <div className="mm-base-info__text">
+                                {selectedToken.symbol} borrowed with stable rate from {form.moneyMarket.name}
+                            </div>
+                            <div className="mm-base-info__token">
+                                <img
+                                    className="mm-base-info__token-img"
+                                    src={selectedToken.logoURI}
+                                />
+                                <div className="mm-base-info__token-balance">
+                                    {
+                                        thisMM?.fixDebts[
+                                            form.moneyMarket.mmTokens[selectedToken.address].fixDebtToken
+                                        ]?.balance
+                                    }
+                                </div>
+                                <div className="mm-base-info__token-apy">
+                                    APY:{" "}
+                                    {
+                                        thisMM?.fixDebts[
+                                            form.moneyMarket.mmTokens[selectedToken.address].fixDebtToken
+                                        ]?.APY
+                                    }
+                                    %
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
