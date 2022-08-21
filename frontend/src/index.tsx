@@ -11,6 +11,7 @@ import { ExecutePage } from './pages/execute';
 import { ScriptDesignerPage } from "./pages/script-designer";
 import { ReviewPage } from "./pages/review";
 import { TransactionsPage } from "./pages/transactions";
+import { VestingPage } from "./pages/vesting";
 
 ReactDOM.render(
     <Provider store={store}>
@@ -22,6 +23,7 @@ ReactDOM.render(
                 <Route path="review" element={<App><ReviewPage /></App>} />
                 <Route path="execute" element={<App><ExecutePage /></App>} />
                 <Route path="transactions" element={<App><TransactionsPage/></App>} />
+                <Route path="vesting" element={<App><VestingPage/></App>} />
             </Routes>
         </BrowserRouter>
     </Provider>,
