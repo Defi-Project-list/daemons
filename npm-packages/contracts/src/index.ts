@@ -7,6 +7,7 @@ export * from "./ABIs/core/gas-price-feed";
 export * from "./ABIs/core/gas-tank";
 export * from "./ABIs/core/treasury";
 export * from "./ABIs/core/vesting";
+export * from "./ABIs/core/liquidity-manager";
 
 // executors ABIs
 export * from "./ABIs/script-executors/conditions-checker";

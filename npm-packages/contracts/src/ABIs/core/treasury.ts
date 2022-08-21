@@ -15,7 +15,7 @@ export const treasuryABI: ContractInterface = [
       },
       {
         internalType: "address",
-        name: "_lpRouter",
+        name: "_liquidityManager",
         type: "address"
       }
     ],
@@ -159,19 +159,6 @@ export const treasuryABI: ContractInterface = [
     type: "function"
   },
   {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "DAEMAmount",
-        type: "uint256"
-      }
-    ],
-    name: "createLP",
-    outputs: [],
-    stateMutability: "payable",
-    type: "function"
-  },
-  {
     inputs: [],
     name: "distributed",
     outputs: [
@@ -265,32 +252,6 @@ export const treasuryABI: ContractInterface = [
   {
     inputs: [],
     name: "owner",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address"
-      }
-    ],
-    stateMutability: "view",
-    type: "function"
-  },
-  {
-    inputs: [],
-    name: "percentageDAEMTokensStoredInLP",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256"
-      }
-    ],
-    stateMutability: "view",
-    type: "function"
-  },
-  {
-    inputs: [],
-    name: "polLp",
     outputs: [
       {
         internalType: "address",
@@ -401,12 +362,12 @@ export const treasuryABI: ContractInterface = [
   {
     inputs: [
       {
-        internalType: "uint16",
-        name: "value",
-        type: "uint16"
+        internalType: "address",
+        name: "_liquidityManager",
+        type: "address"
       }
     ],
-    name: "setPercentageToEnableBuyback",
+    name: "setLiquidityManager",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function"
@@ -414,12 +375,12 @@ export const treasuryABI: ContractInterface = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "lpAddress",
-        type: "address"
+        internalType: "uint16",
+        name: "value",
+        type: "uint16"
       }
     ],
-    name: "setPolLP",
+    name: "setPercentageToEnableBuyback",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function"
