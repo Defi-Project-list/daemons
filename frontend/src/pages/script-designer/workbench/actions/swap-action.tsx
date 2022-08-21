@@ -43,8 +43,8 @@ export const SwapAction = ({
     useEffect(() => {
         const updatedForm = {
             ...form,
-            tokenA: tokenA.address,
-            tokenB: tokenA.address
+            tokenFromAddress: tokenA.address,
+            tokenToAddress: tokenA.address
         };
         const valid = isFormValid(updatedForm);
         update({ ...updatedForm, valid });
@@ -107,6 +107,9 @@ export const SwapAction = ({
                             tokenA={tokenA}
                             tokenB={tokenB}
                         />
+
+                        {/* ENABLE WHEN DEBUGGING!  */}
+                        {/* <p>{JSON.stringify(form, null, " ")}</p> */}
                     </div>
                 </form>
             )}
