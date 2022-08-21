@@ -13,6 +13,9 @@ import { ethers } from "ethers";
 import { bigNumberToFloat, vestingABI } from "@daemons-fi/contracts/build";
 import "./styles.css";
 
+const CHAIN_WITH_VESTING = "80001";
+const CHAIN_WITH_VESTING_NAME = "Mumbai";
+
 const getVestingContract = (chainId: string) => {
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);
     const signer = provider.getSigner();
@@ -65,13 +68,20 @@ export function VestingPage() {
 
     const pleaseAuthenticate = () => (
         <div className="vesting">
-            <div>Authenticate to check your vesting status</div>
+            <div className="vesting__text">Authenticate to check your vesting status</div>
         </div>
     );
 
     const calculating = () => (
         <div className="vesting">
-            <div>Fetching the vesting data...</div>
+            <div className="vesting__text">Fetching the vesting data...</div>
+        </div>
+    );
+
+    const wrongChain = () => (
+        <div className="vesting">
+            <div className="vesting__text">It seems you are on the wrong chain.</div>
+            <div className="vesting__text">The vesting happens on {CHAIN_WITH_VESTING_NAME}</div>
         </div>
     );
 
@@ -103,9 +113,13 @@ export function VestingPage() {
     const vestingStarted = () => (
         <div className="vesting">
             {vestingStats()}
-            <div className="vesting__button" onClick={() => claim()}>
-                Claim
-            </div>
+            {available > 0 ? (
+                <div className="vesting__button" onClick={() => claim()}>
+                    Claim
+                </div>
+            ) : (
+                <div className="vesting__button vesting__button--disabled">Claim</div>
+            )}
         </div>
     );
 
@@ -117,6 +131,8 @@ export function VestingPage() {
                 <Card title="Vesting" iconClass="card__title-icon--bank">
                     {!user
                         ? pleaseAuthenticate()
+                        : chainId !== CHAIN_WITH_VESTING
+                        ? wrongChain()
                         : !startDate
                         ? calculating()
                         : startDate > new Date()
