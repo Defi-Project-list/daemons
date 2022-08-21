@@ -7,7 +7,7 @@ import { zapOutDomain, IZapOutAction, zapOutTypes } from "@daemons-fi/shared-def
 import hre from "hardhat";
 const chainId = hre.network.config.chainId;
 
-describe("ScriptExecutor - ZapOut", function () {
+describe("ScriptExecutor - ZapOut [FORKED CHAIN]", function () {
     let owner: SignerWithAddress;
     let otherWallet: SignerWithAddress;
 
@@ -15,10 +15,12 @@ describe("ScriptExecutor - ZapOut", function () {
     let gasTank: Contract;
     let executor: Contract;
     let DAEMToken: Contract;
+    let WMATICToken: Contract;
+    let MATICDAEMLP: Contract;
     let fooToken: Contract;
     let barToken: Contract;
-    let fooBarLP: Contract;
-    let mockRouter: Contract;
+
+    const quickswapRouterAddress = "0x1b02da8cb0d097eb8d57a175b88c7d8b47997506";
 
     // signature components
     let sigR: string;
@@ -29,7 +31,7 @@ describe("ScriptExecutor - ZapOut", function () {
         scriptId: "0x7465737400000000000000000000000000000000000000000000000000000000",
         tokenA: "",
         tokenB: "",
-        amount: ethers.utils.parseEther("145"),
+        amount: ethers.utils.parseEther("500"),
         typeAmt: AmountType.Absolute,
         outputChoice: ZapOutputChoice.bothTokens,
         user: "",
@@ -75,7 +77,28 @@ describe("ScriptExecutor - ZapOut", function () {
         snapshotId = await hre.network.provider.send("evm_snapshot", []);
     });
 
+    this.afterAll(async () => {
+        // Reset the fork
+        await hre.network.provider.request({
+            method: "hardhat_reset",
+            params: []
+        });
+    });
+
     this.beforeAll(async () => {
+        console.log(`Forking Polygon network`);
+        await hre.network.provider.request({
+            method: "hardhat_reset",
+            params: [
+                {
+                    forking: {
+                        jsonRpcUrl: process.env.POLYGON_RPC!,
+                        blockNumber: 29483920
+                    }
+                }
+            ]
+        });
+
         // get main wallet
         [owner, otherWallet] = await ethers.getSigners();
 
@@ -89,7 +112,10 @@ describe("ScriptExecutor - ZapOut", function () {
         DAEMToken = await MockTokenContract.deploy("DAEM Token", "DAEM");
         fooToken = await MockTokenContract.deploy("Foo Token", "FOO");
         barToken = await MockTokenContract.deploy("Bar Token", "BAR");
-        fooBarLP = await MockTokenContract.deploy("FOO-BAR-LP", "FOO-BAR-LP");
+        WMATICToken = await ethers.getContractAt(
+            "MockToken",
+            "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
+        );
 
         // Gas Price Feed contract
         const GasPriceFeedContract = await ethers.getContractFactory("GasPriceFeed");
@@ -103,32 +129,15 @@ describe("ScriptExecutor - ZapOut", function () {
         await executor.setGasTank(gasTank.address);
         await executor.setGasFeed(gasPriceFeed.address);
 
-        // Grant allowance
-        await fooBarLP.approve(executor.address, ethers.utils.parseEther("1000000"));
-        await DAEMToken.approve(executor.address, ethers.utils.parseEther("1000000"));
-
-        // Generate balance
-        await fooBarLP.mint(owner.address, baseMessage.amount);
-        await DAEMToken.mint(owner.address, ethers.utils.parseEther("250"));
-
         // register executor in gas tank
         await gasTank.addExecutor(executor.address);
         await gasTank.setDAEMToken(DAEMToken.address);
 
-        // Mock Uniswap router contract
-        const MockRouterContract = await ethers.getContractFactory("MockUniswapV2Router");
-        mockRouter = await MockRouterContract.deploy();
-
-        // Mock Uniswap factory contract
-        const MockFactoryContract = await ethers.getContractFactory("MockUniswapV2Factory");
-        const mockFactory = await MockFactoryContract.deploy();
-        await mockRouter.setFactory(mockFactory.address);
-        await mockFactory.setFakePair(fooToken.address, barToken.address, fooBarLP.address);
-        const wETH = await mockRouter.WETH();
-        await mockFactory.setFakePair(
+        // create liquidity manager
+        const LiquidityManager = await ethers.getContractFactory("UniswapV2LiquidityManager");
+        const liquidityManager = await LiquidityManager.deploy(
             DAEMToken.address,
-            wETH,
-            "0x2e5b8db3de83d01fbc5caaa010a8ed45dee6bbdf" // totally random address. It won't be used due to the mocks
+            quickswapRouterAddress // quickswap router
         );
 
         // Treasury contract
@@ -136,16 +145,38 @@ describe("ScriptExecutor - ZapOut", function () {
         const treasury = await TreasuryContract.deploy(
             DAEMToken.address,
             gasTank.address,
-            mockRouter.address
+            liquidityManager.address
         );
+
+        // create LP
+        const ETHAmount = ethers.utils.parseEther("2000");
+        const DAEMAmount = ethers.utils.parseEther("2000");
+        await DAEMToken.mint(owner.address, DAEMAmount);
+        await DAEMToken.approve(liquidityManager.address, DAEMAmount);
+        await liquidityManager.createLP(DAEMAmount, treasury.address, { value: ETHAmount });
+
+        // ** DIVERGENCE FROM OTHER TESTS **
+        // Get LP Address and use liquidityManager to create some liquidity
+        // that will be used by the ZapOut executor
+        const MATICDAEMLPaddress = await liquidityManager.polLp();
+        MATICDAEMLP = await ethers.getContractAt("MockToken", MATICDAEMLPaddress);
+
+        await DAEMToken.mint(owner.address, DAEMAmount);
+        await DAEMToken.approve(liquidityManager.address, DAEMAmount);
+        await liquidityManager.addLiquidityETH(
+            DAEMAmount,
+            owner.address,
+            0xffffffffffff,
+            { value: ETHAmount }
+        );
+        // ** END DIVERGENCE **
 
         // add some tokens to treasury
         DAEMToken.mint(treasury.address, ethers.utils.parseEther("110"));
 
-        // create token LP
-        const ethAmount = ethers.utils.parseEther("5");
-        const daemAmount = ethers.utils.parseEther("10");
-        await treasury.createLP(daemAmount, { value: ethAmount });
+        // Grant allowance
+        await MATICDAEMLP.approve(executor.address, ethers.utils.parseEther("1000000"));
+        await DAEMToken.approve(executor.address, ethers.utils.parseEther("1000000"));
 
         // set treasury address in gas tank
         await gasTank.setTreasury(treasury.address);
@@ -164,13 +195,13 @@ describe("ScriptExecutor - ZapOut", function () {
         const message = { ...baseMessage };
         message.user = owner.address;
         message.executor = executor.address;
-        message.tokenA = fooToken.address;
-        message.tokenB = barToken.address;
-        message.kontract = mockRouter.address;
+        message.tokenA = WMATICToken.address;
+        message.tokenB = DAEMToken.address;
+        message.kontract = quickswapRouterAddress;
         message.balance.token = fooToken.address;
-        message.price.tokenA = fooToken.address;
-        message.price.tokenB = barToken.address;
-        message.price.router = mockRouter.address;
+        message.price.tokenA = WMATICToken.address;
+        message.price.tokenB = DAEMToken.address;
+        message.price.router = quickswapRouterAddress;
         message.follow.executor = executor.address; // following itself, it'll never be executed when condition is enabled
 
         // Sign message
@@ -211,52 +242,49 @@ describe("ScriptExecutor - ZapOut", function () {
 
     it("zaps the LP - ABS", async () => {
         let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+        message.amount = ethers.utils.parseEther("500"),
         message = await initialize(message);
 
-        // add a bit more LP, to have some leftovers
-        await fooBarLP.mint(owner.address, ethers.utils.parseEther("15"));
-        expect(await fooBarLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("160"));
+        expect(await MATICDAEMLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("2000"));
 
         await executor.execute(message, sigR, sigS, sigV);
 
         // the LP should be gone (only leftovers) and tokens should have been added
-        expect(await fooBarLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("15"));
-        expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("72.5"));
-        expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("72.5"));
+        expect(await MATICDAEMLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("1500"));
+        expect(await WMATICToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("500"));
+        expect(await DAEMToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("500")); // 250 already there
     });
 
     it("zaps the LP - ABS + single token A", async () => {
         let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+        message.amount = ethers.utils.parseEther("500"),
         message.outputChoice = ZapOutputChoice.tokenA;
         message = await initialize(message);
 
-        // add a bit more LP, to have some leftovers
-        await fooBarLP.mint(owner.address, ethers.utils.parseEther("15"));
-        expect(await fooBarLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("160"));
+        expect(await MATICDAEMLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("2000"));
 
         await executor.execute(message, sigR, sigS, sigV);
 
         // the LP should be gone (only leftovers) and tokens should have been added
-        expect(await fooBarLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("15"));
-        expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("145"));
-        expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("0"));
+        expect(await MATICDAEMLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("1500"));
+        expect(await WMATICToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("936.351131674377891709"));
+        expect(await DAEMToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("0"));
     });
 
     it("zaps the LP - ABS + single token B", async () => {
         let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
+        message.amount = ethers.utils.parseEther("500"),
         message.outputChoice = ZapOutputChoice.tokenB;
         message = await initialize(message);
 
-        // add a bit more LP, to have some leftovers
-        await fooBarLP.mint(owner.address, ethers.utils.parseEther("15"));
-        expect(await fooBarLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("160"));
+        expect(await MATICDAEMLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("2000"));
 
         await executor.execute(message, sigR, sigS, sigV);
 
         // the LP should be gone (only leftovers) and tokens should have been added
-        expect(await fooBarLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("15"));
-        expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("0"));
-        expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("145"));
+        expect(await MATICDAEMLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("1500"));
+        expect(await WMATICToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("0"));
+        expect(await DAEMToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("936.351131674377891709"));
     });
 
     it("zaps the LP - PRC", async () => {
@@ -268,9 +296,11 @@ describe("ScriptExecutor - ZapOut", function () {
         await executor.execute(message, sigR, sigS, sigV);
 
         // 50% of the LP should be gone and tokens should have been added
-        expect(await fooBarLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("72.5"));
-        expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("36.25"));
-        expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("36.25"));
+        expect(await MATICDAEMLP.balanceOf(owner.address)).to.equal(
+            ethers.utils.parseEther("1000")
+        );
+        expect(await WMATICToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("1000"));
+        expect(await DAEMToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("1000"));
     });
 
     it("zaps the LP - PRC + single token A", async () => {
@@ -283,9 +313,11 @@ describe("ScriptExecutor - ZapOut", function () {
         await executor.execute(message, sigR, sigS, sigV);
 
         // 50% of the LP should be gone and tokens should have been added
-        expect(await fooBarLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("72.5"));
-        expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("72.5"));
-        expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("0"));
+        expect(await MATICDAEMLP.balanceOf(owner.address)).to.equal(
+            ethers.utils.parseEther("1000")
+        );
+        expect(await WMATICToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("1748.311233425068801601"));
+        expect(await DAEMToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("0"));
     });
 
     it("zaps the LP - PRC + single token B", async () => {
@@ -298,15 +330,16 @@ describe("ScriptExecutor - ZapOut", function () {
         await executor.execute(message, sigR, sigS, sigV);
 
         // 50% of the LP should be gone and tokens should have been added
-        expect(await fooBarLP.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("72.5"));
-        expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("0"));
-        expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("72.5"));
+        expect(await MATICDAEMLP.balanceOf(owner.address)).to.equal(
+            ethers.utils.parseEther("1000")
+        );
+        expect(await WMATICToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("0"));
+        expect(await DAEMToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("1748.311233425068801601"));
     });
 
     it("zapping triggers reward in gas tank", async () => {
         let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
         message = await initialize(message);
-        await fooToken.mint(owner.address, ethers.utils.parseEther("55"));
 
         // gasTank should NOT have a claimable amount now for user1
         expect((await gasTank.claimable(otherWallet.address)).toNumber()).to.equal(0);
@@ -390,7 +423,6 @@ describe("ScriptExecutor - ZapOut", function () {
         // enable frequency condition so 2 consecutive executions should fail
         message.frequency.enabled = true;
         message = await initialize(message);
-        await fooBarLP.mint(owner.address, ethers.utils.parseEther("2000"));
 
         // the first one goes through
         await executor.execute(message, sigR, sigS, sigV);
@@ -556,7 +588,8 @@ describe("ScriptExecutor - ZapOut", function () {
         let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
         message.tip = ethers.utils.parseEther("5");
         message = await initialize(message);
-        await fooToken.mint(owner.address, ethers.utils.parseEther("55"));
+
+        DAEMToken.mint(owner.address, ethers.utils.parseEther("10"));
 
         // deposit DAEM in the Tip Jar
         await DAEMToken.approve(gasTank.address, ethers.utils.parseEther("10000"));
@@ -577,7 +610,7 @@ describe("ScriptExecutor - ZapOut", function () {
         const message = await initialize(baseMessage);
 
         // revoke the allowance for the token to the executor contract
-        await fooBarLP.approve(executor.address, ethers.utils.parseEther("0"));
+        await MATICDAEMLP.approve(executor.address, ethers.utils.parseEther("0"));
 
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
             "[ALLOWANCE][ACTION]"
@@ -590,10 +623,9 @@ describe("ScriptExecutor - ZapOut", function () {
         let message: IZapOutAction = JSON.parse(JSON.stringify(baseMessage));
         message.repetitions.enabled = true;
         message.repetitions.amount = BigNumber.from(2);
+        message.typeAmt = AmountType.Percentage;
+        message.amount = BigNumber.from(1000);
         message = await initialize(message);
-
-        // let's get rich. wink.
-        await fooBarLP.mint(owner.address, ethers.utils.parseEther("20000000"));
 
         // first two times it goes through
         await executor.execute(message, sigR, sigS, sigV);

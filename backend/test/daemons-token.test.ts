@@ -21,16 +21,12 @@ describe("DAEM Token", function () {
     );
     DAEM = await DaemonsTokenContract.deploy();
 
-    // Mock router contract
-    const MockRouterContract = await ethers.getContractFactory("MockUniswapV2Router");
-    const mockRouter = await MockRouterContract.deploy();
-
     // instantiate treasury
     const TreasuryContract = await ethers.getContractFactory("Treasury");
     treasury = await TreasuryContract.deploy(
       DAEM.address,
       gasTank.address,
-      mockRouter.address
+      "0xa36085f69e2889c224210f603d836748e7dc0088" // totally random address
     );
   });
 

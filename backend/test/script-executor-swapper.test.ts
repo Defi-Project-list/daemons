@@ -7,7 +7,7 @@ import { swapDomain, ISwapAction, swapTypes } from "@daemons-fi/shared-definitio
 import hre from "hardhat";
 const chainId = hre.network.config.chainId;
 
-describe("ScriptExecutor - Swapper", function () {
+describe("ScriptExecutor - Swapper [FORKED CHAIN]", function () {
     let owner: SignerWithAddress;
     let user1: SignerWithAddress;
 
@@ -15,9 +15,10 @@ describe("ScriptExecutor - Swapper", function () {
     let gasTank: Contract;
     let executor: Contract;
     let DAEMToken: Contract;
+    let WMATICToken: Contract;
     let fooToken: Contract;
-    let barToken: Contract;
-    let mockRouter: Contract;
+
+    const quickswapRouterAddress = "0x1b02da8cb0d097eb8d57a175b88c7d8b47997506";
 
     // signature components
     let sigR: string;
@@ -29,7 +30,7 @@ describe("ScriptExecutor - Swapper", function () {
         tokenFrom: "",
         tokenTo: "",
         typeAmt: AmountType.Absolute,
-        amount: ethers.utils.parseEther("145"),
+        amount: ethers.utils.parseEther("1"),
         user: "",
         kontract: "",
         executor: "",
@@ -73,7 +74,28 @@ describe("ScriptExecutor - Swapper", function () {
         snapshotId = await hre.network.provider.send("evm_snapshot", []);
     });
 
+    this.afterAll(async () => {
+        // Reset the fork
+        await hre.network.provider.request({
+            method: "hardhat_reset",
+            params: []
+        });
+    });
+
     this.beforeAll(async () => {
+        console.log(`Forking Polygon network`);
+        await hre.network.provider.request({
+            method: "hardhat_reset",
+            params: [
+                {
+                    forking: {
+                        jsonRpcUrl: process.env.POLYGON_RPC!,
+                        blockNumber: 29483920
+                    }
+                }
+            ]
+        });
+
         // get main wallet
         [owner, user1] = await ethers.getSigners();
 
@@ -86,20 +108,7 @@ describe("ScriptExecutor - Swapper", function () {
         const MockTokenContract = await ethers.getContractFactory("MockToken");
         DAEMToken = await MockTokenContract.deploy("Foo Token", "FOO");
         fooToken = await MockTokenContract.deploy("Foo Token", "FOO");
-        barToken = await MockTokenContract.deploy("Bar Token", "BAR");
-
-        // Mock external contract
-        const MockRouterContract = await ethers.getContractFactory("MockUniswapV2Router");
-        mockRouter = await MockRouterContract.deploy();
-        const MockFactoryContract = await ethers.getContractFactory("MockUniswapV2Factory");
-        const mockFactory = await MockFactoryContract.deploy();
-        await mockRouter.setFactory(mockFactory.address);
-        const wETH = await mockRouter.WETH();
-        await mockFactory.setFakePair(
-            DAEMToken.address,
-            wETH,
-            "0x2e5b8db3de83d01fbc5caaa010a8ed45dee6bbdf" // totally random address. It won't be used due to the mocks
-        );
+        WMATICToken = await ethers.getContractAt("MockToken", "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270");
 
         // Gas Price Feed contract
         const GasPriceFeedContract = await ethers.getContractFactory("GasPriceFeed");
@@ -115,31 +124,40 @@ describe("ScriptExecutor - Swapper", function () {
 
         // Grant allowance
         await fooToken.approve(executor.address, ethers.utils.parseEther("1000000"));
+        await WMATICToken.approve(executor.address, ethers.utils.parseEther("1000000"));
         await DAEMToken.approve(executor.address, ethers.utils.parseEther("1000000"));
 
         // Generate balance
-        await fooToken.mint(owner.address, baseMessage.amount);
         await DAEMToken.mint(owner.address, ethers.utils.parseEther("250"));
 
         // register executor in gas tank
         await gasTank.addExecutor(executor.address);
         await gasTank.setDAEMToken(DAEMToken.address);
 
+        // create liquidity manager
+        const LiquidityManager = await ethers.getContractFactory("UniswapV2LiquidityManager");
+        const liquidityManager = await LiquidityManager.deploy(
+            DAEMToken.address,
+            quickswapRouterAddress // quickswap router
+        );
+
         // Treasury contract
         const TreasuryContract = await ethers.getContractFactory("Treasury");
         const treasury = await TreasuryContract.deploy(
             DAEMToken.address,
             gasTank.address,
-            mockRouter.address
+            liquidityManager.address
         );
+
+        // create LP
+        const ETHAmount = ethers.utils.parseEther("2000");
+        const DAEMAmount = ethers.utils.parseEther("2000");
+        await DAEMToken.mint(owner.address, DAEMAmount);
+        await DAEMToken.approve(liquidityManager.address, ethers.utils.parseEther("2000"));
+        await liquidityManager.createLP(DAEMAmount, treasury.address, { value: ETHAmount });
 
         // add some tokens to treasury
         DAEMToken.mint(treasury.address, ethers.utils.parseEther("110"));
-
-        // create token LP
-        const ethAmount = ethers.utils.parseEther("5");
-        const daemAmount = ethers.utils.parseEther("10");
-        await treasury.createLP(daemAmount, { value: ethAmount });
 
         // set treasury address in gas tank
         await gasTank.setTreasury(treasury.address);
@@ -157,14 +175,14 @@ describe("ScriptExecutor - Swapper", function () {
         // Create message and fill missing info
         const message = { ...baseMessage };
         message.user = owner.address;
-        message.kontract = mockRouter.address;
+        message.kontract = quickswapRouterAddress;
         message.executor = executor.address;
-        message.tokenFrom = fooToken.address;
-        message.tokenTo = barToken.address;
+        message.tokenFrom = DAEMToken.address;
+        message.tokenTo = WMATICToken.address;
         message.balance.token = fooToken.address;
-        message.price.tokenA = fooToken.address;
-        message.price.tokenB = barToken.address;
-        message.price.router = mockRouter.address;
+        message.price.tokenA = WMATICToken.address;
+        message.price.tokenB = DAEMToken.address;
+        message.price.router = quickswapRouterAddress;
         message.follow.executor = executor.address; // following itself, it'll never be executed when condition is enabled
 
         // Sign message
@@ -206,13 +224,12 @@ describe("ScriptExecutor - Swapper", function () {
     it("swaps the tokens - ABS", async () => {
         let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
         message = await initialize(message);
-        await fooToken.mint(owner.address, ethers.utils.parseEther("55"));
 
         await executor.execute(message, sigR, sigS, sigV);
 
-        // check final amounts. Note that 145 were generated during initialization
-        expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("55"));
-        expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("145"));
+        // check final amounts
+        expect(await DAEMToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("249"));
+        expect(await WMATICToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("0.99650324313329805"));
     });
 
     it("swaps the tokens - PRC", async () => {
@@ -220,13 +237,12 @@ describe("ScriptExecutor - Swapper", function () {
         message.typeAmt = AmountType.Percentage;
         message.amount = BigNumber.from(5000); // 50%
         message = await initialize(message);
-        await fooToken.mint(owner.address, ethers.utils.parseEther("55"));
 
         await executor.execute(message, sigR, sigS, sigV);
 
-        // check final amounts. Note that 145 were generated during initialization
-        expect(await fooToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("100"));
-        expect(await barToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("100"));
+        // check final amounts
+        expect(await DAEMToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("125"));
+        expect(await WMATICToken.balanceOf(owner.address)).to.equal(ethers.utils.parseEther("117.314820262399246925"));
     });
 
     it("swapping triggers reward in gas tank", async () => {
@@ -245,7 +261,7 @@ describe("ScriptExecutor - Swapper", function () {
 
     it("swapping is cheap - ABS", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000302223403165482 ETH.
+        // execute the script was 0.000337451043193728 ETH.
         // NOTE: the swap contract is mocked, so this measures all the rest.
 
         let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
@@ -258,14 +274,14 @@ describe("ScriptExecutor - Swapper", function () {
         await executor.execute(message, sigR, sigS, sigV);
         const spentAmount = initialBalance.sub(await owner.getBalance());
 
-        const threshold = ethers.utils.parseEther("0.00031");
+        const threshold = ethers.utils.parseEther("0.00035");
         console.log("Spent for swapping:", spentAmount.toString());
         expect(spentAmount.lte(threshold)).to.equal(true);
     });
 
     it("swapping is cheap - PRC", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000300942401456628 ETH.
+        // execute the script was 0.000336134043025152 ETH.
         // NOTE: the swap contract is mocked, so this measures all the rest.
 
         const message = await initialize(baseMessage);
@@ -275,10 +291,11 @@ describe("ScriptExecutor - Swapper", function () {
         await executor.execute(message, sigR, sigS, sigV);
         const spentAmount = initialBalance.sub(await owner.getBalance());
 
-        const threshold = ethers.utils.parseEther("0.00031");
+        const threshold = ethers.utils.parseEther("0.00035");
         console.log("Spent for swapping:", spentAmount.toString());
         expect(spentAmount.lte(threshold)).to.equal(true);
     });
+
     it("sets the lastExecution value during execution", async () => {
         let message: ISwapAction = JSON.parse(JSON.stringify(baseMessage));
 
@@ -471,7 +488,7 @@ describe("ScriptExecutor - Swapper", function () {
         const message = await initialize(baseMessage);
 
         // revoke the allowance for the token to the executor contract
-        await fooToken.approve(executor.address, ethers.utils.parseEther("0"));
+        await DAEMToken.approve(executor.address, ethers.utils.parseEther("0"));
 
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
             "[ALLOWANCE][ACTION]"

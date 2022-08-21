@@ -1,6 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
-import { BigNumber, Contract } from "ethers";
+import { BigNumber, Contract, utils } from "ethers";
 import { ethers, network } from "hardhat";
 import { AmountType, ComparisonType } from "@daemons-fi/shared-definitions";
 import {
@@ -43,7 +43,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         tip: BigNumber.from(0),
         balance: {
             enabled: false,
-            amount: ethers.utils.parseEther("150"),
+            amount: utils.parseEther("150"),
             token: "",
             comparison: ComparisonType.GreaterThan
         },
@@ -57,7 +57,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
             tokenA: "",
             tokenB: "",
             comparison: ComparisonType.GreaterThan,
-            value: ethers.utils.parseEther("150"),
+            value: utils.parseEther("150"),
             router: ""
         },
         repetitions: {
@@ -107,7 +107,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         // GasTank contract
         const GasTankContract = await ethers.getContractFactory("GasTank");
         gasTank = await GasTankContract.deploy();
-        await gasTank.depositGas({ value: ethers.utils.parseEther("2.0") });
+        await gasTank.depositGas({ value: utils.parseEther("2.0") });
 
         // Add DAEM contracts
         const MockTokenContract = await ethers.getContractFactory("MockToken");
@@ -130,7 +130,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         /** STRATEGY */
         // As we can only test Beefy on a fork we cannot use mocked tokens.
         // The only way around it is to use the fake ETH that come with each
-        // wallet to buy ETH and wBNB, create an LP and use THAT for our tests
+        // wallet to buy ETH and wBTC, create an LP and use THAT for our tests
 
         // Get real router
         uniswapRouter = await ethers.getContractAt(
@@ -139,7 +139,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         );
 
         // Use the MATIC to get wETH
-        const amountWETH = ethers.utils.parseEther("1000");
+        const amountWETH = utils.parseEther("1000");
         const wMATICAddress = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270";
         const wETHAddress = "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619";
         wETH = await ethers.getContractAt("IWETH", wETHAddress);
@@ -154,7 +154,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         console.log(`wETH Balance: ${wETHBalance.toString()}`);
 
         // Use the MATIC balance to buy wBTC
-        const amountWBTC = ethers.utils.parseEther("1000"); // in matic
+        const amountWBTC = utils.parseEther("1000"); // in matic
         const wBTCAddress = "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6";
         wBTC = await ethers.getContractAt("IERC20", wBTCAddress);
         await uniswapRouter.swapExactETHForTokens(
@@ -168,8 +168,8 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         console.log(`wBTC Balance: ${wBTCBalance.toString()}`);
 
         // create LP
-        await wETH.approve(uniswapRouter.address, ethers.utils.parseEther("1000000000000"));
-        await wBTC.approve(uniswapRouter.address, ethers.utils.parseEther("1000000000000"));
+        await wETH.approve(uniswapRouter.address, utils.parseEther("1000000000000"));
+        await wBTC.approve(uniswapRouter.address, utils.parseEther("1000000000000"));
         await uniswapRouter.addLiquidity(
             wETH.address,
             wBTC.address,
@@ -196,28 +196,37 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         mooToken = await ethers.getContractAt("IERC20", mooTokenAddress);
 
         // Grant allowance
-        await DAEMToken.approve(executor.address, ethers.utils.parseEther("1000000"));
-        await lpToken.approve(executor.address, ethers.utils.parseEther("1000000"));
-        await mooToken.approve(executor.address, ethers.utils.parseEther("1000000"));
+        await DAEMToken.approve(executor.address, utils.parseEther("1000000"));
+        await lpToken.approve(executor.address, utils.parseEther("1000000"));
+        await mooToken.approve(executor.address, utils.parseEther("1000000"));
 
         // Generate DAEM balance
-        await DAEMToken.mint(owner.address, ethers.utils.parseEther("250"));
+        await DAEMToken.mint(owner.address, utils.parseEther("250"));
+
+        // create liquidity manager
+        const LiquidityManager = await ethers.getContractFactory("UniswapV2LiquidityManager");
+        const liquidityManager = await LiquidityManager.deploy(
+            DAEMToken.address,
+            "0x1b02da8cb0d097eb8d57a175b88c7d8b47997506"
+        );
 
         // Treasury contract
         const TreasuryContract = await ethers.getContractFactory("Treasury");
         const treasury = await TreasuryContract.deploy(
             DAEMToken.address,
             gasTank.address,
-            uniswapRouter.address
+            liquidityManager.address
         );
 
-        // add some tokens to treasury
-        DAEMToken.mint(treasury.address, ethers.utils.parseEther("110"));
+        // create LP
+        const ETHAmount = utils.parseEther("5");
+        const DAEMAmount = utils.parseEther("10");
+        await DAEMToken.mint(owner.address, DAEMAmount);
+        await DAEMToken.approve(liquidityManager.address, DAEMAmount);
+        await liquidityManager.createLP(DAEMAmount, treasury.address, { value: ETHAmount });
 
-        // create token LP
-        const ethAmount = ethers.utils.parseEther("5");
-        const daemAmount = ethers.utils.parseEther("10");
-        await treasury.createLP(daemAmount, { value: ethAmount });
+        // add some tokens to treasury
+        DAEMToken.mint(treasury.address, utils.parseEther("110"));
 
         // set treasury address in gas tank
         await gasTank.setTreasury(treasury.address);
@@ -249,7 +258,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
 
         // Sign message
         const signature = await owner._signTypedData(BeefyDomain, BeefyTypes, message);
-        const split = ethers.utils.splitSignature(signature);
+        const split = utils.splitSignature(signature);
         [sigR, sigS, sigV] = [split.r, split.s, split.v];
 
         // Return updated message
@@ -265,7 +274,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
     it("spots a tampered message with no conditions", async () => {
         const message = await initialize(baseMessage);
         const tamperedMessage = { ...message };
-        tamperedMessage.amount = ethers.utils.parseEther("0");
+        tamperedMessage.amount = utils.parseEther("0");
 
         await expect(executor.verify(tamperedMessage, sigR, sigS, sigV)).to.be.revertedWith(
             "[SIGNATURE][FINAL]"
@@ -291,7 +300,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         await executor.execute(message, sigR, sigS, sigV);
 
         const lpBalance: BigNumber = await lpToken.balanceOf(owner.address);
-        expect(lpBalance).to.equal(ethers.utils.parseEther("0"));
+        expect(lpBalance).to.equal(utils.parseEther("0"));
         const mooBalance: BigNumber = await mooToken.balanceOf(owner.address);
         expect(mooBalance.gte(0)).to.be.true;
     });
@@ -384,7 +393,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         await executor.execute(message, sigR, sigS, sigV);
         const spentAmount = initialBalance.sub(await owner.getBalance());
 
-        const threshold = ethers.utils.parseEther("0.00041");
+        const threshold = utils.parseEther("0.00041");
         console.log("Spent for supply:", spentAmount.toString());
         expect(spentAmount.lte(threshold)).to.equal(true);
     });
@@ -403,7 +412,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         await executor.execute(message, sigR, sigS, sigV);
         const spentAmount = initialBalance.sub(await owner.getBalance());
 
-        const threshold = ethers.utils.parseEther("0.00041");
+        const threshold = utils.parseEther("0.00041");
         console.log("Spent for supply:", spentAmount.toString());
         expect(spentAmount.lte(threshold)).to.equal(true);
     });
@@ -432,7 +441,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         await executor.execute(withdrawMessage, sigR, sigS, sigV);
         const spentAmount = initialBalance.sub(await owner.getBalance());
 
-        const threshold = ethers.utils.parseEther("0.00041");
+        const threshold = utils.parseEther("0.00041");
         console.log("Spent for withdraw:", spentAmount.toString());
         expect(spentAmount.lte(threshold)).to.equal(true);
     });
@@ -462,7 +471,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         await executor.execute(withdrawMessage, sigR, sigS, sigV);
         const spentAmount = initialBalance.sub(await owner.getBalance());
 
-        const threshold = ethers.utils.parseEther("0.00041");
+        const threshold = utils.parseEther("0.00041");
         console.log("Spent for withdraw:", spentAmount.toString());
         expect(spentAmount.lte(threshold)).to.equal(true);
     });
@@ -493,7 +502,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         let message: IBeefyAction = JSON.parse(JSON.stringify(baseMessage));
         // setting an amount higher than the user's balance
         message.action = BeefyActionType.Deposit;
-        message.amount = ethers.utils.parseEther("9999");
+        message.amount = utils.parseEther("9999");
         message = await initialize(message);
 
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
@@ -505,7 +514,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         let message: IBeefyAction = JSON.parse(JSON.stringify(baseMessage));
         // setting an amount higher than the user's balance
         message.action = BeefyActionType.Withdraw;
-        message.amount = ethers.utils.parseEther("9999");
+        message.amount = utils.parseEther("9999");
         message = await initialize(message);
 
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
@@ -593,7 +602,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         let message: IBeefyAction = JSON.parse(JSON.stringify(baseMessage));
         message.price.enabled = true;
         message.price.comparison = ComparisonType.GreaterThan;
-        message.price.value = ethers.utils.parseUnits("0.055", 8);
+        message.price.value = utils.parseUnits("0.055", 8);
         message = await initialize(message);
 
         // verification should fail as the price lower than expected
@@ -609,7 +618,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         let message: IBeefyAction = JSON.parse(JSON.stringify(baseMessage));
         message.price.enabled = true;
         message.price.comparison = ComparisonType.LessThan;
-        message.price.value = ethers.utils.parseUnits("0.053", 8);
+        message.price.value = utils.parseUnits("0.053", 8);
         message = await initialize(message);
 
         // verification should fail as the price lower than expected
@@ -625,7 +634,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         let message: IBeefyAction = JSON.parse(JSON.stringify(baseMessage));
         message.price.enabled = true;
         message.price.comparison = ComparisonType.GreaterThan;
-        message.price.value = ethers.utils.parseUnits("0.053", 8);
+        message.price.value = utils.parseUnits("0.053", 8);
         message = await initialize(message);
 
         // verification should go through and raise no errors!
@@ -646,7 +655,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
 
     it("fails if the user sets a tip but doesn't have enough funds to pay for it", async () => {
         let message: IBeefyAction = JSON.parse(JSON.stringify(baseMessage));
-        message.tip = ethers.utils.parseEther("15000");
+        message.tip = utils.parseEther("15000");
         message = await initialize(message);
 
         // empty the gas tank and try to verify the message
@@ -655,20 +664,20 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
 
     it("Pays the tip to the executor", async () => {
         let message: IBeefyAction = JSON.parse(JSON.stringify(baseMessage));
-        message.tip = ethers.utils.parseEther("5");
+        message.tip = utils.parseEther("5");
         message = await initialize(message);
 
         // deposit DAEM in the Tip Jar
-        await DAEMToken.approve(gasTank.address, ethers.utils.parseEther("10000"));
-        await gasTank.connect(owner).depositTip(ethers.utils.parseEther("10"));
+        await DAEMToken.approve(gasTank.address, utils.parseEther("10000"));
+        await gasTank.connect(owner).depositTip(utils.parseEther("10"));
         let tipBalance = await gasTank.tipBalanceOf(owner.address);
-        expect(tipBalance).to.be.equal(ethers.utils.parseEther("10"));
+        expect(tipBalance).to.be.equal(utils.parseEther("10"));
 
         await executor.connect(otherWallet).execute(message, sigR, sigS, sigV);
 
         // tokens have been removed from the user's tip jar
         tipBalance = await gasTank.tipBalanceOf(owner.address);
-        expect(tipBalance).to.be.equal(ethers.utils.parseEther("5"));
+        expect(tipBalance).to.be.equal(utils.parseEther("5"));
     });
 
     /* ========== ALLOWANCE CONDITION CHECK ========== */
@@ -679,7 +688,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         message = await initialize(message);
 
         // revoke the allowance for the token to the executor contract
-        await lpToken.approve(executor.address, ethers.utils.parseEther("0"));
+        await lpToken.approve(executor.address, utils.parseEther("0"));
 
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
             "[ALLOWANCE][ACTION]"
@@ -692,7 +701,7 @@ describe("ScriptExecutor - Beefy [FORKED CHAIN]", function () {
         message = await initialize(message);
 
         // revoke the allowance for the token to the executor contract
-        await mooToken.approve(executor.address, ethers.utils.parseEther("0"));
+        await mooToken.approve(executor.address, utils.parseEther("0"));
 
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
             "[ALLOWANCE][ACTION]"

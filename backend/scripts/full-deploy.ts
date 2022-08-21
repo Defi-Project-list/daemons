@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 import { contracts, printContracts } from "./daemons-contracts";
 import { deployDaemToken } from "./single-deployments/a1-daem-token";
 import { deployGasTank } from "./single-deployments/a2-gas-tank";
-import { deployTreasury } from "./single-deployments/a3-treasury";
+import { deployTreasury } from "./single-deployments/a3.2-treasury";
 import { deployVesting } from "./single-deployments/a4-vesting";
 import { deployGasPriceFeed } from "./single-deployments/a5-gas-price-feed";
 import { finalizeGasTank } from "./single-deployments/a6-finalize-gas-tank";
@@ -48,6 +48,8 @@ import { verifyMmAdvancedExecutor } from "./single-deployments/e1b-verify-mmadva
 import { verifyMmBaseExecutor } from "./single-deployments/d1b-verify-mmbase-executor";
 import { verifyTransferExecutor } from "./single-deployments/c1b-verify-transfer-executor";
 import { verifySwapperExecutor } from "./single-deployments/b1b-verify-swapper-executor";
+import { deployUniswapV2LiquidityManager } from "./single-deployments/a3.1-uniswap-liquidity-manager";
+import { verifyVesting } from "./single-deployments/a4b-verify-vesting";
 
 async function deployDaemons() {
     // display deployer address and its balance
@@ -66,27 +68,34 @@ async function deployDaemons() {
     let currentContracts = contracts[currentChain];
     printContracts(currentContracts);
 
+    const oneMonth = () => 60 * 60 * 24 * 30;
+    const now = () => Math.floor(new Date().getTime() / 1000);
+    const vestingStart = now() + oneMonth(); // vesting starts one month from today
+    const vestingDuration = oneMonth() * 48; // vesting lasts 4 years
+
     // deploy side contracts
     currentContracts = await deployDaemToken(currentContracts);
     currentContracts = await deployGasTank(currentContracts);
-    currentContracts = await deployTreasury(currentContracts);
-    currentContracts = await deployVesting(currentContracts);
     currentContracts = await deployGasPriceFeed(currentContracts);
+    currentContracts = await deployVesting(currentContracts, vestingStart, vestingDuration);
+    currentContracts = await deployUniswapV2LiquidityManager(currentContracts);
+    currentContracts = await deployTreasury(currentContracts);
     await finalizeGasTank(currentContracts);
     await initializeToken(currentContracts);
+
+    /** NOTE: LP proportions must be manually set!! */
+    const amountETH = ethers.utils.parseEther("0.1");
+    const amountDAEM = ethers.utils.parseEther("150");
+    await createLP(currentContracts, amountETH, amountDAEM);
+    currentContracts = await retrieveLPAddress(currentContracts);
+    //await vestTokens(currentContracts, owner);
 
     // verify side contracts
     await verifyDaemToken(currentContracts);
     await verifyGasTank(currentContracts);
     await verifyTreasury(currentContracts);
     await verifyGasPriceFeed(currentContracts);
-
-    /** NOTE: LP proportions must be manually set!! */
-    const amountETH = ethers.utils.parseEther("5");
-    const amountDAEM = ethers.utils.parseEther("5");
-    await createLP(currentContracts, amountETH, amountDAEM);
-    currentContracts = await retrieveLPAddress(currentContracts);
-    await vestTokens(currentContracts, owner);
+    await verifyVesting(currentContracts, vestingStart, vestingDuration);
 
     // deploy swapper executor
     currentContracts = await deploySwapperExecutor(currentContracts);

@@ -7,13 +7,16 @@ export const createLP = async (
     amountDAEM: BigNumber
 ): Promise<void> => {
     const treasury = await getContract(contracts, "Treasury");
+    await treasury.preliminaryCheck();
+
+    const token = await getContract(contracts, "DaemonsToken");
+    const liquidityManager = await getContract(contracts, "ILiquidityManager");
+
+    console.log(`Approving LiquidityManager for ${amountDAEM.toString()} DAEM`);
+    await(await token.approve(liquidityManager.address, amountDAEM)).wait();
 
     console.log("Creating LP");
-    let tx = await treasury.createLP(amountDAEM, { value: amountETH });
+    let tx = await liquidityManager.createLP(amountDAEM, treasury.address, { value: amountETH });
     await tx.wait();
     console.log(`LP created`);
-
-    console.log(`Checking treasury`);
-    await treasury.preliminaryCheck();
-    console.log(`Treasury can operate`);
 };

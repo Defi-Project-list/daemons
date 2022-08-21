@@ -13,6 +13,7 @@ describe("Treasury [FORKED CHAIN]", function () {
     let user1: SignerWithAddress;
     let gasTank: SignerWithAddress;
     let treasury: Contract;
+    let liquidityManager: Contract;
     let daemToken: Contract;
 
     let snapshotId: string;
@@ -60,13 +61,27 @@ describe("Treasury [FORKED CHAIN]", function () {
             "0x1b02da8cb0d097eb8d57a175b88c7d8b47997506"
         );
 
+        // create liquidity manager
+        const LiquidityManager = await ethers.getContractFactory("UniswapV2LiquidityManager");
+        liquidityManager = await LiquidityManager.deploy(
+            daemToken.address,
+            quickswapRouter.address
+        );
+
         // Treasury contract
         const TreasuryContract = await ethers.getContractFactory("Treasury");
         treasury = await TreasuryContract.deploy(
             daemToken.address,
             gasTank.address,
-            quickswapRouter.address
+            liquidityManager.address
         );
+
+        // create LP
+        const ETHAmount = utils.parseEther("2000");
+        const DAEMAmount = utils.parseEther("2000");
+        await daemToken.mint(owner.address, DAEMAmount);
+        await daemToken.approve(liquidityManager.address, utils.parseEther("2000"));
+        await liquidityManager.createLP(DAEMAmount, treasury.address, { value: ETHAmount });
 
         // add some tokens to treasury
         await daemToken.mint(treasury.address, ethers.utils.parseEther("2500"));
@@ -77,12 +92,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         // get a snapshot of the current state so to speed up tests
         snapshotId = await network.provider.send("evm_snapshot", []);
     });
-
-    const createLp = async () => {
-        const ETHAmount = utils.parseEther("2000");
-        const DAEMAmount = utils.parseEther("2000");
-        await treasury.connect(owner).createLP(DAEMAmount, { value: ETHAmount });
-    };
 
     describe("Owner controlled setters", function () {
         it("can change commission percentage", async () => {
@@ -183,11 +192,41 @@ describe("Treasury [FORKED CHAIN]", function () {
                 "POL must be at least 2.5%"
             );
         });
+
+        it("whenever liquidity manager is changed, treasury will give it allowance", async () => {
+            // the allowance for the current LM must be set
+            const currentLMAllowance = await daemToken.allowance(
+                treasury.address,
+                liquidityManager.address
+            );
+            expect(currentLMAllowance.gt(0)).to.equal(true);
+
+            // create another liquidity manager and set it to the treasury
+            const LiquidityManager = await ethers.getContractFactory("UniswapV2LiquidityManager");
+            const liquidityManager2 = await LiquidityManager.deploy(
+                daemToken.address,
+                "0x1b02da8cb0d097eb8d57a175b88c7d8b47997506"
+            );
+            await treasury.setLiquidityManager(liquidityManager2.address);
+
+            // the allowance for the previous LM has been revoked
+            const previousLMAllowance = await daemToken.allowance(
+                treasury.address,
+                liquidityManager.address
+            );
+            expect(previousLMAllowance.toNumber()).to.equal(0);
+
+            // the allowance for the new LM has been granted
+            const newLMAllowance = await daemToken.allowance(
+                treasury.address,
+                liquidityManager2.address
+            );
+            expect(newLMAllowance.gt(0)).to.equal(true);
+        });
     });
 
     describe("Rewards payouts requests", function () {
         it("only gas tank can initialize payout requests", async () => {
-            await createLp();
             const amountEth = ethers.utils.parseEther("1.0");
             const amountTip = ethers.utils.parseEther("1.0");
 
@@ -197,7 +236,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         });
 
         it("payout causes tokens to be sent to the user", async () => {
-            await createLp();
             const amountEth = ethers.utils.parseEther("1.0");
             const amountTip = ethers.utils.parseEther("1.0");
 
@@ -216,7 +254,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         });
 
         it("payout causes ETH to be distributed into pools accordingly", async () => {
-            await createLp();
             const amountEth = ethers.utils.parseEther("1.0");
             const amountTip = ethers.utils.parseEther("1.0");
 
@@ -233,7 +270,6 @@ describe("Treasury [FORKED CHAIN]", function () {
 
     describe("Staking payouts requests", function () {
         it("only gas tank can initialize staking payout requests", async () => {
-            await createLp();
             const amountEth = ethers.utils.parseEther("1.0");
             const amountTip = ethers.utils.parseEther("1.0");
 
@@ -243,7 +279,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         });
 
         it("staking payout causes tokens to staked on behalf of the user", async () => {
-            await createLp();
             const amountEth = ethers.utils.parseEther("1.0");
             const amountTip = ethers.utils.parseEther("1.0");
 
@@ -262,7 +297,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         });
 
         it("staking payout causes ETH to be distributed into pools accordingly", async () => {
-            await createLp();
             const amountEth = ethers.utils.parseEther("1.0");
             const amountTip = ethers.utils.parseEther("1.0");
 
@@ -277,7 +311,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         });
 
         it("staking payout doesn't change treasury balance", async () => {
-            await createLp();
             const initialTreasuryBalance = await daemToken.balanceOf(treasury.address);
             const initialAmountOfTokensToDistribute = await treasury.tokensForDistribution();
 
@@ -309,8 +342,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         const oneDay = 60 * 60 * 24;
 
         it("the user cannot stake funds they don't own", async () => {
-            await createLp();
-
             const amount = ethers.utils.parseEther("1.0");
             await expect(treasury.stake(amount)).to.be.revertedWith(
                 "ERC20: transfer amount exceeds balance"
@@ -320,8 +351,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         });
 
         it("the user cannot withdraw funds they don't own", async () => {
-            await createLp();
-
             const amount = ethers.utils.parseEther("1.0");
             await expect(treasury.withdraw(amount)).to.be.revertedWith("Insufficient staked funds");
 
@@ -329,8 +358,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         });
 
         it("is not possible to withdraw ALL funds from the treasury", async () => {
-            await createLp();
-
             // stake payout for user1 and wait some time
             const amountEth = ethers.utils.parseEther("1.0");
             const zero = ethers.utils.parseEther("0");
@@ -346,8 +373,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         });
 
         it("user balance is updated after staking and withdrawing", async () => {
-            await createLp();
-
             // add some ETH dust that will stay in the treasury
             const zero = ethers.utils.parseEther("0");
             await treasury.connect(gasTank).stakePayout(owner.address, zero, { value: 100000 });
@@ -373,8 +398,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         });
 
         it("reward rate depends on the amount of ETH in the treasury and redistributionInterval", async () => {
-            await createLp();
-
             const amountEth = ethers.utils.parseEther("1.0");
             const zero = ethers.utils.parseEther("0");
             await treasury.connect(gasTank).stakePayout(user1.address, zero, { value: amountEth });
@@ -392,8 +415,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         });
 
         it("reward is accumulated over time", async () => {
-            await createLp();
-
             // stake payout for user1.
             const amountEth = ethers.utils.parseEther("1.0");
             const zero = ethers.utils.parseEther("0");
@@ -440,7 +461,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         };
 
         it("reward zeroed after claiming", async () => {
-            await createLp();
             await stakePayoutAndWaitForOneDay();
 
             // let's claim the reward
@@ -458,7 +478,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         });
 
         it("rewards are accounted each time are claimed", async () => {
-            await createLp();
             await stakePayoutAndWaitForOneDay();
 
             // let's claim the reward
@@ -470,8 +489,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         });
 
         it("exit function gets both reward and staked amount", async () => {
-            await createLp();
-
             // add some ETH dust that will stay in the treasury
             await treasury.connect(gasTank).stakePayout(owner.address, 0, { value: 10000 });
 
@@ -496,8 +513,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         });
 
         it("user can stake and unstake", async () => {
-            await createLp();
-
             // add some ETH dust that will stay in the treasury
             await treasury.connect(gasTank).stakePayout(owner.address, 0, { value: 10000 });
 
@@ -540,7 +555,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         });
 
         it("user can compound the reward", async () => {
-            await createLp();
             const earnedReward = await stakePayoutAndWaitForOneDay();
 
             const quoteRewardToDAEM = await treasury.ethToDAEM(earnedReward);
@@ -560,7 +574,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         });
 
         it("compound fails if minAmountOut is too high", async () => {
-            await createLp();
             const earnedReward = await stakePayoutAndWaitForOneDay();
 
             const quoteRewardToDAEM = await treasury.ethToDAEM(earnedReward);
@@ -574,8 +587,6 @@ describe("Treasury [FORKED CHAIN]", function () {
 
     describe("Commissions", function () {
         it("owner can withdraw commission from the pool", async () => {
-            await createLp();
-
             const ownerInitialBalance = await provider.getBalance(owner.address);
 
             const amountEth = ethers.utils.parseEther("1.0");
@@ -603,112 +614,20 @@ describe("Treasury [FORKED CHAIN]", function () {
         });
     });
 
-    describe("shouldFundLP", function () {
-        it("shouldFundLP is true while LP contains <N% DAEM", async () => {
-            const DAEMTotalSupply = await daemToken.totalSupply();
-            const threshold = await treasury.PERCENTAGE_POL_TO_ENABLE_BUYBACK();
-
-            // supply * 10% - ε
-            const amountBelowThreshold = DAEMTotalSupply.mul(threshold).div(10000).sub(100000);
-            await treasury.createLP(amountBelowThreshold, { value: amountBelowThreshold });
-
-            expect((await treasury.percentageDAEMTokensStoredInLP()).toNumber()).to.equal(999);
-            expect(await treasury.shouldFundLP()).to.be.true;
-        });
-
-        it("shouldFundLP is false while LP contains >N% DAEM", async () => {
-            const DAEMTotalSupply = await daemToken.totalSupply();
-            const threshold = await treasury.PERCENTAGE_POL_TO_ENABLE_BUYBACK();
-
-            // supply * 10% + ε
-            const amountAboveThreshold = DAEMTotalSupply.mul(threshold).div(10000).add(100000);
-            await treasury.createLP(amountAboveThreshold, { value: amountAboveThreshold });
-
-            expect((await treasury.percentageDAEMTokensStoredInLP()).toNumber()).to.equal(1000);
-            expect(await treasury.shouldFundLP()).to.be.false;
-        });
-    });
-
     describe("Protocol Owned Liquidity", function () {
-        it("LP creation can only be executed by admin", async () => {
-            const ETHAmount = utils.parseEther("1.0");
-            const DAEMAmount = utils.parseEther("1500");
-
-            await expect(
-                treasury.connect(user1).createLP(DAEMAmount, { value: ETHAmount })
-            ).to.be.revertedWith("Ownable: caller is not the owner");
-        });
-
         it("LP funding can only be executed by admin", async () => {
             await expect(treasury.connect(user1).fundLP(0)).to.be.revertedWith(
                 "Ownable: caller is not the owner"
             );
         });
 
-        it("LP creation can only be executed once", async () => {
-            await createLp();
-            await expect(createLp()).to.be.revertedWith("PoL already initialized");
-        });
-
-        it("LP creation uses the passed ETH & DAEM", async () => {
-            // send some ETH to the treasury for the LP
-            const ETHAmount = utils.parseEther("1500");
-            const DAEMAmount = utils.parseEther("1500");
-
-            await treasury.connect(owner).createLP(DAEMAmount, { value: ETHAmount });
-
-            const ETHBalance = await provider.getBalance(treasury.address);
-            const DAEMBalance = await daemToken.balanceOf(treasury.address);
-            expect(ETHBalance).to.equal(ethers.utils.parseEther("0"));
-            expect(DAEMBalance).to.equal(ethers.utils.parseEther("1000")); // 2.5K - 1.5K
-        });
-
-        it("LP address is initially empty", async () => {
-            const polLp = await treasury.polLp();
-            expect(polLp).to.equal("0x0000000000000000000000000000000000000000");
-
-            await createLp();
-            await expect(createLp()).to.be.revertedWith("PoL already initialized");
-        });
-
-        it("LP address is set after creating LP", async () => {
-            await createLp();
-            const polLp = await treasury.polLp();
-            expect(polLp).to.not.equal("0x0000000000000000000000000000000000000000");
-        });
-
-        it("LP can be initialized manually as well", async () => {
-            await treasury.setPolLP("0x2e5b8db3de83d01fbc5caaa010a8ed45dee6bbdf");
-            const polLp = await treasury.polLp();
-            expect(polLp).to.not.equal("0x2e5b8db3de83d01fbc5caaa010a8ed45dee6bbdf");
-        });
-
-        it("LP can be not be initialized manually multiple times", async () => {
-            await treasury.setPolLP("0x2e5b8db3de83d01fbc5caaa010a8ed45dee6bbdf");
-            await expect(
-                treasury.setPolLP("0x2e5b8db3de83d01fbc5caaa010a8ed45dee6bbdf")
-            ).to.be.revertedWith("PoL already initialized");
-        });
-
-        it("LP funding cannot be performed before of LP creation", async () => {
-            await expect(treasury.connect(owner).fundLP(0)).to.be.revertedWith(
-                "PoL not initialized yet"
-            );
-        });
-
         it("LP funding cannot be performed if owned DAEM is > than threshold", async () => {
-            // create LP using ALL DAEM tokens
-            const DAEMTotalSupply = await daemToken.totalSupply();
-            await treasury.createLP(DAEMTotalSupply, { value: DAEMTotalSupply });
-
             await expect(treasury.connect(owner).fundLP(0)).to.be.revertedWith(
                 "Funding forbidden. Should buyback"
             );
         });
 
         it("LP funding fail if minAmountOut is too high", async () => {
-            await createLp();
-
             // add funds to the polPool by having the gasTank faking a payout
             const ETHAmount = utils.parseEther("1.0");
             const zero = ethers.utils.parseEther("0");
@@ -727,8 +646,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         });
 
         it("LP funding uses all the ETH in the polPool", async () => {
-            await createLp();
-
             // add funds to the polPool by having the gasTank faking a payout
             const ETHAmount = utils.parseEther("1.0");
             const zero = ethers.utils.parseEther("0");
@@ -746,14 +663,9 @@ describe("Treasury [FORKED CHAIN]", function () {
     });
 
     describe("Buybacks", function () {
-        it("Buybacks cannot be performed before of LP creation", async () => {
-            await expect(treasury.buybackDAEM(0)).to.be.revertedWith("PoL not initialized yet");
-        });
-
         it("buybacks are disabled if DAEM in LP is < than threshold", async () => {
-            // create LP using a tiny part of DAEM tokens
-            const amount = BigNumber.from(10000);
-            await treasury.createLP(amount, { value: amount });
+            // mint a lot of DAEM to trigger an LP funding instead of a buyback
+            await daemToken.mint(treasury.address, utils.parseEther("9999999"));
 
             await expect(treasury.buybackDAEM(0)).to.be.revertedWith(
                 "Buyback forbidden. Should fund"
@@ -761,8 +673,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         });
 
         it("buybacks fail if minAmountOut is too high", async () => {
-            await createLp();
-
             // add funds to the polPool by having the gasTank faking a payout
             const ETHAmount = utils.parseEther("1.0");
             const zero = ethers.utils.parseEther("0");
@@ -777,8 +687,6 @@ describe("Treasury [FORKED CHAIN]", function () {
         });
 
         it("buybacks purchases DAEM back using all the content of the PoLPool", async () => {
-            await createLp();
-
             // add funds to the polPool by having the gasTank faking a payout
             const ETHAmount = utils.parseEther("1.0");
             const zero = ethers.utils.parseEther("0");
@@ -799,23 +707,6 @@ describe("Treasury [FORKED CHAIN]", function () {
             const ownedDAEM = await daemToken.balanceOf(treasury.address);
             const minimumExpectedAmount = initiallyOwnedDAEM.add(amountMinusSlippage);
             expect(ownedDAEM.sub(minimumExpectedAmount).gte(0)).to.be.true;
-        });
-    });
-
-    describe("ethToDAEM", function () {
-        it("ethToDAEM requires PoL to be initialized", async () => {
-            const amount = ethers.utils.parseEther("15");
-            await expect(treasury.ethToDAEM(amount)).to.be.revertedWith("PoL not initialized");
-        });
-
-        it("ethToDAEM returns the right conversion from ETH to DAEM tokens", async () => {
-            await createLp();
-
-            const amount = ethers.utils.parseEther("1");
-            const expectedAmount = ethers.utils.parseEther("0.996503243133298050");
-
-            const conversion = await treasury.ethToDAEM(amount);
-            expect(conversion).to.equal(expectedAmount);
         });
     });
 });

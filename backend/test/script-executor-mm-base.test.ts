@@ -12,7 +12,7 @@ import {
 import hre from "hardhat";
 const chainId = hre.network.config.chainId;
 
-describe("ScriptExecutor - Money Market Base", function () {
+describe("ScriptExecutor - Money Market Base [FORKED CHAIN]", function () {
     let owner: SignerWithAddress;
     let otherWallet: SignerWithAddress;
 
@@ -20,10 +20,12 @@ describe("ScriptExecutor - Money Market Base", function () {
     let gasTank: Contract;
     let executor: Contract;
     let DAEMToken: Contract;
+    let WMATICToken: Contract;
     let fooToken: Contract;
     let fooAToken: Contract;
     let mockMoneyMarketPool: Contract;
-    let mockRouter: Contract;
+
+    const quickswapRouterAddress = "0x1b02da8cb0d097eb8d57a175b88c7d8b47997506";
 
     // signature components
     let sigR: string;
@@ -86,7 +88,28 @@ describe("ScriptExecutor - Money Market Base", function () {
         snapshotId = await hre.network.provider.send("evm_snapshot", []);
     });
 
+    this.afterAll(async () => {
+        // Reset the fork
+        await hre.network.provider.request({
+            method: "hardhat_reset",
+            params: []
+        });
+    });
+
     this.beforeAll(async () => {
+        console.log(`Forking Polygon network`);
+        await hre.network.provider.request({
+            method: "hardhat_reset",
+            params: [
+                {
+                    forking: {
+                        jsonRpcUrl: process.env.POLYGON_RPC!,
+                        blockNumber: 29483920
+                    }
+                }
+            ]
+        });
+
         // get main wallet
         [owner, otherWallet] = await ethers.getSigners();
 
@@ -101,6 +124,7 @@ describe("ScriptExecutor - Money Market Base", function () {
         fooToken = await MockTokenContract.deploy("Foo Token", "FOO");
         fooAToken = await MockTokenContract.deploy("Foo A Token", "aFOO");
         const fooDebtToken = await MockTokenContract.deploy("Foo DebtToken", "dFOO");
+        WMATICToken = await ethers.getContractAt("MockToken", "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270");
 
         // Gas Price Feed contract
         const GasPriceFeedContract = await ethers.getContractFactory("GasPriceFeed");
@@ -133,17 +157,11 @@ describe("ScriptExecutor - Money Market Base", function () {
         await gasTank.addExecutor(executor.address);
         await gasTank.setDAEMToken(DAEMToken.address);
 
-        // Mock external contract
-        const MockRouterContract = await ethers.getContractFactory("MockUniswapV2Router");
-        mockRouter = await MockRouterContract.deploy();
-        const MockFactoryContract = await ethers.getContractFactory("MockUniswapV2Factory");
-        const mockFactory = await MockFactoryContract.deploy();
-        await mockRouter.setFactory(mockFactory.address);
-        const wETH = await mockRouter.WETH();
-        await mockFactory.setFakePair(
+        // create liquidity manager
+        const LiquidityManager = await ethers.getContractFactory("UniswapV2LiquidityManager");
+        const liquidityManager = await LiquidityManager.deploy(
             DAEMToken.address,
-            wETH,
-            "0x2e5b8db3de83d01fbc5caaa010a8ed45dee6bbdf" // totally random address. It won't be used due to the mocks
+            quickswapRouterAddress // quickswap router
         );
 
         // Treasury contract
@@ -151,16 +169,18 @@ describe("ScriptExecutor - Money Market Base", function () {
         const treasury = await TreasuryContract.deploy(
             DAEMToken.address,
             gasTank.address,
-            mockRouter.address
+            liquidityManager.address
         );
+
+        // create LP
+        const ETHAmount = ethers.utils.parseEther("2000");
+        const DAEMAmount = ethers.utils.parseEther("2000");
+        await DAEMToken.mint(owner.address, DAEMAmount);
+        await DAEMToken.approve(liquidityManager.address, ethers.utils.parseEther("2000"));
+        await liquidityManager.createLP(DAEMAmount, treasury.address, { value: ETHAmount });
 
         // add some tokens to treasury
         DAEMToken.mint(treasury.address, ethers.utils.parseEther("110"));
-
-        // create token LP
-        const ethAmount = ethers.utils.parseEther("5");
-        const daemAmount = ethers.utils.parseEther("10");
-        await treasury.createLP(daemAmount, { value: ethAmount });
 
         // set treasury address in gas tank
         await gasTank.setTreasury(treasury.address);
@@ -184,9 +204,9 @@ describe("ScriptExecutor - Money Market Base", function () {
         message.kontract = mockMoneyMarketPool.address;
         message.healthFactor.kontract = mockMoneyMarketPool.address;
         message.balance.token = fooToken.address;
-        message.price.tokenA = fooToken.address;
+        message.price.tokenA = WMATICToken.address;
         message.price.tokenB = DAEMToken.address;
-        message.price.router = mockRouter.address;
+        message.price.router = quickswapRouterAddress;
         message.follow.executor = executor.address; // following itself, it'll never be executed when condition is enabled
 
         // Sign message

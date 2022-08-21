@@ -2,22 +2,21 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { BigNumber, ethers } from "ethers";
 import { DaemonsContracts, getContract } from "../daemons-contracts";
 
-
 interface IBeneficiary {
     address: string;
     amount: BigNumber;
-  }
+}
 
-  const beneficiaries: IBeneficiary[] = [
+const beneficiaries: IBeneficiary[] = [
     {
-      address: '0x000000000000000000000000000000000000dead',
-      amount: ethers.utils.parseEther("125000000"),
+        address: "0xC35C79aE067576FcC474E51B18c4eE4Ab36C0274",
+        amount: ethers.utils.parseEther("125000000")
     },
     {
-      address: '0x00000000000000000000000000000000deaddead',
-      amount: ethers.utils.parseEther("125000000"),
-    },
-  ];
+        address: "0x1c00145BDE2720abf45D77B0779Ced52f6FF12B9",
+        amount: ethers.utils.parseEther("124999995")
+    }
+];
 
 export const vestTokens = async (
     contracts: DaemonsContracts,
@@ -37,21 +36,17 @@ export const vestTokens = async (
         totalAmountForBeneficiaries = totalAmountForBeneficiaries.add(b.amount);
     });
 
-    if (ownerBalance.gt(totalAmountForBeneficiaries)) {
-        throw new Error("Not all the owner balance seems to be distributed");
-    }
     if (ownerBalance.lt(totalAmountForBeneficiaries)) {
         throw new Error("Distribution amount is higher than owner balance");
     }
     console.log(`Vesting checks passed`);
 
-    // transfer total amount to vesting contract
-    await token.transfer(vesting.address, ownerBalance);
-    console.log(`${ownerBalance.toString()} tokens have been sent to the vesting contract`);
+    // give allowance to vesting contract
+    await (await token.approve(vesting.address, totalAmountForBeneficiaries)).wait();
 
     // set vesting terms for beneficiaries
     for (const beneficiary of beneficiaries) {
-        await vesting.addBeneficiary(beneficiary.address, beneficiary.amount);
+        await vesting.addBeneficiary(token.address, beneficiary.address, beneficiary.amount);
         console.log(
             `Beneficiary ${
                 beneficiary.address

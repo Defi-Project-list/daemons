@@ -6,7 +6,7 @@ export const initializeToken = async (contracts: DaemonsContracts): Promise<void
     const treasury = await getContract(contracts, "Treasury");
     const vesting = await getContract(contracts, "Vesting");
     const token = await getContract(contracts, "DaemonsToken");
-    await token.initialize(treasury.address, vesting.address);
+    await (await token.initialize(treasury.address, vesting.address)).wait();
 
     console.log(`Token initialized`);
 };
