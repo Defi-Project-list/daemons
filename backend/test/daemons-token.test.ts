@@ -6,14 +6,13 @@ import { ethers } from "hardhat";
 describe("DAEM Token", function () {
   let owner: SignerWithAddress;
   let vesting: SignerWithAddress;
-  let otherUser: SignerWithAddress;
   let gasTank: SignerWithAddress;
   let treasury: Contract;
   let DAEM: Contract;
 
   this.beforeEach(async () => {
     // get some wallets
-    [owner, vesting, otherUser, gasTank] = await ethers.getSigners();
+    [owner, vesting, gasTank] = await ethers.getSigners();
 
     // instantiate BAL token contract
     const DaemonsTokenContract = await ethers.getContractFactory(

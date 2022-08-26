@@ -18,8 +18,8 @@ describe("ScriptExecutor - Pass [FORKED CHAIN]", function () {
     let WMATICToken: Contract;
     let fooToken: Contract;
     let fooAToken: Contract;
-    let mockMoneyMarketPool: Contract;
 
+    const aavePoolAddress = "0x794a61358D6845594F94dc1DB02A252b5b4814aD";
     const quickswapRouterAddress = "0x1b02da8cb0d097eb8d57a175b88c7d8b47997506";
 
     // signature components
@@ -112,19 +112,29 @@ describe("ScriptExecutor - Pass [FORKED CHAIN]", function () {
         DAEMToken = await MockTokenContract.deploy("Foo Token", "FOO");
         fooToken = await MockTokenContract.deploy("Foo Token", "FOO");
         fooAToken = await MockTokenContract.deploy("Foo A Token", "aFOO");
-        const fooDebtToken = await MockTokenContract.deploy("Foo DebtToken", "dFOO");
-        WMATICToken = await ethers.getContractAt("MockToken", "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270");
+        WMATICToken = await ethers.getContractAt(
+            "MockToken",
+            "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
+        );
 
         // Gas Price Feed contract
         const GasPriceFeedContract = await ethers.getContractFactory("GasPriceFeed");
         const gasPriceFeed = await GasPriceFeedContract.deploy();
 
-        // Mock Money Market Pool contract
-        const MockMoneyMarketPoolContract = await ethers.getContractFactory("MockMoneyMarketPool");
-        mockMoneyMarketPool = await MockMoneyMarketPoolContract.deploy(
-            fooToken.address,
-            fooAToken.address,
-            fooDebtToken.address
+        // Deposit and Borrow some tokens from the MM to change HealthFactor
+        const aaveMoneyMarket = await ethers.getContractAt("IMoneyMarket", aavePoolAddress);
+        const wMATICAmount = ethers.utils.parseEther("100.0");
+        await owner.sendTransaction({ to: WMATICToken.address, value: wMATICAmount });
+        await WMATICToken.approve(aaveMoneyMarket.address, wMATICAmount);
+        // deposit 100 MATIC
+        await aaveMoneyMarket.deposit(WMATICToken.address, wMATICAmount, owner.address, 0);
+        // borrow 0.0001 BTC, resulting HF: 13.4
+        await aaveMoneyMarket.borrow(
+            "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6",
+            10000,
+            2,
+            0,
+            owner.address
         );
 
         // Executor contract
@@ -187,7 +197,7 @@ describe("ScriptExecutor - Pass [FORKED CHAIN]", function () {
         const message = { ...baseMessage };
         message.user = owner.address;
         message.executor = executor.address;
-        message.healthFactor.kontract = mockMoneyMarketPool.address;
+        message.healthFactor.kontract = aavePoolAddress;
         message.balance.token = fooToken.address;
         message.price.tokenA = WMATICToken.address;
         message.price.tokenB = DAEMToken.address;
@@ -283,7 +293,6 @@ describe("ScriptExecutor - Pass [FORKED CHAIN]", function () {
             "[FREQUENCY_CONDITION][TMP]"
         );
     });
-
 
     /* ========== REVOCATION CONDITION CHECK ========== */
 
@@ -499,9 +508,9 @@ describe("ScriptExecutor - Pass [FORKED CHAIN]", function () {
     it("fails if current health factor is lower than threshold when looking for GreaterThan", async () => {
         let message: IPassAction = JSON.parse(JSON.stringify(baseMessage));
         // enabling the health factor condition
-        // the mock MM pool always return current HF:2
+        // the MM pool has HF:13.4 due to the amount deposited and borrowed
         message.healthFactor.enabled = true;
-        message.healthFactor.amount = ethers.utils.parseEther("2.1");
+        message.healthFactor.amount = ethers.utils.parseEther("15");
         message.healthFactor.comparison = ComparisonType.GreaterThan;
         message = await initialize(message);
 
@@ -513,7 +522,7 @@ describe("ScriptExecutor - Pass [FORKED CHAIN]", function () {
     it("fails if current health factor is higher than threshold when looking for LessThan", async () => {
         let message: IPassAction = JSON.parse(JSON.stringify(baseMessage));
         // enabling the health factor condition
-        // the mock MM pool always return current HF:2
+        // the MM pool has HF:13.4 due to the amount deposited and borrowed
         message.healthFactor.enabled = true;
         message.healthFactor.amount = ethers.utils.parseEther("1.9");
         message.healthFactor.comparison = ComparisonType.LessThan;

@@ -2,7 +2,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { BigNumber, Contract } from "ethers";
 import { ethers } from "hardhat";
-import { AmountType, ComparisonType } from "@daemons-fi/shared-definitions";
+import { AmountType, ComparisonType, InterestRateMode } from "@daemons-fi/shared-definitions";
 import {
     mmBaseDomain,
     IMMBaseAction,
@@ -21,10 +21,10 @@ describe("ScriptExecutor - Money Market Base [FORKED CHAIN]", function () {
     let executor: Contract;
     let DAEMToken: Contract;
     let WMATICToken: Contract;
+    let aWMATICToken: Contract;
     let fooToken: Contract;
-    let fooAToken: Contract;
-    let mockMoneyMarketPool: Contract;
 
+    const aavePoolAddress = "0x794a61358D6845594F94dc1DB02A252b5b4814aD";
     const quickswapRouterAddress = "0x1b02da8cb0d097eb8d57a175b88c7d8b47997506";
 
     // signature components
@@ -120,22 +120,41 @@ describe("ScriptExecutor - Money Market Base [FORKED CHAIN]", function () {
 
         // Mock token contracts
         const MockTokenContract = await ethers.getContractFactory("MockToken");
-        DAEMToken = await MockTokenContract.deploy("Foo Token", "FOO");
+        DAEMToken = await MockTokenContract.deploy("DAEM", "DAEM");
         fooToken = await MockTokenContract.deploy("Foo Token", "FOO");
-        fooAToken = await MockTokenContract.deploy("Foo A Token", "aFOO");
-        const fooDebtToken = await MockTokenContract.deploy("Foo DebtToken", "dFOO");
-        WMATICToken = await ethers.getContractAt("MockToken", "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270");
+        WMATICToken = await ethers.getContractAt(
+            "MockToken",
+            "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
+        );
+        aWMATICToken = await ethers.getContractAt(
+            "MockToken",
+            "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97"
+        );
 
         // Gas Price Feed contract
         const GasPriceFeedContract = await ethers.getContractFactory("GasPriceFeed");
         const gasPriceFeed = await GasPriceFeedContract.deploy();
 
-        // Mock Money Market Pool contract
-        const MockMoneyMarketPoolContract = await ethers.getContractFactory("MockMoneyMarketPool");
-        mockMoneyMarketPool = await MockMoneyMarketPoolContract.deploy(
-            fooToken.address,
-            fooAToken.address,
-            fooDebtToken.address
+        // * * * * TESTING STRATEGY * * * *
+        // We'll get 200 WMATIC and deposit 100 of them, so to have
+        // 100 WMATIC + 100 aWMATIC
+        // We'll also borrow 0.0001 BTC, so to have a 13.4 Health Factor
+        const aaveMoneyMarket = await ethers.getContractAt("IMoneyMarket", aavePoolAddress);
+        await owner.sendTransaction({
+            to: WMATICToken.address,
+            value: ethers.utils.parseEther("200.0")
+        });
+        await WMATICToken.approve(aaveMoneyMarket.address, ethers.utils.parseEther("99999"));
+        // deposit 100 MATIC
+        const wMATICAmount = ethers.utils.parseEther("100.0");
+        await aaveMoneyMarket.deposit(WMATICToken.address, wMATICAmount, owner.address, 0);
+        // borrow 0.0001 BTC, resulting HF: 13.4
+        await aaveMoneyMarket.borrow(
+            "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6",
+            10000,
+            InterestRateMode.Variable,
+            0,
+            owner.address
         );
 
         // Executor contract
@@ -146,12 +165,11 @@ describe("ScriptExecutor - Money Market Base [FORKED CHAIN]", function () {
 
         // Grant allowance
         await DAEMToken.approve(executor.address, ethers.utils.parseEther("1000000"));
-        await fooToken.approve(executor.address, ethers.utils.parseEther("1000000"));
-        await fooAToken.approve(executor.address, ethers.utils.parseEther("1000000"));
+        await WMATICToken.approve(executor.address, ethers.utils.parseEther("1000000"));
+        await aWMATICToken.approve(executor.address, ethers.utils.parseEther("1000000"));
 
         // Generate balance
         await DAEMToken.mint(owner.address, ethers.utils.parseEther("250"));
-        await fooToken.mint(owner.address, baseMessage.amount);
 
         // register executor in gas tank
         await gasTank.addExecutor(executor.address);
@@ -199,10 +217,10 @@ describe("ScriptExecutor - Money Market Base [FORKED CHAIN]", function () {
         const message = { ...baseMessage };
         message.user = owner.address;
         message.executor = executor.address;
-        message.token = fooToken.address;
-        message.aToken = fooAToken.address;
-        message.kontract = mockMoneyMarketPool.address;
-        message.healthFactor.kontract = mockMoneyMarketPool.address;
+        message.token = WMATICToken.address;
+        message.aToken = aWMATICToken.address;
+        message.kontract = aavePoolAddress;
+        message.healthFactor.kontract = aavePoolAddress;
         message.balance.token = fooToken.address;
         message.price.tokenA = WMATICToken.address;
         message.price.tokenB = DAEMToken.address;
@@ -253,10 +271,13 @@ describe("ScriptExecutor - Money Market Base [FORKED CHAIN]", function () {
 
         await executor.execute(message, sigR, sigS, sigV);
 
-        const tokenBalance = await fooToken.balanceOf(owner.address);
+        // NOTE: initial balance was 100 WMATIC + 100 aWMATIC
+        const tokenBalance = await WMATICToken.balanceOf(owner.address);
         expect(tokenBalance).to.equal(ethers.utils.parseEther("5"));
-        const aTokenBalance = await fooAToken.balanceOf(owner.address);
-        expect(aTokenBalance).to.equal(ethers.utils.parseEther("95"));
+        const aTokenBalance = await aWMATICToken.balanceOf(owner.address);
+        // increased a bit due to interests
+        expect(aTokenBalance.gte(ethers.utils.parseEther("195"))).to.equal(true);
+        expect(aTokenBalance.lte(ethers.utils.parseEther("195.001"))).to.equal(true);
     });
 
     it("supplies the tokens - PRC", async () => {
@@ -268,28 +289,29 @@ describe("ScriptExecutor - Money Market Base [FORKED CHAIN]", function () {
 
         await executor.execute(message, sigR, sigS, sigV);
 
-        const tokenBalance = await fooToken.balanceOf(owner.address);
+        // NOTE: initial balance was 100 WMATIC + 100 aWMATIC
+        const tokenBalance = await WMATICToken.balanceOf(owner.address);
         expect(tokenBalance).to.equal(ethers.utils.parseEther("35"));
-        const aTokenBalance = await fooAToken.balanceOf(owner.address);
-        expect(aTokenBalance).to.equal(ethers.utils.parseEther("65"));
+        const aTokenBalance = await aWMATICToken.balanceOf(owner.address);
+        // increased a bit due to interests
+        expect(aTokenBalance.gte(ethers.utils.parseEther("165"))).to.equal(true);
+        expect(aTokenBalance.lte(ethers.utils.parseEther("165.001"))).to.equal(true);
     });
 
     it("withdraws the tokens - ABS", async () => {
         let message: IMMBaseAction = JSON.parse(JSON.stringify(baseMessage));
-        message.amount = ethers.utils.parseEther("95");
+        message.amount = ethers.utils.parseEther("25");
         message.action = BaseMoneyMarketActionType.Withdraw;
         message = await initialize(message);
 
-        // give some aTokens to the user and get rid of the tokens
-        await fooAToken.mint(owner.address, ethers.utils.parseEther("100"));
-        await fooToken.justBurn(owner.address, ethers.utils.parseEther("100"));
-
         await executor.execute(message, sigR, sigS, sigV);
 
-        const aTokenBalance = await fooAToken.balanceOf(owner.address);
-        expect(aTokenBalance).to.equal(ethers.utils.parseEther("5"));
-        const tokenBalance = await fooToken.balanceOf(owner.address);
-        expect(tokenBalance).to.equal(ethers.utils.parseEther("95"));
+        // NOTE: initial balance was 100 WMATIC + 100 aWMATIC
+        const aTokenBalance = await aWMATICToken.balanceOf(owner.address);
+        expect(aTokenBalance.gte(ethers.utils.parseEther("75"))).to.equal(true);
+        expect(aTokenBalance.lte(ethers.utils.parseEther("75.001"))).to.equal(true);
+        const tokenBalance = await WMATICToken.balanceOf(owner.address);
+        expect(tokenBalance).to.equal(ethers.utils.parseEther("125"));
     });
 
     it("withdraws the tokens - PRC", async () => {
@@ -299,22 +321,20 @@ describe("ScriptExecutor - Money Market Base [FORKED CHAIN]", function () {
         message.action = BaseMoneyMarketActionType.Withdraw;
         message = await initialize(message);
 
-        // give some aTokens to the user and get rid of the tokens
-        await fooAToken.mint(owner.address, ethers.utils.parseEther("100"));
-        await fooToken.justBurn(owner.address, ethers.utils.parseEther("100"));
-
         await executor.execute(message, sigR, sigS, sigV);
 
-        const aTokenBalance = await fooAToken.balanceOf(owner.address);
-        expect(aTokenBalance).to.equal(ethers.utils.parseEther("35"));
-        const tokenBalance = await fooToken.balanceOf(owner.address);
-        expect(tokenBalance).to.equal(ethers.utils.parseEther("65"));
+        // NOTE: initial balance was 100 WMATIC + 100 aWMATIC
+        const aTokenBalance = await aWMATICToken.balanceOf(owner.address);
+        expect(aTokenBalance.gte(ethers.utils.parseEther("35"))).to.equal(true);
+        expect(aTokenBalance.lte(ethers.utils.parseEther("35.001"))).to.equal(true);
+        const tokenBalance = await WMATICToken.balanceOf(owner.address);
+        expect(tokenBalance.gte(ethers.utils.parseEther("165"))).to.equal(true);
+        expect(tokenBalance.lte(ethers.utils.parseEther("165.001"))).to.equal(true);
     });
 
     it("execution triggers reward in gas tank", async () => {
         let message: IMMBaseAction = JSON.parse(JSON.stringify(baseMessage));
         message = await initialize(message);
-        await fooToken.mint(owner.address, ethers.utils.parseEther("55"));
 
         // gasTank should NOT have a claimable amount now for user1
         expect((await gasTank.claimable(otherWallet.address)).toNumber()).to.equal(0);
@@ -327,76 +347,73 @@ describe("ScriptExecutor - Money Market Base [FORKED CHAIN]", function () {
 
     it("supplying is cheap - ABS", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000288755247222930 ETH.
+        // execute the script was 0.000347002030189174 ETH.
 
         let message: IMMBaseAction = JSON.parse(JSON.stringify(baseMessage));
         message.action = BaseMoneyMarketActionType.Deposit;
         message = await initialize(message);
-        await fooToken.mint(owner.address, ethers.utils.parseEther("200"));
 
         const initialBalance = await owner.getBalance();
         await executor.execute(message, sigR, sigS, sigV);
         const spentAmount = initialBalance.sub(await owner.getBalance());
 
-        const threshold = ethers.utils.parseEther("0.0003");
+        const threshold = ethers.utils.parseEther("0.00036");
         console.log("Spent for supply:", spentAmount.toString());
         expect(spentAmount.lte(threshold)).to.equal(true);
     });
 
     it("supplying is cheap - PRC", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000290074093311712 ETH.
+        // execute the script was 0.000353075030717525 ETH.
 
         let message: IMMBaseAction = JSON.parse(JSON.stringify(baseMessage));
         message.action = BaseMoneyMarketActionType.Deposit;
         message.typeAmt = AmountType.Percentage;
         message.amount = BigNumber.from(5000);
         message = await initialize(message);
-        await fooToken.mint(owner.address, ethers.utils.parseEther("200"));
 
         const initialBalance = await owner.getBalance();
         await executor.execute(message, sigR, sigS, sigV);
         const spentAmount = initialBalance.sub(await owner.getBalance());
 
-        const threshold = ethers.utils.parseEther("0.0003");
+        const threshold = ethers.utils.parseEther("0.00036");
         console.log("Spent for supply:", spentAmount.toString());
         expect(spentAmount.lte(threshold)).to.equal(true);
     });
 
     it("withdrawing is cheap - ABS", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000200384595992448 ETH.
+        // execute the script was 0.000461633040162071 ETH.
 
         let message: IMMBaseAction = JSON.parse(JSON.stringify(baseMessage));
         message.action = BaseMoneyMarketActionType.Withdraw;
+        message.amount = ethers.utils.parseEther("10");
         message = await initialize(message);
-        await fooAToken.mint(owner.address, ethers.utils.parseEther("200"));
 
         const initialBalance = await owner.getBalance();
         await executor.execute(message, sigR, sigS, sigV);
         const spentAmount = initialBalance.sub(await owner.getBalance());
 
-        const threshold = ethers.utils.parseEther("0.0003");
+        const threshold = ethers.utils.parseEther("0.0005");
         console.log("Spent for withdraw:", spentAmount.toString());
         expect(spentAmount.lte(threshold)).to.equal(true);
     });
 
     it("withdrawing is cheap - PRC", async () => {
         // At the time this test was last checked, the gas spent to
-        // execute the script was 0.000201691434650796 ETH.
+        // execute the script was 0.000465905040533735 ETH.
 
         let message: IMMBaseAction = JSON.parse(JSON.stringify(baseMessage));
         message.action = BaseMoneyMarketActionType.Withdraw;
         message.typeAmt = AmountType.Percentage;
         message.amount = BigNumber.from(5000);
         message = await initialize(message);
-        await fooAToken.mint(owner.address, ethers.utils.parseEther("200"));
 
         const initialBalance = await owner.getBalance();
         await executor.execute(message, sigR, sigS, sigV);
         const spentAmount = initialBalance.sub(await owner.getBalance());
 
-        const threshold = ethers.utils.parseEther("0.0003");
+        const threshold = ethers.utils.parseEther("0.0005");
         console.log("Spent for withdraw:", spentAmount.toString());
         expect(spentAmount.lte(threshold)).to.equal(true);
     });
@@ -406,8 +423,8 @@ describe("ScriptExecutor - Money Market Base [FORKED CHAIN]", function () {
 
         // enable frequency condition so 2 consecutive executions should fail
         message.frequency.enabled = true;
+        message.amount = ethers.utils.parseEther("1");
         message = await initialize(message);
-        await fooToken.mint(owner.address, ethers.utils.parseEther("2000"));
 
         // the first one goes through
         await executor.execute(message, sigR, sigS, sigV);
@@ -595,7 +612,7 @@ describe("ScriptExecutor - Money Market Base [FORKED CHAIN]", function () {
         message = await initialize(message);
 
         // revoke the allowance for the token to the executor contract
-        await fooToken.approve(executor.address, ethers.utils.parseEther("0"));
+        await WMATICToken.approve(executor.address, ethers.utils.parseEther("0"));
 
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
             "[ALLOWANCE][ACTION]"
@@ -607,12 +624,8 @@ describe("ScriptExecutor - Money Market Base [FORKED CHAIN]", function () {
         message.action = BaseMoneyMarketActionType.Withdraw;
         message = await initialize(message);
 
-        // give some aTokens to the user and get rid of the tokens
-        await fooAToken.mint(owner.address, ethers.utils.parseEther("100"));
-        await fooToken.justBurn(owner.address, ethers.utils.parseEther("100"));
-
         // revoke the allowance for the token to the executor contract
-        await fooAToken.approve(executor.address, ethers.utils.parseEther("0"));
+        await aWMATICToken.approve(executor.address, ethers.utils.parseEther("0"));
 
         await expect(executor.verify(message, sigR, sigS, sigV)).to.be.revertedWith(
             "[ALLOWANCE][ACTION]"
@@ -623,12 +636,10 @@ describe("ScriptExecutor - Money Market Base [FORKED CHAIN]", function () {
 
     it("fails if the script has been executed more than the allowed repetitions", async () => {
         let message: IMMBaseAction = JSON.parse(JSON.stringify(baseMessage));
+        message.amount = ethers.utils.parseEther("1");
         message.repetitions.enabled = true;
         message.repetitions.amount = BigNumber.from(2);
         message = await initialize(message);
-
-        // let's get rich. wink.
-        await fooToken.mint(owner.address, ethers.utils.parseEther("20000000"));
 
         // first two times it goes through
         await executor.execute(message, sigR, sigS, sigV);
@@ -676,9 +687,9 @@ describe("ScriptExecutor - Money Market Base [FORKED CHAIN]", function () {
     it("fails if current health factor is lower than threshold when looking for GreaterThan", async () => {
         let message: IMMBaseAction = JSON.parse(JSON.stringify(baseMessage));
         // enabling the health factor condition
-        // the mock MM pool always return current HF:2
+        // the MM pool has HF:13.4 due to the amount deposited and borrowed
         message.healthFactor.enabled = true;
-        message.healthFactor.amount = ethers.utils.parseEther("2.1");
+        message.healthFactor.amount = ethers.utils.parseEther("15");
         message.healthFactor.comparison = ComparisonType.GreaterThan;
         message = await initialize(message);
 
@@ -690,9 +701,9 @@ describe("ScriptExecutor - Money Market Base [FORKED CHAIN]", function () {
     it("fails if current health factor is higher than threshold when looking for LessThan", async () => {
         let message: IMMBaseAction = JSON.parse(JSON.stringify(baseMessage));
         // enabling the health factor condition
-        // the mock MM pool always return current HF:2
+        // the MM pool has HF:13.4 due to the amount deposited and borrowed
         message.healthFactor.enabled = true;
-        message.healthFactor.amount = ethers.utils.parseEther("1.9");
+        message.healthFactor.amount = ethers.utils.parseEther("13");
         message.healthFactor.comparison = ComparisonType.LessThan;
         message = await initialize(message);
 

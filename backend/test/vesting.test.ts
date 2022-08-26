@@ -76,7 +76,7 @@ describe("Vesting contract", function () {
 
         it("cannot add a beneficiary after start date", async () => {
             // add a day to the block time
-            await network.provider.send("evm_increaseTime", [oneDay()]);
+            await network.provider.send("evm_increaseTime", [oneDay() * 2]);
             await network.provider.send("evm_mine");
 
             const amount = ethers.utils.parseEther("100");

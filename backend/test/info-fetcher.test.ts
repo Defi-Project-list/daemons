@@ -59,11 +59,10 @@ describe("InfoFetcher [FORKED CHAIN]", function () {
         await fooToken.mint(owner.address, 758500);
 
         // Deploy Mock MMs
-        const addr0 = ethers.constants.AddressZero;
         const MMV2Contract = await ethers.getContractFactory("MockReserveDataV2");
-        mmV2 = await MMV2Contract.deploy(addr0, addr0, addr0);
+        mmV2 = await MMV2Contract.deploy();
         const MMV3Contract = await ethers.getContractFactory("MockReserveDataV3");
-        mmV3 = await MMV3Contract.deploy(addr0, addr0, addr0);
+        mmV3 = await MMV3Contract.deploy();
 
         // get a snapshot of the current state so to speed up tests
         snapshotId = await network.provider.send("evm_snapshot", []);
