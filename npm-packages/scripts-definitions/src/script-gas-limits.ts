@@ -3,8 +3,8 @@ import { BigNumber } from "ethers";
 const gasLimits: { [scriptType: string]: number } = {
     SwapScript: 350000,
     TransferScript: 200000,
-    MmBaseScript: 350000,
-    MmAdvancedScript: 350000,
+    MmBaseScript: 460000,
+    MmAdvancedScript: 520000,
     ZapInScript: 500000,
     ZapOutScript: 500000,
     BeefyScript: 400000,
