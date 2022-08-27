@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { ScriptProxy } from "../../data/storage-proxy/scripts-proxy";
 import { RootState } from "../../state";
 import { fetchGasTankClaimable } from "../../state/action-creators/gas-tank-action-creators";
-import { removeExecutableScript } from "../../state/action-creators/script-action-creators";
 import { bigNumberToFloat } from "@daemons-fi/contracts";
 
 export const QueueScriptComponent = ({
@@ -49,7 +48,6 @@ export const QueueScriptComponent = ({
             (verification as VerificationFailedScript).code.includes("[FINAL]");
         if (isBroken) {
             await ScriptProxy.markAsBroken(script.getId());
-            dispatch(removeExecutableScript(script));
         }
     };
 

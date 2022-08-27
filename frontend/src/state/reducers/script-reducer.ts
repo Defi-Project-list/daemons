@@ -4,14 +4,10 @@ import { ScriptAction } from "../actions/script-actions";
 
 export type ScriptState = {
     userScripts: BaseScript[];
-    allScripts: BaseScript[];
-    loading: boolean;
 };
 
 const initialState: ScriptState = {
-    userScripts: [],
-    allScripts: [],
-    loading: false
+    userScripts: []
 };
 
 export const scriptReducer = (
@@ -23,12 +19,6 @@ export const scriptReducer = (
             return {
                 ...state,
                 userScripts: action.payload
-            };
-        case ActionType.FETCH_EXECUTABLE_SCRIPTS:
-            return {
-                ...state,
-                allScripts: action.payload,
-                loading: false
             };
         case ActionType.NEW_USER_SCRIPT:
             return {
@@ -42,19 +32,6 @@ export const scriptReducer = (
                 userScripts: state.userScripts.filter(
                     (script) => script.getId() !== userScriptToRemove
                 )
-            };
-        case ActionType.REMOVE_EXECUTABLE_SCRIPT:
-            const executableScriptToRemove = action.payload.getId();
-            return {
-                ...state,
-                allScripts: state.allScripts.filter(
-                    (script) => script.getId() !== executableScriptToRemove
-                )
-            };
-        case ActionType.SET_SCRIPTS_LOADING:
-            return {
-                ...state,
-                loading: true
             };
         default:
             return state;
