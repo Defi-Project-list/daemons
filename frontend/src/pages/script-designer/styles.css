@@ -62,7 +62,7 @@
     display: flex;
     flex-direction: row;
     column-gap: 25px;
-    margin: auto;
+    margin: 0 auto;
 }
 
 .workbench__deploy-button {
