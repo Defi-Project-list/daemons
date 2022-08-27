@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { RootState, useAppSelector } from "../../state";
 import { ITransaction } from "@daemons-fi/shared-definitions";
 import { GetCurrentChain } from "../../data/chain-info";
-import { RootState } from "../../state";
 import { TransactionRecord } from "./transaction-record";
 import { IFetchedTxs } from "../../data/storage-proxy/transaction-proxy";
 import PaginationFooter from "../../components/pagination";
@@ -16,7 +15,7 @@ export function TransactionsPanel({
     isBeneficiary,
     fetchTransactions
 }: ITransactionsPanelProps): JSX.Element {
-    const chainId = useSelector((state: RootState) => state.user.chainId);
+    const chainId = useAppSelector((state: RootState) => state.user.chainId);
     const explorerTxUrl = GetCurrentChain(chainId!).explorerTxUrl;
     const [transactions, setTransactions] = useState<ITransaction[]>([]);
     const [page, setPage] = useState<number>(1);

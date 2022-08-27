@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { IAction, ICondition } from "../../../data/chains-data/interfaces";
 import { GetCurrentChain } from "../../../data/chain-info";
 import { ActionBlock } from "./actions/actions-block";
@@ -13,7 +12,7 @@ import { addScriptToWorkbench } from "../../../state/action-creators/workbench-a
 import { Tooltip } from "../../../components/tooltip";
 import "./blocks.css";
 import { Link, useNavigate } from "react-router-dom";
-import { RootState } from "../../../state";
+import { RootState, useAppDispatch, useAppSelector } from "../../../state";
 import { HeadlessCard } from "../../../components/card/card";
 
 interface IWorkbenchProps {
@@ -21,12 +20,12 @@ interface IWorkbenchProps {
 }
 
 export function Workbench({ chainId }: IWorkbenchProps): JSX.Element {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const [actions, setActions] = useState<IAction[]>([]);
     const [conditions, setConditions] = useState<ICondition[]>([]);
     const [currentScript, _setCurrentScript] = useState<ICurrentScript | undefined>();
-    const workbenchScripts = useSelector((state: RootState) => state.workbench.scripts);
+    const workbenchScripts = useAppSelector((state: RootState) => state.workbench.scripts);
 
     useEffect(() => {
         setActions(GetCurrentChain(chainId).actions);

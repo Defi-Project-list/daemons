@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Form, Field } from "react-final-form";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../../state";
+import { RootState, useAppSelector } from "../../../../state";
 import { TokensModal } from "../../../../components/tokens-modal";
 import { Token } from "../../../../data/chains-data/interfaces";
 import { IBalanceConditionForm } from "../../../../data/chains-data/condition-form-interfaces";
@@ -31,8 +30,8 @@ export const BalanceCondition = ({
     form: IBalanceConditionForm;
     update: (next: IBalanceConditionForm) => void;
 }) => {
-    const chainId = useSelector((state: RootState) => state.user.chainId);
-    const tokenBalances = useSelector((state: RootState) => state.wallet.tokenBalances);
+    const chainId = useAppSelector((state: RootState) => state.user.chainId);
+    const tokenBalances = useAppSelector((state: RootState) => state.wallet.tokenBalances);
     const [tokens, setTokens] = useState<Token[]>([]);
     const [selectedToken, setSelectedToken] = useState<Token | undefined>();
 

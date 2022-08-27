@@ -1,7 +1,6 @@
 import React, { ReactNode, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { gasTankABI } from "@daemons-fi/contracts";
-import { RootState } from "../../state";
+import { RootState, useAppDispatch, useAppSelector } from "../../state";
 import { fetchGasTankBalance } from "../../state/action-creators/gas-tank-action-creators";
 import { Field, Form } from "react-final-form";
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
@@ -11,11 +10,11 @@ import { Card } from "../../components/card/card";
 import { Switch } from "../../components/switch";
 
 export function GasTank(): JSX.Element {
-    const dispatch = useDispatch();
-    const gasTankBalance = useSelector((state: RootState) => state.gasTank.balance);
-    const walletAddress = useSelector((state: RootState) => state.user.address);
-    const chainId = useSelector((state: RootState) => state.user.chainId);
-    const ETHBalance = useSelector((state: RootState) => state.wallet.ETHBalance);
+    const dispatch = useAppDispatch();
+    const gasTankBalance = useAppSelector((state: RootState) => state.gasTank.balance);
+    const walletAddress = useAppSelector((state: RootState) => state.user.address);
+    const chainId = useAppSelector((state: RootState) => state.user.chainId);
+    const ETHBalance = useAppSelector((state: RootState) => state.wallet.ETHBalance);
     const [toggleDeposit, setToggleDeposit] = useState<boolean>(true);
     const currencySymbol = GetCurrentChain(chainId!).coinSymbol;
 

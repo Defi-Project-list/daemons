@@ -1,7 +1,7 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import { StorageProxy } from "../../data/storage-proxy";
 import { IUserProfile } from "../../data/storage-proxy/auth-proxy";
+import { useAppDispatch } from "../../state";
 import { updateTutorialTooltip } from "../../state/action-creators/user-action-creators";
 import { Switch } from "../switch";
 import { errorToast } from "../toaster";
@@ -12,7 +12,7 @@ interface ISettingsPanelProps {
 }
 
 export const SettingsPanel = ({ user }: ISettingsPanelProps): JSX.Element => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
     const setShowTooltip = async (value: boolean) => {
         dispatch(updateTutorialTooltip(value));

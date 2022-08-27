@@ -1,9 +1,8 @@
 import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
-import { useDispatch, useSelector } from "react-redux";
 import { GetCurrentChain } from "../../data/chain-info";
-import { RootState } from "../../state";
+import { RootState, useAppDispatch, useAppSelector } from "../../state";
 import {
     fetchStakingBalance,
     fetchStakingClaimable
@@ -20,21 +19,21 @@ import { Switch } from "../../components/switch";
 import { TooltipSize } from "../../components/tooltip";
 
 export function Staking() {
-    const dispatch = useDispatch();
-    const stakingBalance = useSelector((state: RootState) => state.staking.balance);
-    const claimable = useSelector((state: RootState) => state.staking.claimable);
-    const walletAddress = useSelector((state: RootState) => state.user.address);
-    const chainId = useSelector((state: RootState) => state.user.chainId);
-    const DAEMBalance = useSelector((state: RootState) => state.wallet.DAEMBalance);
+    const dispatch = useAppDispatch();
+    const stakingBalance = useAppSelector((state: RootState) => state.staking.balance);
+    const claimable = useAppSelector((state: RootState) => state.staking.claimable);
+    const walletAddress = useAppSelector((state: RootState) => state.user.address);
+    const chainId = useAppSelector((state: RootState) => state.user.chainId);
+    const DAEMBalance = useAppSelector((state: RootState) => state.wallet.DAEMBalance);
     const [toggleDeposit, setToggleDeposit] = useState<boolean>(true);
     const [needsAllowance, setNeedsAllowance] = useState<boolean>(true);
     const [apy, setApy] = useState<number>(0);
     const contracts = GetCurrentChain(chainId!).contracts;
     const currencySymbol = GetCurrentChain(chainId!).coinSymbol;
-    const currentDAEMPrice = useSelector((state: RootState) => state.prices.DAEMPriceInEth);
-    const distrInterval = useSelector((state: RootState) => state.treasury.distrInterval);
-    const redistributionPool = useSelector((state: RootState) => state.treasury.redistributionPool);
-    const stakedAmount = useSelector((state: RootState) => state.treasury.stakedAmount);
+    const currentDAEMPrice = useAppSelector((state: RootState) => state.prices.DAEMPriceInEth);
+    const distrInterval = useAppSelector((state: RootState) => state.treasury.distrInterval);
+    const redistributionPool = useAppSelector((state: RootState) => state.treasury.redistributionPool);
+    const stakedAmount = useAppSelector((state: RootState) => state.treasury.stakedAmount);
     const nothingToClaim = !claimable;
 
     // wallet signer and provider

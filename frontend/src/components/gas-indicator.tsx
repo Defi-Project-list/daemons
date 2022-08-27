@@ -1,13 +1,12 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { GetCurrentChain } from "../data/chain-info";
-import { RootState } from "../state";
+import { RootState, useAppSelector } from "../state";
 
 export function GasIndicator(): JSX.Element {
-    const balance = useSelector((state: RootState) => state.gasTank.balance);
-    const walletConnected = useSelector((state: RootState) => state.user.connected);
-    const chainId = useSelector((state: RootState) => state.user.chainId);
+    const balance = useAppSelector((state: RootState) => state.gasTank.balance);
+    const walletConnected = useAppSelector((state: RootState) => state.user.connected);
+    const chainId = useAppSelector((state: RootState) => state.user.chainId);
 
     const showBalance = balance !== undefined && walletConnected;
     const currencySymbol = GetCurrentChain(chainId!).coinSymbol;

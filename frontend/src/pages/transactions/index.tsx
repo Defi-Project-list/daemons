@@ -1,6 +1,5 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../state";
+import { RootState, useAppDispatch, useAppSelector } from "../../state";
 import { DisconnectedPage } from "../error-pages/disconnected-page";
 import { UnsupportedChainPage } from "../error-pages/unsupported-chain-page";
 import { BannedPage } from "../error-pages/banned-page";
@@ -14,9 +13,11 @@ import { clearUnseenTransactions } from "../../state/action-creators/user-action
 import { IUserProfile } from "../../data/storage-proxy/auth-proxy";
 
 export function TransactionsPage(): JSX.Element {
-    const dispatch = useDispatch();
-    const user: IUserProfile | undefined = useSelector((state: RootState) => state.user.userProfile);
-    const supportedChain: boolean = useSelector((state: RootState) => state.user.supportedChain);
+    const dispatch = useAppDispatch();
+    const user: IUserProfile | undefined = useAppSelector(
+        (state: RootState) => state.user.userProfile
+    );
+    const supportedChain: boolean = useAppSelector((state: RootState) => state.user.supportedChain);
 
     if (!user) return <DisconnectedPage />;
     if (user.banned) return <BannedPage />;

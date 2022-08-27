@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Form, Field } from "react-final-form";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../../state";
+import { RootState, useAppSelector } from "../../../../state";
 import { TokensModal } from "../../../../components/tokens-modal";
 import { DEX, Token } from "../../../../data/chains-data/interfaces";
 import { IPriceConditionForm } from "../../../../data/chains-data/condition-form-interfaces";
@@ -63,7 +62,7 @@ export const PriceCondition = ({
     form: IPriceConditionForm;
     update: (next: IPriceConditionForm) => void;
 }) => {
-    const chainId = useSelector((state: RootState) => state.user.chainId);
+    const chainId = useAppSelector((state: RootState) => state.user.chainId);
     const [tokens, setTokens] = useState<Token[]>([]);
     const [dexes, setDexes] = useState<DEX[]>([]);
     const [currentPrice, setCurrentPrice] = useState<number | undefined>();

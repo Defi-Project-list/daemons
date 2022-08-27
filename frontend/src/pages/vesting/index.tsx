@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../../state";
+import { RootState, useAppSelector } from "../../state";
 import { Card } from "../../components/card/card";
 import { IUserProfile } from "../../data/storage-proxy/auth-proxy";
 import { BannedPage } from "../error-pages/banned-page";
@@ -26,11 +25,11 @@ const getVestingContract = (chainId: string) => {
 };
 
 export function VestingPage() {
-    const user: IUserProfile | undefined = useSelector(
+    const user: IUserProfile | undefined = useAppSelector(
         (state: RootState) => state.user.userProfile
     );
-    const chainId: string | undefined = useSelector((state: RootState) => state.user.chainId);
-    const supportedChain: boolean = useSelector((state: RootState) => state.user.supportedChain);
+    const chainId: string | undefined = useAppSelector((state: RootState) => state.user.chainId);
+    const supportedChain: boolean = useAppSelector((state: RootState) => state.user.supportedChain);
     const [startDate, setStartDate] = useState<Date | undefined>();
     const [locked, setLocked] = useState<number>(0);
     const [available, setAvailable] = useState<number>(0);

@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
-import { useSelector } from "react-redux";
 import { errorToast } from "../../components/toaster";
 import { StorageProxy } from "../../data/storage-proxy";
 import { IUserStat } from "../../data/storage-proxy/stats-proxy";
-import { RootState } from "../../state";
+import { RootState, useAppSelector } from "../../state";
 import { userStatsToLineChartData } from "./data-processing";
 
 const options = {
@@ -32,7 +31,7 @@ const options = {
 };
 
 export function UsersChart(): JSX.Element {
-    const chainId = useSelector((state: RootState) => state.user.chainId)!;
+    const chainId = useAppSelector((state: RootState) => state.user.chainId)!;
     const [data, setData] = useState<IUserStat[]>([]);
 
     const fetchData = async () => {

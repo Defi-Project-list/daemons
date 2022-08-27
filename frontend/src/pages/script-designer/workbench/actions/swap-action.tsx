@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { ISwapActionForm } from "../../../../data/chains-data/action-form-interfaces";
 import { Form } from "react-final-form";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../../state";
+import { RootState, useAppSelector } from "../../../../state";
 import { TokensModal } from "../../../../components/tokens-modal";
 import { AmountType } from "@daemons-fi/shared-definitions/build";
-import { IToken, Token } from "../../../../data/chains-data/interfaces";
+import { IToken } from "../../../../data/chains-data/interfaces";
 import { GetCurrentChain } from "../../../../data/chain-info";
 import { AmountInput } from "../shared/amount-input";
 import { LpInfoBox } from "../../../../components/lp-info";
@@ -34,8 +33,8 @@ export const SwapAction = ({
     form: ISwapActionForm;
     update: (next: ISwapActionForm) => void;
 }) => {
-    const chainId = useSelector((state: RootState) => state.user.chainId);
-    const tokenBalances = useSelector((state: RootState) => state.wallet.tokenBalances);
+    const chainId = useAppSelector((state: RootState) => state.user.chainId);
+    const tokenBalances = useAppSelector((state: RootState) => state.wallet.tokenBalances);
     const tokens = GetCurrentChain(chainId!).tokens;
     const [tokenA, setTokenA] = useState<IToken>(tokens[0]);
     const [tokenB, setTokenB] = useState<IToken>(tokens[1]);

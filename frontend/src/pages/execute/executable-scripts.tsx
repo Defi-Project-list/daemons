@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { BaseScript } from "@daemons-fi/scripts-definitions";
-import { RootState } from "../../state";
+import { RootState, useAppSelector } from "../../state";
 import { QueueScriptComponent } from "./executable-script";
 import { Card } from "../../components/card/card";
 import { TooltipSize } from "../../components/tooltip";
@@ -9,7 +8,7 @@ import { StorageProxy } from "../../data/storage-proxy";
 import "./styles.css";
 
 export function ExecutableScriptsContainer() {
-    const chainId = useSelector((state: RootState) => state.user.chainId);
+    const chainId = useAppSelector((state: RootState) => state.user.chainId);
     const [scripts, setScripts] = useState<BaseScript[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [executableScripts, setExecutableScripts] = useState<Set<string>>(new Set());

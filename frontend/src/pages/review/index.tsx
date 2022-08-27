@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { ScriptFactory } from "../../script-factories";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../state";
+import { RootState, useAppDispatch, useAppSelector } from "../../state";
 import { State, TemporaryScript } from "./temporary-script";
 import "./styles.css";
 import { StorageProxy } from "../../data/storage-proxy";
@@ -22,11 +21,13 @@ import { IUserProfile } from "../../data/storage-proxy/auth-proxy";
 
 export function ReviewPage(): JSX.Element {
     // redux
-    const dispatch = useDispatch();
-    const chainId: string | undefined = useSelector((state: RootState) => state.user.chainId);
-    const user: IUserProfile | undefined = useSelector((state: RootState) => state.user.userProfile);
-    const supportedChain: boolean = useSelector((state: RootState) => state.user.supportedChain);
-    const workbenchScripts = useSelector((state: RootState) => state.workbench.scripts);
+    const dispatch = useAppDispatch();
+    const chainId: string | undefined = useAppSelector((state: RootState) => state.user.chainId);
+    const user: IUserProfile | undefined = useAppSelector(
+        (state: RootState) => state.user.userProfile
+    );
+    const supportedChain: boolean = useAppSelector((state: RootState) => state.user.supportedChain);
+    const workbenchScripts = useAppSelector((state: RootState) => state.workbench.scripts);
 
     // states
     const [redirect, setRedirect] = useState<boolean>(false);
@@ -157,10 +158,7 @@ export function ReviewPage(): JSX.Element {
             </button>
 
             {/* A link to the workbench */}
-            <Link
-                className="designer__review-link"
-                to="/new-script"
-            >
+            <Link className="designer__review-link" to="/new-script">
                 Chain another script
             </Link>
         </div>

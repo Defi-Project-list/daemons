@@ -1,7 +1,6 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import { IUserProfile } from "../../data/storage-proxy/auth-proxy";
-import { RootState } from "../../state";
+import { RootState, useAppSelector } from "../../state";
 import { BannedPage } from "../error-pages/banned-page";
 import { DisconnectedPage } from "../error-pages/disconnected-page";
 import { NotWhitelistedPage } from "../error-pages/not-whitelisted-page";
@@ -12,8 +11,10 @@ import { Staking } from "./staking";
 import "./styles.css";
 
 export function ExecutePage() {
-    const user: IUserProfile | undefined = useSelector((state: RootState) => state.user.userProfile);
-    const supportedChain: boolean = useSelector((state: RootState) => state.user.supportedChain);
+    const user: IUserProfile | undefined = useAppSelector(
+        (state: RootState) => state.user.userProfile
+    );
+    const supportedChain: boolean = useAppSelector((state: RootState) => state.user.supportedChain);
 
     if (!user) return <DisconnectedPage />;
     if (user.banned) return <BannedPage />;

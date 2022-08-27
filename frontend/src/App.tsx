@@ -3,8 +3,7 @@ import { ConnectWalletButton } from "./components/wallet-connector";
 import { MetaMaskProvider } from "metamask-react";
 import { Link } from "react-router-dom";
 import logo from "./assets/logo.svg";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "./state";
+import { RootState, useAppDispatch, useAppSelector } from "./state";
 import { GasIndicator } from "./components/gas-indicator";
 import { fetchUserScripts } from "./state/action-creators/script-action-creators";
 import { fetchGasTankBalance } from "./state/action-creators/gas-tank-action-creators";
@@ -14,7 +13,7 @@ import { fetchTipJarBalance } from "./state/action-creators/tip-jar-action-creat
 import { TipIndicator } from "./components/tip-indicator";
 import { fetchLatestGasPrice } from "./state/action-creators/gas-price-feed-action-creators";
 import { fetchDAEMPriceInEth } from "./state/action-creators/prices-action-creators";
-import { cleanMmInfo, fetchDaemBalance, fetchEthBalance, fetchTokenBalances } from "./state/action-creators/wallet-action-creators";
+import { cleanMmInfo, fetchTokenBalances } from "./state/action-creators/wallet-action-creators";
 import "react-toastify/dist/ReactToastify.css";
 import "./fonts.css";
 import "./constants.css";
@@ -23,13 +22,15 @@ import { IUserProfile } from "./data/storage-proxy/auth-proxy";
 
 export const App = ({ children }: { children: any }) => {
     // redux
-    const dispatch = useDispatch();
-    const chainId: string | undefined = useSelector((state: RootState) => state.user.chainId);
-    const walletAddress: string | undefined = useSelector(
+    const dispatch = useAppDispatch();
+    const chainId: string | undefined = useAppSelector((state: RootState) => state.user.chainId);
+    const walletAddress: string | undefined = useAppSelector(
         (state: RootState) => state.user.address
     );
-    const user: IUserProfile | undefined = useSelector((state: RootState) => state.user.userProfile);
-    const supportedChain: boolean = useSelector((state: RootState) => state.user.supportedChain);
+    const user: IUserProfile | undefined = useAppSelector(
+        (state: RootState) => state.user.userProfile
+    );
+    const supportedChain: boolean = useAppSelector((state: RootState) => state.user.supportedChain);
 
     // menu selection classes
     const dashboardLinkClassName = `menu__entry ${

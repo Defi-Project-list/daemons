@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
-import { RootState } from "../../state";
+import { RootState, useAppDispatch, useAppSelector } from "../../state";
 import {
     fetchGasTankClaimable,
     setGasTankClaimableToZero
@@ -33,10 +32,10 @@ const confettiConfig: any = {
 };
 
 export function ClaimRewards() {
-    const dispatch = useDispatch();
-    const claimable = useSelector((state: RootState) => state.gasTank.claimable);
-    const walletAddress = useSelector((state: RootState) => state.user.address);
-    const chainId = useSelector((state: RootState) => state.user.chainId);
+    const dispatch = useAppDispatch();
+    const claimable = useAppSelector((state: RootState) => state.gasTank.claimable);
+    const walletAddress = useAppSelector((state: RootState) => state.user.address);
+    const chainId = useAppSelector((state: RootState) => state.user.chainId);
     const nothingToClaim = !claimable;
     const [confetti, setConfetti] = useState<boolean>(false);
     const [firstTime, setFirstTime] = useState<boolean>(true);

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { GetCurrentChain } from "../../data/chain-info";
 import { IToken } from "../../data/chains-data/interfaces";
 import { ILPInfo, retrieveLpInfo } from "../../data/retrieve-lp-info";
-import { RootState } from "../../state";
+import { RootState, useAppSelector } from "../../state";
 import { Tooltip, TooltipIcon } from "../tooltip";
 import "./styles.css";
 
@@ -22,8 +21,8 @@ export const LpInfoBox = ({
     showOwned,
     setLpAddress
 }: ILpInfoBoxProps): JSX.Element => {
-    const chainId = useSelector((state: RootState) => state.user.chainId)!;
-    const address = useSelector((state: RootState) => state.user.address)!;
+    const chainId = useAppSelector((state: RootState) => state.user.chainId)!;
+    const address = useAppSelector((state: RootState) => state.user.address)!;
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [lpInfo, setLPInfo] = useState<ILPInfo | undefined>();
 

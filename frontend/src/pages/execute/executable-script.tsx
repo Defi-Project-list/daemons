@@ -6,9 +6,8 @@ import {
 } from "@daemons-fi/scripts-definitions";
 import { BigNumber, ethers } from "ethers";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { ScriptProxy } from "../../data/storage-proxy/scripts-proxy";
-import { RootState } from "../../state";
+import { RootState, useAppDispatch, useAppSelector } from "../../state";
 import { fetchGasTankClaimable } from "../../state/action-creators/gas-tank-action-creators";
 import { bigNumberToFloat } from "@daemons-fi/contracts";
 
@@ -19,12 +18,12 @@ export const QueueScriptComponent = ({
     script: BaseScript;
     markAsExecutable: (value: boolean) => void;
 }) => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const [verification, setVerification] = useState(script.getVerification());
-    const walletAddress = useSelector((state: RootState) => state.user.address);
-    const chainId = useSelector((state: RootState) => state.user.chainId);
-    const currentGasPrice = useSelector((state: RootState) => state.gasPriceFeed.price) ?? 0;
-    const currentDAEMPrice = useSelector((state: RootState) => state.prices.DAEMPriceInEth) ?? 1;
+    const walletAddress = useAppSelector((state: RootState) => state.user.address);
+    const chainId = useAppSelector((state: RootState) => state.user.chainId);
+    const currentGasPrice = useAppSelector((state: RootState) => state.gasPriceFeed.price) ?? 0;
+    const currentDAEMPrice = useAppSelector((state: RootState) => state.prices.DAEMPriceInEth) ?? 1;
 
     // wallet signer and provider
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);

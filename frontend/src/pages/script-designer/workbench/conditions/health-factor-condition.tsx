@@ -2,9 +2,8 @@ import { MoneyMarketABI } from "@daemons-fi/contracts";
 import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { Form, Field } from "react-final-form";
-import { useSelector } from "react-redux";
+import { RootState, useAppSelector } from "../../../../state";
 import { IHealthFactorConditionForm } from "../../../../data/chains-data/condition-form-interfaces";
-import { RootState } from "../../../../state";
 import { bigNumberToFloat } from "@daemons-fi/contracts";
 
 const validateForm = (form: IHealthFactorConditionForm) => {
@@ -44,7 +43,7 @@ export const HealthFactorCondition = ({
     form: IHealthFactorConditionForm;
     update: (next: IHealthFactorConditionForm) => void;
 }) => {
-    const walletAddress = useSelector((state: RootState) => state.user.address);
+    const walletAddress = useAppSelector((state: RootState) => state.user.address);
     const [currentHealthFactor, setCurrentHealthFactor] = useState<number | undefined>(undefined);
 
     useEffect(() => {

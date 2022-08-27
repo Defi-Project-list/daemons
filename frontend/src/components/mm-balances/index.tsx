@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { IToken, MoneyMarket } from "../../data/chains-data/interfaces";
-import { RootState } from "../../state";
+import { RootState, useAppDispatch, useAppSelector } from "../../state";
 import { fetchMmInfo } from "../../state/action-creators/wallet-action-creators";
 import { successToast } from "../toaster";
 import "./styles.css";
@@ -11,10 +10,10 @@ interface IMmBalancesProps {
 }
 
 export const MmBalances = ({ moneyMarket }: IMmBalancesProps): JSX.Element => {
-    const dispatch = useDispatch();
-    const chainId = useSelector((state: RootState) => state.user.chainId)!;
-    const address = useSelector((state: RootState) => state.user.address)!;
-    const mmInfo = useSelector((state: RootState) => state.wallet.moneyMarketsInfo);
+    const dispatch = useAppDispatch();
+    const chainId = useAppSelector((state: RootState) => state.user.chainId)!;
+    const address = useAppSelector((state: RootState) => state.user.address)!;
+    const mmInfo = useAppSelector((state: RootState) => state.wallet.moneyMarketsInfo);
 
     const thisMM = mmInfo[moneyMarket.poolAddress];
     const depositedTokensInfo = thisMM ? Object.values(thisMM.deposits) : [];

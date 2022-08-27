@@ -1,8 +1,7 @@
 import React from 'react';
 import { Form, Field } from 'react-final-form';
 import { BaseScript } from '@daemons-fi/scripts-definitions';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../../state';
+import { RootState, useAppSelector } from "../../../../state";
 import { IFollowConditionForm } from "../../../../data/chains-data/condition-form-interfaces";
 
 const validateForm = (form: IFollowConditionForm) => {
@@ -16,7 +15,7 @@ const isFormValid = (values: IFollowConditionForm) => {
 };
 
 export const FollowCondition = ({ form, update }: { form: IFollowConditionForm; update: (next: IFollowConditionForm) => void; }) => {
-    const userScripts: BaseScript[] = useSelector((state: RootState) => state.script.userScripts);
+    const userScripts: BaseScript[] = useAppSelector((state: RootState) => state.script.userScripts);
 
     return (
         <Form

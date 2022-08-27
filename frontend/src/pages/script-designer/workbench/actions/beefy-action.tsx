@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { IBeefyActionForm } from "../../../../data/chains-data/action-form-interfaces";
 import { Form, Field } from "react-final-form";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../../state";
+import { RootState, useAppSelector } from "../../../../state";
 import { TokensModal } from "../../../../components/tokens-modal";
 import { DEX, Token } from "../../../../data/chains-data/interfaces";
 import { GetCurrentChain, ZeroAddress } from "../../../../data/chain-info";
@@ -36,7 +35,7 @@ export const BeefyAction = ({
     form: IBeefyActionForm;
     update: (next: IBeefyActionForm) => void;
 }) => {
-    const chainId = useSelector((state: RootState) => state.user.chainId)!;
+    const chainId = useAppSelector((state: RootState) => state.user.chainId)!;
     const tokens = GetCurrentChain(chainId!).tokens;
     const dexes = GetCurrentChain(chainId!).dexes;
     const [selectedDex, setSelectedDex] = useState<DEX>(dexes[0]);

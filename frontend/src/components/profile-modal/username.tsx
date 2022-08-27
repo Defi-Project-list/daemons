@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { StorageProxy } from "../../data/storage-proxy";
+import { useAppDispatch } from "../../state";
 import { updateUsername } from "../../state/action-creators/user-action-creators";
 import { errorToast, successToast } from "../toaster";
 
@@ -9,7 +9,7 @@ interface IUsernameProps {
 }
 
 export const Username = ({ username }: IUsernameProps): JSX.Element => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const [editingUsername, setEditingUsername] = useState<boolean>(false);
     const [currentUsername, setCurrentUsername] = useState<string>(username ?? "");
     const [editedUsername, setEditedUsername] = useState<string>(currentUsername);

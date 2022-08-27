@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { RootState } from "../../state";
-import { useSelector } from "react-redux";
+import { RootState, useAppSelector } from "../../state";
 import { useNavigate } from "react-router-dom";
 import { IUserProfile } from "../../data/storage-proxy/auth-proxy";
 import { Workbench } from "./workbench/workbench";
@@ -13,11 +12,11 @@ import { GetCurrentChain } from "../../data/chain-info";
 export function ScriptDesignerPage(): JSX.Element {
     // redux
     const navigate = useNavigate();
-    const chainId: string | undefined = useSelector((state: RootState) => state.user.chainId)!;
-    const user: IUserProfile | undefined = useSelector(
+    const chainId: string | undefined = useAppSelector((state: RootState) => state.user.chainId)!;
+    const user: IUserProfile | undefined = useAppSelector(
         (state: RootState) => state.user.userProfile
     );
-    const supportedChain: boolean = useSelector((state: RootState) => state.user.supportedChain);
+    const supportedChain: boolean = useAppSelector((state: RootState) => state.user.supportedChain);
     const currentChain = GetCurrentChain(chainId!);
     const [isWalletRetracted, setWalletRetracted] = useState<boolean>(
         window.localStorage["wallet-retracted"] === "true"

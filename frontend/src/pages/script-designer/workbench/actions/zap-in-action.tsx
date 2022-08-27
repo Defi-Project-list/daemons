@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { IZapInActionForm } from "../../../../data/chains-data/action-form-interfaces";
 import { Form } from "react-final-form";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../../state";
+import { RootState, useAppSelector } from "../../../../state";
 import { TokensModal } from "../../../../components/tokens-modal";
 import { AmountType } from "@daemons-fi/shared-definitions/build";
 import { Token } from "../../../../data/chains-data/interfaces";
@@ -47,8 +46,8 @@ export const ZapInAction = ({
     form: IZapInActionForm;
     update: (next: IZapInActionForm) => void;
 }) => {
-    const chainId = useSelector((state: RootState) => state.user.chainId);
-    const tokenBalances = useSelector((state: RootState) => state.wallet.tokenBalances);
+    const chainId = useAppSelector((state: RootState) => state.user.chainId);
+    const tokenBalances = useAppSelector((state: RootState) => state.wallet.tokenBalances);
     const tokens = GetCurrentChain(chainId!).tokens;
     const dexes = GetCurrentChain(chainId!).dexes;
     const selectedDex = dexes[0];

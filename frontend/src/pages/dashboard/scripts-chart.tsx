@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
-import { useSelector } from "react-redux";
 import { errorToast } from "../../components/toaster";
 import { StorageProxy } from "../../data/storage-proxy";
 import { IScriptStats } from "../../data/storage-proxy/stats-proxy";
-import { RootState } from "../../state";
+import { RootState, useAppSelector } from "../../state";
 import { scriptStatsToBarChartData } from "./data-processing";
 
 const options = {
@@ -26,7 +25,7 @@ const options = {
 };
 
 export function ScriptsChart(): JSX.Element {
-    const chainId = useSelector((state: RootState) => state.user.chainId)!;
+    const chainId = useAppSelector((state: RootState) => state.user.chainId)!;
     const [data, setData] = useState<IScriptStats[]>([]);
 
     const fetchData = async () => {

@@ -1,6 +1,5 @@
 import React from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../../state";
+import { RootState, useAppSelector } from "../../state";
 import { DisconnectedPage } from "../error-pages/disconnected-page";
 import { UnsupportedChainPage } from "../error-pages/unsupported-chain-page";
 import { UserScriptsContainer } from "./user-scripts";
@@ -13,8 +12,8 @@ import { NotWhitelistedPage } from "../error-pages/not-whitelisted-page";
 import { IUserProfile } from "../../data/storage-proxy/auth-proxy";
 
 export function MyPage(): JSX.Element {
-    const user: IUserProfile | undefined = useSelector((state: RootState) => state.user.userProfile);
-    const supportedChain: boolean = useSelector((state: RootState) => state.user.supportedChain);
+    const user: IUserProfile | undefined = useAppSelector((state: RootState) => state.user.userProfile);
+    const supportedChain: boolean = useAppSelector((state: RootState) => state.user.supportedChain);
 
     if (!user) return <DisconnectedPage />;
     if (user.banned) return <BannedPage />;

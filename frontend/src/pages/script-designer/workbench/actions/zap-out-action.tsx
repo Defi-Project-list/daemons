@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { IZapOutActionForm } from "../../../../data/chains-data/action-form-interfaces";
 import { Form, Field } from "react-final-form";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../../state";
+import { RootState, useAppSelector } from "../../../../state";
 import { TokensModal } from "../../../../components/tokens-modal";
 import { AmountType, ZapOutputChoice } from "@daemons-fi/shared-definitions/build";
 import { IToken } from "../../../../data/chains-data/interfaces";
@@ -34,7 +33,7 @@ export const ZapOutAction = ({
     form: IZapOutActionForm;
     update: (next: IZapOutActionForm) => void;
 }) => {
-    const chainId = useSelector((state: RootState) => state.user.chainId);
+    const chainId = useAppSelector((state: RootState) => state.user.chainId);
     const tokens = GetCurrentChain(chainId!).tokens;
     const [tokenA, setTokenA] = useState<IToken>(tokens[0]);
     const [tokenB, setTokenB] = useState<IToken>(tokens[1]);

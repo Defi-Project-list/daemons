@@ -1,8 +1,7 @@
 import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { GetCurrentChain } from "../../data/chain-info";
-import { RootState } from "../../state";
+import { RootState, useAppDispatch, useAppSelector } from "../../state";
 import { UniswapV2PairABI } from "@daemons-fi/contracts";
 import { bigNumberToFloat } from "@daemons-fi/contracts";
 import { Cacher } from "../../data/cacher";
@@ -12,18 +11,18 @@ import { fetchTreasuryStats } from "../../state/action-creators/treasury-action-
 type reserves = { resETH: number; resDAEM: number };
 
 export function TreasuryData(): JSX.Element {
-    const dispatch = useDispatch();
-    const chainId = useSelector((state: RootState) => state.user.chainId)!;
+    const dispatch = useAppDispatch();
+    const chainId = useAppSelector((state: RootState) => state.user.chainId)!;
     const [lpTreasuryBalance, setLpTreasuryBalance] = useState<number | undefined>();
     const [lpOwnedPercentage, setLpOwnedPercentage] = useState<number | undefined>();
     const [lpReserves, setLpReserves] = useState<reserves | undefined>();
     const [apr, setApr] = useState<number | undefined>();
     const [apy, setApy] = useState<number | undefined>();
     const currencySymbol = GetCurrentChain(chainId).coinSymbol;
-    const currentDAEMPrice = useSelector((state: RootState) => state.prices.DAEMPriceInEth);
-    const distrInterval = useSelector((state: RootState) => state.treasury.distrInterval);
-    const redistributionPool = useSelector((state: RootState) => state.treasury.redistributionPool);
-    const stakedAmount = useSelector((state: RootState) => state.treasury.stakedAmount);
+    const currentDAEMPrice = useAppSelector((state: RootState) => state.prices.DAEMPriceInEth);
+    const distrInterval = useAppSelector((state: RootState) => state.treasury.distrInterval);
+    const redistributionPool = useAppSelector((state: RootState) => state.treasury.redistributionPool);
+    const stakedAmount = useAppSelector((state: RootState) => state.treasury.stakedAmount);
 
     const secondsInOneYear = 31104000;
     const calculateAPR = (): number =>

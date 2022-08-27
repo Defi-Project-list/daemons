@@ -7,8 +7,7 @@ import { AmountType } from "@daemons-fi/shared-definitions/build";
 import { IBaseMMActionForm } from "../../../../data/chains-data/action-form-interfaces";
 import { IToken, Token } from "../../../../data/chains-data/interfaces";
 import { AmountInput } from "../shared/amount-input";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../../state";
+import { RootState, useAppSelector } from "../../../../state";
 import "./mm-action.css";
 
 const validateForm = (values: IBaseMMActionForm) => {
@@ -35,8 +34,8 @@ export const MmBaseAction = ({
     form: IBaseMMActionForm;
     update: (next: IBaseMMActionForm) => void;
 }) => {
-    const tokenBalances = useSelector((state: RootState) => state.wallet.tokenBalances);
-    const mmInfo = useSelector((state: RootState) => state.wallet.moneyMarketsInfo);
+    const tokenBalances = useAppSelector((state: RootState) => state.wallet.tokenBalances);
+    const mmInfo = useAppSelector((state: RootState) => state.wallet.moneyMarketsInfo);
     const thisMM = mmInfo[form.moneyMarket.poolAddress];
 
     const tokens = form.moneyMarket.supportedTokens;

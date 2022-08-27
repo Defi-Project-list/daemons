@@ -1,10 +1,10 @@
 import React from "react";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
-import { useDispatch } from "react-redux";
 import { AuthProxy, IUserProfile } from "../../data/storage-proxy/auth-proxy";
 import { authenticationCheck } from "../../state/action-creators/user-action-creators";
 import { Username } from "./username";
 import "./profile.css";
+import { useAppDispatch } from "../../state";
 
 interface IProfilePanelProps {
     user: IUserProfile;
@@ -12,7 +12,7 @@ interface IProfilePanelProps {
 }
 
 export const ProfilePanel = ({ user, closeModal: closePanel }: IProfilePanelProps): JSX.Element => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const username = user.username !== user.address ? user.username : undefined;
 
     const logOut = async () => {

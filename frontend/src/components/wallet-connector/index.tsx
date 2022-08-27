@@ -4,9 +4,8 @@ import {
     authenticationCheck,
     updateWalletAddress
 } from "../../state/action-creators/user-action-creators";
-import { useDispatch, useSelector } from "react-redux";
 import { BigNumber } from "ethers";
-import { RootState } from "../../state";
+import { RootState, useAppDispatch, useAppSelector } from "../../state";
 import { StorageProxy } from "../../data/storage-proxy";
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
 import { INotification, NotificationProxy } from "../../data/storage-proxy/notification-proxy";
@@ -17,7 +16,7 @@ import "./styles.css";
 import { useNavigate } from "react-router-dom";
 
 export function ConnectWalletButton() {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { status, connect, account, chainId } = useMetaMask();
 
@@ -65,8 +64,8 @@ export function ConnectWalletButton() {
 }
 
 function ConnectedWalletComponent({ walletAddress, chainId }: any): JSX.Element | null {
-    const dispatch = useDispatch();
-    const user: IUserProfile | undefined = useSelector(
+    const dispatch = useAppDispatch();
+    const user: IUserProfile | undefined = useAppSelector(
         (state: RootState) => state.user.userProfile
     );
     const chainInfo = GetCurrentChain(chainId);

@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { BaseScript, getGasLimitForScript } from "@daemons-fi/scripts-definitions";
 import { VerificationFailedScript, VerificationState } from "@daemons-fi/scripts-definitions";
-import { RootState } from "../../state";
+import { RootState, useAppDispatch, useAppSelector } from "../../state";
 import {
     fetchGasTankBalance,
     fetchGasTankClaimable
@@ -19,11 +18,11 @@ import { Tooltip } from "../../components/tooltip";
 
 export const MyPageScript = ({ script }: { script: BaseScript }) => {
     const [verification, setVerification] = useState(script.getVerification());
-    const dispatch = useDispatch();
-    const walletAddress = useSelector((state: RootState) => state.user.address);
-    const chainId = useSelector((state: RootState) => state.user.chainId);
+    const dispatch = useAppDispatch();
+    const walletAddress = useAppSelector((state: RootState) => state.user.address);
+    const chainId = useAppSelector((state: RootState) => state.user.chainId);
     const currencySymbol = GetCurrentChain(chainId!).coinSymbol;
-    const currentGasPrice = useSelector((state: RootState) => state.gasPriceFeed.price) ?? 0;
+    const currentGasPrice = useAppSelector((state: RootState) => state.gasPriceFeed.price) ?? 0;
 
     // wallet signer and provider
     const provider = new ethers.providers.Web3Provider((window as any).ethereum);

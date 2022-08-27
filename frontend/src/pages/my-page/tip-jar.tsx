@@ -1,7 +1,6 @@
 import React, { ReactNode, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { gasTankABI } from "@daemons-fi/contracts";
-import { RootState } from "../../state";
+import { RootState, useAppDispatch, useAppSelector } from "../../state";
 import { Field, Form } from "react-final-form";
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
 import { promiseToast } from "../../components/toaster";
@@ -14,11 +13,11 @@ import { Card } from "../../components/card/card";
 import { Switch } from "../../components/switch";
 
 export function TipJar(): JSX.Element {
-    const dispatch = useDispatch();
-    const tipJarBalance = useSelector((state: RootState) => state.tipJar.balance);
-    const walletAddress = useSelector((state: RootState) => state.user.address);
-    const DAEMBalance = useSelector((state: RootState) => state.wallet.DAEMBalance);
-    const chainId = useSelector((state: RootState) => state.user.chainId);
+    const dispatch = useAppDispatch();
+    const tipJarBalance = useAppSelector((state: RootState) => state.tipJar.balance);
+    const walletAddress = useAppSelector((state: RootState) => state.user.address);
+    const DAEMBalance = useAppSelector((state: RootState) => state.wallet.DAEMBalance);
+    const chainId = useAppSelector((state: RootState) => state.user.chainId);
     const contracts = GetCurrentChain(chainId!).contracts;
     const [toggleDeposit, setToggleDeposit] = useState<boolean>(true);
     const [needsAllowance, setNeedsAllowance] = useState<boolean>(true);

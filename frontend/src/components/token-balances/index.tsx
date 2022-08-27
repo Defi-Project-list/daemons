@@ -1,17 +1,16 @@
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
 import { GetCurrentChainTokensDictionary } from "../../data/chain-info";
 import { IToken } from "../../data/chains-data/interfaces";
-import { RootState } from "../../state";
+import { RootState, useAppDispatch, useAppSelector } from "../../state";
 import { fetchTokenBalances } from "../../state/action-creators/wallet-action-creators";
 import { successToast } from "../toaster";
 import "./styles.css";
 
 export const TokenBalances = (): JSX.Element => {
-    const dispatch = useDispatch();
-    const balances = useSelector((state: RootState) => state.wallet.tokenBalances);
-    const chainId = useSelector((state: RootState) => state.user.chainId);
-    const address = useSelector((state: RootState) => state.user.address);
+    const dispatch = useAppDispatch();
+    const balances = useAppSelector((state: RootState) => state.wallet.tokenBalances);
+    const chainId = useAppSelector((state: RootState) => state.user.chainId);
+    const address = useAppSelector((state: RootState) => state.user.address);
 
     const tokens = GetCurrentChainTokensDictionary(chainId!);
     const triggerReload = async () => {

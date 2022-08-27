@@ -1,6 +1,5 @@
 import React from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../../state";
+import { RootState, useAppSelector } from "../../state";
 import { UnsupportedChainPage } from "../error-pages/unsupported-chain-page";
 import "./styles.css";
 import { UsersChart } from "./users-chart";
@@ -16,13 +15,15 @@ import { DisconnectedPage } from "../error-pages/disconnected-page";
 Chart.register(...registerables);
 
 export function DashboardPage() {
-    const user: IUserProfile | undefined = useSelector((state: RootState) => state.user.userProfile);
-    const chainId: string | undefined = useSelector((state: RootState) => state.user.chainId);
-    const supportedChain: boolean = useSelector((state: RootState) => state.user.supportedChain);
+    const user: IUserProfile | undefined = useAppSelector(
+        (state: RootState) => state.user.userProfile
+    );
+    const chainId: string | undefined = useAppSelector((state: RootState) => state.user.chainId);
+    const supportedChain: boolean = useAppSelector((state: RootState) => state.user.supportedChain);
 
     if (user && !user.whitelisted) return <NotWhitelistedPage />;
     if (user && user.banned) return <BannedPage />;
-    if (!chainId) return <DisconnectedPage />
+    if (!chainId) return <DisconnectedPage />;
     if (!supportedChain) return <UnsupportedChainPage />;
 
     return (
