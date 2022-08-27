@@ -21,7 +21,7 @@ export class ScriptProxy {
             return [];
         }
 
-        console.log(`Fetching all scripts for chain ${chainId}`);
+        console.debug(`Fetching all scripts for chain ${chainId}`);
         const url = `${storageAddress}/scripts/${chainId}`;
         const requestOptions = { method: "GET", credentials: "include" };
         const response = await fetch(url, requestOptions as any);

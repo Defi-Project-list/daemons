@@ -13,7 +13,13 @@ import { fetchGasTankClaimable } from "../../state/action-creators/gas-tank-acti
 import { removeExecutableScript } from "../../state/action-creators/script-action-creators";
 import { bigNumberToFloat } from "@daemons-fi/contracts";
 
-export const QueueScriptComponent = ({ script }: { script: BaseScript }) => {
+export const QueueScriptComponent = ({
+    script,
+    markAsExecutable
+}: {
+    script: BaseScript;
+    markAsExecutable: (value: boolean) => void;
+}) => {
     const dispatch = useDispatch();
     const [verification, setVerification] = useState(script.getVerification());
     const walletAddress = useSelector((state: RootState) => state.user.address);
@@ -36,6 +42,7 @@ export const QueueScriptComponent = ({ script }: { script: BaseScript }) => {
     const verifyScript = async () => {
         const verification = await script.verify(signer);
         setVerification(verification);
+        markAsExecutable(verification.state === VerificationState.valid);
 
         const isBroken =
             verification.state === VerificationState.errorCode &&
@@ -78,7 +85,7 @@ export const QueueScriptComponent = ({ script }: { script: BaseScript }) => {
                         Execute
                     </button>
                 ) : (
-                    <div className="queue-script__verification-message">
+                    <div className="queue-script__verification-message" onClick={verifyScript}>
                         {verification.toString()}
                     </div>
                 )}

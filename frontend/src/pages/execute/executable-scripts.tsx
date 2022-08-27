@@ -1,36 +1,39 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { BaseScript } from "@daemons-fi/scripts-definitions";
 import { RootState } from "../../state";
-import { fetchExecutableScripts } from "../../state/action-creators/script-action-creators";
-import { toggleScriptsLoading } from "../../state/action-creators/script-action-creators";
 import { QueueScriptComponent } from "./executable-script";
 import { Card } from "../../components/card/card";
-import "./styles.css";
 import { TooltipSize } from "../../components/tooltip";
+import { StorageProxy } from "../../data/storage-proxy";
+import "./styles.css";
 
 export function ExecutableScriptsContainer() {
-    const dispatch = useDispatch();
     const chainId = useSelector((state: RootState) => state.user.chainId);
-    const fetchedScripts = useSelector((state: RootState) => state.script.allScripts);
-    const loading = useSelector((state: RootState) => state.script.loading);
-    const [scriptsChain, setScriptsChain] = useState<string>("");
+    const [scripts, setScripts] = useState<BaseScript[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [executableScripts, setExecutableScripts] = useState<Set<string>>(new Set());
 
     const reloadScripts = async () => {
-        dispatch(toggleScriptsLoading());
-        dispatch(fetchExecutableScripts(chainId));
+        setIsLoading(true);
+        const scripts = await StorageProxy.script.fetchScripts(chainId);
+        setScripts(scripts);
+        setExecutableScripts(new Set());
+        setIsLoading(false);
+        console.log(scripts);
     };
 
     useEffect(() => {
-        if (fetchedScripts.length === 0 || scriptsChain !== chainId) {
-            reloadScripts();
-            setScriptsChain(chainId!);
-        }
+        reloadScripts();
     }, [chainId]);
 
-    const scripts = fetchedScripts.map((script: BaseScript) => (
-        <QueueScriptComponent key={script.getId()} script={script} />
-    ));
+    const markAsExecutable = (script: BaseScript, value: boolean) => {
+        const executableScriptsCopy = new Set([...executableScripts]);
+        value
+            ? executableScriptsCopy.add(script.getId())
+            : executableScriptsCopy.delete(script.getId());
+        setExecutableScripts(executableScriptsCopy);
+    };
 
     const actionComponent = (
         <div className="card__action-button" onClick={reloadScripts}>
@@ -38,7 +41,7 @@ export function ExecutableScriptsContainer() {
             <div
                 className={
                     "queue-container__reload-bt " +
-                    (loading ? "queue-container__reload-bt--loading" : "")
+                    (isLoading ? "queue-container__reload-bt--loading" : "")
                 }
             />
         </div>
@@ -66,7 +69,25 @@ export function ExecutableScriptsContainer() {
             tooltipSize={TooltipSize.Large}
         >
             <div className="card__subtitle">Execute scripts and get rewarded in DAEM tokens</div>
-            <div className="queue-container">{scripts}</div>
+            <div className="queue-container">
+                {scripts
+                    .sort((s1, s2) =>
+                        // Place executable scripts on top
+                        executableScripts.has(s1.getId()) && !executableScripts.has(s2.getId())
+                            ? -1
+                            : executableScripts.has(s2.getId()) &&
+                              !executableScripts.has(s1.getId())
+                            ? 1
+                            : 0
+                    )
+                    .map((script: BaseScript) => (
+                        <QueueScriptComponent
+                            key={script.getId()}
+                            script={script}
+                            markAsExecutable={(value: boolean) => markAsExecutable(script, value)}
+                        />
+                    ))}
+            </div>
         </Card>
     );
 }

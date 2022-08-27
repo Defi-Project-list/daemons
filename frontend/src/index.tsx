@@ -1,9 +1,7 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { store } from './state';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-
 import { App } from './App';
 import { DashboardPage } from './pages/dashboard';
 import { MyPage } from './pages/my-page';
@@ -12,8 +10,11 @@ import { ScriptDesignerPage } from "./pages/script-designer";
 import { ReviewPage } from "./pages/review";
 import { TransactionsPage } from "./pages/transactions";
 import { VestingPage } from "./pages/vesting";
+import { createRoot } from 'react-dom/client';
 
-ReactDOM.render(
+const container = document.getElementById('app-root');
+const root = createRoot(container!);
+root.render(
     <Provider store={store}>
         <BrowserRouter>
             <Routes>
@@ -26,5 +27,5 @@ ReactDOM.render(
                 <Route path="vesting" element={<App><VestingPage/></App>} />
             </Routes>
         </BrowserRouter>
-    </Provider>,
-    document.getElementById('app-root'));
+    </Provider>
+);
