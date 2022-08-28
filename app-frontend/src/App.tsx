@@ -18,6 +18,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./fonts.css";
 import "./constants.css";
 import "./app.css";
+import "./pages/shared.css";
 import { IUserProfile } from "./data/storage-proxy/auth-proxy";
 
 export const App = ({ children }: { children: any }) => {

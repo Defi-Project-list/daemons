@@ -5,7 +5,6 @@ import { UnsupportedChainPage } from "../error-pages/unsupported-chain-page";
 import { UserScriptsContainer } from "./user-scripts";
 import { GasTank } from "./gas-tank";
 import "./styles.css";
-import "../shared.css";
 import { TipJar } from "./tip-jar";
 import { BannedPage } from "../error-pages/banned-page";
 import { NotWhitelistedPage } from "../error-pages/not-whitelisted-page";
