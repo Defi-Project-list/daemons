@@ -12,6 +12,7 @@ import { TransactionsPage } from "./pages/transactions";
 import { VestingPage } from "./pages/vesting";
 import { createRoot } from 'react-dom/client';
 
+
 const container = document.getElementById('app-root');
 const root = createRoot(container!);
 root.render(
