@@ -1,0 +1,11 @@
+.execute-page__layout {
+    display: grid;
+    grid-template-columns: 60fr 40fr;
+    column-gap: 20px;
+}
+
+.execute-page__left-panel {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+}
