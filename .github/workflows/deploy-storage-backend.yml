@@ -1,11 +1,11 @@
-name: Deploy Storage
+name: Deploy Storage Backend
 
 on:
   push:
     branches:
       - master
     paths:
-      - "storage/**"
+      - "storage-backend/**"
 
 jobs:
   build:
@@ -21,7 +21,7 @@ jobs:
           MONGO_DB_CONN_STRING: not_used_in_tests
           OTP_KEY: just_testing
         run: |
-          cd storage/
+          cd storage-backend/
           npm install
           npm run test:ci
 
@@ -30,6 +30,6 @@ jobs:
         env:
           REPO: self
           BRANCH: depl-storage
-          FOLDER: storage
+          FOLDER: storage-backend
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MESSAGE: "Storage tested and deployed"
