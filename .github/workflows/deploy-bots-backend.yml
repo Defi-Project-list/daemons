@@ -1,11 +1,11 @@
-name: Deploy Daemonic-Bots
+name: Deploy Bots Backend
 
 on:
   push:
     branches:
       - master
     paths:
-      - "daemonic-bots/**"
+      - "bots-backend/**"
 
 jobs:
   build:
@@ -21,7 +21,7 @@ jobs:
           KOVAN_RPC: not_used_in_tests
           MUMBAI_RPC: not_used_in_tests
         run: |
-          cd daemonic-bots/
+          cd bots-backend/
           npm install
           npm run test:ci
 
@@ -30,6 +30,6 @@ jobs:
         env:
           REPO: self
           BRANCH: depl-daemonic-bots
-          FOLDER: daemonic-bots
+          FOLDER: bots-backend
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MESSAGE: "Daemonic-bots tested and deployed"
+          MESSAGE: "Bots backend tested and deployed"

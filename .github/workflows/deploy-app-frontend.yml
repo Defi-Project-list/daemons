@@ -1,11 +1,11 @@
-name: Deploy Frontend
+name: Deploy App Frontend
 
 on:
   push:
     branches:
       - master
     paths:
-      - "frontend/**"
+      - "app-frontend/**"
 
 jobs:
   build:
@@ -17,17 +17,17 @@ jobs:
 
       - name: Install all dependencies
         run: |
-          cd frontend/
+          cd app-frontend/
           npm install
 
       - name: test
         run: |
-          cd frontend/
+          cd app-frontend/
           npm run test:ci
 
       - name: Build
         run: |
-          cd frontend/
+          cd app-frontend/
           npm run build # The build command of your project
 
       - name: Push
@@ -35,6 +35,6 @@ jobs:
         env:
           REPO: self
           BRANCH: depl-frontend
-          FOLDER: frontend/dist
+          FOLDER: app-frontend/dist
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MESSAGE: "Frontend tested, built and deployed"
+          MESSAGE: "App frontend tested, built and deployed"
