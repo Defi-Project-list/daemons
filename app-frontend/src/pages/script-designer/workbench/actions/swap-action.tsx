@@ -43,7 +43,7 @@ export const SwapAction = ({
         const updatedForm = {
             ...form,
             tokenFromAddress: tokenA.address,
-            tokenToAddress: tokenA.address
+            tokenToAddress: tokenB.address
         };
         const valid = isFormValid(updatedForm);
         update({ ...updatedForm, valid });
