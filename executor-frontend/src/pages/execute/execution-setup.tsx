@@ -13,6 +13,7 @@ export interface IExecutionSetupForm {
     throttle: number;
     profitsDestination: string;
     executorPrivateKey: string;
+    executorAddress: string;
 }
 
 export function ExecutionSetup({
@@ -38,7 +39,8 @@ export function ExecutionSetup({
             claimInterval: 20,
             throttle: 5,
             profitsDestination: "",
-            executorPrivateKey: ""
+            executorPrivateKey: "",
+            executorAddress: ""
         } as IExecutionSetupForm
     });
 
@@ -56,6 +58,7 @@ export function ExecutionSetup({
         const randomWallet = Wallet.createRandom();
         setValue("executorPrivateKey", randomWallet.privateKey);
         setCalculatedAddress(randomWallet.address);
+        setValue("executorAddress", randomWallet.address);
         setIsWalletBtDisabled(true);
         trigger("executorPrivateKey");
     };
@@ -67,6 +70,7 @@ export function ExecutionSetup({
         } catch (error) {}
         setIsWalletBtDisabled(!!privateKey);
         setCalculatedAddress(address);
+        setValue("executorAddress", address);
     };
 
     const chainButton = () => {
@@ -134,11 +138,7 @@ export function ExecutionSetup({
                     <div className="setup__text">Chain:</div>
                     <div className="setup__input">
                         {chainButton()}
-                        <input
-                            id="id-chain-input"
-                            type="hidden"
-                            {...register("chainId", { required: true })}
-                        />
+                        <input type="hidden" {...register("chainId", { required: true })} />
                         {errors.chainId && (
                             <div className="setup__error">Please choose a chain.</div>
                         )}
@@ -217,7 +217,6 @@ export function ExecutionSetup({
                     <div className="setup__text">Private key</div>
                     <div className="setup__input">
                         <input
-                            id="id-private-key-input"
                             className="card__input"
                             placeholder="5f1d3e19a8dd681651abc165165cac16a516a..."
                             {...register("executorPrivateKey", {
@@ -235,6 +234,7 @@ export function ExecutionSetup({
                 <div className="setup__line">
                     <div className="setup__text">Address</div>
                     <div className="">{calculatedAddress}</div>
+                    <input type="hidden" {...register("executorAddress", { required: true })} />
                 </div>
 
                 <input

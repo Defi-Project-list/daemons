@@ -1,3 +1,9 @@
+import {
+    IContractsList,
+    kovanContracts,
+    mumbaiTestnetContracts
+} from "@daemons-fi/contracts/build";
+
 export interface ISimplifiedChainInfo {
     name: string;
     id: string;
@@ -9,6 +15,8 @@ export interface ISimplifiedChainInfo {
     coinIconPath: string;
     explorerUrl: string;
     explorerTxUrl: string;
+    contracts: IContractsList;
+    minCoinsToExecuteScripts: number;
 }
 
 export const ChainInfo: { [chainId: string]: ISimplifiedChainInfo } = {
@@ -22,7 +30,9 @@ export const ChainInfo: { [chainId: string]: ISimplifiedChainInfo } = {
         coinDecimals: 18,
         coinIconPath: "https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png",
         explorerUrl: "https://kovan.etherscan.io/",
-        explorerTxUrl: "https://kovan.etherscan.io/tx/"
+        explorerTxUrl: "https://kovan.etherscan.io/tx/",
+        contracts: kovanContracts,
+        minCoinsToExecuteScripts: 0.01,
     },
     "80001": {
         name: "Mumbai",
@@ -34,7 +44,9 @@ export const ChainInfo: { [chainId: string]: ISimplifiedChainInfo } = {
         coinDecimals: 18,
         coinIconPath: "/icons/polygon.jpg",
         explorerUrl: "https://mumbai.polygonscan.com/",
-        explorerTxUrl: "https://mumbai.polygonscan.com/tx/"
+        explorerTxUrl: "https://mumbai.polygonscan.com/tx/",
+        contracts: mumbaiTestnetContracts,
+        minCoinsToExecuteScripts: 1,
     }
 };
 
