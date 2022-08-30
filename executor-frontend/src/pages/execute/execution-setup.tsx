@@ -2,6 +2,7 @@ import { Wallet } from "ethers";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { ChainsModal } from "../../components/chains-modal";
+import { MessageModal } from "../../components/message-modal";
 import { Tooltip, TooltipSize } from "../../components/tooltip";
 import { ISimplifiedChainInfo } from "../../data/supported-chains";
 import "./execution-setup.css";
@@ -22,6 +23,7 @@ export function ExecutionSetup({
     submitSetupData: (data: IExecutionSetupForm) => void;
 }) {
     const [displayChains, setDisplayChains] = useState<boolean>(false);
+    const [displayWalletMessage, setDisplayWalletMessage] = useState<boolean>(false);
     const [chain, setChain] = useState<ISimplifiedChainInfo | undefined>();
     const [isWalletBtDisabled, setIsWalletBtDisabled] = useState<boolean>(false);
     const [calculatedAddress, setCalculatedAddress] = useState<string>("");
@@ -51,10 +53,6 @@ export function ExecutionSetup({
     };
 
     const generateRandomWallet = () => {
-        alert(
-            "Daemons does *not* store any key, so please write this down or add it to your MetaMask.\n\nIf you were to lose it, there would be nothing we could do to recover any funds in it."
-        );
-
         const randomWallet = Wallet.createRandom();
         setValue("executorPrivateKey", randomWallet.privateKey);
         setCalculatedAddress(randomWallet.address);
@@ -209,7 +207,7 @@ export function ExecutionSetup({
                         value="Generate a new wallet"
                         disabled={isWalletBtDisabled}
                         className="setup__button"
-                        onClick={generateRandomWallet}
+                        onClick={() => setDisplayWalletMessage(true)}
                     />
                 </div>
 
@@ -251,6 +249,20 @@ export function ExecutionSetup({
                 selectedChain={chain}
                 setSelectedChain={setChainValue}
             />
+            <MessageModal
+                isOpen={displayWalletMessage}
+                hideDialog={() => setDisplayWalletMessage(false)}
+                okAction={generateRandomWallet}
+            >
+                <div className="wallet-message">
+                    We will create a new wallet for you, but will <strong>not</strong> store it
+                    anywhere.
+                    <br /><br />
+                    Write it down or import it into your MetaMask.
+                    <br /><br />
+                    In case of loss, there would be nothing we could do to recover any funds in it.
+                </div>
+            </MessageModal>
         </div>
     );
 }
