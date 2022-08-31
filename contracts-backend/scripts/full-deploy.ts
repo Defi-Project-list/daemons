@@ -50,6 +50,7 @@ import { verifyTransferExecutor } from "./single-deployments/c1b-verify-transfer
 import { verifySwapperExecutor } from "./single-deployments/b1b-verify-swapper-executor";
 import { deployUniswapV2LiquidityManager } from "./single-deployments/a3.1-uniswap-liquidity-manager";
 import { verifyVesting } from "./single-deployments/a4b-verify-vesting";
+import { verifyLiquidityManager } from "./single-deployments/a3.1b-verify-liquidity-manager";
 
 async function deployDaemons() {
     // display deployer address and its balance
@@ -93,6 +94,7 @@ async function deployDaemons() {
     // verify side contracts
     await verifyDaemToken(currentContracts);
     await verifyGasTank(currentContracts);
+    await verifyLiquidityManager(currentContracts);
     await verifyTreasury(currentContracts);
     await verifyGasPriceFeed(currentContracts);
     await verifyVesting(currentContracts, vestingStart, vestingDuration);
