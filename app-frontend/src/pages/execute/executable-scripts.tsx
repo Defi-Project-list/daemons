@@ -19,7 +19,6 @@ export function ExecutableScriptsContainer() {
         setScripts(scripts);
         setExecutableScripts(new Set());
         setIsLoading(false);
-        console.log(scripts);
     };
 
     useEffect(() => {
