@@ -116,4 +116,9 @@ export const possibleVerificationErrors: { [code: string]: IVerificationResultDe
     description:
       "The script passes all checks, but it fails during the dry run. It could be due to an error in the smart contract",
   },
+
+  "[UNKNOWN]": {
+    name: "Unknown",
+    description: "The script cannot be executed, but we cannot parse the reason why."
+  }
 };

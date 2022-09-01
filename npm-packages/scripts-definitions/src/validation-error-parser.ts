@@ -29,6 +29,12 @@ export function parseValidationError(error: any): string {
 
     try {
         // this will likely work on kovan with the default Metamask Provider
+        if (error.error.data) return parseErrorDataText(error.error.data);
+    } catch (error) {}
+
+
+    try {
+        // this will likely work on kovan with the default Metamask Provider
         const rinkebyError: string = error.error.data.originalError.message;
         if (rinkebyError) {
             const split = rinkebyError.split(" ");
