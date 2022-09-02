@@ -35,7 +35,7 @@ export const kovanContracts: IContractsList = {
   ILiquidityManager: "0xA0F0ee9A685B8C53615E5d0E79DF081BdFA4a6F0",
   Treasury: "0x63f457074b1A1889d68c39D20Ca5802E1dD43044",
   wethDaemLp: "0x5528272943599533F76b6d97e1ebfB4FAa461afB",
-  InfoFetcher: "0x94842ee7a691AC3CdA616a4f9E8385258BE4FaFE",
+  InfoFetcher: "0x6E3E8F8085e63f20fEa5C2102309421e3a432e05",
 
   SwapperScriptExecutor: "0xc9157bA9bF8Ed1200c31bec914C02888A9e624a6",
   TransferScriptExecutor: "0x7F6F78F6e6ff610014223844F3a268A82Fbaed65",
@@ -58,7 +58,7 @@ export const mumbaiTestnetContracts: IContractsList = {
   ILiquidityManager: "0x630f83BDd1189cDc23f2B10307E6D84d385Ba87f",
   Treasury: "0x57C94936EE7cb649307b831c46D49Bd2391FCDfe",
   wethDaemLp: "0xe9a9bec138E331927625152d3f8495755ec68c36",
-  InfoFetcher: "0x05Af9c3a34c9453e997ad73aBD6A65afCc75411B",
+  InfoFetcher: "0xc19De6D8939fAD8eE1E4D5f3106D69126b8E8Ba6",
 
   SwapperScriptExecutor: "0xc36449d5A86668E941214d8B5661D9BaA1DE8b1D",
   TransferScriptExecutor: "0x3C676A86781d9D1D85583a8d6736D2588a9FD533",

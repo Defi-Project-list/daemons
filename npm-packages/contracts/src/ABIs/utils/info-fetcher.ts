@@ -202,5 +202,146 @@ export const InfoFetcherABI: ContractInterface = [
     ],
     stateMutability: "view",
     type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address"
+      },
+      {
+        internalType: "address",
+        name: "_treasury",
+        type: "address"
+      },
+      {
+        internalType: "address",
+        name: "_gasTank",
+        type: "address"
+      }
+    ],
+    name: "fetchUserStateOnDaemons",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "claimableDAEM",
+            type: "uint256"
+          },
+          {
+            internalType: "uint256",
+            name: "claimableETH",
+            type: "uint256"
+          },
+          {
+            internalType: "uint256",
+            name: "ethInGasTank",
+            type: "uint256"
+          },
+          {
+            internalType: "uint256",
+            name: "daemInGasTank",
+            type: "uint256"
+          },
+          {
+            internalType: "uint256",
+            name: "daemInTreasury",
+            type: "uint256"
+          }
+        ],
+        internalType: "struct DaemonsInfo",
+        name: "",
+        type: "tuple"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address"
+      },
+      {
+        internalType: "address",
+        name: "_treasury",
+        type: "address"
+      },
+      {
+        internalType: "address",
+        name: "_gasTank",
+        type: "address"
+      },
+      {
+        internalType: "address[]",
+        name: "tokens",
+        type: "address[]"
+      }
+    ],
+    name: "fetchUserStateOnDaemonsAndBalances",
+    outputs: [
+      {
+        components: [
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "claimableDAEM",
+                type: "uint256"
+              },
+              {
+                internalType: "uint256",
+                name: "claimableETH",
+                type: "uint256"
+              },
+              {
+                internalType: "uint256",
+                name: "ethInGasTank",
+                type: "uint256"
+              },
+              {
+                internalType: "uint256",
+                name: "daemInGasTank",
+                type: "uint256"
+              },
+              {
+                internalType: "uint256",
+                name: "daemInTreasury",
+                type: "uint256"
+              }
+            ],
+            internalType: "struct DaemonsInfo",
+            name: "daemonsInfo",
+            type: "tuple"
+          },
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "coin",
+                type: "uint256"
+              },
+              {
+                internalType: "uint256[]",
+                name: "tokens",
+                type: "uint256[]"
+              }
+            ],
+            internalType: "struct Balances",
+            name: "balances",
+            type: "tuple"
+          }
+        ],
+        internalType: "struct DaemonsInfoWithBalances",
+        name: "",
+        type: "tuple"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
   }
 ];
