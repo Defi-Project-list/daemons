@@ -1,7 +1,13 @@
 import { bigNumberToFloat } from "@daemons-fi/contracts/build";
-import { BaseScript, VerificationState } from "@daemons-fi/scripts-definitions/build";
+import {
+    BaseScript,
+    ScriptVerification,
+    VerificationState
+} from "@daemons-fi/scripts-definitions/build";
 import { BigNumber, Wallet } from "ethers";
 import React, { useEffect, useState } from "react";
+import { transferAllDAEM } from "../../data/DAEM-transferer";
+import { claimFunds } from "../../data/gas-tank-proxy";
 import { fetchWalletBalance, instantiateProvider } from "../../data/info-fetcher-proxy";
 import { ScriptProxy } from "../../data/scripts-proxy";
 import { ChainInfo, ISimplifiedChainInfo } from "../../data/supported-chains";
@@ -13,6 +19,7 @@ interface IExecutionStateProps {
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+let SHOULD_STOP = false;
 
 export function ExecutionState({ setupData }: IExecutionStateProps) {
     const [chain, setChain] = useState<ISimplifiedChainInfo | undefined>();
@@ -20,6 +27,7 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
     const [gasUsed, setGasUsed] = useState<number>(0);
     const [daemBalance, setDaemBalance] = useState<number>(0);
     const [daemClaimable, setDaemClaimable] = useState<number>(0);
+    const [daemProfits, setDaemProfits] = useState<number>(0);
     const [scriptsChecked, setScriptsChecked] = useState<number>(0);
     const [successfulExecutions, setSuccessfulExecutions] = useState<number>(0);
     const [failedExecutions, setFailedExecutions] = useState<number>(0);
@@ -41,34 +49,56 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
         setDaemClaimable(balances.claimableDAEM);
     };
 
-    const execute = async () => {
-        await waitForFunds();
+    const execute = async (missingToClaim: number) => {
+        if (SHOULD_STOP || !(await waitForFunds())) return;
 
         // fetch scripts
         const scripts = await ScriptProxy.fetchScripts(setupData!.chainId);
         console.debug({ msg: "fetched scripts", scripts });
         let executed = 0;
-        while (scripts.length > 0) {
+        while (scripts.length > 0 && !SHOULD_STOP) {
             const result = await tryExecuteScript(scripts.pop()!);
-            if (result) executed++;
+            if (result) {
+                executed++;
+                missingToClaim--;
+                await sleep(setupData!.throttle * 1000);
+            }
+
+            if (missingToClaim <= 0) {
+                await claimAndSendFunds();
+                missingToClaim += setupData!.claimInterval;
+            }
         }
 
         if (executed) await fetchBalances();
-        await execute();
+        if (SHOULD_STOP) {
+            setCurrentTask((prev) => `Stopped.`);
+            return;
+        }
+        await execute(
+            missingToClaim > 0 ? missingToClaim : missingToClaim + setupData!.claimInterval
+        );
     };
 
     const tryExecuteScript = async (script: BaseScript): Promise<boolean> => {
         const provider = instantiateProvider(setupData!.rpcUrl);
-        const verificationResult = await script.verify(provider);
-        setScriptsChecked(scriptsChecked + 1);
-        if (verificationResult.state !== VerificationState.valid) {
+        setCurrentTask((prev) => `Verifying Script ${script.getId().substring(0, 15)}...`);
+        setScriptsChecked((prev) => prev + 1);
+
+        let verificationResult: ScriptVerification | undefined = undefined;
+        try {
+            verificationResult = await script.verify(provider);
+        } catch (error) {
+            console.log({ msg: "Error during verification", error });
+        }
+        if (!verificationResult || verificationResult.state !== VerificationState.valid) {
             console.debug({ msg: "Script verification failed" });
             return false;
         }
 
         console.debug({ message: "Script successfully verified", script });
         const walletSigner = new Wallet(setupData!.executorPrivateKey, provider);
-        setCurrentTask((prev) => `Executing script ${script.getId()}`);
+        setCurrentTask((prev) => `Executing script ${script.getId().substring(0, 15)}`);
 
         try {
             const tx = await script.execute(walletSigner);
@@ -79,8 +109,8 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
                 ? setSuccessfulExecutions((prev) => prev + 1)
                 : setFailedExecutions((prev) => prev + 1);
 
-            const gasUsed = res?.gasUsed ?? BigNumber.from(0)
-            const gasPrice = res?.effectiveGasPrice ?? BigNumber.from(0)
+            const gasUsed = res?.gasUsed ?? BigNumber.from(0);
+            const gasPrice = res?.effectiveGasPrice ?? BigNumber.from(0);
             const gasPaid = bigNumberToFloat(gasUsed.mul(gasPrice), 8);
             setGasUsed((prev) => prev + gasPaid);
             return res?.status === 1;
@@ -91,27 +121,61 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
         }
     };
 
+    const claimAndSendFunds = async () => {
+        if (!setupData) throw new Error("Setup incomplete");
+
+        const provider = instantiateProvider(setupData.rpcUrl);
+        const walletSigner = new Wallet(setupData.executorPrivateKey, provider);
+
+        // claim DAEM profits
+        setCurrentTask((prev) => `Claiming DAEM profits from Gas Tank`);
+        const claimed = await claimFunds(setupData.chainId, walletSigner);
+        setDaemClaimable(0);
+
+        // if the used wallet is also the destination, we don't need to send any DAEM to it
+        if (
+            setupData.executorAddress.toLowerCase() === setupData.profitsDestination.toLowerCase()
+        ) {
+            setDaemProfits((prev) => prev + claimed);
+            return;
+        }
+
+        // otherwise, let's send all DAEM we have there
+        setCurrentTask((prev) => `Transferring earned DAEM to your main wallet`);
+        const transferred = await transferAllDAEM(
+            setupData.chainId,
+            walletSigner,
+            setupData.profitsDestination
+        );
+        setDaemProfits((prev) => prev + transferred);
+    };
+
     const waitForFunds = async () => {
-        while (ethBalance < chain!.minCoinsToExecuteScripts) {
+        if (ethBalance < chain!.minCoinsToExecuteScripts) {
             setCurrentTask(
                 `Not enough ${chain!.coinName} to execute. Please send at least ${
                     chain?.minCoinsToExecuteScripts
                 } to ${setupData?.executorAddress} to trigger the executions`
             );
-            await sleep(30000); //sleep 30 seconds;
-            await fetchBalances();
+            setStartedAt(undefined);
+            return false;
         }
+
+        return true;
     };
 
     const startExecuting = async () => {
         console.log("started");
         setStartedAt(new Date());
-        execute();
+        SHOULD_STOP = false;
+        await fetchBalances();
+        execute(setupData!.claimInterval);
     };
 
     const stopExecuting = async () => {
         setStartedAt(undefined);
-        setCurrentTask("Stopped")
+        setCurrentTask("Stopping...");
+        SHOULD_STOP = true;
     };
 
     useEffect(() => {
@@ -166,6 +230,9 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
                     </div>
                     <div className="exec-state__text">Failed executions: {failedExecutions}</div>
                     <div className="exec-state__text">
+                        DAEM claimed every {setupData!.claimInterval} successful executions
+                    </div>
+                    <div className="exec-state__text">
                         Gas used:
                         <div className="exec-state__token-balance">
                             <img
@@ -183,6 +250,16 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
                                 src="/icons/DAEM.svg"
                             />
                             <div className="exec-state__token-amount">{daemClaimable}</div>
+                        </div>
+                    </div>
+                    <div className="exec-state__text">
+                        Claimed profits:
+                        <div className="exec-state__token-balance">
+                            <img
+                                className="exec-state__token-icon exec-state__token-icon--small"
+                                src="/icons/DAEM.svg"
+                            />
+                            <div className="exec-state__token-amount">{daemProfits}</div>
                         </div>
                     </div>
                 </div>

@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: column;
     row-gap: 10px;
+    border: none;
 }
 
 .setup__line {
@@ -15,6 +16,11 @@
     display: flex;
     align-items: center;
     column-gap: 5px;
+}
+
+.setup__address {
+    font-family: monospace;
+    font-size: 0.9rem;
 }
 
 .setup__input {

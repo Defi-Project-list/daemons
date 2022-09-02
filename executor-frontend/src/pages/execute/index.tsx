@@ -29,7 +29,7 @@ export function ExecutePage() {
                         tooltipContent={setupTooltip}
                         tooltipSize={TooltipSize.Large}
                     >
-                        <ExecutionSetup submitSetupData={setSetupData} />
+                        <ExecutionSetup submitSetupData={setSetupData} disabled={!!setupData} />
                     </Card>
                 </div>
                 <div className="execute-page__right-panel">
