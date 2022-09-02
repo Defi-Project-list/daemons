@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { ExecutionSetup, IExecutionSetupForm } from "./execution-setup";
+import { ExecutionSetup, IExecutorSettings } from "./execution-setup";
 import { ExecutionState } from "./execution-state";
 import { TooltipSize } from "../../components/tooltip";
 import { Card } from "../../components/card/card";
 import "./styles.css";
 
 export function ExecutePage() {
-    const [setupData, setSetupData] = useState<IExecutionSetupForm | undefined>();
+    const [setupData, setSetupData] = useState<IExecutorSettings | undefined>();
 
     const setupTooltip = (
         <div>

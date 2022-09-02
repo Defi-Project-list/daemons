@@ -7,7 +7,7 @@ export const fetchWalletBalance = async (
     chainId: string,
     walletAddress: string,
     rpcUrl: string
-): Promise<{ ETHBalance: number; DAEMBalance: number }> => {
+): Promise<{ ETHBalance: number; DAEMBalance: number; claimableDAEM: number }> => {
     // fetch chain info
     const chain = ChainInfo[chainId];
     if (!chain) throw new Error(`Chain ${chainId} is not supported!`);
@@ -18,12 +18,18 @@ export const fetchWalletBalance = async (
     const InfoFetcher = new ethers.Contract(InfoFetcherAddress, InfoFetcherABI, provider);
 
     const DAEMtoken = chain.contracts.DaemonsToken;
-    const rawBalances = await InfoFetcher.fetchBalances(walletAddress, [DAEMtoken]);
+    const rawBalances = await InfoFetcher.fetchUserStateOnDaemonsAndBalances(
+        walletAddress,
+        chain.contracts.Treasury,
+        chain.contracts.GasTank,
+        [DAEMtoken]
+    );
 
-    const ETHBalance = bigNumberToFloat(rawBalances.coin, 5);
-    const DAEMBalance = bigNumberToFloat(rawBalances.tokens[0], 4);
+    const ETHBalance = bigNumberToFloat(rawBalances.balances.coin, 5);
+    const DAEMBalance = bigNumberToFloat(rawBalances.balances.tokens[0], 4);
+    const claimableDAEM = bigNumberToFloat(rawBalances.daemonsInfo.claimableDAEM, 4);
 
-    return { ETHBalance, DAEMBalance };
+    return { ETHBalance, DAEMBalance, claimableDAEM };
 };
 
 export const instantiateProvider = (rpcUrl: string): ethers.providers.JsonRpcProvider => {

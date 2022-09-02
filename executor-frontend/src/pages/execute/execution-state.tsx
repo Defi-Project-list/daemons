@@ -5,11 +5,11 @@ import React, { useEffect, useState } from "react";
 import { fetchWalletBalance, instantiateProvider } from "../../data/info-fetcher-proxy";
 import { ScriptProxy } from "../../data/scripts-proxy";
 import { ChainInfo, ISimplifiedChainInfo } from "../../data/supported-chains";
-import { IExecutionSetupForm } from "./execution-setup";
+import { IExecutorSettings } from "./execution-setup";
 import "./execution-state.css";
 
 interface IExecutionStateProps {
-    setupData?: IExecutionSetupForm;
+    setupData?: IExecutorSettings;
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -19,6 +19,7 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
     const [ethBalance, setEthBalance] = useState<number>(0);
     const [gasUsed, setGasUsed] = useState<number>(0);
     const [daemBalance, setDaemBalance] = useState<number>(0);
+    const [daemClaimable, setDaemClaimable] = useState<number>(0);
     const [scriptsChecked, setScriptsChecked] = useState<number>(0);
     const [successfulExecutions, setSuccessfulExecutions] = useState<number>(0);
     const [failedExecutions, setFailedExecutions] = useState<number>(0);
@@ -37,6 +38,7 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
 
         setEthBalance(balances.ETHBalance);
         setDaemBalance(balances.DAEMBalance);
+        setDaemClaimable(balances.claimableDAEM);
     };
 
     const execute = async () => {
@@ -102,12 +104,14 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
     };
 
     const startExecuting = async () => {
+        console.log("started");
         setStartedAt(new Date());
         execute();
     };
 
     const stopExecuting = async () => {
         setStartedAt(undefined);
+        setCurrentTask("Stopped")
     };
 
     useEffect(() => {
@@ -169,6 +173,16 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
                                 src={chain.coinIconPath}
                             />
                             <div className="exec-state__token-amount">{gasUsed}</div>
+                        </div>
+                    </div>
+                    <div className="exec-state__text">
+                        Claimable DAEM:
+                        <div className="exec-state__token-balance">
+                            <img
+                                className="exec-state__token-icon exec-state__token-icon--small"
+                                src="/icons/DAEM.svg"
+                            />
+                            <div className="exec-state__token-amount">{daemClaimable}</div>
                         </div>
                     </div>
                 </div>

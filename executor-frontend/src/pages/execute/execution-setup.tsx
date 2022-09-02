@@ -7,7 +7,7 @@ import { Tooltip, TooltipSize } from "../../components/tooltip";
 import { ISimplifiedChainInfo } from "../../data/supported-chains";
 import "./execution-setup.css";
 
-export interface IExecutionSetupForm {
+export interface IExecutorSettings {
     chainId: string;
     rpcUrl: string;
     claimInterval: number;
@@ -20,7 +20,7 @@ export interface IExecutionSetupForm {
 export function ExecutionSetup({
     submitSetupData
 }: {
-    submitSetupData: (data: IExecutionSetupForm) => void;
+    submitSetupData: (data: IExecutorSettings) => void;
 }) {
     const [displayChains, setDisplayChains] = useState<boolean>(false);
     const [displayWalletMessage, setDisplayWalletMessage] = useState<boolean>(false);
@@ -43,7 +43,7 @@ export function ExecutionSetup({
             profitsDestination: "",
             executorPrivateKey: "",
             executorAddress: ""
-        } as IExecutionSetupForm
+        } as IExecutorSettings
     });
 
     const setChainValue = (chain: ISimplifiedChainInfo) => {
