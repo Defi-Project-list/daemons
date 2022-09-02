@@ -54,7 +54,6 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
 
         // fetch scripts
         const scripts = await ScriptProxy.fetchScripts(setupData!.chainId);
-        console.debug({ msg: "fetched scripts", scripts });
         let executed = 0;
         while (scripts.length > 0 && !SHOULD_STOP) {
             const result = await tryExecuteScript(scripts.pop()!);

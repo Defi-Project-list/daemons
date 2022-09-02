@@ -31,7 +31,7 @@ export const scriptsRouter = express.Router();
 scriptsRouter.get("/:chainId", async (req: Request, res: Response) => {
     const chainId = String(req.params.chainId);
     const scripts = await Script.find({ chainId: chainId }).lean().skip(pointer).limit(10);
-    const countScripts = await Script.countDocuments({});
+    const countScripts = await Script.countDocuments({chainId: chainId});
     pointer = (pointer + 10) % countScripts;
     return res.send(scripts);
 });
