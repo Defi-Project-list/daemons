@@ -10,9 +10,27 @@ const DAEM: IToken = {
     minInLpToBeLiquid: 10
 }
 
+const MATIC: IToken = {
+    name: "Matic",
+    symbol: "MATIC",
+    address: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    decimals: 18,
+    logoURI: "https://tokens.1inch.io/0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0.png",
+    minInLpToBeLiquid: 10
+};
+
 const WMATIC: IToken = {
     name: "Wrapped MATIC",
     symbol: "WMATIC",
+    address: "0x9c3c9283d3e44854697cd22d3faa240cfb032889",
+    decimals: 18,
+    logoURI: "https://tokens.1inch.io/0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0.png",
+    minInLpToBeLiquid: 1000
+};
+
+const aaveWMATIC: IToken = {
+    name: "Wrapped MATIC",
+    symbol: "aaveWMATIC",
     address: "0xb685400156cF3CBE8725958DeAA61436727A30c3",
     decimals: 18,
     logoURI: "https://tokens.1inch.io/0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0.png",
@@ -64,9 +82,9 @@ const wBTC: IToken = {
     minInLpToBeLiquid: 5
 };
 
-
 export const mumbaiTokens: Token[] = [
     WMATIC,
+    aaveWMATIC,
     WETH,
     wBTC,
     DAEM,
@@ -74,6 +92,8 @@ export const mumbaiTokens: Token[] = [
     USDT,
     DAI
 ];
+
+export const mumbaiSwapTokens: Token[] = [MATIC, WMATIC, DAEM];
 
 export const mumbaiQuickswapDEX: DEX = {
     name: "Quickswap",
@@ -91,7 +111,7 @@ export const mumbaiAaveMM: MoneyMarket = {
     name: "AAVE",
     poolAddress: "0x6C9fB0D5bD9429eb9Cd96B85B81d872281771E6B",
     isV3: true,
-    supportedTokens: [DAI, USDT, USDC, WETH, wBTC, WMATIC],
+    supportedTokens: [DAI, USDT, USDC, WETH, wBTC, aaveWMATIC],
     mmTokens: {
         // DAI
         [DAI.address]: {
@@ -122,7 +142,7 @@ export const mumbaiAaveMM: MoneyMarket = {
         },
 
         // WMATIC
-        [WMATIC.address]: {
+        [aaveWMATIC.address]: {
             aToken: "0x89a6AE840b3F8f489418933A220315eeA36d11fF",
             varDebtToken: "0x02a5680AE3b7383854Bf446b1B3Be170E67E689C",
             fixDebtToken: "0xEC59F2FB4EF0C46278857Bf2eC5764485974D17B"

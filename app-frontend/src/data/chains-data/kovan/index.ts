@@ -10,7 +10,7 @@ import {
     ZapInAction,
     ZapOutAction
 } from "./action-forms";
-import { kovanAaveMM, kovanDexes, kovanTokens } from "./tokens";
+import { kovanAaveMM, kovanDexes, kovanSwapTokens, kovanTokens } from "./tokens";
 
 export const kovanInfo: IChainInfo = {
     name: "Kovan",
@@ -25,6 +25,7 @@ export const kovanInfo: IChainInfo = {
     explorerUrl: "https://kovan.etherscan.io/",
     explorerTxUrl: "https://kovan.etherscan.io/tx/",
     tokens: kovanTokens,
+    swapTokens: kovanSwapTokens,
     dexes: kovanDexes,
     moneyMarkets: [kovanAaveMM],
     beefyMoos: {

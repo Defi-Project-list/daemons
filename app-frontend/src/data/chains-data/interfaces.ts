@@ -65,6 +65,7 @@ export interface IChainInfo {
     explorerUrl: string;
     explorerTxUrl: string;
     tokens: Token[];
+    swapTokens: Token[];
     dexes: DEX[];
     moneyMarkets: MoneyMarket[];
     beefyMoos: BeefyMooForLP;

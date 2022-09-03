@@ -52,6 +52,11 @@ export const App = ({ children }: { children: any }) => {
             ? "menu__entry--selected"
             : "menu__entry--unselected"
     }`;
+    const swapLinkClassName = `menu__entry ${
+        document.location.href.endsWith("/swap")
+            ? "menu__entry--selected"
+            : "menu__entry--unselected"
+    }`;
 
     useEffect(() => {
         if (!supportedChain) return;
@@ -92,6 +97,9 @@ export const App = ({ children }: { children: any }) => {
                             {user.unseenTransactions ? (
                                 <div className="menu__notification">{user.unseenTransactions}</div>
                             ) : null}
+                        </Link>
+                        <Link className={swapLinkClassName} to="/swap">
+                            Swap
                         </Link>
                     </div>
                 )}

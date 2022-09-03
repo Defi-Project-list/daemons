@@ -8,7 +8,16 @@ const DAEM: IToken = {
     decimals: 18,
     logoURI: "/icons/DAEM.svg",
     minInLpToBeLiquid: 10
-}
+};
+
+const ETH: IToken = {
+    name: "Ether",
+    symbol: "ETH",
+    address: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    decimals: 18,
+    logoURI: "https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png",
+    minInLpToBeLiquid: 10
+};
 
 const WETH: IToken = {
     name: "Wrapped Ether",
@@ -60,7 +69,7 @@ const UNI: IToken = {
     symbol: "UNI",
     address: "0x075a36ba8846c6b6f53644fdd3bf17e5151789dc",
     decimals: 18,
-    logoURI: "https://tokens.1inch.io/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984.png",
+    logoURI: "https://tokens.1inch.io/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984.png"
 };
 
 const BAT: IToken = {
@@ -68,7 +77,7 @@ const BAT: IToken = {
     symbol: "BAT",
     address: "0x2d12186fbb9f9a8c28b3ffdd4c42920f8539d738",
     decimals: 18,
-    logoURI: "https://tokens.1inch.io/0x0d8775f648430679a709e98d2b0cb6250d2887ef.png",
+    logoURI: "https://tokens.1inch.io/0x0d8775f648430679a709e98d2b0cb6250d2887ef.png"
 };
 
 const MKR: IToken = {
@@ -76,7 +85,7 @@ const MKR: IToken = {
     symbol: "MKR",
     address: "0x61e4cae3da7fd189e52a4879c7b8067d7c2cc0fa",
     decimals: 18,
-    logoURI: "https://tokens.1inch.io/0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2.png",
+    logoURI: "https://tokens.1inch.io/0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2.png"
 };
 
 const BUSD: IToken = {
@@ -93,7 +102,7 @@ const MANA: IToken = {
     symbol: "MANA",
     address: "0x738dc6380157429e957d223e6333dc385c85fec7",
     decimals: 18,
-    logoURI: "https://tokens.1inch.io/0x0f5d2fb29fb7d3cfee444a200298f468908cc942.png",
+    logoURI: "https://tokens.1inch.io/0x0f5d2fb29fb7d3cfee444a200298f468908cc942.png"
 };
 
 const LINK: IToken = {
@@ -101,7 +110,7 @@ const LINK: IToken = {
     symbol: "LINK",
     address: "0xad5ce863ae3e4e9394ab43d4ba0d80f419f61789",
     decimals: 18,
-    logoURI: "https://tokens.1inch.io/0x514910771af9ca656af840dff83e8264ecf986ca.png",
+    logoURI: "https://tokens.1inch.io/0x514910771af9ca656af840dff83e8264ecf986ca.png"
 };
 
 const aaveDAI: IToken = {
@@ -137,6 +146,8 @@ export const kovanTokens: Token[] = [
     UNI,
     aaveDAI
 ];
+
+export const kovanSwapTokens: Token[] = [ETH, WETH, DAEM];
 
 export const kovanSushiDEX: DEX = {
     name: "Sushi",
