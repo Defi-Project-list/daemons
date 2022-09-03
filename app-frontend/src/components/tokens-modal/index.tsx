@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
+import { CoinAddress } from "../../data/chain-info";
 import { IToken } from "../../data/chains-data/interfaces";
 import "./styles.css";
 
@@ -14,7 +15,7 @@ const modalStyles: any = {
         boxShadow: " 0 0 12px 0 rgba(0, 0, 0)",
         overflow: "hidden",
         background: "var(--body-background)",
-        border: "none",
+        border: "none"
     },
     overlay: {
         backgroundColor: "#191919bb"
@@ -50,6 +51,26 @@ export const TokensModal = ({ tokens, selectedToken, setSelectedToken }: TokensM
             (t) => t.name?.toLowerCase().includes(value) || t.symbol?.toLowerCase().includes(value)
         );
         setDisplayedTokens(filteredTokens);
+    };
+
+    const addTokenToMetamask = async (token: IToken) => {
+        try {
+            const ethereum = (window as any).ethereum;
+            await ethereum.request({
+                method: "wallet_watchAsset",
+                params: {
+                    type: "ERC20",
+                    options: {
+                        address: token.address,
+                        symbol: token.symbol,
+                        decimals: token.decimals,
+                        image: token.logoURI
+                    }
+                }
+            });
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (
@@ -106,8 +127,24 @@ export const TokensModal = ({ tokens, selectedToken, setSelectedToken }: TokensM
                             >
                                 <img className="tokens-modal__token-img" src={token.logoURI} />
                                 <div>
-                                    <div className="tokens-modal__symbol">{token.symbol} - {token.name}</div>
-                                    <div className="tokens-modal__address">{token.address}</div>
+                                    <div className="tokens-modal__symbol">
+                                        {token.symbol} - {token.name}
+                                    </div>
+                                    <div className="tokens-modal__address">
+                                        {token.address}
+
+                                        {token.address !== CoinAddress ? (
+                                            <div
+                                                className="tokens-modal__add-token"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    addTokenToMetamask(token);
+                                                }}
+                                            >
+                                                +
+                                            </div>
+                                        ) : null}
+                                    </div>
                                 </div>
                             </div>
                         ))}

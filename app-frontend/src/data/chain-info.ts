@@ -17,6 +17,7 @@ export const GetAvailableChains = (): IChainInfo[] => Object.values(ChainInfo);
 
 export const ZeroAddress = "0x0000000000000000000000000000000000000000";
 export const ZeroId = "0x0000000000000000000000000000000000000000000000000000000000000000";
+export const CoinAddress = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
 export const GetCurrentChainTokensDictionary = (chainId: string): { [address: string]: IToken } => {
     const result: { [address: string]: IToken } = {};
