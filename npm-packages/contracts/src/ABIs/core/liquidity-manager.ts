@@ -153,5 +153,44 @@ export const liquidityManagerABI: ContractInterface = [
     ],
     stateMutability: "payable",
     type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "amountIn",
+        type: "uint256"
+      },
+      {
+        internalType: "uint256",
+        name: "swapType",
+        type: "uint256"
+      },
+      {
+        internalType: "uint256",
+        name: "amountOutMin",
+        type: "uint256"
+      },
+      {
+        internalType: "address",
+        name: "to",
+        type: "address"
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256"
+      }
+    ],
+    name: "swapTokenForToken",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256"
+      }
+    ],
+    stateMutability: "nonpayable",
+    type: "function"
   }
 ];
