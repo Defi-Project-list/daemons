@@ -6,7 +6,7 @@ const DAEM: IToken = {
     symbol: "DAEM",
     address: mumbaiTestnetContracts.DaemonsToken,
     decimals: 18,
-    logoURI: "/icons/DAEM.svg",
+    logoURI: "https://app.daemons.fi/icons/DAEM.svg",
     minInLpToBeLiquid: 10
 }
 
