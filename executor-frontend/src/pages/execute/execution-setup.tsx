@@ -24,6 +24,7 @@ export function ExecutionSetup({
     submitSetupData: (data: IExecutorSettings) => void;
     disabled: boolean;
 }) {
+    const [displayAdvancedSettings, setDisplayAdvancedSettings] = useState<boolean>(false);
     const [displayChains, setDisplayChains] = useState<boolean>(false);
     const [displayWalletMessage, setDisplayWalletMessage] = useState<boolean>(false);
     const [chain, setChain] = useState<ISimplifiedChainInfo | undefined>();
@@ -193,24 +194,6 @@ export function ExecutionSetup({
                         </div>
                     </div>
 
-                    <div style={{ display: "None" }} className="setup__line">
-                        <div className="setup__text">Claim Interval {claimIntervalTooltip}</div>
-                        <input
-                            className="card__input"
-                            type="number"
-                            {...register("claimInterval", { required: true })}
-                        />
-                    </div>
-
-                    <div style={{ display: "None" }} className="setup__line">
-                        <div className="setup__text">Throttle in seconds {throttleTooltip}</div>
-                        <input
-                            className="card__input"
-                            type="number"
-                            {...register("throttle", { required: true })}
-                        />
-                    </div>
-
                     <div className="setup__wallet setup__line">
                         <div className="setup__text">Throwaway Wallet {walletTooltip}</div>
                         <input
@@ -248,11 +231,47 @@ export function ExecutionSetup({
                         <input type="hidden" {...register("executorAddress", { required: true })} />
                     </div>
 
+                    {/* Advanced Settings */}
+                    <div
+                        className="setup__display-advanced"
+                        onClick={() => setDisplayAdvancedSettings((curr) => !curr)}
+                    >
+                        <div className="setup__display-advanced-text">Advanced Settings</div>
+                        <div className="setup__display-advanced-triangle">
+                            {displayAdvancedSettings ? "  ▼" : "  ▶"}{" "}
+                        </div>
+                    </div>
+
+                    <div
+                        style={{ display: displayAdvancedSettings ? "grid" : "none" }}
+                        className="setup__line"
+                    >
+                        <div className="setup__text">Claim Interval {claimIntervalTooltip}</div>
+                        <input
+                            className="card__input"
+                            type="number"
+                            {...register("claimInterval", { required: true })}
+                        />
+                    </div>
+
+                    <div
+                        style={{ display: displayAdvancedSettings ? "grid" : "none" }}
+                        className="setup__line"
+                    >
+                        <div className="setup__text">Throttle in seconds {throttleTooltip}</div>
+                        <input
+                            className="card__input"
+                            type="number"
+                            {...register("throttle", { required: true })}
+                        />
+                    </div>
+
+                    {/* Submit Button */}
                     <input
                         disabled={disabled}
                         className="setup__button setup__button--submit"
                         type="submit"
-                        value="Start"
+                        value="Submit"
                     />
                 </fieldset>
             </form>
