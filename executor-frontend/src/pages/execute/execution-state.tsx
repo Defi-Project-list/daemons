@@ -49,7 +49,16 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
         setDaemClaimable(balances.claimableDAEM);
     };
 
-    const execute = async (missingToClaim: number) => {
+    const tryExecute = async (missingToClaim: number): Promise<void> => {
+        try {
+            await execute(missingToClaim);
+        } catch (error: any) {
+            setStartedAt((prev) => undefined);
+            setCurrentTask((prev) => `The following error occurred ${error.toString()}`);
+        }
+    };
+
+    const execute = async (missingToClaim: number): Promise<void> => {
         if (SHOULD_STOP || !(await waitForFunds())) return;
 
         // fetch scripts
@@ -75,9 +84,7 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
             return;
         }
 
-        execute(
-            missingToClaim > 0 ? missingToClaim : missingToClaim + setupData!.claimInterval
-        );
+        tryExecute(missingToClaim > 0 ? missingToClaim : missingToClaim + setupData!.claimInterval);
     };
 
     const tryExecuteScript = async (script: BaseScript): Promise<boolean> => {
@@ -169,7 +176,7 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
         setStartedAt(new Date());
         SHOULD_STOP = false;
         await fetchBalances();
-        execute(setupData!.claimInterval);
+        tryExecute(setupData!.claimInterval);
     };
 
     const stopExecuting = async () => {
