@@ -138,10 +138,10 @@ export function ExecutionSetup({
     );
 
     return (
-        <div>
+        <div style={{height: "550px"}}>
             {/* Form in which the user will input the data */}
-            <form onSubmit={handleSubmit(submitSetupData)}>
-                <fieldset className="setup" disabled={disabled}>
+            <form className="height-100" onSubmit={handleSubmit(submitSetupData)}>
+                <fieldset className="setup height-100" disabled={disabled}>
                     <div className="setup__line">
                         <div className="setup__text">Chain:</div>
                         <div className="setup__input">

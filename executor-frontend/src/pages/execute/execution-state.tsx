@@ -31,8 +31,20 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
     const [scriptsChecked, setScriptsChecked] = useState<number>(0);
     const [successfulExecutions, setSuccessfulExecutions] = useState<number>(0);
     const [failedExecutions, setFailedExecutions] = useState<number>(0);
-    const [currentTask, setCurrentTask] = useState<string>("");
+    const [previousTasks, setPreviousTask] = useState<string[]>([]);
+    const [currentTask, _setCurrentTask] = useState<string>("");
     const [startedAt, setStartedAt] = useState<Date | undefined>();
+
+    const setCurrentTask = (task: string): void => {
+        _setCurrentTask((previousTask) => {
+            setPreviousTask((tasks) => {
+                const copy = [...tasks];
+                copy.push(previousTask);
+                return copy.length <= 5 ? copy : copy.slice(copy.length - 5);
+            });
+            return `${new Date().toLocaleTimeString()} - ${task}`;
+        });
+    };
 
     const fetchBalances = async () => {
         if (!setupData) throw new Error("Setup incomplete");
@@ -54,7 +66,7 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
             await execute(missingToClaim);
         } catch (error: any) {
             setStartedAt((prev) => undefined);
-            setCurrentTask((prev) => `The following error occurred ${error.toString()}`);
+            setCurrentTask(`The following error occurred ${error.toString()}`);
         }
     };
 
@@ -80,7 +92,7 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
 
         if (executed) await fetchBalances();
         if (SHOULD_STOP) {
-            setCurrentTask((prev) => `Stopped.`);
+            setCurrentTask(`Stopped.`);
             return;
         }
 
@@ -89,7 +101,8 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
 
     const tryExecuteScript = async (script: BaseScript): Promise<boolean> => {
         const provider = instantiateProvider(setupData!.rpcUrl);
-        setCurrentTask((prev) => `Verifying Script ${script.getId().substring(0, 15)}...`);
+
+        setCurrentTask(`Verifying Script ${script.getId().substring(0, 15)}...`);
         setScriptsChecked((prev) => prev + 1);
 
         let verificationResult: ScriptVerification | undefined = undefined;
@@ -105,7 +118,7 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
 
         console.debug({ message: "Script successfully verified", script });
         const walletSigner = new Wallet(setupData!.executorPrivateKey, provider);
-        setCurrentTask((prev) => `Executing script ${script.getId().substring(0, 15)}`);
+        setCurrentTask(`Executing script ${script.getId().substring(0, 15)}...`);
 
         try {
             const tx = await script.execute(walletSigner);
@@ -135,7 +148,7 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
         const walletSigner = new Wallet(setupData.executorPrivateKey, provider);
 
         // claim DAEM profits
-        setCurrentTask((prev) => `Claiming DAEM profits from Gas Tank`);
+        setCurrentTask(`Claiming DAEM profits from Gas Tank`);
         const claimed = await claimFunds(setupData.chainId, walletSigner);
         setDaemClaimable(0);
 
@@ -148,7 +161,7 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
         }
 
         // otherwise, let's send all DAEM we have there
-        setCurrentTask((prev) => `Transferring earned DAEM to your main wallet`);
+        setCurrentTask(`Transferring earned DAEM to your main wallet`);
         const transferred = await transferAllDAEM(
             setupData.chainId,
             walletSigner,
@@ -274,6 +287,14 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
                 {/* Current task */}
                 <div className="exec-state__title">Current task</div>
                 <div className="exec-state__text">{currentTask}</div>
+                {previousTasks.reverse().map((task, i) => (
+                    <div
+                        key={task + i.toString()}
+                        className={`exec-state__text exec-state__previous-task exec-state__previous-task--opacity-${i}`}
+                    >
+                        {task}
+                    </div>
+                ))}
             </div>
         </div>
     );

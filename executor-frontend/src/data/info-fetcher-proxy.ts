@@ -33,6 +33,7 @@ export const fetchWalletBalance = async (
 };
 
 export const instantiateProvider = (rpcUrl: string): ethers.providers.JsonRpcProvider => {
-    if (rpcUrl.startsWith("wss")) return new ethers.providers.WebSocketProvider(rpcUrl);
-    return new ethers.providers.JsonRpcProvider(rpcUrl);
+    return rpcUrl.startsWith("wss")
+        ? new ethers.providers.WebSocketProvider(rpcUrl)
+        : new ethers.providers.JsonRpcProvider(rpcUrl);
 };
