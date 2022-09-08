@@ -74,7 +74,8 @@ export function ExecutionState({ setupData }: IExecutionStateProps) {
             setCurrentTask((prev) => `Stopped.`);
             return;
         }
-        await execute(
+
+        execute(
             missingToClaim > 0 ? missingToClaim : missingToClaim + setupData!.claimInterval
         );
     };
