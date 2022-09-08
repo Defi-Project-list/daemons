@@ -1,0 +1,25 @@
+name: Push Whole Backend
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "contracts-backend/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Test and Push
+    steps:
+      - name: git-checkout
+        uses: actions/checkout@v2
+
+      - name: Push
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: self
+          BRANCH: depl-full-backend
+          FOLDER: contracts-backend
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MESSAGE: "Push backend"
