@@ -17,11 +17,12 @@ interface ITooltipProps {
     children: any;
     size?: TooltipSize;
     icon?: TooltipIcon;
+    iconComponent?: JSX.Element;
 }
 
-export const Tooltip = ({ children, size, icon }: ITooltipProps): JSX.Element => (
+export const Tooltip = ({ children, size, icon, iconComponent }: ITooltipProps): JSX.Element => (
     <div className="tooltip">
-        <div className={"tooltip__icon " + iconToClass(icon)} />
+        {iconComponent || <div className={"tooltip__icon " + iconToClass(icon)} />}
         <div className={"tooltip__content " + sizeToClass(size)}>{children}</div>
     </div>
 );
