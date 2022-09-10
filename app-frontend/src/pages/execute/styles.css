@@ -1,6 +1,6 @@
 .execute-page__layout {
     display: grid;
-    grid-template-columns: 65fr 35fr;
+    grid-template-columns: auto 400px;
     column-gap: 20px;
 }
 

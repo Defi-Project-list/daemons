@@ -79,42 +79,46 @@ export const App = ({ children }: { children: any }) => {
         <div>
             <ToastContainer />
             <div className="header">
-                <img src={logo} alt="Daemons logo" className="page-logo" />
-                <div className="page-logo__beta-sign">BETA</div>
-                {user && (
-                    <div className="menu">
-                        <Link className={dashboardLinkClassName} to="/">
-                            Dashboard
-                        </Link>
-                        <Link className={myPageLinkClassName} to="/my-page">
-                            My Page
-                        </Link>
-                        <Link className={executeLinkClassName} to="/execute">
-                            Execute
-                        </Link>
-                        <Link className={transactionsLinkClassName} to="/transactions">
-                            Transactions
-                            {user.unseenTransactions ? (
-                                <div className="menu__notification">{user.unseenTransactions}</div>
-                            ) : null}
-                        </Link>
-                        <Link className={swapLinkClassName} to="/swap">
-                            Swap
-                        </Link>
-                    </div>
-                )}
+                <div className="header__content">
+                    <img src={logo} alt="Daemons logo" className="page-logo" />
+                    <div className="page-logo__beta-sign">BETA</div>
+                    {user && (
+                        <div className="menu">
+                            <Link className={dashboardLinkClassName} to="/">
+                                Dashboard
+                            </Link>
+                            <Link className={myPageLinkClassName} to="/my-page">
+                                My Page
+                            </Link>
+                            <Link className={executeLinkClassName} to="/execute">
+                                Execute
+                            </Link>
+                            <Link className={transactionsLinkClassName} to="/transactions">
+                                Transactions
+                                {user.unseenTransactions ? (
+                                    <div className="menu__notification">
+                                        {user.unseenTransactions}
+                                    </div>
+                                ) : null}
+                            </Link>
+                            <Link className={swapLinkClassName} to="/swap">
+                                Swap
+                            </Link>
+                        </div>
+                    )}
 
-                <div className="menu__entry menu__entry--gas">
-                    <GasIndicator />
-                </div>
-                <div className="menu__entry menu__entry--tip">
-                    <TipIndicator />
-                </div>
-                <div className="wallet-control">
-                    <MetaMaskProvider>
-                        {" "}
-                        <ConnectWalletButton />{" "}
-                    </MetaMaskProvider>
+                    <div className="menu__entry menu__entry--gas">
+                        <GasIndicator />
+                    </div>
+                    <div className="menu__entry menu__entry--tip">
+                        <TipIndicator />
+                    </div>
+                    <div className="wallet-control">
+                        <MetaMaskProvider>
+                            {" "}
+                            <ConnectWalletButton />{" "}
+                        </MetaMaskProvider>
+                    </div>
                 </div>
             </div>
 

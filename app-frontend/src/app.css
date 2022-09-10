@@ -40,15 +40,25 @@ input[type=range] {
 
 .header {
     padding: 10px 80px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
     background-color: var(--black);
     box-shadow: 0px 1px 10px 1px #000;
 }
 
+.header__content {
+    max-width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+}
+
 .page {
     padding: 40px 80px;
+    max-width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .page-logo {
@@ -65,7 +75,7 @@ input[type=range] {
     border-style: groove;
     padding: 2px;
     position: absolute;
-    left: 258px;
+    left: 170px;
     top: 11px;
 }
 
