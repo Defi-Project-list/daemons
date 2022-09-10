@@ -6,6 +6,12 @@
     row-gap: 20px;
 }
 
+@media only screen and (max-width: 1200px) {
+    .dashboard-page__layout {
+        display: flex;
+        flex-direction: column;
+    }
+}
 
 /* Treasury stats */
 

@@ -2,8 +2,14 @@
     display: grid;
     grid-template-columns: 50fr 50fr;
     column-gap: 20px;
+    row-gap: 20px;
 }
 
+@media only screen and (max-width: 1200px) {
+    .transaction-page__layout {
+        grid-template-columns: 1fr;
+    }
+}
 
 /* Transactions Panel */
 

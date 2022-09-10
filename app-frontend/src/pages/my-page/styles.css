@@ -1,6 +1,7 @@
 .my-page__layout {
     display: grid;
     grid-template-columns: auto 400px;
+    grid-template-rows: 400px;
     column-gap: 20px;
 }
 
@@ -33,7 +34,7 @@
 
 .script {
     position: relative;
-    width: 250px;
+    width: 200px;
     margin: 15px;
     text-align: center;
     padding: 15px;

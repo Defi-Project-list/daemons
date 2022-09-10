@@ -1,6 +1,7 @@
 .execute-page__layout {
     display: grid;
     grid-template-columns: auto 400px;
+    grid-template-rows: 400px;
     column-gap: 20px;
 }
 
