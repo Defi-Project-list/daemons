@@ -1,14 +1,9 @@
-import hre from "hardhat";
-import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
-import { contracts, printContracts } from "./daemons-contracts";
-import { deployDaemToken } from "./single-deployments/a1-daem-token";
 import { deployGasTank } from "./single-deployments/a2-gas-tank";
 import { deployTreasury } from "./single-deployments/a3.2-treasury";
 import { deployVesting } from "./single-deployments/a4-vesting";
 import { deployGasPriceFeed } from "./single-deployments/a5-gas-price-feed";
 import { finalizeGasTank } from "./single-deployments/a6-finalize-gas-tank";
-import { initializeToken } from "./single-deployments/a7-initialize-token";
 import { deploySwapperExecutor } from "./single-deployments/b1-swapper-executor";
 import { initializeSwapperExecutor } from "./single-deployments/b2-initialize-swapper-executor";
 import { registerSwapperExecutor } from "./single-deployments/b3-register-swapper-in-gas-tank";
@@ -51,48 +46,40 @@ import { verifySwapperExecutor } from "./single-deployments/b1b-verify-swapper-e
 import { deployUniswapV2LiquidityManager } from "./single-deployments/a3.1-uniswap-liquidity-manager";
 import { verifyVesting } from "./single-deployments/a4b-verify-vesting";
 import { verifyLiquidityManager } from "./single-deployments/a3.1b-verify-liquidity-manager";
+import { getContracts } from "./shared";
+import { initializeToken } from "./single-deployments/a7-initialize-token";
 
 async function deployDaemons() {
-    // display deployer address and its balance
-    const [owner] = await ethers.getSigners();
-    const initialBalance = await owner.getBalance();
-    console.log("Deploying contracts with the account:", owner.address);
-    console.log(
-        "Account balance:",
-        initialBalance.div(BigNumber.from("10").pow(BigNumber.from("12"))).toNumber() / 1000000
-    );
-
-    // retrieve known contracts (in case this is a partial deploy)
-    const currentChain = hre.network.config.chainId;
-    if (!currentChain) throw new Error("Could not retrieve current chain");
-    console.log(`Chain: ${currentChain}`);
-    let currentContracts = contracts[currentChain];
-    printContracts(currentContracts);
+    let currentContracts = await getContracts()
 
     const oneMonth = () => 60 * 60 * 24 * 30;
     const now = () => Math.floor(new Date().getTime() / 1000);
     const vestingStart = now() + oneMonth(); // vesting starts one month from today
     const vestingDuration = oneMonth() * 48; // vesting lasts 4 years
 
+    // NOTE:
+    // DAEM token should already have been deployed and initialized.
+
     // deploy side contracts
-    currentContracts = await deployDaemToken(currentContracts);
     currentContracts = await deployGasTank(currentContracts);
     currentContracts = await deployGasPriceFeed(currentContracts);
     currentContracts = await deployVesting(currentContracts, vestingStart, vestingDuration);
     currentContracts = await deployUniswapV2LiquidityManager(currentContracts);
     currentContracts = await deployTreasury(currentContracts);
     await finalizeGasTank(currentContracts);
-    await initializeToken(currentContracts);
+
+    // Initialize & vest
+    /** NOTE: only to be called on BASE chains! */
+    // await initializeToken(currentContracts);
+    //await vestTokens(currentContracts, owner);
 
     /** NOTE: LP proportions must be manually set!! */
     const amountETH = ethers.utils.parseEther("0.1");
     const amountDAEM = ethers.utils.parseEther("150");
     await createLP(currentContracts, amountETH, amountDAEM);
     currentContracts = await retrieveLPAddress(currentContracts);
-    //await vestTokens(currentContracts, owner);
 
     // verify side contracts
-    await verifyDaemToken(currentContracts);
     await verifyGasTank(currentContracts);
     await verifyLiquidityManager(currentContracts);
     await verifyTreasury(currentContracts);
