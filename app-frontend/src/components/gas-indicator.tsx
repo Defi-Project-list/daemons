@@ -44,10 +44,10 @@ export function GasIndicator(): JSX.Element {
                     GAS TANK EMPTY
                     <br />
                     <br />
-                    You don't have enough gas to execute any of your scripts.
+                    Some of your scripts cannot be executed as you don't have enough gas.
                     <br />
                     <br />
-                    Fill the gas tank if you want your scripts to be executed (at least {maxGas}
+                    Fill the gas tank if you want your scripts to be executed (at least to {maxGas}
                     {currencySymbol}).
                 </Tooltip>
             ) : isGasTankLow ? (
@@ -57,7 +57,7 @@ export function GasIndicator(): JSX.Element {
                     <br />
                     <br />
                     You will soon run out of gas. We advise to leave enough gas to execute at least
-                    10 scripts. ({maxGas * 10}
+                    10 scripts ({maxGas * 10}
                     {currencySymbol}).
                 </Tooltip>
             ) : (
