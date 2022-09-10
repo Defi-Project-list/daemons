@@ -3,10 +3,6 @@ import React, { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import { GetCurrentChain } from "../../data/chain-info";
 import { RootState, useAppDispatch, useAppSelector } from "../../state";
-import {
-    fetchStakingBalance,
-    fetchStakingClaimable
-} from "../../state/action-creators/staking-action-creators";
 import { fetchDaemBalance } from "../../state/action-creators/wallet-action-creators";
 import { AllowanceHelper } from "@daemons-fi/scripts-definitions";
 import { treasuryABI } from "@daemons-fi/contracts";
@@ -17,11 +13,12 @@ import CountUp from "react-countup";
 import { fetchTreasuryStats } from "../../state/action-creators/treasury-action-creators";
 import { Switch } from "../../components/switch";
 import { TooltipSize } from "../../components/tooltip";
+import { updateUserStats } from "../../state/action-creators/user-action-creators";
 
 export function Staking() {
     const dispatch = useAppDispatch();
-    const stakingBalance = useAppSelector((state: RootState) => state.staking.balance);
-    const claimable = useAppSelector((state: RootState) => state.staking.claimable);
+    const stakingBalance = useAppSelector((state: RootState) => state.user.treasuryStaked);
+    const claimable = useAppSelector((state: RootState) => state.user.treasuryClaimable);
     const walletAddress = useAppSelector((state: RootState) => state.user.address);
     const chainId = useAppSelector((state: RootState) => state.user.chainId);
     const DAEMBalance = useAppSelector((state: RootState) => state.wallet.DAEMBalance);
@@ -32,7 +29,9 @@ export function Staking() {
     const currencySymbol = GetCurrentChain(chainId!).coinSymbol;
     const currentDAEMPrice = useAppSelector((state: RootState) => state.prices.DAEMPriceInEth);
     const distrInterval = useAppSelector((state: RootState) => state.treasury.distrInterval);
-    const redistributionPool = useAppSelector((state: RootState) => state.treasury.redistributionPool);
+    const redistributionPool = useAppSelector(
+        (state: RootState) => state.treasury.redistributionPool
+    );
     const stakedAmount = useAppSelector((state: RootState) => state.treasury.stakedAmount);
     const nothingToClaim = !claimable;
 
@@ -53,8 +52,7 @@ export function Staking() {
 
     useEffect(() => {
         dispatch(fetchTreasuryStats(chainId));
-        dispatch(fetchStakingBalance(walletAddress, chainId));
-        dispatch(fetchStakingClaimable(walletAddress, chainId));
+        dispatch(updateUserStats(walletAddress, chainId));
         dispatch(fetchDaemBalance(walletAddress, chainId));
         checkForAllowance();
     }, [chainId]);
@@ -88,8 +86,7 @@ export function Staking() {
         );
         await toastedTransaction;
 
-        dispatch(fetchStakingBalance(walletAddress, chainId));
-        dispatch(fetchStakingClaimable(walletAddress, chainId));
+        dispatch(updateUserStats(walletAddress, chainId));
         dispatch(fetchDaemBalance(walletAddress, chainId));
     };
 
@@ -124,7 +121,7 @@ export function Staking() {
         );
         await toastedTransaction;
 
-        dispatch(fetchStakingBalance(walletAddress, chainId));
+        dispatch(updateUserStats(walletAddress, chainId));
         dispatch(fetchDaemBalance(walletAddress, chainId));
     };
 
@@ -143,7 +140,7 @@ export function Staking() {
         );
         await toastedTransaction;
 
-        dispatch(fetchStakingBalance(walletAddress, chainId));
+        dispatch(updateUserStats(walletAddress, chainId));
         dispatch(fetchDaemBalance(walletAddress, chainId));
         (document.getElementById("id-staking-amount") as HTMLInputElement).value = "";
     };
@@ -164,7 +161,7 @@ export function Staking() {
         );
         await toastedTransaction;
 
-        dispatch(fetchStakingClaimable(walletAddress, chainId));
+        dispatch(updateUserStats(walletAddress, chainId));
     };
 
     const compound = async () => {
@@ -186,7 +183,7 @@ export function Staking() {
         );
         await toastedTransaction;
 
-        dispatch(fetchStakingClaimable(walletAddress, chainId));
+        dispatch(updateUserStats(walletAddress, chainId));
     };
 
     const getTreasuryContract = async () => {

@@ -1,17 +1,17 @@
 import React, { ReactNode, useState } from "react";
 import { gasTankABI } from "@daemons-fi/contracts";
 import { RootState, useAppDispatch, useAppSelector } from "../../state";
-import { fetchGasTankBalance } from "../../state/action-creators/gas-tank-action-creators";
 import { Field, Form } from "react-final-form";
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
 import { promiseToast } from "../../components/toaster";
 import "./gas-tank.css";
 import { Card } from "../../components/card/card";
 import { Switch } from "../../components/switch";
+import { updateUserStats } from "../../state/action-creators/user-action-creators";
 
 export function GasTank(): JSX.Element {
     const dispatch = useAppDispatch();
-    const gasTankBalance = useAppSelector((state: RootState) => state.gasTank.balance);
+    const gasTankBalance = useAppSelector((state: RootState) => state.user.gasBalance);
     const walletAddress = useAppSelector((state: RootState) => state.user.address);
     const chainId = useAppSelector((state: RootState) => state.user.chainId);
     const ETHBalance = useAppSelector((state: RootState) => state.wallet.ETHBalance);
@@ -48,7 +48,7 @@ export function GasTank(): JSX.Element {
         );
         await toastedTransaction;
 
-        dispatch(fetchGasTankBalance(walletAddress, chainId));
+        dispatch(updateUserStats(walletAddress, chainId));
     };
 
     const withdraw = async () => {
@@ -69,7 +69,7 @@ export function GasTank(): JSX.Element {
         );
         await toastedTransaction;
 
-        dispatch(fetchGasTankBalance(walletAddress, chainId));
+        dispatch(updateUserStats(walletAddress, chainId));
     };
 
     const withdrawAll = async () => {
@@ -85,7 +85,7 @@ export function GasTank(): JSX.Element {
         );
         await toastedTransaction;
 
-        dispatch(fetchGasTankBalance(walletAddress, chainId));
+        dispatch(updateUserStats(walletAddress, chainId));
     };
 
     const buttonDisabled = () => {

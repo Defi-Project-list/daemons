@@ -10,6 +10,11 @@ export type UserState = {
     supportedChain: boolean;
     DAEMBalance: number;
     ETHBalance: number;
+    gasBalance?: number;
+    tipBalance?: number;
+    gasTankClaimable?: number;
+    treasuryStaked?: number;
+    treasuryClaimable?: number;
 };
 
 const initialState: UserState = {
@@ -51,6 +56,15 @@ export const userReducer = (state: UserState = initialState, action: UserAction)
             return {
                 ...state,
                 userProfile: { ...state.userProfile, showTutorial: action.value }
+            };
+        case ActionType.UPDATE_USER_STATS:
+            return {
+                ...state,
+                gasBalance: action.gasBalance,
+                tipBalance: action.tipBalance,
+                gasTankClaimable: action.gasTankClaimable,
+                treasuryStaked: action.treasuryStaked,
+                treasuryClaimable: action.treasuryClaimable
             };
         default:
             return state;

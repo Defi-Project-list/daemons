@@ -6,10 +6,7 @@ import logo from "./assets/logo.svg";
 import { RootState, useAppDispatch, useAppSelector } from "./state";
 import { GasIndicator } from "./components/gas-indicator";
 import { fetchUserScripts } from "./state/action-creators/script-action-creators";
-import { fetchGasTankBalance } from "./state/action-creators/gas-tank-action-creators";
-import { fetchGasTankClaimable } from "./state/action-creators/gas-tank-action-creators";
 import { ToastContainer } from "react-toastify";
-import { fetchTipJarBalance } from "./state/action-creators/tip-jar-action-creators";
 import { TipIndicator } from "./components/tip-indicator";
 import { fetchLatestGasPrice } from "./state/action-creators/gas-price-feed-action-creators";
 import { fetchDAEMPriceInEth } from "./state/action-creators/prices-action-creators";
@@ -20,6 +17,7 @@ import "./constants.css";
 import "./app.css";
 import "./pages/shared.css";
 import { IUserProfile } from "./data/storage-proxy/auth-proxy";
+import { updateUserStats } from "./state/action-creators/user-action-creators";
 
 export const App = ({ children }: { children: any }) => {
     // redux
@@ -59,13 +57,11 @@ export const App = ({ children }: { children: any }) => {
     }`;
 
     useEffect(() => {
-        if (!supportedChain) return;
+        //if (!supportedChain) return;
 
         if (user && walletAddress) {
             dispatch(fetchUserScripts(chainId, walletAddress));
-            dispatch(fetchGasTankBalance(walletAddress, chainId));
-            dispatch(fetchGasTankClaimable(walletAddress, chainId));
-            dispatch(fetchTipJarBalance(walletAddress, chainId));
+            dispatch(updateUserStats(walletAddress, chainId));
             dispatch(fetchTokenBalances(walletAddress, chainId));
         }
 

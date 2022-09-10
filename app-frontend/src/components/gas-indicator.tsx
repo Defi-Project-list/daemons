@@ -7,7 +7,7 @@ import { RootState, useAppSelector } from "../state";
 import { Tooltip } from "./tooltip";
 
 export function GasIndicator(): JSX.Element {
-    const balance = useAppSelector((state: RootState) => state.gasTank.balance);
+    const balance = useAppSelector((state: RootState) => state.user.gasBalance);
     const walletConnected = useAppSelector((state: RootState) => state.user.connected);
     const chainId = useAppSelector((state: RootState) => state.user.chainId);
     const userScripts = useAppSelector((state: RootState) => state.script.userScripts);

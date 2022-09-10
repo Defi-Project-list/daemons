@@ -1,14 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
 import { RootState, useAppDispatch, useAppSelector } from "../../state";
-import {
-    fetchGasTankClaimable,
-    setGasTankClaimableToZero
-} from "../../state/action-creators/gas-tank-action-creators";
-import {
-    fetchStakingBalance,
-    fetchStakingClaimable
-} from "../../state/action-creators/staking-action-creators";
 import { fetchDaemBalance } from "../../state/action-creators/wallet-action-creators";
 import Confetti from "react-dom-confetti";
 import "./claim-reward.css";
@@ -16,6 +8,7 @@ import { promiseToast } from "../../components/toaster";
 import { gasTankABI } from "@daemons-fi/contracts";
 import { Card } from "../../components/card/card";
 import { TooltipSize } from "../../components/tooltip";
+import { updateUserStats } from "../../state/action-creators/user-action-creators";
 
 const confettiConfig: any = {
     angle: "127",
@@ -33,7 +26,7 @@ const confettiConfig: any = {
 
 export function ClaimRewards() {
     const dispatch = useAppDispatch();
-    const claimable = useAppSelector((state: RootState) => state.gasTank.claimable);
+    const claimable = useAppSelector((state: RootState) => state.user.gasTankClaimable);
     const walletAddress = useAppSelector((state: RootState) => state.user.address);
     const chainId = useAppSelector((state: RootState) => state.user.chainId);
     const nothingToClaim = !claimable;
@@ -52,7 +45,7 @@ export function ClaimRewards() {
         );
         await toastedTransaction;
 
-        dispatch(fetchGasTankClaimable(walletAddress, chainId));
+        dispatch(updateUserStats(walletAddress, chainId));
         dispatch(fetchDaemBalance(walletAddress, chainId));
     };
 
@@ -75,9 +68,7 @@ export function ClaimRewards() {
             "Something bad happened. Contact us if the error persists"
         );
 
-        dispatch(setGasTankClaimableToZero());
-        dispatch(fetchStakingClaimable(walletAddress, chainId));
-        dispatch(fetchStakingBalance(walletAddress, chainId));
+        dispatch(updateUserStats(walletAddress, chainId));
     };
 
     const getGasTankContract = async () => {

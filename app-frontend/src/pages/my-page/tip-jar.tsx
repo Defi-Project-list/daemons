@@ -5,16 +5,16 @@ import { Field, Form } from "react-final-form";
 import { GetCurrentChain, IsChainSupported } from "../../data/chain-info";
 import { promiseToast } from "../../components/toaster";
 import "./tip-jar.css";
-import { fetchTipJarBalance } from "../../state/action-creators/tip-jar-action-creators";
 import { fetchDaemBalance } from "../../state/action-creators/wallet-action-creators";
 import { AllowanceHelper } from "@daemons-fi/scripts-definitions/build";
 import { ethers } from "ethers";
 import { Card } from "../../components/card/card";
 import { Switch } from "../../components/switch";
+import { updateUserStats } from "../../state/action-creators/user-action-creators";
 
 export function TipJar(): JSX.Element {
     const dispatch = useAppDispatch();
-    const tipJarBalance = useAppSelector((state: RootState) => state.tipJar.balance);
+    const tipJarBalance = useAppSelector((state: RootState) => state.user.tipBalance);
     const walletAddress = useAppSelector((state: RootState) => state.user.address);
     const DAEMBalance = useAppSelector((state: RootState) => state.wallet.DAEMBalance);
     const chainId = useAppSelector((state: RootState) => state.user.chainId);
@@ -85,7 +85,7 @@ export function TipJar(): JSX.Element {
         await toastedTransaction;
 
         dispatch(fetchDaemBalance(walletAddress, chainId));
-        dispatch(fetchTipJarBalance(walletAddress, chainId));
+        dispatch(updateUserStats(walletAddress, chainId));
     };
 
     const withdraw = async () => {
@@ -108,7 +108,7 @@ export function TipJar(): JSX.Element {
         await toastedTransaction;
 
         dispatch(fetchDaemBalance(walletAddress, chainId));
-        dispatch(fetchTipJarBalance(walletAddress, chainId));
+        dispatch(updateUserStats(walletAddress, chainId));
     };
 
     const withdrawAll = async () => {
@@ -125,7 +125,7 @@ export function TipJar(): JSX.Element {
         await toastedTransaction;
 
         dispatch(fetchDaemBalance(walletAddress, chainId));
-        dispatch(fetchTipJarBalance(walletAddress, chainId));
+        dispatch(updateUserStats(walletAddress, chainId));
     };
 
     const buttonDisabled = () => {

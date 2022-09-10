@@ -8,8 +8,8 @@ import { BigNumber, ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { ScriptProxy } from "../../data/storage-proxy/scripts-proxy";
 import { RootState, useAppDispatch, useAppSelector } from "../../state";
-import { fetchGasTankClaimable } from "../../state/action-creators/gas-tank-action-creators";
 import { bigNumberToFloat } from "@daemons-fi/contracts";
+import { updateUserStats } from "../../state/action-creators/user-action-creators";
 
 export const QueueScriptComponent = ({
     script,
@@ -55,7 +55,7 @@ export const QueueScriptComponent = ({
         if (!transactionResponse) return;
 
         transactionResponse.wait().then(() => {
-            dispatch(fetchGasTankClaimable(walletAddress, chainId));
+            dispatch(updateUserStats(walletAddress, chainId));
             verifyScript();
         });
         setVerification(script.getVerification());

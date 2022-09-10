@@ -28,9 +28,19 @@ export interface IUpdateTutorialTooltip {
     value: boolean;
 }
 
+export interface IUpdateUserStats {
+    type: ActionType.UPDATE_USER_STATS;
+    gasBalance?: number;
+    tipBalance?: number;
+    gasTankClaimable?: number;
+    treasuryStaked?: number;
+    treasuryClaimable?: number;
+}
+
 export type UserAction =
     | IUpdateWalletAction
     | IAuthCheck
     | ISetTxAsSeen
     | IUpdateUsername
-    | IUpdateTutorialTooltip;
+    | IUpdateTutorialTooltip
+    | IUpdateUserStats;
