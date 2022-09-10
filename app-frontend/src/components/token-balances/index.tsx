@@ -21,6 +21,16 @@ export const TokenBalances = (): JSX.Element => {
         .filter((address) => tokens[address])
         .filter((address) => balances[address] > 0);
 
+    const styleBalance = (amount?: number) =>
+        amount === undefined
+            ? "0"
+            : amount < 10000
+            ? amount.toString()
+            : Intl.NumberFormat("en-US", {
+                  notation: "compact",
+                  maximumFractionDigits: 4
+              }).format(amount);
+
     return (
         <div className="token-balances">
             {/* Header */}
@@ -36,7 +46,7 @@ export const TokenBalances = (): JSX.Element => {
                         <TokenWithBalance
                             key={tokens[address].address}
                             token={tokens[address]}
-                            balance={balances[address] ?? 0}
+                            balance={styleBalance(balances[address])}
                         />
                     ))
                 ) : (
@@ -50,7 +60,7 @@ export const TokenBalances = (): JSX.Element => {
     );
 };
 
-const TokenWithBalance = ({ token, balance }: { token: IToken; balance: number }): JSX.Element => (
+const TokenWithBalance = ({ token, balance }: { token: IToken; balance: string }): JSX.Element => (
     <div className="token-with-balance">
         <img className="token-with-balance__img" src={token.logoURI} />
         <div className="token-with-balance__name">{token.symbol}</div>
