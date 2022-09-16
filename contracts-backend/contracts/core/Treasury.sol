@@ -6,6 +6,7 @@ import "../interfaces/ILiquidityManager.sol";
 import "../utils/WithOperators.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@layerzerolabs/solidity-examples/contracts/token/oft/OFT.sol";
 
 /// @title Treasury Contract
 /// @notice Contract taking care of:
@@ -274,6 +275,35 @@ contract Treasury is ITreasury, Ownable, WithOperators {
         uint256 amount = commissionsPool;
         commissionsPool = 0;
         payable(_msgSender()).transfer(amount);
+    }
+
+    /// @notice Send a specified amount of DAEM tokens to a treasury on another chain
+    /// @param lzChainId the LayerZero chain identifier of the chain we are targeting
+    /// @param amount the amount of DAEM tokens to send to the treasury on the target chain
+    function sendDAEMToTreasuryOnOtherChain(
+        uint16 lzChainId,
+        bytes calldata treasuryAddress,
+        uint256 amount
+    ) external payable onlyOwner {
+        OFT DAEM = OFT(address(token));
+        (uint256 fee, ) = DAEM.estimateSendFee(
+            lzChainId,
+            treasuryAddress,
+            amount,
+            false,
+            bytes("")
+        );
+        require(msg.value >= fee, "Fee not covered");
+
+        DAEM.sendFrom{value: msg.value}(
+            address(this),
+            lzChainId,
+            treasuryAddress,
+            amount,
+            payable(msg.sender),
+            msg.sender,
+            bytes("")
+        );
     }
 
     /* ========== EXTERNAL FUNCTIONS ========== */
