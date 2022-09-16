@@ -3,6 +3,7 @@ pragma solidity ^0.8.9;
 
 import "../interfaces/ITreasury.sol";
 import "../interfaces/ILiquidityManager.sol";
+import "../utils/WithOperators.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -12,7 +13,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 /// - taking care of rewards distributions to users that staked DAEM
 /// - holds the commissions money, until it's withdrawn by the owner
 /// - buy and hold the DAEM-ETH LP
-contract Treasury is ITreasury, Ownable {
+contract Treasury is ITreasury, Ownable, WithOperators {
     IERC20 private token;
     address private gasTank;
     ILiquidityManager private liquidityManager;
@@ -231,7 +232,7 @@ contract Treasury is ITreasury, Ownable {
     /// @notice Adds funds to the Protocol-owned-Liquidity LP
     /// @dev Funds in the PoL pool will be used. 50% of it to buyback DAEM and then funding the LP.
     /// @param amountOutMin the minimum amount of DAEM tokens to receive during buyback
-    function fundLP(uint256 amountOutMin) external onlyOwner {
+    function fundLP(uint256 amountOutMin) external onlyOwnerOrOperators {
         require(shouldFundLP(), "Funding forbidden. Should buyback");
         // First we buy back some DAEM at market price using half of the polPool
         uint256 amountToSwap = polPool / 2;
@@ -256,7 +257,7 @@ contract Treasury is ITreasury, Ownable {
     /// @notice Buybacks DAEM tokens using the PoL funds and keeps them in the treasury
     /// @dev 100% of funds in the PoL pool will be used to buyback DAEM.
     /// @param amountOutMin the minimum amount of DAEM tokens to receive during buyback
-    function buybackDAEM(uint256 amountOutMin) external onlyOwner {
+    function buybackDAEM(uint256 amountOutMin) external onlyOwnerOrOperators {
         require(!shouldFundLP(), "Buyback forbidden. Should fund");
         // We buy back some DAEM at market price using all the polPool
         liquidityManager.swapETHforDAEM{value: polPool}(
@@ -269,7 +270,7 @@ contract Treasury is ITreasury, Ownable {
     }
 
     /// @notice Claims the commissions and send them to the contract owner wallet
-    function claimCommission() external onlyOwner {
+    function claimCommission() external onlyOwnerOrOperators {
         uint256 amount = commissionsPool;
         commissionsPool = 0;
         payable(_msgSender()).transfer(amount);
