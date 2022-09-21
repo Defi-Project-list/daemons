@@ -8,6 +8,7 @@ import "./gas-tank.css";
 import { Card } from "../../components/card/card";
 import { Switch } from "../../components/switch";
 import { updateUserStats } from "../../state/action-creators/user-action-creators";
+import { TooltipSize } from "../../components/tooltip";
 
 export function GasTank(): JSX.Element {
     const dispatch = useAppDispatch();
@@ -230,6 +231,7 @@ export function GasTank(): JSX.Element {
             iconClass="card__title-icon--gas-tank"
             actionComponent={depositWithdrawSwitch}
             tooltipContent={tooltipContent}
+            tooltipSize={TooltipSize.Small}
         >
             <div className="card__fake-input">
                 {gasTankBalance !== undefined ? gasTankBalance : "??"} {currencySymbol}

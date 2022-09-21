@@ -11,6 +11,7 @@ import { ethers } from "ethers";
 import { Card } from "../../components/card/card";
 import { Switch } from "../../components/switch";
 import { updateUserStats } from "../../state/action-creators/user-action-creators";
+import { TooltipSize } from "../../components/tooltip";
 
 export function TipJar(): JSX.Element {
     const dispatch = useAppDispatch();
@@ -274,6 +275,7 @@ export function TipJar(): JSX.Element {
             iconClass="card__title-icon--tip-jar"
             actionComponent={depositWithdrawSwitch}
             tooltipContent={tooltipContent}
+            tooltipSize={TooltipSize.Small}
         >
             <div className="card__fake-input">
                 {tipJarBalance !== undefined ? tipJarBalance : "??"} DAEM
