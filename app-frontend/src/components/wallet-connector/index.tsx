@@ -35,6 +35,7 @@ export function ConnectWalletButton() {
     useEffect(() => {
         if (currentChainId && currentChainId !== chainId) {
             // chain id has changed, send to home to prevent errors
+            // window.location.href = "/";
             navigate("/")
         }
         setCurrentChainId(chainId ?? undefined);
