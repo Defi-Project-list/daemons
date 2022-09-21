@@ -57,19 +57,18 @@ export const App = ({ children }: { children: any }) => {
     }`;
 
     useEffect(() => {
-        //if (!supportedChain) return;
+        dispatch(cleanMmInfo());
+        dispatch(fetchDAEMPriceInEth(chainId));
+        dispatch(fetchLatestGasPrice(chainId));
+    }, [chainId]);
 
+    useEffect(() => {
         if (user && walletAddress) {
             dispatch(fetchUserScripts(chainId, walletAddress));
             dispatch(updateUserStats(walletAddress, chainId));
             dispatch(fetchTokenBalances(walletAddress, chainId));
         }
-
-        // these values do not depend on the user and can be fetched anyway
-        dispatch(cleanMmInfo());
-        dispatch(fetchDAEMPriceInEth(chainId));
-        dispatch(fetchLatestGasPrice(chainId));
-    }, [chainId, walletAddress, user]);
+    }, [user]);
 
     return (
         <div>
