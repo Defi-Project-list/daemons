@@ -28,8 +28,7 @@ export const AmountInput = (props: IAmountInputProps) => {
                         meta.error ? "script-block__input--error" : ""
                     }`}
                     onChange={(e) => {
-                        const n = Number(e.target.value);
-                        e.target.value = n < 0 ? "0" : e.target.value;
+                        const n = Math.max(0, Number(e.target.value));
                         input.onChange(e);
                         props.processNewValue(amountType, n);
                         setAmount(n);
@@ -58,11 +57,39 @@ export const AmountInput = (props: IAmountInputProps) => {
                             props.processNewValue(amountType, n);
                             setAmount(n);
                         }}
+                        value={currentAmount}
                     />
                 )}
             </Field>
 
-            <div className="block-amount__slider-value">{`${currentAmount / 100}%`}</div>
+            <Field name={props.inputName ?? "floatAmount"} component="input" type="number">
+                {({ input, meta }) => (
+                    <div className="block-amount__percentage-group">
+                        <input
+                            {...input}
+                            className="block-amount__percentage-input"
+                            onChange={(e) => {
+                                if (isNaN(Number(e.target.value))) {
+                                    setAmount(50);
+                                    return;
+                                }
+
+                                const rawN = Number(e.target.value);
+                                const rounded = Math.round(rawN * 100) / 100;
+                                const bounded = Math.max(Math.min(rounded, 100), 0.01);
+                                const n = bounded * 100;
+
+                                input.onChange(e);
+                                props.processNewValue(amountType, n);
+                                setAmount(n);
+                            }}
+                            value={`${currentAmount / 100}`}
+                            placeholder="Amount"
+                        />
+                        %
+                    </div>
+                )}
+            </Field>
         </div>
     );
 
