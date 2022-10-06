@@ -1,8 +1,4 @@
-import {
-    IContractsList,
-    kovanContracts,
-    mumbaiTestnetContracts
-} from "@daemons-fi/contracts/build";
+import { IContractsList, mumbaiTestnetContracts } from "@daemons-fi/contracts/build";
 
 export interface ISimplifiedChainInfo {
     name: string;
@@ -20,20 +16,6 @@ export interface ISimplifiedChainInfo {
 }
 
 export const ChainInfo: { [chainId: string]: ISimplifiedChainInfo } = {
-    "42": {
-        name: "Kovan",
-        id: "42",
-        defaultRPC: "https://kovan.infura.io/v3/",
-        iconPath: "/icons/kovan.jpg",
-        coinName: "Ether",
-        coinSymbol: "ETH",
-        coinDecimals: 18,
-        coinIconPath: "https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png",
-        explorerUrl: "https://kovan.etherscan.io/",
-        explorerTxUrl: "https://kovan.etherscan.io/tx/",
-        contracts: kovanContracts,
-        minCoinsToExecuteScripts: 0.01,
-    },
     "80001": {
         name: "Mumbai",
         id: "80001",
@@ -46,7 +28,7 @@ export const ChainInfo: { [chainId: string]: ISimplifiedChainInfo } = {
         explorerUrl: "https://mumbai.polygonscan.com/",
         explorerTxUrl: "https://mumbai.polygonscan.com/tx/",
         contracts: mumbaiTestnetContracts,
-        minCoinsToExecuteScripts: 1,
+        minCoinsToExecuteScripts: 1
     }
 };
 
