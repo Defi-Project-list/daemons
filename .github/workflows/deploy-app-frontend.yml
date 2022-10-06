@@ -15,10 +15,19 @@ jobs:
       - name: git-checkout
         uses: actions/checkout@v2
 
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@daemons-fi"
+
       - name: Install all dependencies
         run: |
           cd app-frontend/
           npm install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GH_REGISTRY_PACKAGES }}
 
       - name: test
         run: |

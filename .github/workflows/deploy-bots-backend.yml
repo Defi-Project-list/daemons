@@ -15,11 +15,19 @@ jobs:
       - name: git-checkout
         uses: actions/checkout@v2
 
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@daemons-fi"
+
       - name: Test
         env:
           MONGO_DB_CONN_STRING: not_used_in_tests
           KOVAN_RPC: not_used_in_tests
           MUMBAI_RPC: not_used_in_tests
+          NODE_AUTH_TOKEN: ${{ secrets.GH_REGISTRY_PACKAGES }}
         run: |
           cd bots-backend/
           npm install
